@@ -1,5 +1,5 @@
 export const API_CONFIG = {
-  baseUrl: 'http://localhost:3000',
+  baseUrl: 'https://check-ecommerce.onrender.com',
   get productsUrl() { return `${this.baseUrl}/api/products`; },
   get categoriesUrl() { return `${this.baseUrl}/api/categories`; },
   get brandsUrl() { return `${this.baseUrl}/api/brands`; },
