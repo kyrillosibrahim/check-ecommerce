@@ -1,0 +1,85 @@
+<div class="container section-padding">
+  <h2 class="section-title">{{ 'cart.title' | translate }}</h2>
+
+  @if ((cartService.cart$ | async)?.length === 0) {
+    <div class="empty-state">
+      <i class="bi bi-cart-x d-block"></i>
+      <h3>{{ 'cart.empty' | translate }}</h3>
+      <p>{{ 'cart.empty_desc' | translate }}</p>
+      <a routerLink="/products" class="btn btn-primary">
+        <i style="font-size: 1rem; color: white;" class="bi bi-bag me-2"></i>{{ 'cart.start_shopping' | translate }}
+      </a>
+    </div>
+  } @else {
+    <div class="row g-4">
+      <!-- Cart Items -->
+      <div class="col-lg-8">
+        <div class="card shadow-sm" style="background-color: var(--sz-bg-card); border-color: var(--sz-border-color);">
+          <div class="card-body p-0">
+            <!-- Table header (desktop) -->
+            <div class="d-none d-md-flex px-4 py-3 fw-semibold small table-header"
+                 style="border-bottom: 1px solid var(--sz-border-color);">
+              <div class="flex-grow-1">{{ 'cart.product' | translate }}</div>
+              <div style="width: 120px;" class="text-center">{{ 'cart.price' | translate }}</div>
+              <div style="width: 140px;" class="text-center">{{ 'cart.quantity' | translate }}</div>
+              <div style="width: 100px;" class="text-end">{{ 'cart.total' | translate }}</div>
+              <div style="width: 50px;"></div>
+            </div>
+
+            @for (item of (cartService.cart$ | async) ?? []; track item.product.id) {
+              <app-cart-item
+                [item]="item"
+                (quantityChange)="cartService.updateQuantity($event.productId, $event.quantity)"
+                (remove)="cartService.removeFromCart($event)" />
+            }
+          </div>
+          <div class="px-4 py-3 d-flex justify-content-end" style="border-top: 1px solid var(--sz-border-color);">
+            <button class="btn btn-outline-danger btn-sm" (click)="clearAll()">
+              <i class="bi bi-trash3 me-1"></i>{{ 'cart.clear_all' | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Summary -->
+      <div class="col-lg-4">
+        <div class="card shadow-sm" style="background-color: var(--sz-bg-card); border-color: var(--sz-border-color);">
+          <div class="card-body">
+            <h6 class="fw-bold mb-4">{{ 'cart.order_summary' | translate }}</h6>
+
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-secondary">{{ 'cart.subtotal' | translate }}</span>
+              <span>{{ cartService.cartSubtotal$ | async | egpCurrency }}</span>
+            </div>
+
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-secondary">{{ 'cart.discount' | translate }}</span>
+              <span class="text-danger">-{{ cartService.cartDiscount$ | async | egpCurrency }}</span>
+            </div>
+
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-secondary">{{ 'cart.shipping' | translate }}</span>
+              <span class="text-success">{{ 'cart.shipping_free' | translate }}</span>
+            </div>
+
+            <hr style="border-color: var(--sz-border-color);">
+
+            <div class="d-flex justify-content-between mb-4">
+              <span class="fw-bold fs-6">{{ 'cart.total' | translate }}</span>
+              <span class="fw-bold fs-6" style="color: var(--sz-accent);">
+                {{ cartService.cartTotal$ | async | egpCurrency }}
+              </span>
+            </div>
+
+            <a routerLink="/checkout" class="btn btn-primary w-100 mb-2">
+              <i class="bi bi-lock me-2"></i>{{ 'cart.proceed_checkout' | translate }}
+            </a>
+            <a routerLink="/products" class="btn btn-outline-secondary w-100">
+              {{ 'cart.continue_shopping' | translate }}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

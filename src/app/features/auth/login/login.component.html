@@ -1,0 +1,76 @@
+<div class="container section-padding">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+      <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
+        <div class="card-body p-4 p-md-5">
+          <div class="text-center mb-4">
+            <i class="bi bi-person-circle fs-3" style="color: var(--sz-accent);"></i>
+            <h3 class="fw-bold mt-2 h5">{{ 'login.welcome' | translate }}</h3>
+            <p class="text-secondary small">{{ 'login.subtitle' | translate }}</p>
+          </div>
+
+          @if (errorMessage) {
+            <div class="alert alert-danger d-flex align-items-center" role="alert">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              {{ errorMessage }}
+            </div>
+          }
+
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            <!-- Phone -->
+            <div class="mb-3">
+              <label class="form-label">{{ 'login.phone' | translate }}</label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="bi bi-phone"></i>
+                </span>
+                <input type="tel" class="form-control" formControlName="phone" [placeholder]="'login.phone_placeholder' | translate"
+                       [class.is-invalid]="f['phone'].touched && f['phone'].invalid"
+                      >
+                @if (f['phone'].touched && f['phone'].invalid) {
+                  <div class="invalid-feedback">{{ 'login.phone_invalid' | translate }}</div>
+                }
+              </div>
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+              <label class="form-label">{{ 'login.password' | translate }}</label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="bi bi-lock"></i>
+                </span>
+                <input type="password" class="form-control" formControlName="password" [placeholder]="'login.password_placeholder' | translate"
+                       [class.is-invalid]="f['password'].touched && f['password'].invalid"
+                      >
+                @if (f['password'].touched && f['password'].invalid) {
+                  <div class="invalid-feedback">{{ 'login.password_invalid' | translate }}</div>
+                }
+              </div>
+            </div>
+
+            <!-- Forgot Password -->
+            <div class="mb-4 text-end">
+              <a routerLink="/forgot-password" class="small" style="color: var(--sz-accent);">{{ 'login.forgot_password' | translate }}</a>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-sm w-100 mb-3" [disabled]="isLoading">
+              @if (isLoading) {
+                <span class="spinner-border spinner-border-sm me-2"></span>
+              }
+              <i class="bi bi-box-arrow-in-right me-2"></i>{{ 'login.sign_in' | translate }}
+            </button>
+          </form>
+
+          <!-- Register link -->
+          <div class="text-center mt-3">
+            <small class="text-secondary">
+              {{ 'login.no_account' | translate }}
+              <a routerLink="/register" class="fw-semibold" style="color: var(--sz-accent);">{{ 'login.register_link' | translate }}</a>
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

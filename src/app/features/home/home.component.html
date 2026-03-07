@@ -1,0 +1,36 @@
+<!-- Hero Slider -->
+<app-hero-slider />
+
+<!-- Best Selling Products -->
+@if (bestSellingProducts.length > 0) {
+  <section class="section-padding" style="background-color: var(--sz-bg-secondary);">
+    <div class="container">
+      <h2 class="section-title">المنتجات الأكثر مبيعاً</h2>
+      <app-featured-products
+        [products]="bestSellingProducts"
+        (addToCart)="onAddToCart($event)"
+        (addToWishlist)="onAddToWishlist($event)" />
+    </div>
+  </section>
+}
+
+<!-- Categories -->
+<section class="section-padding">
+  <div class="container">
+    <h2 class="section-title">{{ 'home.shop_by_category' | translate }}</h2>
+    @if (isLoading()) {
+      <app-skeleton-loader type="card" [count]="6" />
+    } @else {
+      <app-categories-grid [categories]="categories" />
+    }
+  </div>
+</section>
+<!-- All Brands -->
+@if (brands.length > 0) {
+  <section class="section-padding">
+    <div class="container">
+      <h2 class="section-title">العلامات التجارية الشائعة</h2>
+      <app-brands-grid [brands]="brands" />
+    </div>
+  </section>
+}

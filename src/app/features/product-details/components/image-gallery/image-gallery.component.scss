@@ -1,0 +1,57 @@
+:host {
+  display: block;
+}
+
+.gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.main-image-wrapper {
+  border-radius: 12px;
+  overflow: hidden;
+  background-color:white;
+  border: 1px solid var(--sz-border-color);
+}
+
+.main-image {
+  width: 100%;
+  max-height: 380px;
+  object-fit: contain;
+  display: block;
+  transition: opacity 0.2s ease;
+}
+
+.thumbnails {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.thumb-btn {
+  padding: 0;
+  border: 2px solid var(--sz-border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--sz-bg-secondary);
+  transition: border-color 0.2s ease, opacity 0.2s ease;
+  opacity: 0.75;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &.active {
+    border-color: var(--sz-accent);
+    opacity: 1;
+  }
+}
+
+.thumb-img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  display: block;
+}

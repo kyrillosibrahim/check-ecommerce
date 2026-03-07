@@ -1,0 +1,27 @@
+[
+  {
+    "id": "usr-mlz72ekqrm21",
+    "name": "Kyrillos",
+    "phone": "01275388239",
+    "email": "kyrilosibrahim012753@gmail.com",
+    "password": "$2b$10$.GlA2mssJ3HAkpf/BCXacuYdGhWoDovs2jNlF4pDvEAyiZlvGijGO",
+    "role": "admin",
+    "createdAt": "2026-02-23T13:10:24.842Z",
+    "addresses": [
+      {
+        "fullName": "Kyrillos",
+        "phone": "01275388239",
+        "governorate": "Cairo",
+        "city": "Nasr City",
+        "address": "0120"
+      },
+      {
+        "fullName": "Kyrillos",
+        "phone": "01275388239",
+        "governorate": "Matrouh",
+        "city": "El Alamein",
+        "address": "شارع المستشفى"
+      }
+    ]
+  }
+]

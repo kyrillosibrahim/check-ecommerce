@@ -1,0 +1,163 @@
+<section class="offers-page">
+  <!-- LightRays Background -->
+  <app-light-rays
+    raysOrigin="top-center"
+    raysColor="#4dabf7"
+    [raysSpeed]="2"
+    [lightSpread]="1"
+    [rayLength]="2"
+    [followMouse]="true"
+    [mouseInfluence]="0.3"
+    [noiseAmount]="0.09"
+    [distortion]="0"
+    [pulsating]="false"
+    [fadeDistance]="2"
+    [saturation]="2" />
+
+  <!-- Content -->
+  <div class="offers-content container">
+    <!-- Header -->
+    <div class="offers-header">
+      <h1 class="offers-heading">
+        @if (translationService.isArabic()) {
+          العروض والخصومات
+        } @else {
+          Offers & Discounts
+        }
+      </h1>
+      <p class="offers-subtitle">
+        @if (translationService.isArabic()) {
+          اكتشف أفضل العروض والخصومات على منتجاتنا
+        } @else {
+          Discover the best deals and discounts on our products
+        }
+      </p>
+      <div class="heading-line"></div>
+    </div>
+
+    <!-- Banners Carousel -->
+    @if (banners().length > 0) {
+      <div id="offersBannerCarousel" class="carousel slide mb-4 offers-banner-carousel" data-bs-ride="carousel" data-bs-interval="3500">
+        <div class="carousel-indicators">
+          @for (banner of banners(); track banner.id; let i = $index) {
+            <button type="button" data-bs-target="#offersBannerCarousel" [attr.data-bs-slide-to]="i"
+                    [class.active]="i === 0" [attr.aria-current]="i === 0 ? 'true' : null"></button>
+          }
+        </div>
+        <div class="carousel-inner rounded-3 overflow-hidden">
+          @for (banner of banners(); track banner.id; let i = $index) {
+            <div class="carousel-item" [class.active]="i === 0">
+              @if (banner.link) {
+                <a [routerLink]="banner.link">
+                  <img [src]="banner.image" class="d-block w-100 offers-banner-img" alt="عرض">
+                </a>
+              } @else {
+                <img [src]="banner.image" class="d-block w-100 offers-banner-img" alt="عرض">
+              }
+            </div>
+          }
+        </div>
+        @if (banners().length > 1) {
+          <button class="carousel-control-prev" type="button" data-bs-target="#offersBannerCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#offersBannerCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+          </button>
+        }
+      </div>
+    }
+
+    @if (isLoading()) {
+      <div class="page-loader">
+        <div class="spinner"></div>
+      </div>
+    } @else if (discountedProducts().length === 0) {
+      <div class="empty-state">
+        <i class="bi bi-tags d-block"></i>
+        <h3>
+          @if (translationService.isArabic()) {
+            لا توجد عروض حاليًا
+          } @else {
+            No offers available
+          }
+        </h3>
+        <p>
+          @if (translationService.isArabic()) {
+            تابعنا للحصول على أحدث العروض
+          } @else {
+            Stay tuned for the latest deals
+          }
+        </p>
+        <a routerLink="/products" class="btn btn-primary btn-sm">
+          @if (translationService.isArabic()) {
+            تصفح المنتجات
+          } @else {
+            Browse Products
+          }
+        </a>
+      </div>
+    } @else {
+      <!-- Filter Bar -->
+      <div class="offers-filter-bar">
+        <div class="filter-chips-row">
+          <div class="chips-scroll">
+            <button class="filter-chip" [class.active]="selectedCategory() === ''" (click)="onCategorySelect('')">
+              {{ 'offers.filter_all' | translate }}
+              <span class="chip-count">{{ discountedProducts().length }}</span>
+            </button>
+            @for (cat of availableCategories(); track cat) {
+              <button class="filter-chip" [class.active]="selectedCategory() === cat" (click)="onCategorySelect(cat)">
+                {{ 'cat.' + cat | translate }}
+              </button>
+            }
+          </div>
+          <div class="sort-wrapper">
+            <select class="sort-select" [ngModel]="sortBy()" (ngModelChange)="onSortChange($event)">
+              <option value="default">{{ 'offers.sort_default' | translate }}</option>
+              <option value="discount-high">{{ 'offers.sort_discount_high' | translate }}</option>
+              <option value="discount-low">{{ 'offers.sort_discount_low' | translate }}</option>
+              <option value="price-low">{{ 'offers.sort_price_low' | translate }}</option>
+              <option value="price-high">{{ 'offers.sort_price_high' | translate }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="results-count">
+          {{ filteredProducts().length }} {{ 'offers.results_count' | translate }}
+        </div>
+      </div>
+
+      <!-- Products Grid -->
+      @if (filteredProducts().length === 0) {
+        <div class="empty-state">
+          <i class="bi bi-funnel d-block"></i>
+          <h3>
+            @if (translationService.isArabic()) {
+              لا توجد عروض في هذا القسم
+            } @else {
+              No offers in this category
+            }
+          </h3>
+          <p>
+            @if (translationService.isArabic()) {
+              جرب اختيار قسم آخر
+            } @else {
+              Try selecting a different category
+            }
+          </p>
+        </div>
+      } @else {
+        <div class="row g-2 g-md-3 row-cols-lg-5">
+          @for (product of filteredProducts(); track product.id) {
+            <div class="col-6 col-md-4 col-lg">
+              <app-product-card
+                [product]="product"
+                (addToCart)="onAddToCart($event)"
+                (addToWishlist)="onAddToWishlist($event)" />
+            </div>
+          }
+        </div>
+      }
+    }
+  </div>
+</section>

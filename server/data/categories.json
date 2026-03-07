@@ -1,0 +1,43 @@
+[
+  {
+    "id": 2,
+    "name": "فيتامينات ومكملات غذائية",
+    "slug": "فيتامينات-ومكملات-غذائية",
+    "image": "/uploads/categories/1772142725432-380776.png",
+    "subcategories": [
+      {
+        "id": 1,
+        "name": "الحياه",
+        "slug": "الحياه",
+        "image": "/uploads/categories/1772394780795-348753.png"
+      },
+      {
+        "id": 2,
+        "name": "تيزو",
+        "slug": "تيزو",
+        "image": "/uploads/categories/1772394790582-876312.png"
+      }
+    ],
+    "famousBrands": [
+      1,
+      3,
+      5
+    ]
+  },
+  {
+    "id": 3,
+    "name": "العناية بالشعر",
+    "slug": "العناية-بالشعر",
+    "image": "/uploads/categories/1772156669659-573604.png",
+    "subcategories": [],
+    "famousBrands": []
+  },
+  {
+    "id": 4,
+    "name": "العناية 00",
+    "slug": "العناية-00",
+    "image": "/uploads/categories/1772394504025-633433.png",
+    "subcategories": [],
+    "famousBrands": []
+  }
+]

@@ -1,0 +1,203 @@
+:host {
+  display: block;
+  padding-inline: 30px;
+}
+
+.profile-card {
+  max-width: 680px;
+  margin: 0 auto;
+  background: var(--sz-bg-card);
+  border: 1px solid var(--sz-border-color);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 2rem 2rem 1.5rem;
+  background: linear-gradient(135deg, var(--sz-accent) 0%, var(--sz-accent-hover) 100%);
+  color: #fff;
+}
+
+.avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  border: 2.5px solid rgba(255, 255, 255, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  span { font-size: 1.8rem; font-weight: 700; text-transform: uppercase; line-height: 1; }
+}
+
+.profile-header-info { min-width: 0; }
+
+.profile-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0 0 0.2rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.member-since { font-size: 0.75rem; opacity: 0.85; }
+
+.profile-fields { padding: 0.5rem 0; }
+
+.field-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  transition: background 0.15s;
+
+  &:not(:last-child) { border-bottom: 1px solid var(--sz-border-color); }
+  &:hover { background: var(--sz-bg-secondary); }
+}
+
+.field-label {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--sz-text-secondary);
+  font-size: 0.82rem;
+  font-weight: 500;
+  flex-shrink: 0;
+
+  i { font-size: 1rem; opacity: 0.7; }
+}
+
+.field-value {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--sz-text-primary);
+  font-weight: 600;
+  font-size: 0.85rem;
+  min-width: 0;
+
+  > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+
+// Shared icon button base
+.info-btn, .edit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+
+  &:hover { color: #fff; }
+}
+
+.info-btn {
+  color: var(--sz-accent);
+  font-size: 0.95rem;
+  &:hover { background: var(--sz-accent); transform: scale(1.1); }
+}
+
+.edit-btn {
+  color: var(--sz-text-muted);
+  font-size: 0.8rem;
+  &:hover { background: var(--sz-accent); }
+}
+
+.email-edit-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  .form-control { font-size: 0.82rem; max-width: 260px; }
+}
+
+.email-edit-actions {
+  display: flex;
+  gap: 0.3rem;
+  flex-shrink: 0;
+  .btn {
+    width: 30px; height: 30px; padding: 0;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; font-size: 0.85rem;
+  }
+}
+
+.password-section { border-top: 1px solid var(--sz-border-color); }
+
+.change-password-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 1rem 2rem;
+  background: none;
+  border: none;
+  color: var(--sz-text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover { background: var(--sz-bg-secondary); }
+  .bi-shield-lock { font-size: 1rem; color: var(--sz-accent); }
+  .toggle-chevron { margin-inline-start: auto; font-size: 0.75rem; color: var(--sz-text-muted); }
+}
+
+.password-form {
+  padding: 0 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  animation: slideDown 0.25s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.password-field {
+  label { display: block; font-size: 0.78rem; font-weight: 500; color: var(--sz-text-secondary); margin-bottom: 0.35rem; }
+  .form-control { font-size: 0.82rem; }
+}
+
+.toggle-password {
+  cursor: pointer;
+  background: var(--sz-bg-secondary);
+  border-color: var(--sz-border-color);
+  color: var(--sz-text-muted);
+  &:hover { color: var(--sz-accent); }
+}
+
+.password-actions {
+  display: flex;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+  .btn { font-size: 0.82rem; padding: 0.45rem 1.2rem; border-radius: 8px; }
+}
+
+@media (max-width: 576px) {
+  :host { padding-inline: 10px; }
+  .profile-header { padding: 1.5rem 1.25rem 1.25rem; gap: 1rem; }
+  .avatar { width: 56px; height: 56px; span { font-size: 1.4rem; } }
+  .profile-name { font-size: 1rem; }
+  .field-row { flex-direction: column; align-items: flex-start; gap: 0.4rem; padding: 0.85rem 1.25rem; }
+  .field-value { width: 100%; }
+  .email-edit-form { flex-direction: column; align-items: stretch; .form-control { max-width: 100%; } }
+  .email-edit-actions { justify-content: flex-end; }
+  .change-password-toggle { padding: 1rem 1.25rem; }
+  .password-form { padding: 0 1.25rem 1.25rem; }
+  .password-actions { flex-direction: column; .btn { width: 100%; } }
+}

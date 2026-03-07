@@ -1,0 +1,83 @@
+.carousel-container {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--sz-border-color);
+  border-radius: 24px;
+  padding: 16px;
+  background-color: var(--sz-bg-card);
+  user-select: none;
+  touch-action: pan-y;
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+// Separate perspective wrapper so perspective doesn't sit on the same
+// element as the translateX transform (which would break the 3D effect).
+.carousel-perspective {
+  perspective: 1000px;
+  overflow: visible;
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+  transform-style: preserve-3d;
+}
+
+.carousel-item {
+  position: relative;
+  flex-shrink: 0;
+  height: 350px;
+  border-radius: 12px;
+
+  @media (max-width: 768px) {
+    height: auto;
+  }
+  overflow: hidden;
+  background-color: var(--sz-bg-secondary);
+  border: 1px solid var(--sz-border-color);
+  transition: transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1),
+              opacity 0.4s ease;
+  backface-visibility: hidden;
+}
+
+.carousel-image {
+  display: block;
+  width: 100%;
+  height: 350px;
+  object-fit: contain;
+  background-color: var(--sz-bg-secondary);
+  pointer-events: none;
+
+  @media (max-width: 768px) {
+    height: auto;
+  }
+}
+
+// Indicators
+.carousel-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+.carousel-indicator {
+  height: 8px;
+  width: 8px;
+  border-radius: 50%;
+  background-color: var(--sz-text-muted, #888);
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+
+  &.active {
+    background-color: var(--sz-accent);
+    transform: scale(1.3);
+  }
+
+  &:hover:not(.active) {
+    background-color: var(--sz-text-secondary, #666);
+  }
+}

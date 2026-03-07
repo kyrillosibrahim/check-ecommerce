@@ -1,0 +1,200 @@
+<div class="container section-padding">
+  @if (orderPlaced) {
+    <!-- Success State -->
+    <div class="text-center py-5 success-container">
+      <div class="mb-4 success-icon-wrapper">
+        <i class="bi bi-check-circle-fill text-success success-icon"></i>
+      </div>
+      <h2 class="fw-bold mb-3 success-title">{{ 'checkout.success_title' | translate }}</h2>
+      <p class="mb-2 fs-5 success-message">{{ 'checkout.success_message' | translate }}</p>
+      <p class="text-secondary mb-2">{{ 'checkout.success_thanks' | translate }}</p>
+      <p class="text-secondary mb-4">{{ 'checkout.success_order_id' | translate }} <strong>{{ orderId }}</strong></p>
+
+      <p class="text-secondary small">{{ 'checkout.success_redirect' | translate }}</p>
+      <a routerLink="/" class="btn btn-primary mt-3">
+        <i class="bi bi-house me-2"></i>{{ 'checkout.back_home' | translate }}
+      </a>
+    </div>
+  } @else {
+    <h2 class="section-title">{{ 'checkout.title' | translate }}</h2>
+
+    <div class="row g-4">
+      <div class="col-lg-5">
+        <!-- Saved Address Card -->
+        @if (savedAddress && !showForm) {
+          <div class="card shadow-sm mb-3 saved-address-card" style="background-color: var(--sz-bg-card);">
+            <div class="card-body p-3">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <h6 class="fw-bold mb-0 fs-6"><i class="bi bi-geo-alt-fill me-2" style="color: var(--sz-accent);"></i>{{ 'checkout.saved_address' | translate }}</h6>
+                <span class="badge bg-success-subtle text-success small"><i class="bi bi-check-circle me-1"></i>{{ 'checkout.default_address' | translate }}</span>
+              </div>
+              <div class="saved-address-details small">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                  <i class="bi bi-person text-secondary"></i>
+                  <span class="fw-semibold">{{ savedAddress.fullName }}</span>
+                </div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                  <i class="bi bi-phone text-secondary"></i>
+                  <span>{{ savedAddress.phone }}</span>
+                </div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                  <i class="bi bi-pin-map text-secondary"></i>
+                  <span>{{ savedAddress.governorate | localize:savedGovAr }} - {{ savedAddress.city | localize:savedCityAr }}</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                  <i class="bi bi-house text-secondary"></i>
+                  <span>{{ savedAddress.address }}</span>
+                </div>
+              </div>
+
+              <!-- Shipping cost for saved address -->
+              @if (shippingCost > 0) {
+                <div class="alert alert-info mb-0 mt-2 py-1 px-2 d-flex align-items-center gap-2 small">
+                  <i class="bi bi-truck"></i>
+                  <span>{{ 'checkout.shipping_cost_label' | translate }}: <strong>{{ shippingCost | egpCurrency }}</strong></span>
+                </div>
+              }
+
+              <div class="d-flex gap-2 mt-3">
+                <button class="btn btn-outline-primary btn-sm" (click)="editAddress()">
+                  <i class="bi bi-plus-circle me-1"></i>{{ 'checkout.add_new_address' | translate }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Place order button when using saved address -->
+          <button class="btn btn-primary w-100" (click)="onSubmit()"
+                  [disabled]="checkoutForm.invalid">
+            <i class="bi bi-check-circle me-2"></i>{{ 'checkout.place_order' | translate }}
+          </button>
+        }
+
+        <!-- Checkout Form -->
+        @if (showForm) {
+          <div class="card shadow-sm" style="background-color: var(--sz-bg-card);">
+            <div class="card-body p-3">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold mb-0"><i class="bi bi-geo-alt me-2"></i>{{ 'checkout.shipping_info' | translate }}</h6>
+                @if (savedAddress) {
+                  <button class="btn btn-outline-secondary btn-sm" (click)="useSavedAddress()">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i>{{ 'checkout.use_saved' | translate }}
+                  </button>
+                }
+              </div>
+
+              <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit()">
+                <div class="row g-3">
+                  <!-- Governorate -->
+                  <div class="col-md-6">
+                    <label class="form-label">{{ 'checkout.governorate' | translate }}</label>
+                    <select class="form-select" formControlName="governorate"
+                            (change)="onGovernorateChange()"
+                            [class.is-invalid]="f['governorate'].touched && f['governorate'].invalid"
+                            style="background-color: var(--sz-bg-secondary); border-color: var(--sz-border-color); color: var(--sz-text-primary);">
+                      <option value="">{{ 'checkout.select_governorate' | translate }}</option>
+                      @for (gov of governorates; track gov.id) {
+                        <option [value]="gov.governorate_name_en">{{ gov.governorate_name_en | localize:gov.governorate_name_ar }}</option>
+                      }
+                    </select>
+                    @if (f['governorate'].touched && f['governorate'].errors?.['required']) {
+                      <div class="invalid-feedback">{{ 'validation.governorate_required' | translate }}</div>
+                    }
+                  </div>
+
+                  <!-- City -->
+                  <div class="col-md-6">
+                    <label class="form-label">{{ 'checkout.city' | translate }}</label>
+                    <select class="form-select" formControlName="city"
+                            [class.is-invalid]="f['city'].touched && f['city'].invalid"
+                            style="background-color: var(--sz-bg-secondary); border-color: var(--sz-border-color); color: var(--sz-text-primary);">
+                      <option value="">{{ 'checkout.select_city' | translate }}</option>
+                      @for (city of cities; track city.id) {
+                        <option [value]="city.city_name_en">{{ city.city_name_en | localize:city.city_name_ar }}</option>
+                      }
+                    </select>
+                    @if (f['city'].touched && f['city'].errors?.['required']) {
+                      <div class="invalid-feedback">{{ 'validation.city_required' | translate }}</div>
+                    }
+                  </div>
+
+                  <!-- Shipping Cost Badge -->
+                  @if (shippingCost > 0) {
+                    <div class="col-md-6 d-flex align-items-end">
+                      <div class="alert alert-info w-100 mb-0 py-2 d-flex align-items-center gap-2">
+                        <i class="bi bi-truck"></i>
+                        <span>{{ 'checkout.shipping_cost_label' | translate }}: <strong>{{ shippingCost | egpCurrency }}</strong></span>
+                      </div>
+                    </div>
+                  }
+
+                  <!-- Address -->
+                  <div class="col-12">
+                    <label class="form-label">{{ 'checkout.address' | translate }}</label>
+                    <textarea class="form-control" formControlName="address" rows="3"
+                              [class.is-invalid]="f['address'].touched && f['address'].invalid"
+                              style="background-color: var(--sz-bg-secondary); border-color: var(--sz-border-color); color: var(--sz-text-primary);"></textarea>
+                    @if (f['address'].touched && f['address'].errors?.['required']) {
+                      <div class="invalid-feedback">{{ 'validation.address_required' | translate }}</div>
+                    }
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 mt-3"
+                        [disabled]="checkoutForm.invalid">
+                  <i class="bi bi-check-circle me-2"></i>{{ 'checkout.place_order' | translate }}
+                </button>
+              </form>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Order Summary -->
+      <div class="col-lg-7">
+        <div class="card shadow-sm" style="background-color: var(--sz-bg-card);">
+          <div class="card-body p-3">
+            <h6 class="fw-bold mb-3 fs-6">{{ 'checkout.order_summary' | translate }}</h6>
+
+            @for (item of (cartService.cart$ | async) ?? []; track item.product.id) {
+              <div class="d-flex align-items-center gap-3 mb-3">
+                <img [src]="item.product.images[0]" [alt]="item.product.title" class="rounded"
+                     style="width: 50px; height: 50px; object-fit: cover;">
+                <div class="flex-grow-1">
+                  <span class="fw-semibold d-block">{{ item.product.title | localize:item.product.titleAr }}</span>
+                  <small class="text-secondary">x{{ item.quantity }}</small>
+                </div>
+              </div>
+            }
+
+            <hr style="border-color: var(--sz-border-color);">
+
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-secondary">{{ 'checkout.subtotal' | translate }}</span>
+              <span>{{ cartService.cartSubtotal$ | async | egpCurrency }}</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-secondary">{{ 'checkout.discount' | translate }}</span>
+              <span class="text-danger">-{{ cartService.cartDiscount$ | async | egpCurrency }}</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-secondary">{{ 'checkout.shipping' | translate }}</span>
+              @if (shippingCost > 0) {
+                <span>{{ shippingCost | egpCurrency }}</span>
+              } @else {
+                <span class="text-secondary">--</span>
+              }
+            </div>
+            <hr style="border-color: var(--sz-border-color);">
+            <div class="d-flex justify-content-between">
+              <span class="fw-bold fs-6">{{ 'checkout.total' | translate }}</span>
+              <span class="fw-bold fs-6" style="color: var(--sz-accent);">
+                {{ ((cartService.cartTotal$ | async) ?? 0) + shippingCost | egpCurrency }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

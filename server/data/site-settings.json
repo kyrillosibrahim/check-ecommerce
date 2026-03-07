@@ -1,0 +1,25 @@
+{
+  "logo": "logo-1772153311918.png",
+  "colors": {
+    "primaryLight": "#db8b00",
+    "primaryDark": "#000000",
+    "secondaryLight": "#d40c0c",
+    "secondaryDark": "#20c9a6"
+  },
+  "social": {
+    "facebook": "https://www.facebook.com/?locale=ar_AR",
+    "instagram": "https://www.instagram.com/youstena12",
+    "whatsapp": "01275388239",
+    "phone": "01275388239"
+  },
+  "bestSellingProducts": [
+    "nowfods-ناو-فودز-كلوروفيل-سائل-بنكهة-النعناع-الطبيعية-473-مل",
+    "nowfods-ناو-فودز-ل-تيروسين،-750-مل-جرام،-90-كبسولة-نباتية",
+    "prod-mm6btpij"
+  ],
+  "bestSellingBrands": [
+    1,
+    2,
+    9
+  ]
+}

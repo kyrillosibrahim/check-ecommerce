@@ -1,0 +1,86 @@
+:host {
+  display: block;
+  padding-inline: 30px;
+}
+
+.success-container {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.success-icon-wrapper {
+  animation: scaleIn 0.5s ease-out 0.2s both;
+}
+
+.success-icon {
+  font-size: 5rem;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.success-title {
+  animation: fadeInUp 0.5s ease-out 0.4s both;
+}
+
+.success-message {
+  animation: fadeInUp 0.5s ease-out 0.6s both;
+  color: var(--sz-accent) !important;
+  font-weight: 600;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+// Card headings — between h5 (1.25rem) and h6 (1rem)
+.card h6.fs-6 {
+  font-size: 1.1rem !important;
+}
+
+// Compact font sizes
+.form-label {
+  font-size: 0.85rem;
+}
+
+.form-control,
+.form-select {
+  font-size: 0.85rem;
+}
+
+// Saved Address Card
+.saved-address-card {
+  border-inline-start: 4px solid var(--sz-accent) !important;
+  animation: fadeInUp 0.4s ease-out;
+
+  .saved-address-details {
+    padding: 0.75rem 1rem;
+    background-color: var(--sz-bg-secondary);
+    border-radius: 0.5rem;
+
+    i {
+      width: 20px;
+      text-align: center;
+    }
+  }
+}

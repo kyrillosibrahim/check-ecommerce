@@ -1,0 +1,98 @@
+[
+  {
+    "id": 1,
+    "name": "NOw Foods",
+    "slug": "now-foods",
+    "image": "brands/now-foods.png"
+  },
+  {
+    "id": 2,
+    "name": "calefornia gold",
+    "slug": "calefornia-gold",
+    "image": "brands/calefornia-gold.png"
+  },
+  {
+    "id": 3,
+    "name": "Doctor best",
+    "slug": "doctor-best",
+    "image": "brands/doctor-best.png"
+  },
+  {
+    "id": 4,
+    "name": "jarrow",
+    "slug": "jarrow",
+    "image": "brands/jarrow.png"
+  },
+  {
+    "id": 5,
+    "name": "life exention",
+    "slug": "life-exention",
+    "image": "brands/life-exention.png"
+  },
+  {
+    "id": 6,
+    "name": "muscletech",
+    "slug": "muscletech",
+    "image": "brands/muscletech.png"
+  },
+  {
+    "id": 7,
+    "name": "Natrol",
+    "slug": "natrol",
+    "image": "brands/natrol.png"
+  },
+  {
+    "id": 8,
+    "name": "natural way",
+    "slug": "natural-way",
+    "image": "brands/natural-way.png"
+  },
+  {
+    "id": 9,
+    "name": "on optimum",
+    "slug": "on-optimum",
+    "image": "brands/on-optimum.png"
+  },
+  {
+    "id": 10,
+    "name": "osteo bi flex",
+    "slug": "osteo-bi-flex",
+    "image": "brands/osteo-bi-flex.png"
+  },
+  {
+    "id": 11,
+    "name": "peerfectil",
+    "slug": "peerfectil",
+    "image": "brands/peerfectil.png"
+  },
+  {
+    "id": 12,
+    "name": "schiff",
+    "slug": "schiff",
+    "image": "brands/schiff.png"
+  },
+  {
+    "id": 13,
+    "name": "seven says",
+    "slug": "seven-says",
+    "image": "brands/seven-says.png"
+  },
+  {
+    "id": 14,
+    "name": "Solary",
+    "slug": "solary",
+    "image": "brands/solary.png"
+  },
+  {
+    "id": 15,
+    "name": "solgar",
+    "slug": "solgar",
+    "image": "brands/solgar.png"
+  },
+  {
+    "id": 16,
+    "name": "vitabiotics",
+    "slug": "vitabiotics",
+    "image": "brands/vitabiotics.png"
+  }
+]

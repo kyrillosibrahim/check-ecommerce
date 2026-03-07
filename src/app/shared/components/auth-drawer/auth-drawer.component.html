@@ -1,0 +1,257 @@
+<!-- Backdrop -->
+@if (drawerService.isOpen$ | async) {
+  <div class="auth-drawer-backdrop" (click)="drawerService.close()"></div>
+}
+
+<!-- Drawer Panel -->
+<div class="auth-drawer-panel" [class.open]="drawerService.isOpen$ | async">
+  <!-- Header -->
+  <div class="drawer-header">
+    <button class="btn-close-drawer" (click)="drawerService.close()">
+      <i class="bi bi-x-lg"></i>
+    </button>
+    <div class="drawer-logo">
+      <img [src]="logoUrl" alt="Check">
+    </div>
+  </div>
+
+  <!-- Tabs (hide on forgot-password) -->
+  @if ((drawerService.activeView$ | async) !== 'forgot-password') {
+    <div class="drawer-tabs">
+      <button [class.active]="(drawerService.activeView$ | async) === 'login'"
+              (click)="switchView('login')">
+        {{ 'login.sign_in' | translate }}
+      </button>
+      <button [class.active]="(drawerService.activeView$ | async) === 'register'"
+              (click)="switchView('register')">
+        {{ 'register.submit' | translate }}
+      </button>
+    </div>
+  }
+
+  <!-- Body -->
+  <div class="drawer-body">
+    <!-- Error -->
+    @if (errorMessage) {
+      <div class="alert alert-danger d-flex align-items-center py-2" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <small>{{ errorMessage }}</small>
+      </div>
+    }
+
+    <!-- Success -->
+    @if (successMessage) {
+      <div class="alert alert-success d-flex align-items-center py-2" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <small>{{ successMessage | translate }}</small>
+      </div>
+    }
+
+    <!-- ============ LOGIN ============ -->
+    @if ((drawerService.activeView$ | async) === 'login') {
+      <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+        <!-- Phone -->
+        <div class="mb-3">
+          <label class="form-label">{{ 'login.phone' | translate }}</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-phone"></i></span>
+            <input type="tel" class="form-control" formControlName="phone" dir="rtl"
+                   [placeholder]="'login.phone_placeholder' | translate"
+                   [class.is-invalid]="lf['phone'].touched && lf['phone'].invalid">
+            @if (lf['phone'].touched && lf['phone'].invalid) {
+              <div class="invalid-feedback">{{ 'login.phone_invalid' | translate }}</div>
+            }
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="mb-3">
+          <label class="form-label">{{ 'login.password' | translate }}</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+            <input type="password" class="form-control" formControlName="password" dir="rtl"
+                   [placeholder]="'login.password_placeholder' | translate"
+                   [class.is-invalid]="lf['password'].touched && lf['password'].invalid">
+            @if (lf['password'].touched && lf['password'].invalid) {
+              <div class="invalid-feedback">{{ 'login.password_invalid' | translate }}</div>
+            }
+          </div>
+        </div>
+
+        <!-- Forgot Password Link -->
+        <div class="mb-4 text-end">
+          <a class="small cursor-pointer" style="color: var(--sz-accent);" (click)="switchView('forgot-password')">
+            {{ 'login.forgot_password' | translate }}
+          </a>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-sm w-100" [disabled]="isLoading">
+          @if (isLoading) {
+            <span class="spinner-border spinner-border-sm me-2"></span>
+          }
+          <i class="bi bi-box-arrow-in-right me-2"></i>{{ 'login.sign_in' | translate }}
+        </button>
+      </form>
+    }
+
+    <!-- ============ REGISTER ============ -->
+    @if ((drawerService.activeView$ | async) === 'register') {
+      <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+        <!-- Name -->
+        <div class="mb-3">
+          <label class="form-label">{{ 'register.name' | translate }}</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-person"></i></span>
+            <input type="text" class="form-control" formControlName="name" dir="rtl"
+                   [placeholder]="'register.name_placeholder' | translate"
+                   [class.is-invalid]="rf['name'].touched && rf['name'].invalid">
+            @if (rf['name'].touched && rf['name'].invalid) {
+              <div class="invalid-feedback">{{ 'register.name_invalid' | translate }}</div>
+            }
+          </div>
+        </div>
+
+        <!-- Phone -->
+        <div class="mb-3">
+          <label class="form-label">{{ 'register.phone' | translate }}</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-phone"></i></span>
+            <input type="tel" class="form-control" formControlName="phone" dir="rtl"
+                   [placeholder]="'register.phone_placeholder' | translate"
+                   [class.is-invalid]="rf['phone'].touched && rf['phone'].invalid">
+            @if (rf['phone'].touched && rf['phone'].invalid) {
+              <div class="invalid-feedback">{{ 'register.phone_invalid' | translate }}</div>
+            }
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3">
+          <label class="form-label">{{ 'register.email' | translate }}</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+            <input type="email" class="form-control" formControlName="email" dir="rtl"
+                   [placeholder]="'register.email_placeholder' | translate"
+                   [class.is-invalid]="rf['email'].touched && rf['email'].invalid">
+            @if (rf['email'].touched && rf['email'].invalid) {
+              <div class="invalid-feedback">{{ 'register.email_invalid' | translate }}</div>
+            }
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="mb-3">
+          <label class="form-label">{{ 'register.password' | translate }}</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+            <input type="password" class="form-control" formControlName="password" dir="rtl"
+                   [placeholder]="'register.password_placeholder' | translate"
+                   [class.is-invalid]="rf['password'].touched && rf['password'].invalid">
+            @if (rf['password'].touched && rf['password'].invalid) {
+              <div class="invalid-feedback">{{ 'register.password_invalid' | translate }}</div>
+            }
+          </div>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="mb-4">
+          <label class="form-label">{{ 'register.confirm_password' | translate }}</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+            <input type="password" class="form-control" formControlName="confirmPassword" dir="rtl"
+                   [placeholder]="'register.confirm_placeholder' | translate"
+                   [class.is-invalid]="rf['confirmPassword'].touched && (rf['confirmPassword'].invalid || registerForm.hasError('passwordsMismatch'))">
+            @if (rf['confirmPassword'].touched && (rf['confirmPassword'].invalid || registerForm.hasError('passwordsMismatch'))) {
+              <div class="invalid-feedback">{{ 'register.confirm_invalid' | translate }}</div>
+            }
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-sm w-100" [disabled]="isLoading">
+          @if (isLoading) {
+            <span class="spinner-border spinner-border-sm me-2"></span>
+          }
+          <i class="bi bi-person-plus me-2"></i>{{ 'register.submit' | translate }}
+        </button>
+      </form>
+    }
+
+    <!-- ============ FORGOT PASSWORD ============ -->
+    @if ((drawerService.activeView$ | async) === 'forgot-password') {
+      <div class="mb-3">
+        <a class="small cursor-pointer d-inline-flex align-items-center" style="color: var(--sz-accent);" (click)="switchView('login')">
+          <i class="bi bi-arrow-right me-1"></i>{{ 'forgot.back_login' | translate }}
+        </a>
+      </div>
+
+      <div class="text-center mb-4">
+        <i class="bi bi-shield-lock fs-3" style="color: var(--sz-accent);"></i>
+        <h6 class="fw-bold mt-2">{{ 'forgot.title' | translate }}</h6>
+        <p class="text-secondary small mb-0">{{ 'forgot.subtitle' | translate }}</p>
+      </div>
+
+      <!-- Step 1: Email -->
+      @if (forgotStep === 'email') {
+        <form [formGroup]="emailForm" (ngSubmit)="sendOtp()">
+          <div class="mb-4">
+            <label class="form-label">{{ 'forgot.email' | translate }}</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+              <input type="email" class="form-control" formControlName="email" dir="rtl"
+                     [placeholder]="'forgot.email_placeholder' | translate"
+                     [class.is-invalid]="ef['email'].touched && ef['email'].invalid">
+              @if (ef['email'].touched && ef['email'].invalid) {
+                <div class="invalid-feedback">{{ 'forgot.email_invalid' | translate }}</div>
+              }
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-sm w-100" [disabled]="isLoading">
+            @if (isLoading) {
+              <span class="spinner-border spinner-border-sm me-2"></span>
+            }
+            <i class="bi bi-send me-2"></i>{{ 'forgot.send_otp' | translate }}
+          </button>
+        </form>
+      }
+
+      <!-- Step 2: OTP + New Password -->
+      @if (forgotStep === 'reset') {
+        <form [formGroup]="resetForm" (ngSubmit)="onResetPassword()">
+          <div class="mb-3">
+            <label class="form-label">{{ 'forgot.otp' | translate }}</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-key"></i></span>
+              <input type="text" class="form-control text-center fw-bold letter-spacing-2" formControlName="otp"
+                     [placeholder]="'forgot.otp_placeholder' | translate" maxlength="6"
+                     [class.is-invalid]="rsf['otp'].touched && rsf['otp'].invalid">
+              @if (rsf['otp'].touched && rsf['otp'].invalid) {
+                <div class="invalid-feedback">{{ 'forgot.otp' | translate }}</div>
+              }
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label">{{ 'forgot.new_password' | translate }}</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-lock"></i></span>
+              <input type="password" class="form-control" formControlName="newPassword" dir="rtl"
+                     [placeholder]="'forgot.new_password_placeholder' | translate"
+                     [class.is-invalid]="rsf['newPassword'].touched && rsf['newPassword'].invalid">
+              @if (rsf['newPassword'].touched && rsf['newPassword'].invalid) {
+                <div class="invalid-feedback">{{ 'login.password_invalid' | translate }}</div>
+              }
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-sm w-100" [disabled]="isLoading">
+            @if (isLoading) {
+              <span class="spinner-border spinner-border-sm me-2"></span>
+            }
+            <i class="bi bi-check-lg me-2"></i>{{ 'forgot.reset' | translate }}
+          </button>
+        </form>
+      }
+    }
+  </div>
+</div>

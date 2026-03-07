@@ -1,0 +1,16 @@
+<div class="row g-4 row-cols-lg-6">
+  @for (product of products; track product.id) {
+    <div class="col-6 col-md-4 col-lg">
+      <app-product-card
+        [product]="product"
+        (addToCart)="addToCart.emit($event)"
+        (addToWishlist)="addToWishlist.emit($event)" />
+    </div>
+  }
+</div>
+
+<div class="text-center mt-4">
+  <a routerLink="/products" class="btn btn-outline-primary">
+    {{ 'home.view_all_products' | translate }} <i class="bi bi-arrow-right ms-1"></i>
+  </a>
+</div>

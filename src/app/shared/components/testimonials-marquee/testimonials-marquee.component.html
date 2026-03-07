@@ -1,0 +1,80 @@
+<section class="testimonials-section">
+  <!-- Section Title -->
+  <h3 class="marquee-title">
+    @if (translationService.isArabic()) {
+      تقييمات العملاء
+    } @else {
+      Customer Reviews
+    }
+  </h3>
+
+  <div class="marquee-wrapper" dir="ltr">
+    <!-- Row 1 -->
+    <div class="marquee-track marquee-left">
+      @for (card of row1Cards; track $index) {
+        <div class="testimonial-card">
+          <div class="card-top">
+            <div class="avatar"><i class="bi bi-person-circle"></i></div>
+            <div class="info">
+              <h6 class="name">{{ getName(card) }}</h6>
+              <div class="stars">
+                @for (_ of getStars(card); track $index) { <i class="bi bi-star-fill"></i> }
+                @for (_ of getEmptyStars(card); track $index) { <i class="bi bi-star"></i> }
+              </div>
+            </div>
+          </div>
+          <p class="review-text">{{ getReview(card) }}</p>
+        </div>
+      }
+      @for (card of row1Cards; track $index) {
+        <div class="testimonial-card">
+          <div class="card-top">
+            <div class="avatar"><i class="bi bi-person-circle"></i></div>
+            <div class="info">
+              <h6 class="name">{{ getName(card) }}</h6>
+              <div class="stars">
+                @for (_ of getStars(card); track $index) { <i class="bi bi-star-fill"></i> }
+                @for (_ of getEmptyStars(card); track $index) { <i class="bi bi-star"></i> }
+              </div>
+            </div>
+          </div>
+          <p class="review-text">{{ getReview(card) }}</p>
+        </div>
+      }
+    </div>
+
+    <!-- Row 2 -->
+    <div class="marquee-track marquee-right">
+      @for (card of row2Cards; track $index) {
+        <div class="testimonial-card">
+          <div class="card-top">
+            <div class="avatar"><i class="bi bi-person-circle"></i></div>
+            <div class="info">
+              <h6 class="name">{{ getName(card) }}</h6>
+              <div class="stars">
+                @for (_ of getStars(card); track $index) { <i class="bi bi-star-fill"></i> }
+                @for (_ of getEmptyStars(card); track $index) { <i class="bi bi-star"></i> }
+              </div>
+            </div>
+          </div>
+          <p class="review-text">{{ getReview(card) }}</p>
+        </div>
+      }
+      @for (card of row2Cards; track $index) {
+        <div class="testimonial-card">
+          <div class="card-top">
+            <div class="avatar"><i class="bi bi-person-circle"></i></div>
+            <div class="info">
+              <h6 class="name">{{ getName(card) }}</h6>
+              <div class="stars">
+                @for (_ of getStars(card); track $index) { <i class="bi bi-star-fill"></i> }
+                @for (_ of getEmptyStars(card); track $index) { <i class="bi bi-star"></i> }
+              </div>
+            </div>
+          </div>
+          <p class="review-text">{{ getReview(card) }}</p>
+        </div>
+      }
+    </div>
+  </div>
+</section>

@@ -1,0 +1,10 @@
+:host {
+  display: block;
+}
+
+:host-context([dir="rtl"]) .pagination {
+  direction: rtl;
+}
+:host-context([dir="ltr"]) .pagination {
+  direction: ltr;
+}

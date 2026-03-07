@@ -1,0 +1,10 @@
+<div class="row g-2 g-md-3 row-cols-lg-5">
+  @for (product of products; track product.id) {
+    <div class="col-6 col-md-4 col-lg">
+      <app-product-card
+        [product]="product"
+        (addToCart)="addToCart.emit($event)"
+        (addToWishlist)="addToWishlist.emit($event)" />
+    </div>
+  }
+</div>

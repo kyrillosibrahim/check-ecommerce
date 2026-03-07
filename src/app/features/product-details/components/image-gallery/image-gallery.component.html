@@ -1,0 +1,17 @@
+<div class="gallery">
+  <!-- Main Image -->
+  <div class="main-image-wrapper">
+    <img [src]="selectedImage" [alt]="productTitle" class="main-image" />
+  </div>
+
+  <!-- Thumbnails -->
+  @if (images.length > 1) {
+    <div class="thumbnails">
+      @for (img of images; track $index) {
+        <button class="thumb-btn" [class.active]="$index === selectedIndex()" (click)="selectImage($index)">
+          <img [src]="img" [alt]="productTitle + ' - ' + ($index + 1)" class="thumb-img" />
+        </button>
+      }
+    </div>
+  }
+</div>

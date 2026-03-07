@@ -1,0 +1,21 @@
+:host {
+  display: block;
+}
+
+.form-label {
+  font-size: 0.78rem;
+}
+
+.form-control,
+.input-group-text {
+  font-size: 0.75rem;
+  padding: 0.35rem 0.7rem;
+  background-color: var(--sz-bg-secondary);
+  border-color: var(--sz-border-color);
+}
+
+.form-control::placeholder {
+  font-size: 0.7rem;
+  color: #888;
+  opacity: 0.6;
+}

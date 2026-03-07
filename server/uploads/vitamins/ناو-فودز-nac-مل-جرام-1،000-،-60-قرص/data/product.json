@@ -1,0 +1,42 @@
+{
+  "id": "nowfods-ناو-فودز-nac-مل-جرام-1،000-،-60-قرص",
+  "slug": "ناو-فودز-nac-مل-جرام-1،000-،-60-قرص",
+  "title": "ناو فودز‏ NAC مل جرام 1،000 ، 60 قرص",
+  "titleAr": "ناو فودز‏ NAC مل جرام 1،000 ، 60 قرص",
+  "description": "",
+  "descriptionAr": "",
+  "category": "فيتامينات-ومكملات-غذائية",
+  "categoryId": 2,
+  "brand": "Now Foods",
+  "wholesalePrice": 0,
+  "originalPrice": 1225,
+  "discountedPrice": 1225,
+  "discountPercentage": 0,
+  "merchantProfitPercentage": 0,
+  "price": 1225,
+  "stock": 50,
+  "rating": 4.5,
+  "ratingsCount": 0,
+  "isFeatured": true,
+  "comingSoon": false,
+  "tags": [
+    "vitamins",
+    "supplements",
+    "now-foods"
+  ],
+  "productForm": null,
+  "faq": [],
+  "mainImages": [
+    "main/img-1.webp",
+    "main/img-2.webp"
+  ],
+  "swiperImages": [
+    "swiper/img-1.webp",
+    "swiper/img-2.webp"
+  ],
+  "normalImages": [
+    "normal/img-1.webp",
+    "normal/img-2.webp"
+  ],
+  "createdAt": "2026-02-20T03:10:48.908Z"
+}

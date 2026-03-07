@@ -1,0 +1,119 @@
+<div class="container section-padding">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+      <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
+        <div class="card-body p-4 p-md-5">
+          <div class="text-center mb-4">
+            <i class="bi bi-person-plus-fill fs-3" style="color: var(--sz-accent);"></i>
+            <h3 class="fw-bold mt-2 h5">{{ 'register.title' | translate }}</h3>
+            <p class="text-secondary small">{{ 'register.subtitle' | translate }}</p>
+          </div>
+
+          @if (errorMessage) {
+            <div class="alert alert-danger d-flex align-items-center" role="alert">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              {{ errorMessage }}
+            </div>
+          }
+
+          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+            <!-- Name -->
+            <div class="mb-3">
+              <label class="form-label">{{ 'register.name' | translate }}</label>
+              <div class="input-group">
+                <span class="input-group-text" >
+                  <i class="bi bi-person"></i>
+                </span>
+                <input type="text" class="form-control" formControlName="name" [placeholder]="'register.name_placeholder' | translate"
+                       [class.is-invalid]="f['name'].touched && f['name'].invalid"
+                       >
+                @if (f['name'].touched && f['name'].invalid) {
+                  <div class="invalid-feedback">{{ 'register.name_invalid' | translate }}</div>
+                }
+              </div>
+            </div>
+
+            <!-- Phone -->
+            <div class="mb-3">
+              <label class="form-label">{{ 'register.phone' | translate }}</label>
+              <div class="input-group">
+                <span class="input-group-text" >
+                  <i class="bi bi-phone"></i>
+                </span>
+                <input type="tel" class="form-control" formControlName="phone" [placeholder]="'register.phone_placeholder' | translate"
+                       [class.is-invalid]="f['phone'].touched && f['phone'].invalid"
+                       >
+                @if (f['phone'].touched && f['phone'].invalid) {
+                  <div class="invalid-feedback">{{ 'register.phone_invalid' | translate }}</div>
+                }
+              </div>
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+              <label class="form-label">{{ 'register.email' | translate }}</label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="bi bi-envelope"></i>
+                </span>
+                <input type="email" class="form-control" formControlName="email" [placeholder]="'register.email_placeholder' | translate"
+                       [class.is-invalid]="f['email'].touched && f['email'].invalid"
+                       >
+                @if (f['email'].touched && f['email'].invalid) {
+                  <div class="invalid-feedback">{{ 'register.email_invalid' | translate }}</div>
+                }
+              </div>
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+              <label class="form-label">{{ 'register.password' | translate }}</label>
+              <div class="input-group">
+                <span class="input-group-text" >
+                  <i class="bi bi-lock"></i>
+                </span>
+                <input type="password" class="form-control" formControlName="password" [placeholder]="'register.password_placeholder' | translate"
+                       [class.is-invalid]="f['password'].touched && f['password'].invalid"
+                       >
+                @if (f['password'].touched && f['password'].invalid) {
+                  <div class="invalid-feedback">{{ 'register.password_invalid' | translate }}</div>
+                }
+              </div>
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="mb-4">
+              <label class="form-label">{{ 'register.confirm_password' | translate }}</label>
+              <div class="input-group">
+                <span class="input-group-text" >
+                  <i class="bi bi-lock-fill"></i>
+                </span>
+                <input type="password" class="form-control" formControlName="confirmPassword" [placeholder]="'register.confirm_placeholder' | translate"
+                       [class.is-invalid]="f['confirmPassword'].touched && (f['confirmPassword'].invalid || registerForm.hasError('passwordsMismatch'))"
+                       >
+                @if (f['confirmPassword'].touched && (f['confirmPassword'].invalid || registerForm.hasError('passwordsMismatch'))) {
+                  <div class="invalid-feedback">{{ 'register.confirm_invalid' | translate }}</div>
+                }
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-sm w-100 mb-3" [disabled]="isLoading">
+              @if (isLoading) {
+                <span class="spinner-border spinner-border-sm me-2"></span>
+              }
+              <i class="bi bi-person-plus me-2"></i>{{ 'register.submit' | translate }}
+            </button>
+          </form>
+
+          <!-- Login link -->
+          <div class="text-center mt-3">
+            <small class="text-secondary">
+              {{ 'register.has_account' | translate }}
+              <a routerLink="/login" class="fw-semibold" style="color: var(--sz-accent);">{{ 'register.login_link' | translate }}</a>
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,38 @@
+:host {
+  display: block;
+  margin-top: -1px;
+}
+
+.hero-image {
+  object-fit: cover;
+  filter: brightness(0.9);
+  @media (max-width: 768px) {
+    height: auto;
+  }
+}
+
+.carousel-caption {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--sz-hero-overlay);
+}
+
+.importbuttomstyle{
+  cursor: pointer !important;
+    background-color: #ffffff53 !important;
+    width: fit-content !important;
+    height: fit-content !important;
+    margin: auto 5% !important;
+    padding: 5px !important;
+    border-radius: 50% !important;
+}
+.carousel-control-next-icon,
+.carousel-control-prev-icon{
+      @media (max-width: 768px) {
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+
+  }
+}

@@ -1,0 +1,28 @@
+<div class="container mt-3" style="padding: 2% 5%;">
+<div id="heroCarousel" class="carousel slide rounded-3 overflow-hidden" data-bs-ride="carousel" data-bs-interval="3500">
+  <!-- Indicators -->
+  <div class="carousel-indicators">
+    @for (slide of translatedSlides; track $index) {
+      <button type="button" data-bs-target="#heroCarousel" [attr.data-bs-slide-to]="$index"
+              [class.active]="$index === 0"></button>
+    }
+  </div>
+
+  <!-- Slides -->
+  <div class="carousel-inner">
+    @for (slide of translatedSlides; track $index) {
+      <div class="carousel-item" [class.active]="$index === 0">
+        <img [src]="slide.image" [alt]="slide.title" class="d-block w-100 hero-image">
+      </div>
+    }
+  </div>
+
+  <!-- Controls -->
+  <button class="carousel-control-prev importbuttomstyle" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon"></span>
+  </button>
+  <button class="carousel-control-next importbuttomstyle" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon"></span>
+  </button>
+</div>
+</div>

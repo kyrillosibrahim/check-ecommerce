@@ -1,0 +1,32 @@
+<div class="card border-0 shadow-sm mb-4 p-3" style="background-color: var(--sz-bg-card);">
+  <div class="row g-3 align-items-end">
+    <!-- Category -->
+    <div class="col-6">
+      <label class="form-label small fw-semibold">{{ 'filter.category' | translate }}</label>
+      <select class="form-select"
+              [ngModel]="selectedCategory"
+              (ngModelChange)="categoryChange.emit($event)"
+              style="background-color: var(--sz-bg-secondary); border-color: var(--sz-border-color); color: var(--sz-text-primary);">
+        <option value="">{{ 'filter.all_categories' | translate }}</option>
+        @for (cat of categories; track cat.id) {
+          <option [value]="cat.slug">{{ 'cat.' + cat.slug | translate }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Sort -->
+    <div class="col-6">
+      <label class="form-label small fw-semibold">{{ 'filter.sort_by' | translate }}</label>
+      <select class="form-select"
+              [ngModel]="sortBy"
+              (ngModelChange)="sortChange.emit($event)"
+              style="background-color: var(--sz-bg-secondary); border-color: var(--sz-border-color); color: var(--sz-text-primary);">
+        <option value="default">{{ 'filter.sort_default' | translate }}</option>
+        <option value="price-low">{{ 'filter.sort_price_low' | translate }}</option>
+        <option value="price-high">{{ 'filter.sort_price_high' | translate }}</option>
+        <option value="name-az">{{ 'filter.sort_name_az' | translate }}</option>
+        <option value="rating">{{ 'filter.sort_rating' | translate }}</option>
+      </select>
+    </div>
+  </div>
+</div>

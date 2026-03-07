@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "productId": "nowfods-بورون-3-مل-جرام-من-ناو-فودز-250-كبسولة-نباتية",
+    "productName": "بورون 3 مل جرام من ناو فودز 250 كبسولة نباتية",
+    "categorySlug": "فيتامينات-ومكملات-غذائية",
+    "merchants": [
+      {
+        "merchantName": "يوسف ناجي",
+        "originalPrice": 1534,
+        "wholesalePrice": 1338,
+        "sellingPrice": 1430
+      }
+    ],
+    "sellingPrice": 1430,
+    "bestMerchant": "يوسف ناجي",
+    "bestWholesalePrice": 1338,
+    "profit": 92,
+    "profitPercent": 6.88,
+    "createdAt": "2026-02-27T00:09:20.182Z"
+  }
+]

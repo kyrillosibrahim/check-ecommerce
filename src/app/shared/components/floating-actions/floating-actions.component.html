@@ -1,0 +1,40 @@
+<div class="fab-container" [class.visible]="isVisible()">
+  <!-- Social Menu -->
+  @if (isOpen()) {
+    <div class="fab-menu">
+      @if (social.instagram) {
+        <a class="fab-item fab-instagram" [href]="social.instagram" target="_blank" rel="noopener" title="Instagram">
+          <i class="bi bi-instagram"></i>
+        </a>
+      }
+
+      @if (social.facebook) {
+        <a class="fab-item fab-messenger" [href]="social.facebook" target="_blank" rel="noopener" title="Facebook">
+          <i class="bi bi-messenger"></i>
+        </a>
+      }
+
+      @if (social.phone) {
+        <a class="fab-item fab-phone" [href]="'tel:+2' + social.phone" title="Call us">
+          <i class="bi bi-telephone-fill"></i>
+        </a>
+      }
+
+      @if (social.whatsapp) {
+        <a class="fab-item fab-whatsapp" [href]="'https://wa.me/' + social.whatsapp" target="_blank" rel="noopener" title="WhatsApp">
+          <i class="bi bi-whatsapp"></i>
+        </a>
+      }
+    </div>
+  }
+
+  <!-- Chat Toggle Button -->
+  <button class="fab-toggle" (click)="toggle()" [class.open]="isOpen()">
+    <i class="bi" [class.bi-chat-dots-fill]="!isOpen()" [class.bi-x-lg]="isOpen()"></i>
+  </button>
+
+  <!-- Scroll to Top Button -->
+  <button class="fab-scroll-top" (click)="scrollToTop()" title="Back to top">
+    <i class="bi bi-chevron-double-up"></i>
+  </button>
+</div>

@@ -1,0 +1,306 @@
+// ── Offers Page – Cool Blue-Cyan Premium Dark Theme ──
+// Palette: #0d6efd (brand) → #4dabf7 (accent) → #74c0fc (highlight)
+
+.offers-page {
+  position: relative;
+  min-height: 100vh;
+  background: transparent;
+  overflow: hidden;
+}
+
+.offers-banner-carousel {
+  padding-inline: 5%;
+}
+
+.offers-banner-img {
+  height: 300px;
+  object-fit: contain;
+
+  @media (max-width: 768px) {
+    height: 180px;
+  }
+}
+
+:host-context([data-bs-theme="light"]) {
+  app-light-rays,
+  ::ng-deep app-light-rays {
+    display: none !important;
+  }
+}
+
+// ── Full page loader ──
+.page-loader {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(77, 171, 247, 0.15);
+  border-top-color: #4dabf7;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.offers-content {
+  position: relative;
+  z-index: 1;
+  padding-top: 1.5rem;
+  padding-bottom: 4rem;
+}
+
+// ── Header ──
+.offers-header {
+  text-align: center;
+  margin-bottom: .5rem;
+}
+
+.offers-heading {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin: 0 0 0.4rem;
+  color: var(--bs-heading-color);
+  text-shadow: 0 0 40px rgba(77, 171, 247, 0.25);
+}
+
+.offers-subtitle {
+  font-size: 0.82rem;
+  color: var(--bs-heading-color);
+  margin: 0 0 0.8rem;
+}
+
+.heading-line {
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #0d6efd, #4dabf7);
+  margin: 0 auto;
+  border-radius: 4px;
+}
+
+// ── Empty state ──
+.empty-state {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: var(--bs-secondary-color);
+
+  i {
+    font-size: 2.5rem;
+    color: var(--bs-secondary-color);
+    margin-bottom: 1rem;
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    color: var(--bs-heading-color);
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    font-size: 0.8rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+// ── Filter Bar ──
+.offers-filter-bar {
+  margin-bottom: 1.5rem;
+}
+
+.filter-chips-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.chips-scroll {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  flex: 1;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 100px;
+  border: 1.5px solid var(--sz-border-color);
+  background: transparent;
+  color: var(--sz-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: var(--sz-accent);
+    color: var(--sz-accent);
+  }
+
+  &.active {
+    background: var(--sz-accent);
+    border-color: var(--sz-accent);
+    color: #fff;
+
+    .chip-count {
+      background: rgba(255, 255, 255, 0.25);
+      color: #fff;
+    }
+  }
+}
+
+.chip-count {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.1rem 0.4rem;
+  border-radius: 100px;
+  background: var(--sz-bg-secondary);
+  color: var(--sz-text-muted);
+  line-height: 1.2;
+}
+
+.sort-wrapper {
+  flex-shrink: 0;
+}
+
+.sort-select {
+  padding: 0.4rem 2rem 0.4rem 0.75rem;
+  border-radius: 8px;
+  border: 1.5px solid var(--sz-border-color);
+  background-color: transparent;
+  color: var(--sz-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  appearance: auto;
+  transition: border-color 0.2s ease;
+
+  &:hover,
+  &:focus {
+    border-color: var(--sz-accent);
+    outline: none;
+  }
+
+  option {
+    background: var(--sz-bg-card);
+    color: var(--sz-text-primary);
+  }
+}
+
+.results-count {
+  font-size: 0.72rem;
+  color: var(--sz-text-muted);
+  font-weight: 500;
+}
+
+// ── Dark mode filter ──
+:host-context([data-bs-theme="dark"]) {
+  .filter-chip {
+    border-color: rgba(77, 171, 247, 0.15);
+    color: var(--bs-heading-color);
+
+    &:hover {
+      border-color: rgba(77, 171, 247, 0.4);
+      color: var(--sz-accent);
+    }
+
+    &.active {
+      background: linear-gradient(135deg, #0d6efd, #4dabf7);
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 2px 12px rgba(77, 171, 247, 0.25);
+    }
+  }
+
+  .sort-select {
+    border-color: rgba(77, 171, 247, 0.15);
+    color: var(--bs-heading-color);
+
+    &:hover,
+    &:focus {
+      border-color: rgba(77, 171, 247, 0.4);
+    }
+  }
+}
+
+// ── RTL ──
+:host-context([dir="rtl"]) {
+  .sort-select {
+    padding: 0.4rem 0.75rem 0.4rem 2rem;
+  }
+}
+
+// ── Cards on dark page (dark mode only) ──
+:host-context([data-bs-theme="dark"]) ::ng-deep .card {
+  background-color: rgba(12, 17, 30, 0.85) !important;
+  border-color: rgba(77, 171, 247, 0.08) !important;
+  backdrop-filter: blur(8px);
+
+  .card-title,
+  h6 {
+    color: #e0e8f0 !important;
+  }
+
+  .text-secondary,
+  small {
+    color: #7b8ca8 !important;
+  }
+
+  .price-current {
+    color: #4dabf7 !important;
+  }
+}
+
+// ── Responsive ──
+@media (max-width: 576px) {
+  .offers-content {
+    padding-top: 1.5rem;
+    padding-bottom: 3rem;
+  }
+
+  .offers-heading {
+    font-size: 1.25rem;
+  }
+
+  .offers-subtitle {
+    font-size: 0.72rem;
+  }
+
+  .filter-chips-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .filter-chip {
+    font-size: 0.7rem;
+    padding: 0.35rem 0.7rem;
+  }
+
+  .sort-wrapper {
+    align-self: flex-end;
+  }
+
+  .sort-select {
+    font-size: 0.7rem;
+  }
+}

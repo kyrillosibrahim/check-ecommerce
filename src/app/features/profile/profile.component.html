@@ -1,0 +1,156 @@
+<div class="container section-padding">
+  <h2 class="section-title">حسابي</h2>
+
+  @if (user) {
+    <div class="profile-card">
+      <!-- Avatar + Name -->
+      <div class="profile-header">
+        <div class="avatar">
+          <span>{{ user.name.charAt(0) }}</span>
+        </div>
+        <div class="profile-header-info">
+          <h3 class="profile-name">{{ user.name }}</h3>
+          <span class="member-since">عضو منذ {{ user.createdAt | date:'mediumDate' }}</span>
+        </div>
+      </div>
+
+      <!-- Info Fields -->
+      <div class="profile-fields">
+        <!-- Name (read-only) -->
+        <div class="field-row">
+          <div class="field-label">
+            <i class="bi bi-person"></i>
+            <span>الاسم</span>
+          </div>
+          <div class="field-value">
+            <span>{{ user.name }}</span>
+            <button type="button" class="info-btn" (click)="showNameInfo()" title="تغيير الاسم">
+              <i class="bi bi-info-circle"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Phone (read-only) -->
+        <div class="field-row">
+          <div class="field-label">
+            <i class="bi bi-phone"></i>
+            <span>رقم الهاتف</span>
+          </div>
+          <div class="field-value">
+            <span dir="ltr">{{ user.phone }}</span>
+          </div>
+        </div>
+
+        <!-- Email (editable) -->
+        <div class="field-row">
+          <div class="field-label">
+            <i class="bi bi-envelope"></i>
+            <span>البريد الإلكتروني</span>
+          </div>
+          <div class="field-value">
+            @if (editingEmail()) {
+              <form [formGroup]="emailForm" (ngSubmit)="saveEmail()" class="email-edit-form">
+                <input
+                  type="email"
+                  class="form-control form-control-sm"
+                  formControlName="email"
+                  placeholder="البريد الإلكتروني"
+                />
+                <div class="email-edit-actions">
+                  <button type="submit" class="btn btn-sm btn-primary" [disabled]="emailForm.invalid || emailSaving()">
+                    @if (emailSaving()) {
+                      <span class="spinner-border spinner-border-sm"></span>
+                    } @else {
+                      <i class="bi bi-check-lg"></i>
+                    }
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary" (click)="cancelEditEmail()" [disabled]="emailSaving()">
+                    <i class="bi bi-x-lg"></i>
+                  </button>
+                </div>
+              </form>
+            } @else {
+              <span>{{ user.email }}</span>
+              <button type="button" class="edit-btn" (click)="startEditEmail()" title="تعديل البريد الإلكتروني">
+                <i class="bi bi-pencil"></i>
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Password Section -->
+      <div class="password-section">
+        <button type="button" class="change-password-toggle" (click)="togglePasswordSection()">
+          <i class="bi bi-shield-lock"></i>
+          <span>تغيير كلمة المرور</span>
+          <i class="bi toggle-chevron" [class.bi-chevron-down]="!showPasswordSection()" [class.bi-chevron-up]="showPasswordSection()"></i>
+        </button>
+
+        @if (showPasswordSection()) {
+          <form [formGroup]="passwordForm" (ngSubmit)="savePassword()" class="password-form">
+            <div class="password-field">
+              <label>كلمة المرور الحالية</label>
+              <div class="input-group">
+                <input
+                  [type]="showCurrentPassword() ? 'text' : 'password'"
+                  class="form-control"
+                  formControlName="currentPassword"
+                  placeholder="أدخل كلمة المرور الحالية"
+                />
+                <button type="button" class="input-group-text toggle-password" (click)="showCurrentPassword.set(!showCurrentPassword())">
+                  <i class="bi" [class.bi-eye]="!showCurrentPassword()" [class.bi-eye-slash]="showCurrentPassword()"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="password-field">
+              <label>كلمة المرور الجديدة</label>
+              <div class="input-group">
+                <input
+                  [type]="showNewPassword() ? 'text' : 'password'"
+                  class="form-control"
+                  formControlName="newPassword"
+                  placeholder="6 أحرف على الأقل"
+                />
+                <button type="button" class="input-group-text toggle-password" (click)="showNewPassword.set(!showNewPassword())">
+                  <i class="bi" [class.bi-eye]="!showNewPassword()" [class.bi-eye-slash]="showNewPassword()"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="password-field">
+              <label>تأكيد كلمة المرور الجديدة</label>
+              <div class="input-group">
+                <input
+                  [type]="showConfirmPassword() ? 'text' : 'password'"
+                  class="form-control"
+                  formControlName="confirmPassword"
+                  placeholder="أعد إدخال كلمة المرور الجديدة"
+                />
+                <button type="button" class="input-group-text toggle-password" (click)="showConfirmPassword.set(!showConfirmPassword())">
+                  <i class="bi" [class.bi-eye]="!showConfirmPassword()" [class.bi-eye-slash]="showConfirmPassword()"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="password-actions">
+              <button type="submit" class="btn btn-primary" [disabled]="passwordForm.invalid || passwordSaving()">
+                @if (passwordSaving()) {
+                  <span class="spinner-border spinner-border-sm me-1"></span>
+                  جاري الحفظ...
+                } @else {
+                  <i class="bi bi-check2-circle me-1"></i>
+                  حفظ كلمة المرور
+                }
+              </button>
+              <button type="button" class="btn btn-outline-secondary" (click)="togglePasswordSection()">
+                إلغاء
+              </button>
+            </div>
+          </form>
+        }
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,74 @@
+<!-- Desktop Layout -->
+<div class="d-none d-md-flex align-items-center px-4 py-3 gap-3"
+     style="border-bottom: 1px solid var(--sz-border-color);">
+  <div class="d-flex align-items-center gap-3 flex-grow-1 min-w-0" style="max-width: 400px;">
+    <a [routerLink]="['/product', item.product.id]" class="flex-shrink-0">
+      <img [src]="item.product.images[0]" [alt]="item.product.title" class="cart-item-img rounded">
+    </a>
+    <div class="min-w-0">
+      <a [routerLink]="['/product', item.product.id]" class="text-decoration-none" style="color: var(--sz-text-primary);">
+        <h6 class="mb-1 fw-semibold text-truncate-2">{{ item.product.title | localize:item.product.titleAr }}</h6>
+      </a>
+      <small class="text-secondary">{{ item.product.brand }}</small>
+    </div>
+  </div>
+  <div style="width: 120px;" class="text-center">
+    <span class="fw-semibold">{{ item.product | discountPrice | egpCurrency }}</span>
+  </div>
+  <div style="width: 140px;">
+    <div class="input-group input-group-sm">
+      <button class="btn btn-outline-secondary" (click)="decrement()" [disabled]="item.quantity <= 1">
+        <i class="bi bi-dash"></i>
+      </button>
+      <span class="input-group-text text-center flex-grow-1 justify-content-center"
+            style="background-color: var(--sz-bg-secondary); border-color: var(--sz-border-color);">
+        {{ item.quantity }}
+      </span>
+      <button class="btn btn-outline-secondary" (click)="increment()" [disabled]="item.quantity >= item.product.stock">
+        <i class="bi bi-plus"></i>
+      </button>
+    </div>
+  </div>
+  <div style="width: 100px;" class="text-end fw-bold">
+    {{ lineTotal | egpCurrency }}
+  </div>
+  <div style="width: 50px;" class="text-end">
+    <button class="btn btn-link text-danger p-0" (click)="remove.emit(item.product.id)" [title]="'cart.remove' | translate">
+      <i class="bi bi-trash"></i>
+    </button>
+  </div>
+</div>
+
+<!-- Mobile Layout -->
+<div class="d-flex d-md-none align-items-start gap-3 px-3 py-3 mobile-cart-item"
+     style="border-bottom: 1px solid var(--sz-border-color);">
+  <a [routerLink]="['/product', item.product.id]" class="flex-shrink-0">
+    <img [src]="item.product.images[0]" [alt]="item.product.title" class="cart-item-img-mobile rounded">
+  </a>
+  <div class="flex-grow-1 min-w-0">
+    <div class="d-flex justify-content-between align-items-start mb-1">
+      <a [routerLink]="['/product', item.product.id]" class="text-decoration-none flex-grow-1 min-w-0" style="color: var(--sz-text-primary);">
+        <h6 class="mb-0 fw-semibold text-truncate-2">{{ item.product.title | localize:item.product.titleAr }}</h6>
+      </a>
+      <button class="btn btn-link text-danger p-0 ms-2 flex-shrink-0" (click)="remove.emit(item.product.id)">
+        <i class="bi bi-trash" style="font-size: 0.85rem;"></i>
+      </button>
+    </div>
+    <small class="text-secondary d-block mb-2">{{ item.product.brand }}</small>
+    <div class="d-flex align-items-center justify-content-between">
+      <div class="input-group input-group-sm" style="width: 110px;">
+        <button class="btn btn-outline-secondary btn-sm" (click)="decrement()" [disabled]="item.quantity <= 1">
+          <i class="bi bi-dash"></i>
+        </button>
+        <span class="input-group-text text-center flex-grow-1 justify-content-center"
+              style="background-color: var(--sz-bg-secondary); border-color: var(--sz-border-color); font-size: 0.75rem;">
+          {{ item.quantity }}
+        </span>
+        <button class="btn btn-outline-secondary btn-sm" (click)="increment()" [disabled]="item.quantity >= item.product.stock">
+          <i class="bi bi-plus"></i>
+        </button>
+      </div>
+      <span class="fw-bold" style="color: var(--sz-accent); font-size: 0.82rem;">{{ lineTotal | egpCurrency }}</span>
+    </div>
+  </div>
+</div>

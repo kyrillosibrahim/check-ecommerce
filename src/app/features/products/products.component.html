@@ -1,0 +1,66 @@
+<div class="container section-padding">
+  <h2 class="section-title">{{ 'products.title' | translate }}</h2>
+
+  <!-- Filters -->
+  <app-product-filter
+    [categories]="categories"
+    [selectedCategory]="selectedCategory"
+    [sortBy]="sortBy"
+    [searchTerm]="searchTerm"
+    (categoryChange)="onCategoryChange($event)"
+    (sortChange)="onSortChange($event)"
+    (searchChange)="onSearchChange($event)" />
+
+  <!-- Brand filter badge -->
+  @if (selectedBrand) {
+    <div class="mb-3">
+      <span class="badge bg-primary fs-6 py-2 px-3">
+        <i class="bi bi-award me-1"></i>{{ selectedBrand }}
+        <a routerLink="/products" class="text-white ms-2" style="text-decoration: none; cursor: pointer;">
+          <i class="bi bi-x-lg"></i>
+        </a>
+      </span>
+    </div>
+  }
+
+  <!-- Results count -->
+  @if (!isLoading()) {
+    <p class="text-secondary mb-4">
+      {{ 'products.showing' | translate }} {{ displayedProducts.length }} {{ 'products.of' | translate }} {{ filteredProducts.length }} {{ 'products.products' | translate }}
+    </p>
+  }
+
+  <!-- Products grid -->
+  @if (isLoading()) {
+    <app-skeleton-loader type="card" [count]="8" />
+  } @else if (displayedProducts.length === 0) {
+    <div class="empty-state">
+      <i class="bi bi-search d-block"></i>
+      <h3>{{ 'products.no_products' | translate }}</h3>
+      <p>{{ 'products.no_products_desc' | translate }}</p>
+    </div>
+  } @else {
+    <div class="row g-2 g-md-4 row-cols-lg-6">
+      @for (product of displayedProducts; track product.id) {
+        <div class="col-6 col-md-4 col-lg">
+          <app-product-card
+            [product]="product"
+            (addToCart)="onAddToCart($event)"
+            (addToWishlist)="onAddToWishlist($event)" />
+        </div>
+      }
+    </div>
+
+    <!-- Infinite scroll sentinel & loading -->
+    @if (hasMore) {
+      <div class="text-center my-4">
+        @if (isLoadingMore()) {
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        }
+      </div>
+    }
+    <div #scrollSentinel class="scroll-sentinel"></div>
+  }
+</div>

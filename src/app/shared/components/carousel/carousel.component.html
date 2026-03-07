@@ -1,0 +1,45 @@
+<!-- Perspective wrapper - separate from the translated track to avoid CSS conflicts -->
+<div
+  class="carousel-container"
+  [style.width.px]="baseWidth"
+  (mouseenter)="onMouseEnter()"
+  (mouseleave)="onMouseLeave()"
+  (pointerdown)="onPointerDown($event)"
+  (pointermove)="onPointerMove($event)"
+  (pointerup)="onPointerUp()"
+  (pointercancel)="onPointerUp()"
+>
+  <div class="carousel-perspective"
+       [style.perspectiveOrigin]="perspectiveOrigin()">
+    <div
+      class="carousel-track"
+      [style.transform]="trackTransform()"
+      [style.width.px]="itemWidth()"
+      [style.gap.px]="16"
+    >
+      @for (item of items; track item.image; let i = $index) {
+        <div
+          class="carousel-item"
+          [style.width.px]="itemWidth()"
+          [style.transform]="getItemTransform(i)"
+          [style.opacity]="getItemOpacity(i)"
+        >
+          <img [src]="item.image" [alt]="item.title || 'Slide ' + (i + 1)" class="carousel-image" />
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Indicators -->
+  @if (items.length > 1) {
+    <div class="carousel-indicators">
+      @for (item of items; track item.image; let i = $index) {
+        <div
+          class="carousel-indicator"
+          [class.active]="activeIndex() === i"
+          (click)="goTo(i); $event.stopPropagation()"
+        ></div>
+      }
+    </div>
+  }
+</div>

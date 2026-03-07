@@ -1,0 +1,16 @@
+const express = require('express');
+const router = express.Router();
+const { register, login, forgotPassword, resetPassword, getAllUsers, updateUser, deleteUser, saveAddress, changePassword, updateEmail } = require('../controllers/auth.controller');
+
+router.post('/register', register);
+router.post('/login', login);
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password', resetPassword);
+router.get('/users', getAllUsers);
+router.put('/users/:id', updateUser);
+router.delete('/users/:id', deleteUser);
+router.put('/users/:id/address', saveAddress);
+router.put('/users/:id/change-password', changePassword);
+router.put('/users/:id/email', updateEmail);
+
+module.exports = router;

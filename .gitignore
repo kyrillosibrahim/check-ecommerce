@@ -8,6 +8,8 @@
 
 # Node
 /node_modules
+/server/node_modules
+/server/temp
 npm-debug.log
 yarn-error.log
 
@@ -42,3 +44,11 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Misc
+.claude/
+/New folder/
+/react-products-page/
+/server/study-planner/
+*.xlsx
+*.zip

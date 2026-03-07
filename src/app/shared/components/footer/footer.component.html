@@ -1,0 +1,59 @@
+<footer class="footer mt-auto py-5" style="background-color: var(--sz-bg-secondary); border-top: 1px solid var(--sz-border-color);">
+  <div class="container">
+    <div class="row g-4">
+      <!-- Brand -->
+      <div class="col-lg-4 col-md-6 footer-brand-col">
+        <div class="mb-3">
+          <img [src]="logoUrl" alt="Check" style="height: 50px;">
+        </div>
+        <p class="text-secondary mb-3">{{ 'footer.description' | translate }}</p>
+        <div class="d-flex gap-3">
+          @if (social.facebook) {
+            <a [href]="social.facebook" target="_blank" rel="noopener" class="text-secondary fs-5"><i class="bi bi-facebook"></i></a>
+          }
+          @if (social.instagram) {
+            <a [href]="social.instagram" target="_blank" rel="noopener" class="text-secondary fs-5"><i class="bi bi-instagram"></i></a>
+          }
+          @if (social.whatsapp) {
+            <a [href]="'https://wa.me/' + social.whatsapp" target="_blank" rel="noopener" class="text-secondary fs-5"><i class="bi bi-whatsapp"></i></a>
+          }
+        </div>
+      </div>
+
+
+      <!-- Categories -->
+      <div class="col-lg-2 col-md-6">
+        <h6 class="fw-bold mb-3">{{ 'footer.categories' | translate }}</h6>
+        <ul class="list-unstyled">
+          <li class="mb-2"><a routerLink="/products" [queryParams]="{ category: 'electronics' }" class="text-secondary text-decoration-none">{{ 'footer.cat_electronics' | translate }}</a></li>
+          <li class="mb-2"><a routerLink="/products" [queryParams]="{ category: 'clothing' }" class="text-secondary text-decoration-none">{{ 'footer.cat_clothing' | translate }}</a></li>
+          <li class="mb-2"><a routerLink="/products" [queryParams]="{ category: 'sports' }" class="text-secondary text-decoration-none">{{ 'footer.cat_sports' | translate }}</a></li>
+          <li class="mb-2"><a routerLink="/products" [queryParams]="{ category: 'Vitamins' }" class="text-secondary text-decoration-none">{{ 'footer.Vitamins' | translate }}</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div class="col-lg-4 col-md-6">
+        <h6 class="fw-bold mb-3">{{ 'footer.contact_us' | translate }}</h6>
+        <ul class="list-unstyled text-secondary">
+          <li class="mb-2"><a href="mailto:checkinfo@gmail.com" class="text-secondary text-decoration-none"><i class="bi bi-envelope me-2"></i>{{ 'footer.email' | translate }}</a></li>
+          @if (social.phone) {
+            <li class="mb-2"><a [href]="'tel:+2' + social.phone" class="text-secondary text-decoration-none"><i class="bi bi-telephone me-2"></i>{{ social.phone }}</a></li>
+          }
+          <li class="mb-2"><i class="bi bi-clock me-2"></i>{{ 'footer.hours' | translate }}</li>
+        </ul>
+      </div>
+    </div>
+
+    <hr class="my-4" style="border-color: var(--sz-border-color);">
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+      <p class="text-secondary mb-0 small">&copy; {{ currentYear }} {{ 'footer.rights' | translate }}</p>
+      <div class="d-flex gap-3 mt-2 mt-md-0">
+        <a href="#" class="text-secondary small text-decoration-none">{{ 'footer.privacy' | translate }}</a>
+        <a href="#" class="text-secondary small text-decoration-none">{{ 'footer.terms' | translate }}</a>
+        <a href="#" class="text-secondary small text-decoration-none">{{ 'footer.refund' | translate }}</a>
+      </div>
+    </div>
+  </div>
+</footer>

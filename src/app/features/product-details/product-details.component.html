@@ -1,0 +1,246 @@
+<div class="container section-padding">
+  @if (isLoading()) {
+    <app-skeleton-loader type="detail" />
+  } @else if (!product) {
+    <div class="empty-state">
+      <i class="bi bi-exclamation-triangle d-block"></i>
+      <h3>{{ 'details.not_found' | translate }}</h3>
+      <p>{{ 'details.not_found_desc' | translate }}</p>
+      <a routerLink="/products" class="btn btn-primary">{{ 'details.browse_products' | translate }}</a>
+    </div>
+  } @else {
+    <!-- Breadcrumb -->
+    <nav class="mb-4">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a routerLink="/">{{ 'nav.home' | translate }}</a></li>
+        <li class="breadcrumb-item"><a routerLink="/products">{{ 'nav.products' | translate }}</a></li>
+        <li class="breadcrumb-item">
+          <a routerLink="/products" [queryParams]="{ category: product.category }">{{ product.category }}</a>
+        </li>
+        <li class="breadcrumb-item active">{{ product.title | localize:product.titleAr }}</li>
+      </ol>
+    </nav>
+
+    <div class="row g-5">
+      <!-- Image Gallery -->
+      <div class="col-md-5">
+        <app-image-gallery [images]="product.images" [productTitle]="product.title" />
+      </div>
+
+      <!-- Product Info -->
+      <div class="col-md-7">
+        <span class="badge bg-primary bg-opacity-10 text-primary mb-2">{{ product.brand }}</span>
+        <h1 class="h5 fw-bold mb-1" style="line-height: 1.8;">{{ product.title | localize:product.titleAr }}</h1>
+
+        <!-- Product Form Badge -->
+        @if (product.productForm) {
+          <span class="form-badge mb-1">
+            <i class="bi bi-capsule me-1"></i>{{ product.productForm.type | localize:product.productForm.typeAr }}@if (product.productForm.count) { · {{ product.productForm.count }}}
+          </span>
+        }
+
+        <!-- Rating -->
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <div class="star-rating">
+            @for (star of starsArray; track star) {
+              <i class="bi" [class.bi-star-fill]="star <= product.rating" [class.bi-star-half]="star > product.rating && star - 0.5 <= product.rating" [class.bi-star]="star > product.rating && star - 0.5 > product.rating"></i>
+            }
+          </div>
+          <span class="text-secondary small">{{ product.rating }} ({{ product.ratingsCount }} {{ 'details.reviews' | translate }})</span>
+        </div>
+
+        <!-- Price -->
+        @if (!product.comingSoon) {
+          <div class="mb-1">
+            @if (hasDiscount) {
+              <span class="price-original fs-6 me-2">{{ product.price | egpCurrency }}</span>
+              <span class="price-current fs-4">{{ product | discountPrice | egpCurrency }}</span>
+              <span class="badge bg-danger ms-2">-{{ product.discountPercentage }}% {{ 'details.off' | translate }}</span>
+            } @else {
+              <span class="price-current fs-4">{{ product.price | egpCurrency }}</span>
+            }
+          </div>
+        }
+
+        <!-- Offers TextLoop -->
+        @if (product.offers?.length) {
+          <div class="mb-1">
+            <app-text-loop [items]="product.offers!" />
+          </div>
+        }
+
+        <!-- Stock -->
+        <div class="mb-2">
+          @if (product.comingSoon) {
+            <span class="text-warning fw-semibold">
+              <i class="bi bi-clock me-1"></i>{{ 'product.coming_soon' | translate }}
+            </span>
+          } @else if (product.stock > 0) {
+            <span class="text-success fw-semibold">
+              <i class="bi bi-check-circle me-1"></i>{{ 'details.in_stock' | translate }} ({{ product.stock }} {{ 'details.available' | translate }})
+            </span>
+          } @else {
+            <span class="text-danger fw-semibold">
+              <i class="bi bi-x-circle me-1"></i>{{ 'product.out_of_stock' | translate }}
+            </span>
+          }
+        </div>
+
+        <!-- Quantity + Actions -->
+        @if (product.comingSoon) {
+          <button class="btn btn-warning btn-md w-100" (click)="onComingSoon()">
+            <i class="bi bi-clock me-2"></i>{{ 'product.coming_soon' | translate }}
+          </button>
+        } @else if (product.stock > 0) {
+          <div class="d-flex align-items-center gap-3 mb-4">
+            <div class="input-group" style="width: 140px;">
+              <button class="btn btn-outline-secondary" (click)="decrementQty()" [disabled]="quantity <= 1">
+                <i class="bi bi-dash"></i>
+              </button>
+              <span class="input-group-text text-center flex-grow-1 justify-content-center"
+                    style="background-color: var(--sz-bg-secondary); border-color: var(--sz-border-color);">
+                {{ quantity }}
+              </span>
+              <button class="btn btn-outline-secondary" (click)="incrementQty()" [disabled]="quantity >= product.stock">
+                <i class="bi bi-plus"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="d-flex gap-3">
+            @if (product.inCart || cartService.isInCart(product.id)) {
+              <button class="btn btn-secondary btn-md flex-grow-1" disabled>
+                <i class="bi bi-check-lg me-2"></i>{{ 'details.added' | translate }}
+              </button>
+            } @else {
+              <button class="btn btn-primary btn-md flex-grow-1" (click)="addToCart()">
+                <i class="bi bi-cart-plus me-2"></i>{{ 'details.add_to_cart' | translate }}
+              </button>
+            }
+            <button class="btn btn-md" [class.btn-danger]="isInWishlist" [class.btn-outline-danger]="!isInWishlist" (click)="toggleWishlist()" [title]="'product.add_to_wishlist' | translate">
+              <i class="bi" [class.bi-heart-fill]="isInWishlist" [class.bi-heart]="!isInWishlist"></i>
+            </button>
+          </div>
+        }
+
+        <!-- Delivery Quality Button -->
+        <div class="mt-4 pt-3" style="border-top: 1px solid var(--sz-border-color);">
+          <button class="btn-delivery-quality" (click)="showDeliveryQuality()">
+            <i class="bi bi-shield-check me-2"></i>{{ 'details.delivery_quality' | translate }}
+          </button>
+        </div>
+
+        <!-- Tags -->
+        <div class="mt-3 pt-3" style="border-top: 1px solid var(--sz-border-color);">
+          <small class="text-secondary">{{ 'details.tags' | translate }} </small>
+          @for (tag of product.tags; track tag) {
+            <span class="badge bg-secondary bg-opacity-10 text-secondary me-1">{{ tag }}</span>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Description Section -->
+    @if (descriptionHtml || product.description || product.descriptionAr) {
+      <section class="mt-5 pt-5" style="border-top: 1px solid var(--sz-border-color);">
+        <h3 class="section-title">{{ 'details.description' | translate }}</h3>
+        @if (descriptionHtml) {
+          <div class="product-description-section"
+               [dir]="translationService.isArabic() ? 'rtl' : 'ltr'"
+               [innerHTML]="descriptionHtml"></div>
+        } @else {
+          <p class="text-secondary" style="line-height: 2;" [dir]="translationService.isArabic() ? 'rtl' : 'ltr'">{{ product.description | localize:product.descriptionAr }}</p>
+        }
+      </section>
+    }
+
+    <!-- Natural Images Carousel -->
+    @if (naturalImages.length > 0) {
+      <section class="mt-5 pt-5" style="border-top: 1px solid var(--sz-border-color);">
+        <h3 class="section-title">{{ 'details.natural_images' | translate }}</h3>
+        <div class="natural-carousel-wrapper">
+          <p-carousel [value]="naturalImages" [numVisible]="1" [numScroll]="1" [circular]="true">
+            <ng-template let-img #item>
+              <div class="natural-carousel-item">
+                <img [src]="img" [alt]="product.title" class="natural-carousel-img" />
+              </div>
+            </ng-template>
+          </p-carousel>
+        </div>
+      </section>
+    }
+
+    <!-- Testimonials Marquee -->
+    <section class="mt-5 pt-5" style="border-top: 1px solid var(--sz-border-color);">
+      <app-testimonials-marquee />
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="mt-5 pt-5" style="border-top: 1px solid var(--sz-border-color);">
+      <h3 class="section-title">{{ 'faq.title' | translate }}</h3>
+      <div class="accordion" id="faqAccordion">
+        <!-- Product-Specific FAQs -->
+        @if (product.faq) {
+          @for (item of product.faq; track $index; let i = $index) {
+            <div class="accordion-item faq-item">
+              <h2 class="accordion-header">
+                <button class="accordion-button collapsed faq-button" type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#faqProduct' + i">
+
+                  <i class="bi bi-question-circle me-2" style="color: var(--sz-accent);"></i>{{ item.q | localize:item.qAr }}
+                </button>
+              </h2>
+              <div [id]="'faqProduct' + i" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body faq-answer">{{ item.a | localize:item.aAr }}</div>
+              </div>
+            </div>
+          }
+        }
+        <!-- General FAQs -->
+        <div class="accordion-item faq-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed faq-button" type="button" data-bs-toggle="collapse" data-bs-target="#faqGeneral1">
+
+              <i class="bi bi-question-circle me-2" style="color: var(--sz-accent);"></i>{{ 'faq.is_original' | translate }}
+            </button>
+          </h2>
+          <div id="faqGeneral1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+            <div class="accordion-body faq-answer">{{ 'faq.is_original_answer' | translate }}</div>
+          </div>
+        </div>
+        <div class="accordion-item faq-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed faq-button" type="button" data-bs-toggle="collapse" data-bs-target="#faqGeneral2">
+
+              <i class="bi bi-question-circle me-2" style="color: var(--sz-accent);"></i>{{ 'faq.delivery_time' | translate }}
+            </button>
+          </h2>
+          <div id="faqGeneral2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+            <div class="accordion-body faq-answer">{{ 'faq.delivery_time_answer' | translate }}</div>
+          </div>
+        </div>
+        <div class="accordion-item faq-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed faq-button" type="button" data-bs-toggle="collapse" data-bs-target="#faqGeneral3">
+
+              <i class="bi bi-question-circle me-2" style="color: var(--sz-accent);"></i>{{ 'faq.payment_methods' | translate }}
+            </button>
+          </h2>
+          <div id="faqGeneral3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+            <div class="accordion-body faq-answer">{{ 'faq.payment_methods_answer' | translate }}</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Related Products -->
+    @if (relatedProducts.length > 0) {
+      <section class="mt-5 pt-5" style="border-top: 1px solid var(--sz-border-color);">
+        <h3 class="section-title">{{ 'details.you_may_also_like' | translate }}</h3>
+        <app-related-products
+          [products]="relatedProducts"
+          (addToCart)="onRelatedAddToCart($event)"
+          (addToWishlist)="onRelatedAddToWishlist($event)" />
+      </section>
+    }
+  }
+</div>

@@ -1,1 +1,354 @@
-/* You can add global styles to this file, and also import other style files */
+/* ==========================================================
+   Global Styles — ShopZone E-Commerce
+   Uses Bootstrap 5.3 native dark mode via data-bs-theme
+   ========================================================== */
+
+/* ---------- Swiper ---------- */
+@use 'swiper/swiper-bundle';
+
+/* ---------- KO Sans Font ---------- */
+@font-face { font-family: 'KO Sans'; src: url('./assets/fonts/ko-sans/KOSans-Thin.otf') format('opentype'); font-weight: 100; font-style: normal; font-display: swap; }
+@font-face { font-family: 'KO Sans'; src: url('./assets/fonts/ko-sans/KOSans-ExtraLight.otf') format('opentype'); font-weight: 200; font-style: normal; font-display: swap; }
+@font-face { font-family: 'KO Sans'; src: url('./assets/fonts/ko-sans/KOSans-Light.otf') format('opentype'); font-weight: 300; font-style: normal; font-display: swap; }
+@font-face { font-family: 'KO Sans'; src: url('./assets/fonts/ko-sans/KOSans-Regular.otf') format('opentype'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'KO Sans'; src: url('./assets/fonts/ko-sans/KOSans-Medium.otf') format('opentype'); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: 'KO Sans'; src: url('./assets/fonts/ko-sans/KOSans-SemiBold.otf') format('opentype'); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: 'KO Sans'; src: url('./assets/fonts/ko-sans/KOSans-Bold.otf') format('opentype'); font-weight: 700; font-style: normal; font-display: swap; }
+
+/* ---------- Theme Variables ---------- */
+:root,
+[data-bs-theme="light"] {
+  --sz-bg-primary: #ffffff;
+  --sz-bg-secondary: #f1f3f5;
+  --sz-bg-card: #ffffff;
+  --sz-text-primary: #1a1a2e;
+  --sz-text-secondary: #495057;
+  --sz-text-muted: #6c757d;
+  --sz-border-color: #b0b7bf;
+  --sz-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  --sz-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.15);
+  --sz-accent: #4a90d9;
+  --sz-accent-hover: #3a7bc8;
+  --sz-hero-overlay: rgba(0, 0, 0, 0.4);
+  --sz-skeleton-base: #dee2e6;
+  --sz-skeleton-shine: #f1f3f5;
+}
+
+[data-bs-theme="dark"] {
+  --sz-bg-primary: #121212;
+  --sz-bg-secondary: #1e1e1e;
+  --sz-bg-card: #1e1e1e;
+  --sz-text-primary: #e0e0e0;
+  --sz-text-secondary: #a0a0a0;
+  --sz-text-muted: #666666;
+  --sz-border-color: #333333;
+  --sz-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  --sz-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --sz-accent: #4dabf7;
+  --sz-accent-hover: #339af0;
+  --sz-hero-overlay: rgba(0, 0, 0, 0.6);
+  --sz-skeleton-base: #2a2a2a;
+  --sz-skeleton-shine: #3a3a3a;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: clip;
+}
+
+/* ---------- Wider Container ---------- */
+@media (min-width: 1200px) {
+  .container { max-width: 1320px; }
+}
+@media (min-width: 1400px) {
+  .container { max-width: 1520px; }
+}
+@media (min-width: 1600px) {
+  .container { max-width: 1680px; }
+}
+
+body {
+  font-family: 'KO Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 0.8rem;
+  background-color: var(--sz-bg-primary);
+  color: var(--sz-text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  min-height: 100vh;
+  overflow-x: clip;
+}
+
+input[type="password"] {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--sz-bg-secondary); }
+::-webkit-scrollbar-thumb { background: var(--sz-text-muted); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--sz-text-secondary); }
+
+a {
+  color: var(--sz-accent);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  &:hover { color: var(--sz-accent-hover); }
+}
+
+/* Skeleton Loading Animation */
+@keyframes skeleton-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--sz-skeleton-base) 25%, var(--sz-skeleton-shine) 50%, var(--sz-skeleton-base) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite ease-in-out;
+  border-radius: 4px;
+}
+
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--sz-shadow-hover);
+  }
+}
+
+.discount-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+}
+
+.section-padding { padding: 4rem 0; }
+
+@media (max-width: 576px) {
+  .section-padding { padding: 2rem 0; }
+  .container { padding-inline: 10px; }
+}
+
+.section-title {
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+  &::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background-color: var(--sz-accent);
+    margin-top: 0.5rem;
+  }
+
+  @media (max-width: 576px) {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.star-rating { color: #ffc107; font-size: 0.7rem; }
+
+.price-original {
+  text-decoration: line-through;
+  color: var(--sz-text-muted);
+  font-size: 0.75rem;
+}
+
+.price-current {
+  font-weight: 700;
+  color: var(--sz-accent);
+  font-size: 0.95rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  i { font-size: 4rem; color: var(--sz-text-muted); margin-bottom: 1rem; }
+  h3 { color: var(--sz-text-secondary); margin-bottom: 0.5rem; }
+  p { color: var(--sz-text-muted); margin-bottom: 1.5rem; }
+}
+
+.cursor-pointer { cursor: pointer; }
+
+/* ---------- Light Mode — Bootstrap Overrides ---------- */
+[data-bs-theme="light"] {
+  .text-secondary {
+    color: #495057 !important;
+  }
+
+  .text-muted {
+    color: #6c757d !important;
+  }
+
+  .badge.bg-secondary.bg-opacity-10 {
+    background-color: rgba(73, 80, 87, 0.15) !important;
+    color: #343a40 !important;
+  }
+
+  .badge.bg-primary.bg-opacity-10 {
+    background-color: rgba(13, 110, 253, 0.15) !important;
+  }
+
+  .breadcrumb-item a {
+    color: #495057;
+    &:hover { color: var(--sz-accent); }
+  }
+
+  .breadcrumb-item.active {
+    color: #1a1a2e;
+  }
+
+  .form-control,
+  .form-select {
+    border-color: #ced4da;
+    color: #1a1a2e;
+
+    &::placeholder {
+      color: #6c757d;
+    }
+  }
+
+  input[type="password"].form-control {
+    color: #000 !important;
+  }
+
+  .input-group-text {
+    color: #1a1a2e;
+  }
+
+  .btn-primary {
+    background-color: var(--sz-accent);
+    border: 1.5px solid var(--sz-accent);
+    color: #fff;
+
+    &:hover, &:focus {
+      background-color: var(--sz-accent-hover);
+      border-color: var(--sz-accent-hover);
+      color: #fff;
+    }
+  }
+
+  .btn-outline-secondary {
+    border-color: #adb5bd;
+    color: #495057;
+
+    &:hover {
+      background-color: #495057;
+      border-color: #495057;
+      color: #fff;
+    }
+  }
+
+  .card {
+    border-color: #ced4da;
+  }
+
+  .table {
+    color: #1a1a2e;
+    th { color: #343a40; }
+  }
+
+  .accordion-button {
+    color: #1a1a2e;
+  }
+
+  small.text-secondary {
+    color: #495057 !important;
+  }
+}
+
+/* ---------- RTL Overrides ---------- */
+[dir="rtl"] {
+  .discount-badge {
+    left: auto;
+    right: 12px;
+  }
+
+  .bi-arrow-right {
+    transform: scaleX(-1);
+  }
+}
+
+/* ---------- SweetAlert2 — keep header visible ---------- */
+body.swal2-shown {
+  overflow: visible !important;
+  padding-right: 0 !important;
+}
+
+.swal2-container {
+  z-index: 1100 !important;
+}
+
+/* ---------- SweetAlert2 Cart Toast ---------- */
+.cart-toast {
+  .swal2-title {
+    font-size: 0.85rem !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .cart-toast {
+    width: auto !important;
+    max-width: 85% !important;
+    padding: 0.5rem 0.8rem !important;
+
+    .swal2-title {
+      font-size: 0.72rem !important;
+    }
+
+    .swal2-icon {
+      width: 28px !important;
+      height: 28px !important;
+      margin: 0 0.5rem 0 0 !important;
+    }
+  }
+}
+
+/* ---------- SweetAlert2 Delivery Quality ---------- */
+.delivery-quality-popup {
+  background-color: var(--sz-bg-card) !important;
+  color: var(--sz-text-primary) !important;
+
+  .swal2-title {
+    color: var(--sz-text-primary) !important;
+  }
+
+  .swal2-close {
+    color: var(--sz-text-secondary) !important;
+  }
+}
+
+/* ---------- SweetAlert2 Mobile ---------- */
+@media (max-width: 576px) {
+  .swal2-popup {
+    width: 85% !important;
+    font-size: 0.78rem !important;
+    padding: 1.2rem !important;
+  }
+
+  .swal2-title {
+    font-size: 1.1rem !important;
+  }
+
+  .swal2-html-container {
+    font-size: 0.78rem !important;
+    line-height: 1.7 !important;
+  }
+
+  .swal2-confirm,
+  .swal2-cancel {
+    font-size: 0.78rem !important;
+    padding: 0.4rem 1.2rem !important;
+  }
+
+  .swal2-icon {
+    width: 50px !important;
+    height: 50px !important;
+  }
+}

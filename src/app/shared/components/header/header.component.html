@@ -1,0 +1,515 @@
+<!-- ═══════ Top Bar ═══════ -->
+<div class="top-bar d-none d-lg-block">
+  <div class="container d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center gap-3">
+      <a [href]="'tel:+2' + social.phone" class="top-bar-link">
+        <i class="bi bi-telephone-fill me-1"></i>{{ social.phone }}
+      </a>
+      <span class="top-bar-divider">|</span>
+      <a class="top-bar-link cursor-pointer" (click)="authDrawerService.open()">
+        <i class="bi bi-headset me-1"></i>{{ 'nav.contact_us' | translate }}
+      </a>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+      <button class="top-bar-btn" (click)="translationService.toggleLanguage()">
+        <i class="bi bi-globe2 me-1"></i>{{ translationService.currentLang() === 'ar' ? 'الإنجليزية' : 'العربية' }}
+      </button>
+      <button class="top-bar-btn" (click)="themeService.toggleTheme()">
+        @if (themeService.theme$ | async; as theme) {
+          <i class="bi" [class.bi-moon-fill]="theme === 'light'" [class.bi-sun-fill]="theme === 'dark'"></i>
+        }
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ Main Navbar ═══════ -->
+<nav class="navbar navbar-expand-lg sticky-top" style="background-color: var(--sz-bg-card); border-bottom: 1px solid var(--sz-border-color);">
+  <div class="container">
+    <!-- Brand -->
+    <a class="navbar-brand fw-bold ms-lg-5" routerLink="/">
+      <img [src]="logoUrl" alt="Store" class="header-logo">
+    </a>
+
+    <!-- Search Bar (desktop) — centered & wide -->
+    <div class="d-none d-lg-flex mx-4 search-bar-wrapper">
+      <form class="search-bar-desktop search-bar-form" (submit)="onSearch(); $event.preventDefault()">
+        <div class="input-group">
+          <input type="text" class="form-control search-input" [placeholder]="'nav.search_placeholder' | translate"
+                 [(ngModel)]="searchTerm" name="search"
+                 (focus)="openSearchOverlay()"
+                 (input)="onSearchInput()"
+                 autocomplete="off">
+          <button class="btn btn-accent" type="submit">
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
+
+        <!-- Search Dropdown (desktop) -->
+        @if (showSearchOverlay) {
+          <div class="search-dropdown">
+          <div class="search-overlay-body">
+            <!-- Live Search Results -->
+            @if (searchTerm.trim().length >= 2) {
+              @if (isSearching) {
+                <div class="overlay-section text-center py-3">
+                  <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+                </div>
+              } @else {
+                @if (searchSuggestions.length > 0 || brandSuggestions.length > 0) {
+                  <div class="overlay-section">
+                    <div class="overlay-section-header">
+                      <h6>{{ searchTerm }}</h6>
+                      <a class="overlay-link" (click)="onSearch()">عرض كل نتائج البحث <i class="bi bi-arrow-up-left"></i></a>
+                    </div>
+                    <div class="suggestion-list">
+                      @for (brand of brandSuggestions; track brand.id) {
+                        <a class="suggestion-item" (click)="searchByBrand(brand)">
+                          <span class="suggestion-name">{{ brand.name }}</span>
+                          <span class="suggestion-badge brand-type">العلامة التجارية</span>
+                          <i class="bi bi-arrow-up-left suggestion-arrow"></i>
+                        </a>
+                      }
+                      @for (product of searchSuggestions; track product.id) {
+                        <a class="suggestion-item" (click)="goToProduct(product)">
+                          <span class="suggestion-name">{{ product.title }}</span>
+                          <i class="bi bi-arrow-up-left suggestion-arrow"></i>
+                        </a>
+                      }
+                    </div>
+                  </div>
+                } @else {
+                  <div class="overlay-section text-center py-3">
+                    <p class="text-secondary mb-0">لا توجد نتائج لـ "{{ searchTerm }}"</p>
+                  </div>
+                }
+              }
+            } @else {
+              <!-- Default: Recently viewed, categories, brands -->
+              @if (recentlyViewed.length > 0) {
+                <div class="overlay-section">
+                  <div class="overlay-section-header">
+                    <h6>{{ 'nav.recently_viewed' | translate }}</h6>
+                    <a class="overlay-link" routerLink="/products" (click)="closeSearchOverlay()">{{ 'nav.view_history' | translate }}</a>
+                  </div>
+                  <div class="recently-viewed-scroll" #rvDesktop
+                       (mousedown)="onDragStart($event, rvDesktop)"
+                       (mousemove)="onDragMove($event, rvDesktop)"
+                       (mouseup)="onDragEnd()"
+                       (mouseleave)="onDragEnd()">
+                    @for (product of recentlyViewed; track product.id) {
+                      <div class="rv-item" (click)="goToProduct(product)">
+                        @if (getProductImage(product)) {
+                          <img [src]="getProductImage(product)" [alt]="product.title" class="rv-img" draggable="false">
+                        } @else {
+                          <div class="rv-img-placeholder"><i class="bi bi-box"></i></div>
+                        }
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+
+              @if (categories.length > 0) {
+                <div class="overlay-section">
+                  <h6 class="overlay-section-title">{{ 'nav.browse_categories' | translate }}</h6>
+                  <div class="categories-chips">
+                    @for (cat of categories; track cat.id) {
+                      <button class="category-chip" (click)="searchByCategory(cat)">
+                        {{ cat.name }}
+                      </button>
+                    }
+                  </div>
+                </div>
+              }
+
+              @if (brands.length > 0) {
+                <div class="overlay-section">
+                  <h6 class="overlay-section-title">{{ 'nav.popular_brands' | translate }}</h6>
+                  <div class="brands-logo-grid">
+                    @for (brand of brands; track brand.id) {
+                      <a class="brand-logo-card" (click)="searchByBrand(brand)" [title]="brand.name">
+                        @if (brand.image) {
+                          <img [src]="brand.image" [alt]="brand.name" loading="lazy">
+                        } @else {
+                          <div class="brand-logo-placeholder">
+                            <i class="bi bi-award"></i>
+                          </div>
+                        }
+                      </a>
+                    }
+                  </div>
+                </div>
+              }
+            }
+          </div>
+        </div>
+        }
+      </form>
+    </div>
+
+    <!-- Mobile: action icons -->
+    <div class="d-flex align-items-center gap-2 d-lg-none">
+      <button class="btn btn-link nav-icon p-0" (click)="openSearchOverlay()">
+        <i class="bi bi-search" style="font-size: 1rem;"></i>
+      </button>
+      <button class="btn btn-link nav-icon p-0" (click)="themeService.toggleTheme()">
+        @if (themeService.theme$ | async; as theme) {
+          <i class="bi" [class.bi-moon-fill]="theme === 'light'" [class.bi-sun-fill]="theme === 'dark'" style="font-size: 1rem;"></i>
+        }
+      </button>
+      <a routerLink="/wishlist" class="btn btn-link nav-icon p-0 position-relative">
+        <i class="bi bi-heart" style="font-size: 1rem;"></i>
+        @if ((wishlistService.wishlistCount$ | async) ?? 0; as count) {
+          @if (count > 0) {
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.55rem;">{{ count }}</span>
+          }
+        }
+      </a>
+      <a routerLink="/cart" class="btn btn-link nav-icon p-0 position-relative">
+        <i class="bi bi-cart3" style="font-size: 1rem;"></i>
+        @if ((cartService.cartCount$ | async) ?? 0; as count) {
+          @if (count > 0) {
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary" style="font-size: 0.55rem;">{{ count }}</span>
+          }
+        }
+      </a>
+      <button class="navbar-toggler border-0 p-1 ms-1" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+        <span class="navbar-toggler-icon" style="width: 1.2em; height: 1.2em;"></span>
+      </button>
+    </div>
+
+    <!-- Desktop: action icons -->
+    <div class="d-none d-lg-flex align-items-center gap-1">
+      <!-- Offers -->
+      <a routerLink="/offers" class="header-action-btn" routerLinkActive="header-action-active">
+        <i class="bi bi-tag"></i>
+        <span class="header-action-label">{{ 'nav.offers' | translate }}</span>
+      </a>
+
+      <!-- Profile -->
+      @if (authService.isLoggedIn$ | async) {
+        <div class="profile-hover-wrapper" (mouseenter)="showProfileDropdown = true" (mouseleave)="showProfileDropdown = false">
+          <a routerLink="/profile" class="header-action-btn">
+            <i class="bi bi-person-circle"></i>
+            <span class="header-action-label">{{ (authService.currentUser$ | async)?.name }}</span>
+          </a>
+          @if (showProfileDropdown) {
+            <div class="profile-dropdown">
+              <a class="profile-dropdown-item" routerLink="/profile" (click)="showProfileDropdown = false">
+                <i class="bi bi-person-gear me-2"></i>حسابي
+              </a>
+              <hr class="profile-dropdown-divider">
+              <a class="profile-dropdown-item text-danger" (click)="logout(); showProfileDropdown = false">
+                <i class="bi bi-box-arrow-right me-2"></i>{{ 'nav.logout' | translate }}
+              </a>
+            </div>
+          }
+        </div>
+      } @else {
+        <button class="header-action-btn" (click)="authDrawerService.open()">
+          <i class="bi bi-person-circle"></i>
+          <span class="header-action-label">{{ 'nav.login' | translate }}</span>
+        </button>
+      }
+
+      <!-- Wishlist -->
+      <a routerLink="/wishlist" class="header-action-btn position-relative">
+        <i class="bi bi-heart"></i>
+        <span class="header-action-label">{{ 'nav.wishlist' | translate }}</span>
+        @if ((wishlistService.wishlistCount$ | async) ?? 0; as count) {
+          @if (count > 0) {
+            <span class="header-badge bg-danger">{{ count }}</span>
+          }
+        }
+      </a>
+
+      <!-- Cart -->
+      <div class="cart-hover-wrapper" (mouseenter)="showCartDropdown = true" (mouseleave)="showCartDropdown = false">
+        <a routerLink="/cart" class="header-action-btn position-relative">
+          <i class="bi bi-cart3 cart-icon-lg"></i>
+          @if ((cartService.cartCount$ | async) ?? 0; as count) {
+            @if (count > 0) {
+              <span class="header-badge bg-primary">{{ count }}</span>
+            }
+          }
+        </a>
+
+        @if (showCartDropdown && (cartService.cart$ | async); as cartItems) {
+          @if (cartItems.length > 0) {
+            <div class="cart-dropdown">
+              <div class="cart-dropdown-header">
+                <span>سلة التسوق ({{ cartItems.length }})</span>
+              </div>
+              <div class="cart-dropdown-items">
+                @for (item of cartItems; track item.product.id) {
+                  <div class="cart-dropdown-item">
+                    <img [src]="getProductImage(item.product)" [alt]="item.product.title" class="cart-dropdown-img">
+                    <div class="cart-dropdown-info">
+                      <p class="cart-dropdown-name">{{ item.product.title }}</p>
+                      <span class="cart-dropdown-qty">x{{ item.quantity }}</span>
+                      <span class="cart-dropdown-price">{{ (item.product.price * (1 - item.product.discountPercentage / 100) * item.quantity).toFixed(2) }} ج.م</span>
+                    </div>
+                    <button class="cart-dropdown-remove" (click)="removeFromCartHover(item.product.id, $event)">
+                      <i class="bi bi-x"></i>
+                    </button>
+                  </div>
+                }
+              </div>
+              <div class="cart-dropdown-footer">
+                <div class="cart-dropdown-total">
+                  <span>الإجمالي</span>
+                  <strong>{{ (cartService.cartTotal$ | async)?.toFixed(2) }} ج.م</strong>
+                </div>
+                <a routerLink="/cart" class="btn btn-sm w-100 mt-2 cart-dropdown-btn" (click)="showCartDropdown = false">عرض السلة</a>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    </div>
+
+    <!-- Collapsible mobile content -->
+    <div class="collapse navbar-collapse" id="navbarMain" style="flex-grow: 0;">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-lg-none">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ 'nav.home' | translate }}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/products" routerLinkActive="active">{{ 'nav.products' | translate }}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/offers" routerLinkActive="active">{{ 'nav.offers' | translate }}</a>
+        </li>
+      </ul>
+
+      <!-- Mobile: search inside collapse -->
+      <form class="d-lg-none my-2" (submit)="onSearch(); $event.preventDefault()">
+        <div class="input-group input-group-sm">
+          <input type="text" class="form-control" [placeholder]="'nav.search_placeholder' | translate"
+                 [(ngModel)]="searchTerm" name="searchMobile"
+                 (focus)="openSearchOverlay()"
+                 style="background-color: var(--sz-bg-secondary); border-color: var(--sz-border-color); color: var(--sz-text-primary);">
+          <button class="btn btn-outline-secondary" type="submit">
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
+      </form>
+
+      <!-- Mobile: language + auth inside collapse -->
+      <div class="d-lg-none d-flex align-items-center gap-3 my-2 py-2" style="border-top: 1px solid var(--sz-border-color);">
+        <button class="btn btn-link nav-icon p-0" (click)="translationService.toggleLanguage()">
+          <i class="bi bi-translate" style="font-size: 1rem;"></i>
+        </button>
+        @if (authService.isLoggedIn$ | async) {
+          <a class="btn btn-sm btn-outline-secondary" routerLink="/profile">
+            <i class="bi bi-person-gear me-1"></i>حسابي
+          </a>
+          <a class="btn btn-sm btn-outline-danger" (click)="logout()">
+            <i class="bi bi-box-arrow-right me-1"></i>{{ 'nav.logout' | translate }}
+          </a>
+        } @else {
+          <a class="btn btn-sm btn-primary cursor-pointer" (click)="authDrawerService.open()">
+            <i class="bi bi-box-arrow-in-right me-1"></i>{{ 'nav.login' | translate }}
+          </a>
+        }
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════ Categories Bar (desktop) ═══════ -->
+@if (categories.length > 0) {
+  <div class="categories-bar d-none d-lg-block"
+       (mouseleave)="onCategoryLeave()">
+    <div class="container">
+      <div class="categories-bar-scroll">
+        @for (cat of categories; track cat.id) {
+          <div class="categories-bar-item-wrapper"
+               (mouseenter)="onCategoryHover(cat)">
+            <a class="categories-bar-item"
+               [class.active]="hoveredCategory?.id === cat.id"
+               (click)="searchByCategory(cat)">{{ cat.name }}</a>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- ═══ Mega Menu Dropdown ═══ -->
+    @if (hoveredCategory) {
+      <div class="mega-menu-drop"
+           (mouseenter)="onMegaMenuEnter()"
+           (mouseleave)="onCategoryLeave()">
+        <div class="mega-menu-content">
+
+          <!-- Subcategories -->
+          @if (hoveredCategory.subcategories?.length) {
+            <div class="mega-menu-section">
+              <h6 class="mega-menu-section-title">
+                <i class="bi bi-diagram-3 me-2"></i>الأقسام الفرعية
+              </h6>
+              <div class="mega-menu-sub-grid">
+                @for (sub of hoveredCategory.subcategories; track sub.id) {
+                  <a class="mega-menu-sub-card" (click)="searchBySubcategory(hoveredCategory!, sub.slug)">
+                    @if (sub.image) {
+                      <img [src]="sub.image" [alt]="sub.name" class="mega-menu-sub-img">
+                    } @else {
+                      <div class="mega-menu-sub-img-placeholder">
+                        <i class="bi bi-grid"></i>
+                      </div>
+                    }
+                    <span class="mega-menu-sub-name">{{ sub.name }}</span>
+                  </a>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- Famous Brands -->
+          @if (hoveredCategory.famousBrands?.length) {
+            <div class="mega-menu-section">
+              <h6 class="mega-menu-section-title">
+                <i class="bi bi-award me-2"></i>أشهر الماركات
+              </h6>
+              <div class="mega-menu-brand-grid">
+                @for (brand of hoveredCategory.famousBrands; track brand.id) {
+                  <a class="mega-menu-brand-card" (click)="searchByBrandFromMenu(brand.name)">
+                    @if (brand.image) {
+                      <img [src]="brand.image" [alt]="brand.name" class="mega-menu-brand-img">
+                    } @else {
+                      <div class="mega-menu-brand-img-placeholder">
+                        <i class="bi bi-award"></i>
+                      </div>
+                    }
+                    <span class="mega-menu-brand-name">{{ brand.name }}</span>
+                  </a>
+                }
+              </div>
+            </div>
+          }
+
+        </div>
+      </div>
+    }
+  </div>
+}
+
+<!-- ═══════ Search Overlay (mobile only) ═══════ -->
+@if (showSearchOverlay) {
+  <div class="search-overlay-backdrop d-lg-none" (click)="closeSearchOverlay()"></div>
+  <div class="search-overlay d-lg-none">
+    <div class="container">
+      <div class="search-overlay-header">
+        <form class="search-overlay-form" (submit)="onSearch(); $event.preventDefault()">
+          <button class="btn btn-accent btn-search-overlay" type="submit">
+            <i class="bi bi-search"></i>
+          </button>
+          <input type="text" class="search-overlay-input" [placeholder]="'nav.search_placeholder' | translate"
+                 [(ngModel)]="searchTerm" name="searchOverlay" autocomplete="off"
+                 (input)="onSearchInput()">
+        </form>
+        <button class="btn btn-link close-overlay-btn" (click)="closeSearchOverlay()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="search-overlay-body">
+        <!-- Live Search Results (mobile) -->
+        @if (searchTerm.trim().length >= 2) {
+          @if (isSearching) {
+            <div class="overlay-section text-center py-3">
+              <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+            </div>
+          } @else {
+            @if (searchSuggestions.length > 0 || brandSuggestions.length > 0) {
+              <div class="overlay-section">
+                <div class="overlay-section-header">
+                  <h6>{{ searchTerm }}</h6>
+                  <a class="overlay-link" (click)="onSearch()">عرض كل نتائج البحث <i class="bi bi-arrow-up-left"></i></a>
+                </div>
+                <div class="suggestion-list">
+                  @for (brand of brandSuggestions; track brand.id) {
+                    <a class="suggestion-item" (click)="searchByBrand(brand)">
+                      <span class="suggestion-name">{{ brand.name }}</span>
+                      <span class="suggestion-badge brand-type">العلامة التجارية</span>
+                      <i class="bi bi-arrow-up-left suggestion-arrow"></i>
+                    </a>
+                  }
+                  @for (product of searchSuggestions; track product.id) {
+                    <a class="suggestion-item" (click)="goToProduct(product)">
+                      <span class="suggestion-name">{{ product.title }}</span>
+                      <i class="bi bi-arrow-up-left suggestion-arrow"></i>
+                    </a>
+                  }
+                </div>
+              </div>
+            } @else {
+              <div class="overlay-section text-center py-3">
+                <p class="text-secondary mb-0">لا توجد نتائج لـ "{{ searchTerm }}"</p>
+              </div>
+            }
+          }
+        } @else {
+          <!-- Default content -->
+          @if (recentlyViewed.length > 0) {
+            <div class="overlay-section">
+              <div class="overlay-section-header">
+                <h6>{{ 'nav.recently_viewed' | translate }}</h6>
+                <a class="overlay-link" routerLink="/products" (click)="closeSearchOverlay()">{{ 'nav.view_history' | translate }}</a>
+              </div>
+              <div class="recently-viewed-scroll" #rvMobile
+                   (mousedown)="onDragStart($event, rvMobile)"
+                   (mousemove)="onDragMove($event, rvMobile)"
+                   (mouseup)="onDragEnd()"
+                   (mouseleave)="onDragEnd()">
+                @for (product of recentlyViewed; track product.id) {
+                  <div class="rv-item" (click)="goToProduct(product)">
+                    @if (getProductImage(product)) {
+                      <img [src]="getProductImage(product)" [alt]="product.title" class="rv-img" draggable="false">
+                    } @else {
+                      <div class="rv-img-placeholder"><i class="bi bi-box"></i></div>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          @if (categories.length > 0) {
+            <div class="overlay-section">
+              <h6 class="overlay-section-title">{{ 'nav.browse_categories' | translate }}</h6>
+              <div class="categories-chips">
+                @for (cat of categories; track cat.id) {
+                  <button class="category-chip" (click)="searchByCategory(cat)">
+                    {{ cat.name }}
+                  </button>
+                }
+              </div>
+            </div>
+          }
+
+          @if (brands.length > 0) {
+            <div class="overlay-section">
+              <h6 class="overlay-section-title">{{ 'nav.popular_brands' | translate }}</h6>
+              <div class="brands-logo-grid">
+                @for (brand of brands; track brand.id) {
+                  <a class="brand-logo-card" (click)="searchByBrand(brand)" [title]="brand.name">
+                    @if (brand.image) {
+                      <img [src]="brand.image" [alt]="brand.name" loading="lazy">
+                    } @else {
+                      <div class="brand-logo-placeholder">
+                        <i class="bi bi-award"></i>
+                      </div>
+                    }
+                  </a>
+                }
+              </div>
+            </div>
+          }
+        }
+      </div>
+    </div>
+  </div>
+  <!-- Desktop backdrop (click to close) -->
+  <div class="search-overlay-backdrop d-none d-lg-block" (click)="closeSearchOverlay()"></div>
+}

@@ -1,12 +1,55 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { HeaderComponent } from './shared/components/header/header.component';
+import { FooterComponent } from './shared/components/footer/footer.component';
+import { FloatingActionsComponent } from './shared/components/floating-actions/floating-actions.component';
+import { AuthDrawerComponent } from './shared/components/auth-drawer/auth-drawer.component';
+import { SiteSettingsService } from './core/services/settings.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, HeaderComponent, FooterComponent, FloatingActionsComponent, AuthDrawerComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class App {
-  protected readonly title = signal('e-commerce');
+export class App implements OnInit {
+  private settingsService = inject(SiteSettingsService);
+
+  ngOnInit(): void {
+    this.settingsService.getSettings().subscribe(settings => {
+      const root = document.documentElement;
+      const { colors } = settings;
+
+      // Store all color values
+      root.style.setProperty('--sz-accent-light', colors.primaryLight);
+      root.style.setProperty('--sz-accent-hover-light', colors.secondaryLight);
+      root.style.setProperty('--sz-accent-dark', colors.primaryDark);
+      root.style.setProperty('--sz-accent-hover-dark', colors.secondaryDark);
+
+      // Apply based on current theme
+      this.applyThemeColors(root);
+    });
+
+    // Re-apply on theme changes
+    const observer = new MutationObserver(() => {
+      this.applyThemeColors(document.documentElement);
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
+  }
+
+  private applyThemeColors(root: HTMLElement): void {
+    const isDark = root.getAttribute('data-bs-theme') === 'dark';
+    const accentLight = root.style.getPropertyValue('--sz-accent-light');
+    const accentHoverLight = root.style.getPropertyValue('--sz-accent-hover-light');
+    const accentDark = root.style.getPropertyValue('--sz-accent-dark');
+    const accentHoverDark = root.style.getPropertyValue('--sz-accent-hover-dark');
+
+    if (isDark) {
+      if (accentDark) root.style.setProperty('--sz-accent', accentDark);
+      if (accentHoverDark) root.style.setProperty('--sz-accent-hover', accentHoverDark);
+    } else {
+      if (accentLight) root.style.setProperty('--sz-accent', accentLight);
+      if (accentHoverLight) root.style.setProperty('--sz-accent-hover', accentHoverLight);
+    }
+  }
 }
