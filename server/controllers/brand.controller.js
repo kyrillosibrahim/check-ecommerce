@@ -35,7 +35,7 @@ async function getAllBrands(_req, res, next) {
 // POST /api/brands
 async function createBrand(req, res, next) {
   try {
-    const { name } = req.body;
+    const { name, link } = req.body;
     if (!name || !name.trim()) {
       return res.status(400).json({ error: 'Brand name is required.' });
     }
@@ -58,7 +58,7 @@ async function createBrand(req, res, next) {
       imagePath = `brands/${filename}`;
     }
 
-    const newBrand = { id: getNextId(brands), name: name.trim(), slug, image: imagePath };
+    const newBrand = { id: getNextId(brands), name: name.trim(), slug, image: imagePath, link: (link || '').trim() };
     brands.push(newBrand);
     await writeBrands(brands);
 
@@ -72,7 +72,7 @@ async function createBrand(req, res, next) {
 async function updateBrand(req, res, next) {
   try {
     const id = parseInt(req.params.id, 10);
-    const { name } = req.body;
+    const { name, link } = req.body;
 
     if (!name || !name.trim()) {
       return res.status(400).json({ error: 'Brand name is required.' });
@@ -108,6 +108,7 @@ async function updateBrand(req, res, next) {
 
     brands[index].name = name.trim();
     brands[index].slug = slug;
+    if (link !== undefined) brands[index].link = (link || '').trim();
     await writeBrands(brands);
 
     res.json(brands[index]);
