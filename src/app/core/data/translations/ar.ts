@@ -97,7 +97,7 @@ export const AR_TRANSLATIONS: Record<string, string> = {
   'details.off': 'خصم',
   'details.in_stock': 'متوفر',
   'details.available': 'متاح',
-  'details.added': 'تمت الإضافة!',
+  'details.added': 'تمت الإضافة !',
   'details.add_to_cart': 'أضف إلى السلة',
   'details.delivery_quality': 'جودة التوصيل',
   'details.tags': 'الوسوم:',

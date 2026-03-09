@@ -335,56 +335,68 @@
       </div>
     </div>
 
-    <!-- ═══ Mega Menu Dropdown ═══ -->
+    <!-- ═══ Mega Menu Dropdown (Noon-style) ═══ -->
     @if (hoveredCategory) {
       <div class="mega-menu-drop"
            (mouseenter)="onMegaMenuEnter()"
            (mouseleave)="onCategoryLeave()">
         <div class="mega-menu-content">
 
-          <!-- Subcategories -->
-          @if (hoveredCategory.subcategories?.length) {
-            <div class="mega-menu-section">
-              <h6 class="mega-menu-section-title">
-                <i class="bi bi-diagram-3 me-2"></i>الأقسام الفرعية
-              </h6>
-              <div class="mega-menu-sub-grid">
-                @for (sub of hoveredCategory.subcategories; track sub.id) {
-                  <a class="mega-menu-sub-card" (click)="searchBySubcategory(hoveredCategory!, sub.slug)">
-                    @if (sub.image) {
-                      <img [src]="sub.image" [alt]="sub.name" class="mega-menu-sub-img">
-                    } @else {
-                      <div class="mega-menu-sub-img-placeholder">
-                        <i class="bi bi-grid"></i>
-                      </div>
-                    }
-                    <span class="mega-menu-sub-name">{{ sub.name }}</span>
-                  </a>
-                }
+          <!-- Left side: subcategories + brands -->
+          <div class="mega-menu-left">
+            <!-- Subcategories -->
+            @if (hoveredCategory.subcategories?.length) {
+              <div class="mega-menu-section">
+                <h6 class="mega-menu-section-title">
+                  <i class="bi bi-diagram-3 me-2"></i>الأقسام الفرعية
+                </h6>
+                <div class="mega-menu-sub-grid">
+                  @for (sub of hoveredCategory.subcategories; track sub.id) {
+                    <a class="mega-menu-sub-card" (click)="searchBySubcategory(hoveredCategory!, sub.slug)">
+                      @if (sub.image) {
+                        <img [src]="sub.image" [alt]="sub.name" class="mega-menu-sub-img">
+                      } @else {
+                        <div class="mega-menu-sub-img-placeholder">
+                          <i class="bi bi-grid"></i>
+                        </div>
+                      }
+                      <span class="mega-menu-sub-name">{{ sub.name }}</span>
+                    </a>
+                  }
+                </div>
               </div>
-            </div>
-          }
+            }
 
-          <!-- Famous Brands -->
-          @if (hoveredCategory.famousBrands?.length) {
-            <div class="mega-menu-section">
-              <h6 class="mega-menu-section-title">
-                <i class="bi bi-award me-2"></i>أشهر الماركات
-              </h6>
-              <div class="mega-menu-brand-grid">
-                @for (brand of hoveredCategory.famousBrands; track brand.id) {
-                  <a class="mega-menu-brand-card" (click)="searchByBrandFromMenu(brand.name)">
-                    @if (brand.image) {
-                      <img [src]="brand.image" [alt]="brand.name" class="mega-menu-brand-img">
-                    } @else {
-                      <div class="mega-menu-brand-img-placeholder">
-                        <i class="bi bi-award"></i>
-                      </div>
-                    }
-                    <span class="mega-menu-brand-name">{{ brand.name }}</span>
-                  </a>
-                }
+            <!-- Famous Brands -->
+            @if (hoveredCategory.famousBrands?.length) {
+              <div class="mega-menu-section">
+                <h6 class="mega-menu-section-title">
+                  <i class="bi bi-award me-2"></i>أشهر الماركات
+                </h6>
+                <div class="mega-menu-brand-grid">
+                  @for (brand of hoveredCategory.famousBrands; track brand.id) {
+                    <a class="mega-menu-brand-card" (click)="searchByBrandFromMenu(brand.name)">
+                      @if (brand.image) {
+                        <img [src]="brand.image" [alt]="brand.name" class="mega-menu-brand-img">
+                      } @else {
+                        <div class="mega-menu-brand-img-placeholder">
+                          <i class="bi bi-award"></i>
+                        </div>
+                      }
+                      <span class="mega-menu-brand-name">{{ brand.name }}</span>
+                    </a>
+                  }
+                </div>
               </div>
+            }
+          </div>
+
+          <!-- Right side: Category image -->
+          @if (hoveredCategory.image) {
+            <div class="mega-menu-right">
+              <a (click)="searchByCategory(hoveredCategory!)">
+                <img [src]="hoveredCategory.image" [alt]="hoveredCategory.name" class="mega-menu-category-img">
+              </a>
             </div>
           }
 

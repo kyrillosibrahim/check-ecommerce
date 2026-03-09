@@ -21,7 +21,7 @@
   line-height: 2;
   color: var(--sz-text-secondary);
   font-size: 0.9rem;
-
+    unicode-bidi: isolate;
   :host ::ng-deep & {
     h1, h2, h3, h4, h5, h6 {
       color: var(--sz-text-primary);
@@ -65,6 +65,11 @@
   border: 1px solid var(--sz-border-color);
 }
 
+.add-cart-btn {
+  width: 20%;
+  white-space: nowrap;
+}
+
 // Delivery Quality Button
 .btn-delivery-quality {
   display: inline-flex;
@@ -100,7 +105,7 @@
 
 .faq-button {
   background-color: var(--sz-bg-card) !important;
-  color: var(--sz-text-primary) !important;
+  color: #000 !important;
   font-weight: 600;
   font-size: 0.82rem;
   box-shadow: none !important;
@@ -110,7 +115,8 @@
   }
 
   &:not(.collapsed) {
-    color: var(--sz-accent) !important;
+    color: #000 !important;
+    background-color: var(--sz-bg-secondary) !important;
   }
 }
 

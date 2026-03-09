@@ -27,6 +27,7 @@
   padding: 4px 8px;
   border-radius: 4px;
   margin-top: 2px;
+  direction: ltr;
 }
 
 .wishlist-btn {
@@ -52,6 +53,11 @@
     color: #e74c3c;
     border-color: #e74c3c;
   }
+}
+
+.card-footer .btn {
+  font-size: 0.75rem;
+  padding: 0.3rem 0.5rem;
 }
 
 .form-badge {

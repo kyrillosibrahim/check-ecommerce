@@ -58,6 +58,7 @@
 }
 
 html {
+  font-size: 18px;
   overflow-x: clip;
 }
 
@@ -73,8 +74,8 @@ html {
 }
 
 body {
-  font-family: 'KO Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 0.8rem;
+  font-family: 'Tajawal', 'KO Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 1rem;
   background-color: var(--sz-bg-primary);
   color: var(--sz-text-primary);
   transition: background-color 0.3s ease, color 0.3s ease;
@@ -126,7 +127,7 @@ a {
   z-index: 2;
 }
 
-.section-padding { padding: 4rem 0; }
+.section-padding { padding: 1rem 0; }
 
 @media (max-width: 576px) {
   .section-padding { padding: 2rem 0; }

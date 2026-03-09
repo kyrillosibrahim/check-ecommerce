@@ -9,7 +9,7 @@
               style="background-color: var(--sz-bg-secondary); border-color: var(--sz-border-color); color: var(--sz-text-primary);">
         <option value="">{{ 'filter.all_categories' | translate }}</option>
         @for (cat of categories; track cat.id) {
-          <option [value]="cat.slug">{{ 'cat.' + cat.slug | translate }}</option>
+          <option [value]="cat.slug">{{ cat.name }}</option>
         }
       </select>
     </div>

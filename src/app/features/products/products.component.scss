@@ -3,6 +3,12 @@
   padding-inline: 30px;
 }
 
+@media (max-width: 767.98px) {
+  :host {
+    padding-inline: 10px;
+  }
+}
+
 .scroll-sentinel {
   height: 1px;
 }

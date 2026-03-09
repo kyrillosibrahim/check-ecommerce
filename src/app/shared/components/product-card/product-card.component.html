@@ -45,7 +45,7 @@
             <span class="price-current">{{ product | discountPrice | egpCurrency }}</span>
             <div class="text-end">
               <span class="price-original d-block">{{ product.price | egpCurrency }}</span>
-              <span class="badge bg-danger discount-badge-sm">-{{ product.discountPercentage }}%</span>
+              <span class="badge bg-danger discount-badge-sm">%{{ product.discountPercentage }}-</span>
             </div>
           </div>
         } @else {
