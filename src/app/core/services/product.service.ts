@@ -59,6 +59,7 @@ export class ProductService {
       merchant: sp.merchant || '',
       isFeatured: sp.isFeatured || false,
       tags: sp.tags || [],
+      filterTags: sp.filterTags || [],
       productForm: sp.productForm || undefined,
       comingSoon: sp.comingSoon || false,
       faq: sp.faq || [],
@@ -133,13 +134,14 @@ export class ProductService {
   }
 
   /** Server-side filtered search */
-  searchProducts(filters: { search?: string; category?: string; brand?: string; featured?: boolean; limit?: number }): Observable<IProduct[]> {
+  searchProducts(filters: { search?: string; category?: string; brand?: string; featured?: boolean; limit?: number; filterTags?: string[] }): Observable<IProduct[]> {
     let params = new HttpParams();
     if (filters.search) params = params.set('search', filters.search);
     if (filters.category) params = params.set('category', filters.category);
     if (filters.brand) params = params.set('brand', filters.brand);
     if (filters.featured) params = params.set('featured', 'true');
     if (filters.limit) params = params.set('limit', filters.limit.toString());
+    if (filters.filterTags?.length) params = params.set('filterTags', filters.filterTags.join(','));
 
     return this.http.get<any[]>(`${SERVER_URL}/api/products`, { params }).pipe(
       map(products => products.map(p => this.mapServerProduct(p))),

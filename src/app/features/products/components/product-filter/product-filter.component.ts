@@ -14,10 +14,29 @@ export class ProductFilterComponent {
   @Input() selectedCategory = '';
   @Input() sortBy = 'default';
   @Input() searchTerm = '';
+  @Input() selectedFilterTags: string[] = [];
 
   @Output() categoryChange = new EventEmitter<string>();
   @Output() sortChange = new EventEmitter<string>();
   @Output() searchChange = new EventEmitter<string>();
+  @Output() filterTagsChange = new EventEmitter<string[]>();
+
+  get availableFilterTags(): string[] {
+    if (!this.selectedCategory) return [];
+    const cat = this.categories.find(c => c.slug === this.selectedCategory);
+    return cat?.filterTags || [];
+  }
+
+  toggleFilterTag(tag: string): void {
+    const current = [...this.selectedFilterTags];
+    const idx = current.indexOf(tag);
+    if (idx >= 0) {
+      current.splice(idx, 1);
+    } else {
+      current.push(tag);
+    }
+    this.filterTagsChange.emit(current);
+  }
 
   onSearchInput(event: Event): void {
     const value = (event.target as HTMLInputElement).value;

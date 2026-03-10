@@ -82,6 +82,7 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'filter.sort_price_high': 'Price: High to Low',
   'filter.sort_name_az': 'Name: A to Z',
   'filter.sort_rating': 'Rating: High to Low',
+  'filter.filter_tags': 'Filter by',
 
   // ── Product Card ──
   'product.add_to_cart': 'Add to Cart',

@@ -17,4 +17,5 @@ export interface ICategory {
   productCount: number;
   subcategories?: ISubcategory[];
   famousBrands?: IBrand[];
+  filterTags?: string[];
 }

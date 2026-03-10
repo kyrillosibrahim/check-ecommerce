@@ -41,6 +41,7 @@ async function getAllCategories(_req, res, next) {
       name: c.name,
       slug: c.slug,
       image: c.image || '',
+      filterTags: c.filterTags || [],
     }));
     res.json(simple);
   } catch (err) {
@@ -66,6 +67,7 @@ async function getDetailedCategories(_req, res, next) {
         image: c.image || '',
         subcategories: c.subcategories || [],
         famousBrands,
+        filterTags: c.filterTags || [],
       };
     });
 
@@ -101,6 +103,7 @@ async function createCategory(req, res, next) {
       image,
       subcategories: [],
       famousBrands: [],
+      filterTags: [],
     };
     categories.push(newCategory);
     await writeCategories(categories);
@@ -115,7 +118,7 @@ async function createCategory(req, res, next) {
 async function updateCategory(req, res, next) {
   try {
     const id = parseInt(req.params.id, 10);
-    const { name, famousBrands } = req.body;
+    const { name, famousBrands, filterTags } = req.body;
 
     if (!name || !name.trim()) {
       return res.status(400).json({ error: 'Category name is required.' });
@@ -149,6 +152,12 @@ async function updateCategory(req, res, next) {
     if (famousBrands !== undefined) {
       const parsed = typeof famousBrands === 'string' ? JSON.parse(famousBrands) : famousBrands;
       categories[index].famousBrands = Array.isArray(parsed) ? parsed.map(Number) : [];
+    }
+
+    // Update filter tags
+    if (filterTags !== undefined) {
+      const parsed = typeof filterTags === 'string' ? JSON.parse(filterTags) : filterTags;
+      categories[index].filterTags = Array.isArray(parsed) ? parsed : [];
     }
 
     await writeCategories(categories);

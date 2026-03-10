@@ -7,9 +7,11 @@
     [selectedCategory]="selectedCategory"
     [sortBy]="sortBy"
     [searchTerm]="searchTerm"
+    [selectedFilterTags]="selectedFilterTags"
     (categoryChange)="onCategoryChange($event)"
     (sortChange)="onSortChange($event)"
-    (searchChange)="onSearchChange($event)" />
+    (searchChange)="onSearchChange($event)"
+    (filterTagsChange)="onFilterTagsChange($event)" />
 
   <!-- Brand filter badge -->
   @if (selectedBrand) {

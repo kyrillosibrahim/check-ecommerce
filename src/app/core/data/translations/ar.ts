@@ -82,6 +82,7 @@ export const AR_TRANSLATIONS: Record<string, string> = {
   'filter.sort_price_high': 'السعر: من الأعلى للأقل',
   'filter.sort_name_az': 'الاسم: أ إلى ي',
   'filter.sort_rating': 'التقييم: من الأعلى للأقل',
+  'filter.filter_tags': 'فلتر حسب',
 
   // ── Product Card ──
   'product.add_to_cart': 'أضف إلى السلة',

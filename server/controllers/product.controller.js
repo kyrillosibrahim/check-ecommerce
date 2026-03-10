@@ -123,6 +123,7 @@ async function createProduct(req, res, next) {
       isFeatured: body.isFeatured === 'true' || body.isFeatured === true,
       comingSoon: body.comingSoon === 'true' || body.comingSoon === true,
       tags: parseSafe(body.tags) || [],
+      filterTags: parseSafe(body.filterTags) || [],
       productForm: parseSafe(body.productForm) || null,
       faq: (parseSafe(body.faq) || []).map(f => ({ q: f.q || f.qAr || '', a: f.a || f.aAr || '', qAr: f.qAr || f.q || '', aAr: f.aAr || f.a || '' })),
       offers: parseSafe(body.offers) || [],
@@ -162,7 +163,7 @@ async function getAllProducts(req, res, next) {
       return res.json(products);
     }
 
-    const { category, search, brand, featured, limit } = req.query;
+    const { category, search, brand, featured, limit, filterTags: filterTagsParam } = req.query;
 
     const categories = await fse.readdir(UPLOADS_DIR);
 
@@ -193,6 +194,12 @@ async function getAllProducts(req, res, next) {
             const inTags = (data.tags || []).some(t => t.toLowerCase().includes(term));
             const inCategory = (data.category || '').toLowerCase().includes(term);
             if (!inTitle && !inTitleAr && !inBrand && !inTags && !inCategory) continue;
+          }
+
+          if (filterTagsParam) {
+            const requestedTags = filterTagsParam.split(',');
+            const productTags = data.filterTags || [];
+            if (!requestedTags.some(t => productTags.includes(t))) continue;
           }
 
           // Build full image paths

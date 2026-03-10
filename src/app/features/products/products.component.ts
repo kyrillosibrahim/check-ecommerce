@@ -37,6 +37,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedBrand = '';
   sortBy = 'default';
   searchTerm = '';
+  selectedFilterTags: string[] = [];
   itemsPerLoad = 20;
   displayedCount = 0;
   isLoading = signal(true);
@@ -67,6 +68,12 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onCategoryChange(category: string): void {
     this.selectedCategory = category;
+    this.selectedFilterTags = [];
+    this.fetchFromServer();
+  }
+
+  onFilterTagsChange(tags: string[]): void {
+    this.selectedFilterTags = tags;
     this.fetchFromServer();
   }
 
@@ -108,6 +115,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
       search: this.searchTerm || undefined,
       category: this.selectedCategory || undefined,
       brand: this.selectedBrand || undefined,
+      filterTags: this.selectedFilterTags.length ? this.selectedFilterTags : undefined,
     }).subscribe(products => {
       this.allProducts = products;
       this.applySortAndPaginate();

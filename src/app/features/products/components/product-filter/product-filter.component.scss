@@ -13,6 +13,27 @@
   padding: 0.35rem 0.65rem;
 }
 
+.filter-tag-btn {
+  border: 1px solid var(--sz-border-color, #dee2e6);
+  background: var(--sz-bg-secondary, #f8f9fa);
+  color: var(--sz-text-primary, #212529);
+  border-radius: 20px;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.8rem;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: var(--sz-accent, #1bbc9b);
+    color: var(--sz-accent, #1bbc9b);
+  }
+
+  &.active {
+    background: var(--sz-accent, #1bbc9b);
+    border-color: var(--sz-accent, #1bbc9b);
+    color: #fff;
+  }
+}
+
 @media (max-width: 576px) {
   .card {
     padding: 0.75rem !important;

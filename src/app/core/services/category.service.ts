@@ -36,6 +36,7 @@ export class CategoryService {
           ...b,
           image: b.image ? (b.image.startsWith('http') ? b.image : `${SERVER_URL}/uploads/${b.image}`) : '',
         })),
+        filterTags: c.filterTags || [],
       }))),
       tap(cats => {
         this.categoriesSubject.next(cats);
