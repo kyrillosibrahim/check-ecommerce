@@ -168,9 +168,6 @@ async function getAllProducts(req, res, next) {
     const categories = await fse.readdir(UPLOADS_DIR);
 
     for (const cat of categories) {
-      // If category filter is set, only scan that folder
-      if (category && cat !== category) continue;
-
       const catPath = path.join(UPLOADS_DIR, cat);
       const stat = await fse.stat(catPath);
       if (!stat.isDirectory()) continue;
@@ -183,6 +180,8 @@ async function getAllProducts(req, res, next) {
           const data = await fse.readJson(jsonPath);
 
           // --- Server-side filters ---
+          // Match category by slug stored in product.json OR by folder name
+          if (category && data.category !== category && cat !== category) continue;
           if (brand && data.brand !== brand) continue;
           if (featured === 'true' && !data.isFeatured) continue;
 
