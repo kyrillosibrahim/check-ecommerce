@@ -36,4 +36,25 @@ async function getCitiesByGovernorate(req, res, next) {
   }
 }
 
-module.exports = { getAllGovernorates, getCitiesByGovernorate };
+// PUT /api/governorates/:id
+async function updateGovernorate(req, res, next) {
+  try {
+    const govId = parseInt(req.params.id, 10);
+    const { shippingCost } = req.body;
+    if (shippingCost == null || isNaN(Number(shippingCost))) {
+      return res.status(400).json({ message: 'shippingCost is required and must be a number' });
+    }
+    const governorates = await readGovernorates();
+    const index = governorates.findIndex(g => g.id === govId);
+    if (index === -1) {
+      return res.status(404).json({ message: 'Governorate not found' });
+    }
+    governorates[index].shippingCost = Number(shippingCost);
+    await fse.writeJson(GOV_FILE, governorates, { spaces: 2 });
+    res.json(governorates[index]);
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { getAllGovernorates, getCitiesByGovernorate, updateGovernorate };
