@@ -1,7 +1,7 @@
 import { Pipe, PipeTransform, inject } from '@angular/core';
 import { TranslationService } from '../../core/services/translation.service';
 
-@Pipe({ name: 'egpCurrency', pure: false })
+@Pipe({ name: 'egpCurrency' })
 export class EgpCurrencyPipe implements PipeTransform {
   private translationService = inject(TranslationService);
 

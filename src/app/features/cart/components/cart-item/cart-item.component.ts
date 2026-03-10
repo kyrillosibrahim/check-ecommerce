@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ICartItem } from '../../../../core/models/cart.model';
 import { TranslationService } from '../../../../core/services/translation.service';
@@ -11,7 +11,8 @@ import { EgpCurrencyPipe } from '../../../../shared/pipes/egp-currency.pipe';
   selector: 'app-cart-item',
   imports: [RouterLink, EgpCurrencyPipe, DiscountPricePipe, TranslatePipe, LocalizePipe],
   templateUrl: './cart-item.component.html',
-  styleUrl: './cart-item.component.scss'
+  styleUrl: './cart-item.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CartItemComponent {
   translationService = inject(TranslationService);

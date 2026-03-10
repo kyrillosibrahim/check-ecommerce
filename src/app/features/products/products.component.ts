@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, OnInit, OnDestroy, signal, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ProductService } from '../../core/services/product.service';
 import { CartService } from '../../core/services/cart.service';
@@ -9,15 +9,19 @@ import { ICategory } from '../../core/models/category.model';
 import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
 import { SkeletonLoaderComponent } from '../../shared/components/skeleton-loader/skeleton-loader.component';
 import { ProductFilterComponent } from './components/product-filter/product-filter.component';
+import { PaginationComponent } from '../../shared/components/pagination/pagination.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+
+const ITEMS_PER_PAGE = 36;
 
 @Component({
   selector: 'app-products',
-  imports: [ProductCardComponent, SkeletonLoaderComponent, ProductFilterComponent, TranslatePipe, RouterLink],
+  imports: [ProductCardComponent, SkeletonLoaderComponent, ProductFilterComponent, PaginationComponent, TranslatePipe, RouterLink],
   templateUrl: './products.component.html',
-  styleUrl: './products.component.scss'
+  styleUrl: './products.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ProductsComponent implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
   private productService = inject(ProductService);
@@ -25,12 +29,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
   private wishlistService = inject(WishlistService);
   private categoryService = inject(CategoryService);
 
-  @ViewChild('scrollSentinel') scrollSentinel!: ElementRef<HTMLDivElement>;
-  private observer: IntersectionObserver | null = null;
-
-  allProducts: IProduct[] = [];
-  filteredProducts: IProduct[] = [];
-  displayedProducts: IProduct[] = [];
+  products: IProduct[] = [];
   categories: ICategory[] = [];
 
   selectedCategory = '';
@@ -38,14 +37,12 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
   sortBy = 'default';
   searchTerm = '';
   selectedFilterTags: string[] = [];
-  itemsPerLoad = 20;
-  displayedCount = 0;
-  isLoading = signal(true);
-  isLoadingMore = signal(false);
 
-  get hasMore(): boolean {
-    return this.displayedCount < this.filteredProducts.length;
-  }
+  currentPage = 1;
+  totalPages = 1;
+  totalProducts = 0;
+
+  isLoading = signal(true);
 
   ngOnInit(): void {
     this.categoryService.getAll().subscribe(c => this.categories = c);
@@ -54,37 +51,40 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.selectedCategory = params['category'] || '';
       this.selectedBrand = params['brand'] || '';
       this.searchTerm = params['search'] || '';
+      this.currentPage = 1;
       this.fetchFromServer();
     });
-  }
-
-  ngAfterViewInit(): void {
-    this.setupIntersectionObserver();
-  }
-
-  ngOnDestroy(): void {
-    this.observer?.disconnect();
   }
 
   onCategoryChange(category: string): void {
     this.selectedCategory = category;
     this.selectedFilterTags = [];
+    this.currentPage = 1;
     this.fetchFromServer();
   }
 
   onFilterTagsChange(tags: string[]): void {
     this.selectedFilterTags = tags;
+    this.currentPage = 1;
     this.fetchFromServer();
   }
 
   onSortChange(sort: string): void {
     this.sortBy = sort;
-    this.applySortAndPaginate();
+    this.currentPage = 1;
+    this.fetchFromServer();
   }
 
   onSearchChange(term: string): void {
     this.searchTerm = term;
+    this.currentPage = 1;
     this.fetchFromServer();
+  }
+
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    this.fetchFromServer();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   onAddToCart(product: IProduct): void {
@@ -95,39 +95,35 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.wishlistService.addToWishlist(product);
   }
 
-  loadMore(): void {
-    if (!this.hasMore || this.isLoadingMore()) return;
-    this.isLoadingMore.set(true);
-
-    setTimeout(() => {
-      this.displayedCount = Math.min(this.displayedCount + this.itemsPerLoad, this.filteredProducts.length);
-      this.displayedProducts = this.filteredProducts.slice(0, this.displayedCount);
-      this.isLoadingMore.set(false);
-    }, 300);
+  get showingStart(): number {
+    return this.totalProducts === 0 ? 0 : (this.currentPage - 1) * ITEMS_PER_PAGE + 1;
   }
 
-  /** Fetch products from backend with current filters */
+  get showingEnd(): number {
+    return Math.min(this.currentPage * ITEMS_PER_PAGE, this.totalProducts);
+  }
+
   private fetchFromServer(): void {
     this.isLoading.set(true);
-    this.displayedCount = 0;
 
     this.productService.searchProducts({
       search: this.searchTerm || undefined,
       category: this.selectedCategory || undefined,
       brand: this.selectedBrand || undefined,
       filterTags: this.selectedFilterTags.length ? this.selectedFilterTags : undefined,
-    }).subscribe(products => {
-      this.allProducts = products;
-      this.applySortAndPaginate();
+      page: this.currentPage,
+      limit: ITEMS_PER_PAGE,
+    }).subscribe(result => {
+      this.products = this.applySorting(result.products);
+      this.totalProducts = result.total;
+      this.totalPages = Math.max(1, Math.ceil(result.total / ITEMS_PER_PAGE));
       this.isLoading.set(false);
       this.cdr.markForCheck();
     });
   }
 
-  /** Apply client-side sorting and pagination */
-  private applySortAndPaginate(): void {
-    let result = [...this.allProducts];
-
+  private applySorting(products: IProduct[]): IProduct[] {
+    const result = [...products];
     switch (this.sortBy) {
       case 'price-low':
         result.sort((a, b) => a.price - b.price);
@@ -142,21 +138,6 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         result.sort((a, b) => b.rating - a.rating);
         break;
     }
-
-    this.filteredProducts = result;
-    this.displayedCount = Math.min(this.itemsPerLoad, result.length);
-    this.displayedProducts = result.slice(0, this.displayedCount);
-  }
-
-  private setupIntersectionObserver(): void {
-    this.observer = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && this.hasMore && !this.isLoading() && !this.isLoadingMore()) {
-        this.loadMore();
-      }
-    }, { threshold: 0.1 });
-
-    if (this.scrollSentinel) {
-      this.observer.observe(this.scrollSentinel.nativeElement);
-    }
+    return result;
   }
 }

@@ -1,0 +1,70 @@
+:host {
+  display: block;
+}
+
+.gov-table {
+  background: var(--sz-bg-card);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+
+  thead {
+    background: var(--sz-bg-secondary, #f8f9fa);
+
+    th {
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--sz-text-secondary);
+      border-bottom: 2px solid var(--sz-border-color, #dee2e6);
+      padding: 12px 16px;
+      white-space: nowrap;
+    }
+  }
+
+  tbody tr {
+    transition: background-color 0.15s;
+
+    &:hover {
+      background-color: rgba(var(--bs-primary-rgb), 0.04);
+    }
+
+    td {
+      padding: 10px 16px;
+      color: var(--sz-text-primary);
+      border-bottom: 1px solid var(--sz-border-color, #f0f0f0);
+    }
+  }
+}
+
+.col-id {
+  width: 50px;
+}
+
+.col-cost {
+  width: 180px;
+}
+
+.col-actions {
+  width: 140px;
+}
+
+.cost-badge {
+  font-size: 0.85rem;
+  padding: 6px 12px;
+}
+
+.cost-input-group {
+  max-width: 160px;
+
+  .form-control {
+    text-align: center;
+  }
+}
+
+:host-context([dir="rtl"]) {
+  .bi-arrow-left::before {
+    content: "\F138";
+  }
+}

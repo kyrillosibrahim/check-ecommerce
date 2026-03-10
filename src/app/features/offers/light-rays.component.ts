@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, Input } from '@angular/core';
 
 declare const window: any;
 
@@ -38,7 +38,8 @@ const getAnchorAndDir = (origin: RaysOrigin, w: number, h: number) => {
   styles: [`
     :host { display: block; position: absolute; inset: 0; pointer-events: none; z-index: 0; }
     .light-rays-container { width: 100%; height: 100%; overflow: hidden; }
-  `]
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LightRaysComponent implements AfterViewInit, OnDestroy {
   @ViewChild('container') containerRef!: ElementRef<HTMLDivElement>;

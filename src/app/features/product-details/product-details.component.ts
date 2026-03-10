@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ProductService } from '../../core/services/product.service';
@@ -22,7 +22,8 @@ import Swal from 'sweetalert2';
   selector: 'app-product-details',
   imports: [EgpCurrencyPipe, RouterLink, ImageGalleryComponent, RelatedProductsComponent, SkeletonLoaderComponent, CarouselModule, DiscountPricePipe, TranslatePipe, LocalizePipe, TestimonialsMarqueeComponent, TextLoopComponent],
   templateUrl: './product-details.component.html',
-  styleUrl: './product-details.component.scss'
+  styleUrl: './product-details.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductDetailsComponent implements OnInit {
   translationService = inject(TranslationService);
@@ -39,9 +40,7 @@ export class ProductDetailsComponent implements OnInit {
   isLoading = signal(true);
   descriptionHtml: SafeHtml = '';
 
-  get starsArray(): number[] {
-    return Array(5).fill(0).map((_, i) => i + 1);
-  }
+  readonly starsArray = [1, 2, 3, 4, 5];
 
   get hasDiscount(): boolean {
     return !!this.product && this.product.discountPercentage > 0;

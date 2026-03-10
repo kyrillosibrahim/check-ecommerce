@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ICategory } from '../../../../core/models/category.model';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
@@ -7,7 +7,8 @@ import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
   selector: 'app-product-filter',
   imports: [FormsModule, TranslatePipe],
   templateUrl: './product-filter.component.html',
-  styleUrl: './product-filter.component.scss'
+  styleUrl: './product-filter.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductFilterComponent {
   @Input() categories: ICategory[] = [];

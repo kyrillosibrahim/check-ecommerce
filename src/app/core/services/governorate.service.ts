@@ -27,6 +27,22 @@ export class GovernorateService {
     return this.governorates$;
   }
 
+  updateShippingCost(id: number, shippingCost: number): Observable<IGovernorateApi> {
+    return this.http.put<IGovernorateApi>(`${SERVER_URL}/api/governorates/${id}`, { shippingCost }).pipe(
+      tap(updated => {
+        if (this.governoratesCache) {
+          const idx = this.governoratesCache.findIndex(g => g.id === id);
+          if (idx !== -1) this.governoratesCache[idx] = updated;
+        }
+      })
+    );
+  }
+
+  clearCache(): void {
+    this.governoratesCache = null;
+    this.governorates$ = null;
+  }
+
   getCities(governorateId: number): Observable<ICityApi[]> {
     return this.http.get<ICityApi[]>(`${SERVER_URL}/api/governorates/${governorateId}/cities`);
   }

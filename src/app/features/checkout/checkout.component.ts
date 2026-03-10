@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -20,7 +20,8 @@ import { EgpCurrencyPipe } from '../../shared/pipes/egp-currency.pipe';
   selector: 'app-checkout',
   imports: [ReactiveFormsModule, AsyncPipe, EgpCurrencyPipe, RouterLink, TranslatePipe, LocalizePipe],
   templateUrl: './checkout.component.html',
-  styleUrl: './checkout.component.scss'
+  styleUrl: './checkout.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CheckoutComponent {
   translationService = inject(TranslationService);

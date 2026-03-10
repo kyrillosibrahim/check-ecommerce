@@ -1,9 +1,10 @@
-import { Component, Input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, signal } from '@angular/core';
 
 @Component({
   selector: 'app-image-gallery',
   templateUrl: './image-gallery.component.html',
-  styleUrl: './image-gallery.component.scss'
+  styleUrl: './image-gallery.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImageGalleryComponent {
   @Input({ required: true }) images: string[] = [];

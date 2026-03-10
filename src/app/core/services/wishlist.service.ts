@@ -1,4 +1,5 @@
 import { Injectable, inject, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable, combineLatest, map, catchError, of } from 'rxjs';
 import { IProduct } from '../models/product.model';
@@ -21,9 +22,9 @@ export class WishlistService {
   /** IDs currently being toggled (to prevent double-clicks) */
   processingIds = signal<Set<string>>(new Set());
 
-  /** Favorite IDs loaded on init — used for isInWishlist checks across all pages */
-  private favoriteIdSet = new Set<string>();
-  private idsLoaded = false;
+  /** Favorite IDs as a signal — triggers CD in OnPush components */
+  favoriteIds = signal<Set<string>>(new Set());
+  private favoriteIds$ = toObservable(this.favoriteIds);
 
   /** Wishlist items (populated by loadFavorites on wishlist page) */
   wishlist$ = this.wishlistSubject.asObservable();
@@ -36,29 +37,25 @@ export class WishlistService {
   private loadFavoriteIds(): void {
     this.http.get<string[]>(`${SERVER_URL}/api/favorites/ids`).subscribe({
       next: (ids) => {
-        this.favoriteIdSet = new Set(ids);
-        this.idsLoaded = true;
+        this.favoriteIds.set(new Set(ids));
       },
-      error: () => { this.idsLoaded = true; },
+      error: () => {},
     });
   }
 
   /**
-   * Wishlist count — hybrid source:
-   * If products are loaded, derive from inFavorite flags.
-   * Otherwise fall back to wishlist data (loaded on wishlist page).
+   * Wishlist count — reacts to favoriteIds$, wishlist items, and products.
    */
   wishlistCount$ = combineLatest([
     this.wishlistSubject,
     this.productService.products$,
+    this.favoriteIds$,
   ]).pipe(
-    map(([wishlistItems, products]) => {
+    map(([wishlistItems, products, favIds]) => {
       if (products.length > 0) {
         return products.filter(p => p.inFavorite).length;
       }
-      if (this.favoriteIdSet.size > 0) {
-        return this.favoriteIdSet.size;
-      }
+      if (favIds.size > 0) return favIds.size;
       return wishlistItems.length;
     })
   );
@@ -76,6 +73,8 @@ export class WishlistService {
         const total = Array.isArray(res) ? items.length : (res.total ?? res.count ?? items.length);
         const mapped = items.map((p: any) => this.productService.mapServerProduct(p));
         this.wishlistSubject.next(mapped);
+        // Sync favoriteIds with actual products (removes stale IDs)
+        this.favoriteIds.set(new Set(mapped.map((p: IProduct) => p.id)));
         this.loading.set(false);
         return { items: mapped, total };
       }),
@@ -103,12 +102,18 @@ export class WishlistService {
     this.processingIds.set(s);
   }
 
+  /** Check if product is in wishlist — reads favoriteIds signal (triggers CD) */
+  isInWishlist(productId: string): boolean {
+    return this.favoriteIds().has(productId) ||
+      this.wishlistSubject.getValue().some(p => p.id === productId);
+  }
+
   addToWishlist(product: IProduct): void {
     if (this.isProcessing(product.id)) return;
     this.markProcessing(product.id);
 
-    // Optimistic update
-    this.favoriteIdSet.add(product.id);
+    // Optimistic update — new Set triggers signal
+    this.favoriteIds.update(s => { const n = new Set(s); n.add(product.id); return n; });
     this.productService.updateProductFavoriteState(product.id, true);
 
     this.http.post<any>(`${SERVER_URL}/api/favorites/addtofavorit`, {
@@ -122,7 +127,7 @@ export class WishlistService {
         this.unmarkProcessing(product.id);
       },
       error: () => {
-        this.favoriteIdSet.delete(product.id);
+        this.favoriteIds.update(s => { const n = new Set(s); n.delete(product.id); return n; });
         this.productService.updateProductFavoriteState(product.id, false);
         this.unmarkProcessing(product.id);
         Swal.fire({ icon: 'error', title: 'خطأ', text: 'فشل إضافة المنتج للمفضلة', timer: 2000, showConfirmButton: false });
@@ -135,7 +140,7 @@ export class WishlistService {
     this.markProcessing(productId);
 
     // Optimistic update
-    this.favoriteIdSet.delete(productId);
+    this.favoriteIds.update(s => { const n = new Set(s); n.delete(productId); return n; });
     this.productService.updateProductFavoriteState(productId, false);
     const current = this.wishlistSubject.getValue();
     const removed = current.find(p => p.id === productId);
@@ -147,7 +152,7 @@ export class WishlistService {
       },
       error: () => {
         // Rollback
-        this.favoriteIdSet.add(productId);
+        this.favoriteIds.update(s => { const n = new Set(s); n.add(productId); return n; });
         this.productService.updateProductFavoriteState(productId, true);
         if (removed) {
           this.wishlistSubject.next([...this.wishlistSubject.getValue(), removed]);
@@ -156,11 +161,6 @@ export class WishlistService {
         Swal.fire({ icon: 'error', title: 'خطأ', text: 'فشل إزالة المنتج من المفضلة', timer: 2000, showConfirmButton: false });
       },
     });
-  }
-
-  isInWishlist(productId: string): boolean {
-    return this.favoriteIdSet.has(productId) ||
-      this.wishlistSubject.getValue().some(p => p.id === productId);
   }
 
   /** Move item from wishlist to cart, then remove from wishlist */
@@ -175,7 +175,7 @@ export class WishlistService {
   clearWishlist(): void {
     this.http.delete<any>(`${SERVER_URL}/api/favorites/clear`).subscribe({
       next: () => {
-        this.favoriteIdSet.clear();
+        this.favoriteIds.set(new Set());
         this.wishlistSubject.next([]);
         this.productService.clearAllFavoriteState();
       },

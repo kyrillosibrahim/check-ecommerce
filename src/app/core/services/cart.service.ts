@@ -23,17 +23,15 @@ export class CartService {
 
   private cartSubject = new BehaviorSubject<ICartItem[]>([]);
 
+  /** Cart items */
+  cart$ = this.cartSubject.asObservable();
+
   constructor() {
     this.loadCart();
   }
 
-  /** Cart items (populated by loadCart on cart/checkout pages) */
-  cart$ = this.cartSubject.asObservable();
-
   /**
-   * Cart count — hybrid source:
-   * If products are loaded (home/products/offers pages), derive from inCart flags.
-   * Otherwise fall back to cart data (loaded on cart/checkout pages).
+   * Cart count — derived from cart items or product inCart flags.
    */
   cartCount$ = combineLatest([
     this.cartSubject,
@@ -83,8 +81,12 @@ export class CartService {
     }
   });
 
-  /** Load cart items from getcart API. Called by cart/checkout pages only. */
+  private cartLoaded = false;
+
+  /** Load cart items from getcart API */
   loadCart(): void {
+    if (this.cartLoaded) return;
+    this.cartLoaded = true;
     this.http.get<any[]>(`${SERVER_URL}/api/cart/getcart`).subscribe({
       next: (items) => {
         const mapped: ICartItem[] = items.map(item => ({
@@ -161,6 +163,7 @@ export class CartService {
     this.http.delete<any>(`${SERVER_URL}/api/cart/clear`).subscribe({
       next: () => {
         this.cartSubject.next([]);
+        this.cartLoaded = false;
         this.productService.clearAllCartState();
       },
       error: (err) => console.error('Failed to clear cart:', err),

@@ -1,0 +1,96 @@
+<div class="container section-padding">
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <h2 class="section-title mb-0">
+      @if (isArabic) { المحافظات وأسعار الشحن } @else { Governorates & Shipping Costs }
+    </h2>
+    <a routerLink="/" class="btn btn-outline-secondary btn-sm">
+      <i class="bi bi-arrow-left me-1"></i>
+      @if (isArabic) { الرئيسية } @else { Home }
+    </a>
+  </div>
+
+  @if (isLoading()) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  } @else {
+    <div class="table-responsive">
+      <table class="table table-hover align-middle gov-table">
+        <thead>
+          <tr>
+            <th class="col-id">#</th>
+            <th>@if (isArabic) { المحافظة (EN) } @else { Governorate (EN) }</th>
+            <th>@if (isArabic) { المحافظة (AR) } @else { Governorate (AR) }</th>
+            <th class="col-cost">
+              @if (isArabic) { سعر الشحن (جنيه) } @else { Shipping Cost (EGP) }
+            </th>
+            <th class="col-actions">
+              @if (isArabic) { إجراءات } @else { Actions }
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (gov of governorates; track gov.id) {
+            <tr>
+              <td class="text-muted">{{ gov.id }}</td>
+              <td>{{ gov.governorate_name_en }}</td>
+              <td>{{ gov.governorate_name_ar }}</td>
+              <td>
+                @if (editingId === gov.id) {
+                  <div class="input-group input-group-sm cost-input-group">
+                    <input
+                      type="number"
+                      class="form-control"
+                      [(ngModel)]="editingCost"
+                      [min]="0"
+                      (keyup.enter)="saveEdit(gov)"
+                      (keyup.escape)="cancelEdit()" />
+                    <span class="input-group-text">
+                      @if (isArabic) { جنيه } @else { EGP }
+                    </span>
+                  </div>
+                } @else {
+                  <span class="badge bg-primary-subtle text-primary fw-semibold cost-badge">
+                    {{ gov.shippingCost }}
+                    @if (isArabic) { جنيه } @else { EGP }
+                  </span>
+                }
+              </td>
+              <td>
+                @if (editingId === gov.id) {
+                  <div class="d-flex gap-1">
+                    <button class="btn btn-success btn-sm" (click)="saveEdit(gov)" [disabled]="savingId() === gov.id">
+                      @if (savingId() === gov.id) {
+                        <span class="spinner-border spinner-border-sm"></span>
+                      } @else {
+                        <i class="bi bi-check-lg"></i>
+                      }
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm" (click)="cancelEdit()" [disabled]="savingId() === gov.id">
+                      <i class="bi bi-x-lg"></i>
+                    </button>
+                  </div>
+                } @else {
+                  <button class="btn btn-outline-primary btn-sm" (click)="startEdit(gov)">
+                    <i class="bi bi-pencil-square me-1"></i>
+                    @if (isArabic) { تعديل } @else { Edit }
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="text-muted mt-3 small">
+      @if (isArabic) {
+        إجمالي المحافظات: {{ governorates.length }}
+      } @else {
+        Total governorates: {{ governorates.length }}
+      }
+    </div>
+  }
+</div>

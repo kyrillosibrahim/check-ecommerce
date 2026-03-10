@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectorRef, HostListener, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, ChangeDetectorRef, HostListener, OnInit } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -12,7 +12,8 @@ import emailjs from '@emailjs/browser';
   selector: 'app-auth-drawer',
   imports: [AsyncPipe, ReactiveFormsModule, TranslatePipe],
   templateUrl: './auth-drawer.component.html',
-  styleUrl: './auth-drawer.component.scss'
+  styleUrl: './auth-drawer.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AuthDrawerComponent implements OnInit {
   private fb = inject(FormBuilder);

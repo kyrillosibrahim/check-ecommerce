@@ -1,4 +1,4 @@
-import { Component, HostListener, signal, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, signal, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { SiteSettingsService } from '../../../core/services/settings.service';
 
 @Component({
@@ -6,6 +6,7 @@ import { SiteSettingsService } from '../../../core/services/settings.service';
   standalone: true,
   templateUrl: './floating-actions.component.html',
   styleUrl: './floating-actions.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FloatingActionsComponent implements OnInit {
   private settingsService = inject(SiteSettingsService);

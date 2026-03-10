@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy, inject, signal, computed, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, OnDestroy, inject, signal, computed, ChangeDetectorRef } from '@angular/core';
 import { TranslationService } from '../../../core/services/translation.service';
 
 @Component({
@@ -81,7 +81,8 @@ import { TranslationService } from '../../../core/services/translation.service';
     .text-loop-sm .text-loop-text {
       font-size: 0.68rem;
     }
-  `]
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TextLoopComponent implements OnInit, OnDestroy {
   @Input() items: { text: string; textAr?: string; image?: string }[] = [];

@@ -3,7 +3,7 @@
 
   @if (wishlistService.loading()) {
     <app-skeleton-loader type="card" [count]="4" />
-  } @else if ((wishlistService.wishlist$ | async)?.length === 0) {
+  } @else if (products.length === 0) {
     <div class="empty-state">
       <i class="bi bi-heart d-block"></i>
       <h3>{{ 'wishlist.empty' | translate }}</h3>
@@ -14,7 +14,7 @@
     </div>
   } @else {
     <div class="row g-4 row-cols-lg-5">
-      @for (product of (wishlistService.wishlist$ | async) ?? []; track product.id) {
+      @for (product of products; track product.id) {
         <div class="col-6 col-md-4 col-lg">
           <div class="card card-hover h-100 shadow-sm" style="background-color: var(--sz-bg-card); border: 1px solid var(--sz-border-color);">
             <!-- Image -->
@@ -51,5 +51,11 @@
         </div>
       }
     </div>
+
+    <!-- Pagination -->
+    <app-pagination
+      [currentPage]="currentPage"
+      [totalPages]="totalPages"
+      (pageChange)="onPageChange($event)" />
   }
 </div>

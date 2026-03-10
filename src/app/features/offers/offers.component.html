@@ -72,7 +72,7 @@
       <div class="page-loader">
         <div class="spinner"></div>
       </div>
-    } @else if (discountedProducts().length === 0) {
+    } @else if (products.length === 0 && !selectedCategory) {
       <div class="empty-state">
         <i class="bi bi-tags d-block"></i>
         <h3>
@@ -102,18 +102,18 @@
       <div class="offers-filter-bar">
         <div class="filter-chips-row">
           <div class="chips-scroll">
-            <button class="filter-chip" [class.active]="selectedCategory() === ''" (click)="onCategorySelect('')">
+            <button class="filter-chip" [class.active]="selectedCategory === ''" (click)="onCategorySelect('')">
               {{ 'offers.filter_all' | translate }}
-              <span class="chip-count">{{ discountedProducts().length }}</span>
+              <span class="chip-count">{{ totalProducts }}</span>
             </button>
-            @for (cat of availableCategories(); track cat) {
-              <button class="filter-chip" [class.active]="selectedCategory() === cat" (click)="onCategorySelect(cat)">
+            @for (cat of availableCategories; track cat) {
+              <button class="filter-chip" [class.active]="selectedCategory === cat" (click)="onCategorySelect(cat)">
                 {{ 'cat.' + cat | translate }}
               </button>
             }
           </div>
           <div class="sort-wrapper">
-            <select class="sort-select" [ngModel]="sortBy()" (ngModelChange)="onSortChange($event)">
+            <select class="sort-select" [ngModel]="sortBy" (ngModelChange)="onSortChange($event)">
               <option value="default">{{ 'offers.sort_default' | translate }}</option>
               <option value="discount-high">{{ 'offers.sort_discount_high' | translate }}</option>
               <option value="discount-low">{{ 'offers.sort_discount_low' | translate }}</option>
@@ -123,12 +123,12 @@
           </div>
         </div>
         <div class="results-count">
-          {{ filteredProducts().length }} {{ 'offers.results_count' | translate }}
+          {{ showingStart }}-{{ showingEnd }} / {{ totalProducts }} {{ 'offers.results_count' | translate }}
         </div>
       </div>
 
       <!-- Products Grid -->
-      @if (filteredProducts().length === 0) {
+      @if (products.length === 0) {
         <div class="empty-state">
           <i class="bi bi-funnel d-block"></i>
           <h3>
@@ -148,7 +148,7 @@
         </div>
       } @else {
         <div class="row g-2 g-md-3 row-cols-lg-5">
-          @for (product of filteredProducts(); track product.id) {
+          @for (product of products; track product.id) {
             <div class="col-6 col-md-4 col-lg">
               <app-product-card
                 [product]="product"
@@ -157,6 +157,12 @@
             </div>
           }
         </div>
+
+        <!-- Pagination -->
+        <app-pagination
+          [currentPage]="currentPage"
+          [totalPages]="totalPages"
+          (pageChange)="onPageChange($event)" />
       }
     }
   </div>

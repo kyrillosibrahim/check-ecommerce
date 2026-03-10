@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { TranslationService } from '../../../core/services/translation.service';
 
 interface Review {
@@ -42,7 +42,8 @@ const REVIEWS: Review[] = [
   selector: 'app-testimonials-marquee',
   imports: [],
   templateUrl: './testimonials-marquee.component.html',
-  styleUrl: './testimonials-marquee.component.scss'
+  styleUrl: './testimonials-marquee.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TestimonialsMarqueeComponent implements OnInit {
   translationService = inject(TranslationService);
@@ -65,12 +66,21 @@ export class TestimonialsMarqueeComponent implements OnInit {
     return this.translationService.isArabic() ? r.reviewAr : r.review;
   }
 
+  private readonly starCache = new Map<number, number[]>();
+
   getStars(r: Review): number[] {
-    return Array(r.stars).fill(0);
+    if (!this.starCache.has(r.stars)) {
+      this.starCache.set(r.stars, Array(r.stars).fill(0));
+    }
+    return this.starCache.get(r.stars)!;
   }
 
   getEmptyStars(r: Review): number[] {
-    return Array(5 - r.stars).fill(0);
+    const empty = 5 - r.stars;
+    if (!this.starCache.has(-empty)) {
+      this.starCache.set(-empty, Array(empty).fill(0));
+    }
+    return this.starCache.get(-empty)!;
   }
 
   private shuffle<T>(arr: T[]): T[] {

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AsyncPipe } from '@angular/common';
 import { CartService } from '../../core/services/cart.service';
@@ -12,7 +12,8 @@ import Swal from 'sweetalert2';
   selector: 'app-cart',
   imports: [RouterLink, AsyncPipe, EgpCurrencyPipe, CartItemComponent, TranslatePipe],
   templateUrl: './cart.component.html',
-  styleUrl: './cart.component.scss'
+  styleUrl: './cart.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CartComponent {
   translationService = inject(TranslationService);

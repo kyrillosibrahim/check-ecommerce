@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './shared/components/header/header.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
@@ -10,7 +10,8 @@ import { SiteSettingsService } from './core/services/settings.service';
   selector: 'app-root',
   imports: [RouterOutlet, HeaderComponent, FooterComponent, FloatingActionsComponent, AuthDrawerComponent],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrl: './app.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App implements OnInit {
   private settingsService = inject(SiteSettingsService);

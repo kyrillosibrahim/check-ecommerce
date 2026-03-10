@@ -28,14 +28,14 @@
   <!-- Results count -->
   @if (!isLoading()) {
     <p class="text-secondary mb-2">
-      {{ 'products.showing' | translate }} {{ displayedProducts.length }} {{ 'products.of' | translate }} {{ filteredProducts.length }} {{ 'products.products' | translate }}
+      {{ 'products.showing' | translate }} {{ showingStart }}-{{ showingEnd }} {{ 'products.of' | translate }} {{ totalProducts }} {{ 'products.products' | translate }}
     </p>
   }
 
   <!-- Products grid -->
   @if (isLoading()) {
     <app-skeleton-loader type="card" [count]="8" />
-  } @else if (displayedProducts.length === 0) {
+  } @else if (products.length === 0) {
     <div class="empty-state">
       <i class="bi bi-search d-block"></i>
       <h3>{{ 'products.no_products' | translate }}</h3>
@@ -43,7 +43,7 @@
     </div>
   } @else {
     <div class="row g-2 g-md-4 row-cols-lg-6">
-      @for (product of displayedProducts; track product.id) {
+      @for (product of products; track product.id) {
         <div class="col-6 col-md-4 col-lg">
           <app-product-card
             [product]="product"
@@ -53,16 +53,10 @@
       }
     </div>
 
-    <!-- Infinite scroll sentinel & loading -->
-    @if (hasMore) {
-      <div class="text-center my-4">
-        @if (isLoadingMore()) {
-          <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-          </div>
-        }
-      </div>
-    }
-    <div #scrollSentinel class="scroll-sentinel"></div>
+    <!-- Pagination -->
+    <app-pagination
+      [currentPage]="currentPage"
+      [totalPages]="totalPages"
+      (pageChange)="onPageChange($event)" />
   }
 </div>

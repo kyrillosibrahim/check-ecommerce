@@ -70,9 +70,19 @@ async function getFavorites(req, res, next) {
   try {
     const favIds = await readFavorites();
     const idx = await buildProductIndex();
-    const result = favIds
-      .map(id => idx.get(id))
-      .filter(Boolean);
+    const result = [];
+    const validIds = [];
+    for (const id of favIds) {
+      const product = idx.get(id);
+      if (product) {
+        result.push(product);
+        validIds.push(id);
+      }
+    }
+    // Auto-clean stale IDs
+    if (validIds.length < favIds.length) {
+      await writeFavorites(validIds);
+    }
     return res.json(result);
   } catch (err) {
     next(err);

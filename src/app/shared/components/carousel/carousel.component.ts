@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   Input,
   signal,
@@ -23,6 +24,7 @@ const VELOCITY_THRESHOLD = 500;
   imports: [],
   templateUrl: './carousel.component.html',
   styleUrl: './carousel.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CarouselComponent implements OnChanges, OnDestroy {
   @Input() items: CarouselItem[] = [];

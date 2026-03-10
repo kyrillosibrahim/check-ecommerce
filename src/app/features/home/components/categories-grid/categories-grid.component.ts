@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ICategory } from '../../../../core/models/category.model';
 
@@ -6,7 +6,8 @@ import { ICategory } from '../../../../core/models/category.model';
   selector: 'app-categories-grid',
   imports: [RouterLink],
   templateUrl: './categories-grid.component.html',
-  styleUrl: './categories-grid.component.scss'
+  styleUrl: './categories-grid.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CategoriesGridComponent {
   @Input({ required: true }) categories: ICategory[] = [];

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IBrand } from '../../../../core/models/brand.model';
 import Swiper from 'swiper';
@@ -9,6 +9,7 @@ import { Autoplay } from 'swiper/modules';
   imports: [RouterLink],
   templateUrl: './brands-grid.component.html',
   styleUrl: './brands-grid.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BrandsGridComponent implements AfterViewInit {
   @Input() brands: IBrand[] = [];

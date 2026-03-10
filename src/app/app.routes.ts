@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { adminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
   {
@@ -44,6 +45,12 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./features/profile/profile.component').then(c => c.ProfileComponent),
     title: 'Check - حسابي'
+  },
+  {
+    path: 'dashboard/governorates',
+    canActivate: [adminGuard],
+    loadComponent: () => import('./features/dashboard/governorates.component').then(c => c.GovernoratesDashboardComponent),
+    title: 'Check - المحافظات وأسعار الشحن'
   },
   {
     path: '**',

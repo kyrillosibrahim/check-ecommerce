@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectorRef, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, ChangeDetectorRef, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -26,6 +26,7 @@ const RECENTLY_VIEWED_KEY = 'recently_viewed_products';
   imports: [RouterLink, RouterLinkActive, AsyncPipe, FormsModule, TranslatePipe],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   private router = inject(Router);
@@ -111,8 +112,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
         // Search products from server
         return this.productService.searchProducts({ search: term, limit: 10 });
       })
-    ).subscribe(products => {
-      this.searchSuggestions = products;
+    ).subscribe(result => {
+      this.searchSuggestions = result.products;
       this.isSearching = false;
       this.cdr.markForCheck();
     });

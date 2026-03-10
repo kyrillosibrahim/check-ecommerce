@@ -130,22 +130,40 @@ export class ProductService {
   }
 
   search(term: string): Observable<IProduct[]> {
-    return this.searchProducts({ search: term });
+    return this.searchProducts({ search: term }).pipe(map(res => res.products));
   }
 
   /** Server-side filtered search */
-  searchProducts(filters: { search?: string; category?: string; brand?: string; featured?: boolean; limit?: number; filterTags?: string[] }): Observable<IProduct[]> {
+  searchProducts(filters: {
+    search?: string;
+    category?: string;
+    brand?: string;
+    featured?: boolean;
+    limit?: number;
+    filterTags?: string[];
+    page?: number;
+    hasDiscount?: boolean;
+  }): Observable<{ products: IProduct[]; total: number }> {
     let params = new HttpParams();
     if (filters.search) params = params.set('search', filters.search);
     if (filters.category) params = params.set('category', filters.category);
     if (filters.brand) params = params.set('brand', filters.brand);
     if (filters.featured) params = params.set('featured', 'true');
     if (filters.limit) params = params.set('limit', filters.limit.toString());
+    if (filters.page) params = params.set('page', filters.page.toString());
     if (filters.filterTags?.length) params = params.set('filterTags', filters.filterTags.join(','));
+    if (filters.hasDiscount) params = params.set('hasDiscount', 'true');
 
-    return this.http.get<any[]>(`${SERVER_URL}/api/products`, { params }).pipe(
-      map(products => products.map(p => this.mapServerProduct(p))),
-      catchError(() => of([]))
+    return this.http.get<any>(`${SERVER_URL}/api/products`, { params }).pipe(
+      map(res => {
+        const products = Array.isArray(res) ? res : (res.products || res.data || []);
+        const total = Array.isArray(res) ? products.length : (res.total ?? res.count ?? products.length);
+        return {
+          products: products.map((p: any) => this.mapServerProduct(p)),
+          total,
+        };
+      }),
+      catchError(() => of({ products: [], total: 0 }))
     );
   }
 
