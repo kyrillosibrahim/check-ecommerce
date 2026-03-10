@@ -2,18 +2,39 @@
 <div id="heroCarousel" class="carousel slide rounded-3 overflow-hidden" data-bs-ride="carousel" data-bs-interval="3500">
   <!-- Indicators -->
   <div class="carousel-indicators">
-    @for (slide of translatedSlides; track $index) {
-      <button type="button" data-bs-target="#heroCarousel" [attr.data-bs-slide-to]="$index"
-              [class.active]="$index === 0"></button>
+    @if (useBanners) {
+      @for (banner of banners(); track banner.id; let i = $index) {
+        <button type="button" data-bs-target="#heroCarousel" [attr.data-bs-slide-to]="i"
+                [class.active]="i === 0"></button>
+      }
+    } @else {
+      @for (slide of translatedSlides; track $index) {
+        <button type="button" data-bs-target="#heroCarousel" [attr.data-bs-slide-to]="$index"
+                [class.active]="$index === 0"></button>
+      }
     }
   </div>
 
   <!-- Slides -->
   <div class="carousel-inner">
-    @for (slide of translatedSlides; track $index) {
-      <div class="carousel-item" [class.active]="$index === 0">
-        <img [src]="slide.image" [alt]="slide.title" class="d-block w-100 hero-image">
-      </div>
+    @if (useBanners) {
+      @for (banner of banners(); track banner.id; let i = $index) {
+        <div class="carousel-item" [class.active]="i === 0">
+          @if (banner.link) {
+            <a [routerLink]="banner.link">
+              <img [src]="banner.image" class="d-block w-100 hero-image" alt="بنر">
+            </a>
+          } @else {
+            <img [src]="banner.image" class="d-block w-100 hero-image" alt="بنر">
+          }
+        </div>
+      }
+    } @else {
+      @for (slide of translatedSlides; track $index) {
+        <div class="carousel-item" [class.active]="$index === 0">
+          <img [src]="slide.image" [alt]="slide.title" class="d-block w-100 hero-image">
+        </div>
+      }
     }
   </div>
 

@@ -38,6 +38,7 @@ async function createBanner(req, res, next) {
 
     const banners = await readBanners();
     const link = (req.body.link || '').trim();
+    const page = (req.body.page || 'home').trim();
 
     await fse.ensureDir(UPLOADS_DIR);
     const ext = path.extname(req.file.originalname) || '.webp';
@@ -48,7 +49,8 @@ async function createBanner(req, res, next) {
     const newBanner = {
       id: getNextId(banners),
       image: `banners/${filename}`,
-      link
+      link,
+      page
     };
 
     banners.push(newBanner);
@@ -72,6 +74,9 @@ async function updateBanner(req, res, next) {
 
     if (req.body.link !== undefined) {
       banners[index].link = req.body.link.trim();
+    }
+    if (req.body.page !== undefined) {
+      banners[index].page = req.body.page.trim();
     }
 
     if (req.file) {

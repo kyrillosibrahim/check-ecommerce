@@ -1,11 +1,13 @@
-import { ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
 import { ProductService } from '../../core/services/product.service';
 import { CartService } from '../../core/services/cart.service';
 import { WishlistService } from '../../core/services/wishlist.service';
 import { CategoryService } from '../../core/services/category.service';
 import { BrandService } from '../../core/services/brand.service';
+import { BannerService } from '../../core/services/banner.service';
 import { SiteSettingsService } from '../../core/services/settings.service';
 import { IProduct } from '../../core/models/product.model';
+import { IBanner } from '../../core/models/banner.model';
 import { ICategory } from '../../core/models/category.model';
 import { IBrand } from '../../core/models/brand.model';
 import { HeroSliderComponent } from './components/hero-slider/hero-slider.component';
@@ -19,7 +21,8 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
   selector: 'app-home',
   imports: [HeroSliderComponent, FeaturedProductsComponent, CategoriesGridComponent, BrandsGridComponent, SkeletonLoaderComponent, TranslatePipe],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.scss'
+  styleUrl: './home.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent implements OnInit {
   private cdr = inject(ChangeDetectorRef);
@@ -28,14 +31,20 @@ export class HomeComponent implements OnInit {
   private wishlistService = inject(WishlistService);
   private categoryService = inject(CategoryService);
   private brandService = inject(BrandService);
+  private bannerService = inject(BannerService);
   private settingsService = inject(SiteSettingsService);
 
   bestSellingProducts: IProduct[] = [];
   categories: ICategory[] = [];
   brands: IBrand[] = [];
+  homeBanners: IBanner[] = [];
   isLoading = signal(true);
 
   ngOnInit(): void {
+    this.bannerService.getByPage('home').subscribe(b => {
+      this.homeBanners = b;
+      this.cdr.markForCheck();
+    });
     this.categoryService.getAll().subscribe(c => {
       this.categories = c;
       this.isLoading.set(false);
