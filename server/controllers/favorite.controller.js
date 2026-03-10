@@ -4,6 +4,51 @@ const fse = require('fs-extra');
 const FAV_FILE = path.join(__dirname, '..', 'data', 'favorites.json');
 const UPLOADS_DIR = path.join(__dirname, '..', 'uploads');
 
+// ── Product Index Cache ──
+let productIndex = null;   // Map<id, productData>
+let indexBuiltAt = 0;
+const INDEX_TTL = 60_000;  // rebuild every 60s
+
+async function buildProductIndex() {
+  const now = Date.now();
+  if (productIndex && (now - indexBuiltAt) < INDEX_TTL) return productIndex;
+
+  const idx = new Map();
+  if (!(await fse.pathExists(UPLOADS_DIR))) { productIndex = idx; indexBuiltAt = now; return idx; }
+
+  const categories = await fse.readdir(UPLOADS_DIR);
+  await Promise.all(categories.map(async (cat) => {
+    const catPath = path.join(UPLOADS_DIR, cat);
+    try {
+      const stat = await fse.stat(catPath);
+      if (!stat.isDirectory()) return;
+      const folders = await fse.readdir(catPath);
+      await Promise.all(folders.map(async (folder) => {
+        const jsonPath = path.join(catPath, folder, 'data', 'product.json');
+        if (await fse.pathExists(jsonPath)) {
+          try {
+            const data = await fse.readJson(jsonPath);
+            const imgPrefix = `${cat}/${folder}`;
+            const fixPaths = (arr) => arr ? arr.map(p => p.startsWith('http') || p.startsWith(cat) ? p : `${imgPrefix}/${p}`) : [];
+            data.mainImages = fixPaths(data.mainImages);
+            data.swiperImages = fixPaths(data.swiperImages);
+            data.normalImages = fixPaths(data.normalImages);
+            if (data.images) data.images = fixPaths(data.images);
+            idx.set(data.id, data);
+          } catch { /* skip corrupt files */ }
+        }
+      }));
+    } catch { /* skip */ }
+  }));
+
+  productIndex = idx;
+  indexBuiltAt = now;
+  return idx;
+}
+
+// Invalidate cache when products change (called externally if needed)
+function invalidateProductIndex() { productIndex = null; }
+
 // ── Helpers ──
 
 async function readFavorites() {
@@ -15,34 +60,6 @@ async function writeFavorites(favs) {
   await fse.writeJson(FAV_FILE, favs, { spaces: 2 });
 }
 
-async function findProductById(productId) {
-  if (!(await fse.pathExists(UPLOADS_DIR))) return null;
-  const categories = await fse.readdir(UPLOADS_DIR);
-  for (const cat of categories) {
-    const catPath = path.join(UPLOADS_DIR, cat);
-    const stat = await fse.stat(catPath);
-    if (!stat.isDirectory()) continue;
-    const folders = await fse.readdir(catPath);
-    for (const folder of folders) {
-      const jsonPath = path.join(catPath, folder, 'data', 'product.json');
-      if (await fse.pathExists(jsonPath)) {
-        const data = await fse.readJson(jsonPath);
-        if (data.id === productId) {
-          // Prefix image paths with category/product-folder
-          const imgPrefix = `${cat}/${folder}`;
-          const fixPaths = (arr) => arr ? arr.map(p => p.startsWith('http') || p.startsWith(cat) ? p : `${imgPrefix}/${p}`) : [];
-          data.mainImages = fixPaths(data.mainImages);
-          data.swiperImages = fixPaths(data.swiperImages);
-          data.normalImages = fixPaths(data.normalImages);
-          if (data.images) data.images = fixPaths(data.images);
-          return data;
-        }
-      }
-    }
-  }
-  return null;
-}
-
 // ── Route handlers ──
 
 /**
@@ -52,11 +69,10 @@ async function findProductById(productId) {
 async function getFavorites(req, res, next) {
   try {
     const favIds = await readFavorites();
-    const result = [];
-    for (const productId of favIds) {
-      const product = await findProductById(productId);
-      if (product) result.push(product);
-    }
+    const idx = await buildProductIndex();
+    const result = favIds
+      .map(id => idx.get(id))
+      .filter(Boolean);
     return res.json(result);
   } catch (err) {
     next(err);
@@ -101,6 +117,19 @@ async function removeFromFavorites(req, res, next) {
 }
 
 /**
+ * GET /api/favorites/ids
+ * Returns just the array of favorite product IDs (lightweight, no product scanning).
+ */
+async function getFavoriteIds(req, res, next) {
+  try {
+    const favIds = await readFavorites();
+    return res.json(favIds);
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
  * DELETE /api/favorites/clear
  */
 async function clearFavorites(req, res, next) {
@@ -112,4 +141,4 @@ async function clearFavorites(req, res, next) {
   }
 }
 
-module.exports = { getFavorites, addToFavorites, removeFromFavorites, clearFavorites, readFavorites };
+module.exports = { getFavorites, getFavoriteIds, addToFavorites, removeFromFavorites, clearFavorites, readFavorites, invalidateProductIndex };

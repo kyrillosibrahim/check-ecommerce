@@ -65,9 +65,14 @@
       <div class="d-flex gap-2">
         <button class="wishlist-btn btn btn-sm"
                 [class.active]="isInWishlist"
+                [disabled]="isWishlistProcessing"
                 (click)="toggleWishlist($event)"
                 [title]="'product.add_to_wishlist' | translate">
-          <i class="bi" [class.bi-heart-fill]="isInWishlist" [class.bi-heart]="!isInWishlist"></i>
+          @if (isWishlistProcessing) {
+            <span class="spinner-border spinner-border-sm"></span>
+          } @else {
+            <i class="bi" [class.bi-heart-fill]="isInWishlist" [class.bi-heart]="!isInWishlist"></i>
+          }
         </button>
         @if (isInCart) {
           <button class="btn btn-secondary btn-sm flex-grow-1" disabled>

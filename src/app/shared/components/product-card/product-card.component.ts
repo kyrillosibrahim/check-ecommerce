@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IProduct } from '../../../core/models/product.model';
 import { TranslationService } from '../../../core/services/translation.service';
@@ -15,7 +15,8 @@ import Swal from 'sweetalert2';
   selector: 'app-product-card',
   imports: [RouterLink, EgpCurrencyPipe, DiscountPricePipe, TranslatePipe, LocalizePipe, TextLoopComponent],
   templateUrl: './product-card.component.html',
-  styleUrl: './product-card.component.scss'
+  styleUrl: './product-card.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductCardComponent {
   translationService = inject(TranslationService);
@@ -33,8 +34,13 @@ export class ProductCardComponent {
     return this.product.inFavorite || this.wishlistService.isInWishlist(this.product.id);
   }
 
+  get isWishlistProcessing(): boolean {
+    return this.wishlistService.isProcessing(this.product.id);
+  }
+
   toggleWishlist(event: Event): void {
     event.stopPropagation();
+    if (this.isWishlistProcessing) return;
     if (this.isInWishlist) {
       this.wishlistService.removeFromWishlist(this.product.id);
     } else {
@@ -46,9 +52,7 @@ export class ProductCardComponent {
     return this.product.discountPercentage > 0;
   }
 
-  get starsArray(): number[] {
-    return Array(5).fill(0).map((_, i) => i + 1);
-  }
+  readonly starsArray = [1, 2, 3, 4, 5];
 
   onAddToCart(): void {
     this.addToCart.emit(this.product);

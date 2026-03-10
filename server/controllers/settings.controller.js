@@ -61,7 +61,22 @@ exports.getSettings = async (_req, res) => {
   try {
     const settings = readSettings();
 
-    // Populate bestSellingProducts with full product data
+    // Read favorites + cart for counts and inFavorite/inCart flags
+    let favSet = new Set();
+    let cartMap = new Map();
+    try {
+      const favs = fs.pathExistsSync(FAV_FILE) ? fs.readJsonSync(FAV_FILE) : [];
+      favSet = new Set(favs);
+      settings.favoritesCount = favs.length;
+    } catch { settings.favoritesCount = 0; }
+
+    try {
+      const cart = fs.pathExistsSync(CART_FILE) ? fs.readJsonSync(CART_FILE) : [];
+      cartMap = new Map(cart.map(c => [c.productId, c.quantity]));
+      settings.cartCount = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+    } catch { settings.cartCount = 0; }
+
+    // Populate bestSellingProducts with full product data + inFavorite/inCart
     if (settings.bestSellingProducts?.length) {
       const seen = new Set();
       const populated = [];
@@ -69,21 +84,16 @@ exports.getSettings = async (_req, res) => {
         if (seen.has(id)) continue;
         seen.add(id);
         const product = await findProductById(id);
-        if (product) populated.push(product);
+        if (product) {
+          product.inFavorite = favSet.has(id);
+          const qty = cartMap.get(id);
+          product.inCart = !!qty;
+          product.cartQuantity = qty || 0;
+          populated.push(product);
+        }
       }
       settings.bestSellingProducts = populated;
     }
-
-    // Add cart & favorites counts
-    try {
-      const cart = fs.pathExistsSync(CART_FILE) ? fs.readJsonSync(CART_FILE) : [];
-      settings.cartCount = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
-    } catch { settings.cartCount = 0; }
-
-    try {
-      const favs = fs.pathExistsSync(FAV_FILE) ? fs.readJsonSync(FAV_FILE) : [];
-      settings.favoritesCount = favs.length;
-    } catch { settings.favoritesCount = 0; }
 
     res.json(settings);
   } catch (err) {
