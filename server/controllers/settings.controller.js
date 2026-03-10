@@ -93,6 +93,10 @@ exports.getSettings = async (_req, res) => {
       settings.bestSellingProducts = populated;
     }
 
+    // Strip legacy keys that are no longer needed
+    delete settings.cartCount;
+    delete settings.favoritesCount;
+
     res.json(settings);
   } catch (err) {
     res.status(500).json({ error: 'Failed to read settings.' });

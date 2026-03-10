@@ -33,10 +33,11 @@ export class WishlistService {
     this.loadFavoriteIds();
   }
 
-  /** Load just the favorite IDs (lightweight, no full product data) */
+  /** Load favorites on init to get accurate count (auto-cleans stale IDs) */
   private loadFavoriteIds(): void {
-    this.http.get<string[]>(`${SERVER_URL}/api/favorites/ids`).subscribe({
-      next: (ids) => {
+    this.http.get<any[]>(`${SERVER_URL}/api/favorites/getfavorit`).subscribe({
+      next: (products) => {
+        const ids = (products || []).map(p => p.id);
         this.favoriteIds.set(new Set(ids));
       },
       error: () => {},
