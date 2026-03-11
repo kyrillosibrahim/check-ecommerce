@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, combineLatest, map } from 'rxjs';
 import Swal from 'sweetalert2';
@@ -25,6 +25,26 @@ export class CartService {
 
   /** Cart items */
   cart$ = this.cartSubject.asObservable();
+
+  /** Promo code state */
+  promoApplied = signal(false);
+  promoCode = signal('');
+  readonly PROMO_DISCOUNT = 23;
+  private readonly VALID_PROMO = 'km298';
+
+  applyPromo(code: string): boolean {
+    if (code.trim().toLowerCase() === this.VALID_PROMO) {
+      this.promoCode.set(code.trim().toLowerCase());
+      this.promoApplied.set(true);
+      return true;
+    }
+    return false;
+  }
+
+  removePromo(): void {
+    this.promoCode.set('');
+    this.promoApplied.set(false);
+  }
 
   constructor() {
     this.loadCart();

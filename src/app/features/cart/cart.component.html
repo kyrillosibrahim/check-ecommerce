@@ -17,7 +17,7 @@
         <div class="card shadow-sm" style="background-color: var(--sz-bg-card); border-color: var(--sz-border-color);">
           <div class="card-body p-0">
             <!-- Table header (desktop) -->
-            <div class="d-none d-md-flex px-4 py-3 fw-semibold small table-header"
+            <div class="d-none d-md-flex px-4 py-3 fw-semibold table-header"
                  style="border-bottom: 1px solid var(--sz-border-color);">
               <div class="flex-grow-1">{{ 'cart.product' | translate }}</div>
               <div style="width: 120px;" class="text-center">{{ 'cart.price' | translate }}</div>
@@ -34,7 +34,7 @@
             }
           </div>
           <div class="px-4 py-3 d-flex justify-content-end" style="border-top: 1px solid var(--sz-border-color);">
-            <button class="btn btn-outline-danger btn-sm" (click)="clearAll()">
+            <button class="btn btn-outline-danger btn-sm" (click)="clearAll()" style="background-color: red; color: white;">
               <i class="bi bi-trash3 me-1"></i>{{ 'cart.clear_all' | translate }}
             </button>
           </div>
@@ -42,40 +42,88 @@
       </div>
 
       <!-- Order Summary -->
-      <div class="col-lg-4">
+      <div class="col-lg-4" style="align-self: start; position: sticky; top: 100px;">
+        <!-- Promo Code Card -->
+        <div class="card shadow-sm mb-3" style="background-color: var(--sz-bg-card); border-color: var(--sz-border-color);">
+          <div class="card-body">
+            <label class="fw-bold mb-2 d-block" style="font-size: 1.15rem;">
+              {{ translationService.isArabic() ? 'عندك كود؟' : 'Have a code?' }}
+            </label>
+            @if (!promoApplied()) {
+              <div class="input-group">
+                <input type="text" class="form-control" [(ngModel)]="promoCodeInput"
+                       [placeholder]="translationService.isArabic() ? 'ادخل الكود' : 'Enter code'"
+                       (keyup.enter)="applyPromo()"
+                       style="background-color: var(--sz-bg-secondary); border-color: var(--sz-border-color); color: var(--sz-text-primary);">
+                <button class="btn btn-primary" (click)="applyPromo()" [disabled]="!promoCodeInput.trim()">
+                  {{ translationService.isArabic() ? 'تطبيق' : 'Apply' }}
+                </button>
+              </div>
+              @if (promoError()) {
+                <small class="text-danger mt-1 d-block">
+                  {{ translationService.isArabic() ? 'كود غير صحيح' : 'Invalid code' }}
+                </small>
+              }
+            } @else {
+              <div class="d-flex align-items-center justify-content-between promo-success p-2 rounded">
+                <div>
+                  <i class="bi bi-check-circle-fill text-success me-1"></i>
+                  <span class="fw-semibold" style="color: var(--sz-text-primary);">km298</span>
+                  <small class="text-success d-block mt-1">
+                    {{ translationService.isArabic() ? 'كود صحيح — تم تفعيل الكود على الفاتورة' : 'Code applied successfully' }}
+                  </small>
+                </div>
+                <button class="btn btn-link text-danger p-0" (click)="removePromo()">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Summary Card -->
         <div class="card shadow-sm" style="background-color: var(--sz-bg-card); border-color: var(--sz-border-color);">
           <div class="card-body">
-            <h6 class="fw-bold mb-4">{{ 'cart.order_summary' | translate }}</h6>
-
-            <div class="d-flex justify-content-between mb-2">
-              <span class="text-secondary">{{ 'cart.subtotal' | translate }}</span>
-              <span>{{ cartService.cartSubtotal$ | async | egpCurrency }}</span>
+            <div class="d-flex justify-content-between mb-3">
+              <span class="text-secondary fs-6">{{ 'cart.subtotal' | translate }}</span>
+              <span class="fs-6">{{ cartService.cartSubtotal$ | async | egpCurrency }}</span>
             </div>
 
-            <div class="d-flex justify-content-between mb-2">
-              <span class="text-secondary">{{ 'cart.discount' | translate }}</span>
-              <span class="text-danger">-{{ cartService.cartDiscount$ | async | egpCurrency }}</span>
+            <div class="d-flex justify-content-between mb-3">
+              <span class="text-secondary fs-6">{{ 'cart.discount' | translate }}</span>
+              <span class="text-danger fs-6">-{{ cartService.cartDiscount$ | async | egpCurrency }}</span>
             </div>
 
-            <div class="d-flex justify-content-between mb-2">
-              <span class="text-secondary">{{ 'cart.shipping' | translate }}</span>
-              <span class="text-success">{{ 'cart.shipping_free' | translate }}</span>
+            @if (promoApplied()) {
+              <div class="d-flex justify-content-between mb-3">
+                <span class="text-secondary fs-6">
+                  {{ translationService.isArabic() ? 'خصم الكود' : 'Promo discount' }}
+                  <span class="badge bg-success ms-1" style="font-size: 0.7rem;">km298</span>
+                </span>
+                <span class="text-danger fs-6">-{{ PROMO_DISCOUNT | egpCurrency }}</span>
+              </div>
+            }
+
+            <div class="d-flex justify-content-between mb-3">
+              <span class="text-secondary fs-6">{{ 'cart.shipping' | translate }}</span>
+              <span class="text-success fs-6">{{ 'cart.shipping_free' | translate }}</span>
             </div>
 
             <hr style="border-color: var(--sz-border-color);">
 
             <div class="d-flex justify-content-between mb-4">
-              <span class="fw-bold fs-6">{{ 'cart.total' | translate }}</span>
-              <span class="fw-bold fs-6" style="color: var(--sz-accent);">
-                {{ cartService.cartTotal$ | async | egpCurrency }}
+              <span class="fw-bold fs-5">{{ 'cart.total' | translate }}</span>
+              <span class="fw-bold fs-5" style="color: var(--sz-accent);">
+                @if (promoApplied()) {
+                  {{ (cartService.cartTotal$ | async)! - PROMO_DISCOUNT | egpCurrency }}
+                } @else {
+                  {{ cartService.cartTotal$ | async | egpCurrency }}
+                }
               </span>
             </div>
 
-            <a routerLink="/checkout" class="btn btn-primary w-100 mb-2">
+            <a routerLink="/checkout" class="btn btn-primary w-100" style="font-size: 1rem;">
               <i class="bi bi-lock me-2"></i>{{ 'cart.proceed_checkout' | translate }}
-            </a>
-            <a routerLink="/products" class="btn btn-outline-secondary w-100">
-              {{ 'cart.continue_shopping' | translate }}
             </a>
           </div>
         </div>

@@ -15,6 +15,7 @@ import { CategoryService } from '../../../core/services/category.service';
 import { SiteSettingsService } from '../../../core/services/settings.service';
 import { ProductService } from '../../../core/services/product.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { EgpCurrencyPipe } from '../../pipes/egp-currency.pipe';
 import { IBrand } from '../../../core/models/brand.model';
 import { ICategory } from '../../../core/models/category.model';
 import { IProduct } from '../../../core/models/product.model';
@@ -23,7 +24,7 @@ const RECENTLY_VIEWED_KEY = 'recently_viewed_products';
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink, RouterLinkActive, AsyncPipe, FormsModule, TranslatePipe],
+  imports: [RouterLink, RouterLinkActive, AsyncPipe, FormsModule, TranslatePipe, EgpCurrencyPipe],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

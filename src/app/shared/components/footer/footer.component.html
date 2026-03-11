@@ -25,10 +25,9 @@
       <div class="col-lg-2 col-md-6">
         <h6 class="fw-bold mb-3">{{ 'footer.categories' | translate }}</h6>
         <ul class="list-unstyled">
-          <li class="mb-2"><a routerLink="/products" [queryParams]="{ category: 'electronics' }" class="text-secondary text-decoration-none">{{ 'footer.cat_electronics' | translate }}</a></li>
-          <li class="mb-2"><a routerLink="/products" [queryParams]="{ category: 'clothing' }" class="text-secondary text-decoration-none">{{ 'footer.cat_clothing' | translate }}</a></li>
-          <li class="mb-2"><a routerLink="/products" [queryParams]="{ category: 'sports' }" class="text-secondary text-decoration-none">{{ 'footer.cat_sports' | translate }}</a></li>
-          <li class="mb-2"><a routerLink="/products" [queryParams]="{ category: 'Vitamins' }" class="text-secondary text-decoration-none">{{ 'footer.Vitamins' | translate }}</a></li>
+          @for (cat of categories; track cat.id) {
+            <li class="mb-2"><a routerLink="/products" [queryParams]="{ category: cat.slug }" class="text-secondary text-decoration-none">{{ cat.name }}</a></li>
+          }
         </ul>
       </div>
 

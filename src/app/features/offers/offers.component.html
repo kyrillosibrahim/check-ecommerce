@@ -108,7 +108,7 @@
             </button>
             @for (cat of availableCategories; track cat) {
               <button class="filter-chip" [class.active]="selectedCategory === cat" (click)="onCategorySelect(cat)">
-                {{ 'cat.' + cat | translate }}
+                {{ formatCategoryName(cat) }}
               </button>
             }
           </div>

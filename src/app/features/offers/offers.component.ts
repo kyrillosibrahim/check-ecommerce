@@ -112,6 +112,10 @@ export class OffersComponent implements OnInit {
     });
   }
 
+  formatCategoryName(slug: string): string {
+    return slug.replaceAll('-', ' ');
+  }
+
   private applySorting(products: IProduct[]): IProduct[] {
     const result = [...products];
     switch (this.sortBy) {

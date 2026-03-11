@@ -26,8 +26,10 @@ export class ProductCardComponent {
   @Output() addToCart = new EventEmitter<IProduct>();
   @Output() addToWishlist = new EventEmitter<IProduct>();
 
+  private addedToCartLocal = false;
+
   get isInCart(): boolean {
-    return this.product.inCart || this.cartService.isInCart(this.product.id);
+    return this.addedToCartLocal || this.product.inCart || this.cartService.isInCart(this.product.id);
   }
 
   get isInWishlist(): boolean {
@@ -48,6 +50,10 @@ export class ProductCardComponent {
     }
   }
 
+  get categoryName(): string {
+    return (this.product.category || '').replaceAll('-', ' ');
+  }
+
   get hasDiscount(): boolean {
     return this.product.discountPercentage > 0;
   }
@@ -55,6 +61,7 @@ export class ProductCardComponent {
   readonly starsArray = [1, 2, 3, 4, 5];
 
   onAddToCart(): void {
+    this.addedToCartLocal = true;
     this.addToCart.emit(this.product);
   }
 

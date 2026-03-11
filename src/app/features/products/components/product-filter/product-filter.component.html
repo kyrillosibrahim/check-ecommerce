@@ -1,52 +1,58 @@
-<div class="card border-0 shadow-sm mb-4 p-3" style="background-color: var(--sz-bg-card);">
-  <div class="row g-3 align-items-end">
-    <!-- Category -->
-    <div class="col-6">
-      <label class="form-label small fw-semibold">{{ 'filter.category' | translate }}</label>
-      <select class="form-select"
-              [ngModel]="selectedCategory"
-              (ngModelChange)="categoryChange.emit($event)"
-              style="background-color: var(--sz-bg-secondary); border-color: var(--sz-border-color); color: var(--sz-text-primary);">
-        <option value="">{{ 'filter.all_categories' | translate }}</option>
-        @for (cat of categories; track cat.id) {
-          <option [value]="cat.slug">{{ cat.name }}</option>
-        }
-      </select>
-    </div>
+<!-- Category Images Grid -->
+@if (categories.length > 0) {
+  <div class="categories-grid mb-4">
+    <button class="category-card" [class.active]="!selectedCategory" (click)="categoryChange.emit('')">
+      <div class="category-img-wrapper">
+        <i class="bi bi-grid-3x3-gap-fill category-icon-placeholder"></i>
+      </div>
+      <span class="category-name">{{ 'filter.all_categories' | translate }}</span>
+    </button>
+    @for (cat of categories; track cat.id) {
+      <button class="category-card" [class.active]="selectedCategory === cat.slug" (click)="categoryChange.emit(cat.slug)">
+        <div class="category-img-wrapper">
+          @if (cat.image) {
+            <img [src]="cat.image" [alt]="cat.name" class="category-img" loading="lazy">
+          } @else {
+            <i class="bi bi-box category-icon-placeholder"></i>
+          }
+        </div>
+        <span class="category-name">{{ cat.name }}</span>
+      </button>
+    }
+  </div>
+}
 
-    <!-- Sort -->
-    <div class="col-6">
-      <label class="form-label small fw-semibold">{{ 'filter.sort_by' | translate }}</label>
-      <select class="form-select"
-              [ngModel]="sortBy"
-              (ngModelChange)="sortChange.emit($event)"
-              style="background-color: var(--sz-bg-secondary); border-color: var(--sz-border-color); color: var(--sz-text-primary);">
-        <option value="default">{{ 'filter.sort_default' | translate }}</option>
-        <option value="price-low">{{ 'filter.sort_price_low' | translate }}</option>
-        <option value="price-high">{{ 'filter.sort_price_high' | translate }}</option>
-        <option value="name-az">{{ 'filter.sort_name_az' | translate }}</option>
-        <option value="rating">{{ 'filter.sort_rating' | translate }}</option>
-      </select>
+<!-- Sort -->
+<div class="d-flex align-items-center gap-2 mb-3">
+  <label class="form-label small fw-semibold mb-0 text-nowrap">{{ 'filter.sort_by' | translate }}</label>
+  <select class="form-select form-select-sm"
+          [ngModel]="sortBy"
+          (ngModelChange)="sortChange.emit($event)"
+          style="background-color: var(--sz-bg-secondary); border-color: var(--sz-border-color); color: var(--sz-text-primary); max-width: 200px;">
+    <option value="default">{{ 'filter.sort_default' | translate }}</option>
+    <option value="price-low">{{ 'filter.sort_price_low' | translate }}</option>
+    <option value="price-high">{{ 'filter.sort_price_high' | translate }}</option>
+    <option value="name-az">{{ 'filter.sort_name_az' | translate }}</option>
+    <option value="rating">{{ 'filter.sort_rating' | translate }}</option>
+  </select>
+</div>
+
+<!-- Filter Tags -->
+@if (availableFilterTags.length > 0) {
+  <div class="mb-3">
+    <label class="form-label small fw-semibold"><i class="bi bi-funnel me-1"></i>{{ 'filter.filter_tags' | translate }}</label>
+    <div class="d-flex flex-wrap gap-2">
+      @for (tag of availableFilterTags; track tag) {
+        <button type="button"
+                class="btn btn-sm filter-tag-btn"
+                [class.active]="selectedFilterTags.includes(tag)"
+                (click)="toggleFilterTag(tag)">
+          @if (selectedFilterTags.includes(tag)) {
+            <i class="bi bi-check-lg me-1"></i>
+          }
+          {{ tag }}
+        </button>
+      }
     </div>
   </div>
-
-  <!-- Filter Tags -->
-  @if (availableFilterTags.length > 0) {
-    <div class="mt-3">
-      <label class="form-label small fw-semibold"><i class="bi bi-funnel me-1"></i>{{ 'filter.filter_tags' | translate }}</label>
-      <div class="d-flex flex-wrap gap-2">
-        @for (tag of availableFilterTags; track tag) {
-          <button type="button"
-                  class="btn btn-sm filter-tag-btn"
-                  [class.active]="selectedFilterTags.includes(tag)"
-                  (click)="toggleFilterTag(tag)">
-            @if (selectedFilterTags.includes(tag)) {
-              <i class="bi bi-check-lg me-1"></i>
-            }
-            {{ tag }}
-          </button>
-        }
-      </div>
-    </div>
-  }
-</div>
+}

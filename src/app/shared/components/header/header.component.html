@@ -247,8 +247,10 @@
                     <img [src]="getProductImage(item.product)" [alt]="item.product.title" class="cart-dropdown-img">
                     <div class="cart-dropdown-info">
                       <p class="cart-dropdown-name">{{ item.product.title }}</p>
-                      <span class="cart-dropdown-qty">x{{ item.quantity }}</span>
-                      <span class="cart-dropdown-price">{{ (item.product.price * (1 - item.product.discountPercentage / 100) * item.quantity).toFixed(2) }} ج.م</span>
+                      <div class="d-flex align-items-center gap-2">
+                        <span class="cart-dropdown-qty">x{{ item.quantity }}</span>
+                        <span class="cart-dropdown-price">{{ item.product.price * (1 - item.product.discountPercentage / 100) * item.quantity | egpCurrency }}</span>
+                      </div>
                     </div>
                     <button class="cart-dropdown-remove" (click)="removeFromCartHover(item.product.id, $event)">
                       <i class="bi bi-x"></i>
@@ -259,7 +261,7 @@
               <div class="cart-dropdown-footer">
                 <div class="cart-dropdown-total">
                   <span>الإجمالي</span>
-                  <strong>{{ (cartService.cartTotal$ | async)?.toFixed(2) }} ج.م</strong>
+                  <strong>{{ cartService.cartTotal$ | async | egpCurrency }}</strong>
                 </div>
                 <a routerLink="/cart" class="btn btn-sm w-100 mt-2 cart-dropdown-btn" (click)="showCartDropdown = false">عرض السلة</a>
               </div>

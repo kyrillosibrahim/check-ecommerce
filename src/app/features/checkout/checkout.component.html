@@ -177,6 +177,15 @@
               <span class="text-secondary">{{ 'checkout.discount' | translate }}</span>
               <span class="text-danger">-{{ cartService.cartDiscount$ | async | egpCurrency }}</span>
             </div>
+            @if (cartService.promoApplied()) {
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-secondary">
+                  {{ translationService.isArabic() ? 'خصم الكود' : 'Promo discount' }}
+                  <span class="badge bg-success ms-1" style="font-size: 0.65rem;">{{ cartService.promoCode() }}</span>
+                </span>
+                <span class="text-danger">-{{ cartService.PROMO_DISCOUNT | egpCurrency }}</span>
+              </div>
+            }
             <div class="d-flex justify-content-between mb-2">
               <span class="text-secondary">{{ 'checkout.shipping' | translate }}</span>
               @if (shippingCost > 0) {
@@ -189,7 +198,7 @@
             <div class="d-flex justify-content-between">
               <span class="fw-bold fs-6">{{ 'checkout.total' | translate }}</span>
               <span class="fw-bold fs-6" style="color: var(--sz-accent);">
-                {{ ((cartService.cartTotal$ | async) ?? 0) + shippingCost | egpCurrency }}
+                {{ ((cartService.cartTotal$ | async) ?? 0) + shippingCost - (cartService.promoApplied() ? cartService.PROMO_DISCOUNT : 0) | egpCurrency }}
               </span>
             </div>
           </div>

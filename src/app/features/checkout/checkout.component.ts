@@ -165,10 +165,12 @@ export class CheckoutComponent {
       ...this.checkoutForm.value
     };
 
+    const promoDiscount = this.cartService.promoApplied() ? this.cartService.PROMO_DISCOUNT : 0;
+
     const order: IOrder = {
       id: this.orderId,
       items: orderItems,
-      total: cartTotal + this.shippingCost,
+      total: cartTotal + this.shippingCost - promoDiscount,
       shippingCost: this.shippingCost,
       shippingAddress,
       date: new Date().toISOString(),
@@ -185,6 +187,8 @@ export class CheckoutComponent {
       },
       subtotal: cartSubtotal,
       discount: cartDiscount,
+      promoCode: this.cartService.promoApplied() ? this.cartService.promoCode() : null,
+      promoDiscount: promoDiscount,
       items: cartItems.map(item => ({
         productId: item.product.id,
         title: item.product.title,

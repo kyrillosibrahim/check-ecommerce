@@ -55,7 +55,7 @@
   height: 52px;
   border-radius: 50%;
   border: none;
-  background: #dc3545;
+  background: var(--sz-accent, #dc3545);
   color: #fff;
   font-size: 1.2rem;
   cursor: pointer;
