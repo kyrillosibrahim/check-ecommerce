@@ -163,7 +163,7 @@ async function getAllProducts(req, res, next) {
       return res.json(products);
     }
 
-    const { category, search, brand, featured, limit, filterTags: filterTagsParam } = req.query;
+    const { category, search, brand, featured, limit, filterTags: filterTagsParam, hasDiscount, page } = req.query;
 
     const categories = await fse.readdir(UPLOADS_DIR);
 
@@ -184,6 +184,7 @@ async function getAllProducts(req, res, next) {
           if (category && data.category !== category && cat !== category) continue;
           if (brand && data.brand !== brand) continue;
           if (featured === 'true' && !data.isFeatured) continue;
+          if (hasDiscount === 'true' && !(data.discountPercentage > 0)) continue;
 
           if (search) {
             const term = search.toLowerCase();
@@ -231,7 +232,17 @@ async function getAllProducts(req, res, next) {
       p.inFavorite = favSet.has(p.id);
     }
 
-    // Apply limit
+    // Pagination
+    const total = products.length;
+    if (page && limit) {
+      const pageNum = parseInt(page, 10) || 1;
+      const limitNum = parseInt(limit, 10) || 36;
+      const start = (pageNum - 1) * limitNum;
+      products = products.slice(start, start + limitNum);
+      return res.json({ products, total });
+    }
+
+    // Apply limit (no pagination)
     if (limit) {
       const max = parseInt(limit, 10);
       if (!isNaN(max) && max > 0) {
