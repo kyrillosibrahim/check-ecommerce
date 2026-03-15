@@ -6,6 +6,7 @@ import { CartService } from '../../core/services/cart.service';
 import { WishlistService } from '../../core/services/wishlist.service';
 import { BannerService } from '../../core/services/banner.service';
 import { TranslationService } from '../../core/services/translation.service';
+import { SeoService } from '../../core/services/seo.service';
 import { IProduct } from '../../core/models/product.model';
 import { IBanner } from '../../core/models/banner.model';
 import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
@@ -30,6 +31,7 @@ export class OffersComponent implements OnInit {
   private cartService = inject(CartService);
   private wishlistService = inject(WishlistService);
   private bannerService = inject(BannerService);
+  private seoService = inject(SeoService);
 
   banners = signal<IBanner[]>([]);
   products: IProduct[] = [];
@@ -44,6 +46,11 @@ export class OffersComponent implements OnInit {
   availableCategories: string[] = [];
 
   ngOnInit(): void {
+    this.seoService.setPageMeta({
+      title: 'العروض والخصومات',
+      description: 'اكتشف أقوى العروض والخصومات على جميع المنتجات. وفر أكثر مع عروض حصرية يومية.',
+      path: '/offers',
+    });
     this.bannerService.getByPage('offers').subscribe(b => this.banners.set(b));
     this.fetchFromServer();
   }
@@ -63,7 +70,7 @@ export class OffersComponent implements OnInit {
   onPageChange(page: number): void {
     this.currentPage = page;
     this.fetchFromServer();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   onAddToCart(product: IProduct): void {

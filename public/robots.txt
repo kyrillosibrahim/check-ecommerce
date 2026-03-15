@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /cart
+Disallow: /checkout
+Disallow: /profile
+Disallow: /wishlist
+Disallow: /dashboard/
+
+Sitemap: https://check-ecommerce.onrender.com/sitemap.xml

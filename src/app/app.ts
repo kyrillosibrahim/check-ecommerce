@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './shared/components/header/header.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
@@ -15,8 +16,11 @@ import { SiteSettingsService } from './core/services/settings.service';
 })
 export class App implements OnInit {
   private settingsService = inject(SiteSettingsService);
+  private platformId = inject(PLATFORM_ID);
 
   ngOnInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
     this.settingsService.getSettings().subscribe(settings => {
       const root = document.documentElement;
       const { colors } = settings;

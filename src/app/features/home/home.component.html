@@ -2,17 +2,19 @@
 <app-hero-slider [banners]="homeBanners" />
 
 <!-- Best Selling Products -->
-@if (bestSellingProducts.length > 0) {
-  <section class="section-padding" style="background-color: var(--sz-bg-secondary);">
-    <div class="container">
-      <h2 class="section-title">المنتجات الأكثر مبيعاً</h2>
+<section class="section-padding" style="background-color: var(--sz-bg-secondary);">
+  <div class="container">
+    <h2 class="section-title">المنتجات الأكثر مبيعاً</h2>
+    @if (isLoadingProducts()) {
+      <app-skeleton-loader type="card" [count]="6" />
+    } @else if (bestSellingProducts.length > 0) {
       <app-featured-products
         [products]="bestSellingProducts"
         (addToCart)="onAddToCart($event)"
         (addToWishlist)="onAddToWishlist($event)" />
-    </div>
-  </section>
-}
+    }
+  </div>
+</section>
 
 <!-- Categories -->
 <section class="section-padding">
@@ -26,11 +28,13 @@
   </div>
 </section>
 <!-- All Brands -->
-@if (brands.length > 0) {
-  <section class="section-padding">
-    <div class="container">
-      <h2 class="section-title">العلامات التجارية الشائعة</h2>
+<section class="section-padding">
+  <div class="container">
+    <h2 class="section-title">العلامات التجارية الشائعة</h2>
+    @if (isLoadingBrands()) {
+      <app-skeleton-loader type="card" [count]="8" />
+    } @else if (brands.length > 0) {
       <app-brands-grid [brands]="brands" />
-    </div>
-  </section>
-}
+    }
+  </div>
+</section>

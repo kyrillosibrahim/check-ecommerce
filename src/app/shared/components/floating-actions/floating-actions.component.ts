@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, HostListener, signal, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, signal, inject, OnInit, ChangeDetectorRef, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { SiteSettingsService } from '../../../core/services/settings.service';
 
 @Component({
@@ -11,6 +12,7 @@ import { SiteSettingsService } from '../../../core/services/settings.service';
 export class FloatingActionsComponent implements OnInit {
   private settingsService = inject(SiteSettingsService);
   private cdr = inject(ChangeDetectorRef);
+  private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   isVisible = signal(false);
   isOpen = signal(false);
@@ -27,6 +29,7 @@ export class FloatingActionsComponent implements OnInit {
 
   @HostListener('window:scroll')
   onScroll(): void {
+    if (!this.isBrowser) return;
     this.isVisible.set(window.scrollY > window.innerHeight * 0.25);
     if (window.scrollY <= window.innerHeight * 0.25) {
       this.isOpen.set(false);
@@ -38,7 +41,7 @@ export class FloatingActionsComponent implements OnInit {
   }
 
   scrollToTop(): void {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (this.isBrowser) window.scrollTo({ top: 0, behavior: 'smooth' });
     this.isOpen.set(false);
   }
 }

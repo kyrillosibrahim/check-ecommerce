@@ -1,4 +1,5 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable, combineLatest, map, catchError, of } from 'rxjs';
@@ -15,6 +16,7 @@ export class WishlistService {
   private http = inject(HttpClient);
   private cartService = inject(CartService);
   private productService = inject(ProductService);
+  private platformId = inject(PLATFORM_ID);
 
   private wishlistSubject = new BehaviorSubject<IProduct[]>([]);
   loading = signal(false);
@@ -30,7 +32,9 @@ export class WishlistService {
   wishlist$ = this.wishlistSubject.asObservable();
 
   constructor() {
-    this.loadFavoriteIds();
+    if (isPlatformBrowser(this.platformId)) {
+      this.loadFavoriteIds();
+    }
   }
 
   /** Load favorites on init to get accurate count (auto-cleans stale IDs) */

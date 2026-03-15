@@ -1,4 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { EN_TRANSLATIONS, AR_TRANSLATIONS } from '../data/translations';
 
 type Language = 'en' | 'ar';
@@ -11,19 +12,24 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
 @Injectable({ providedIn: 'root' })
 export class TranslationService {
   private readonly STORAGE_KEY = 'sz-lang';
+  private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   currentLang = signal<Language>(this.loadLang());
 
   constructor() {
-    this.applyLang(this.currentLang());
+    if (this.isBrowser) {
+      this.applyLang(this.currentLang());
+    }
   }
 
   toggleLanguage(): void {
     const next: Language = this.currentLang() === 'en' ? 'ar' : 'en';
     this.currentLang.set(next);
-    this.applyLang(next);
-    localStorage.setItem(this.STORAGE_KEY, next);
-    location.reload();
+    if (this.isBrowser) {
+      this.applyLang(next);
+      localStorage.setItem(this.STORAGE_KEY, next);
+      location.reload();
+    }
   }
 
   translate(key: string): string {
@@ -52,6 +58,7 @@ export class TranslationService {
   }
 
   private loadLang(): Language {
+    if (!this.isBrowser) return 'ar';
     return (localStorage.getItem(this.STORAGE_KEY) as Language) || 'ar';
   }
 }

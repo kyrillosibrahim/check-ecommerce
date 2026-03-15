@@ -1,9 +1,11 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, signal, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ProductService } from '../../core/services/product.service';
 import { CartService } from '../../core/services/cart.service';
 import { WishlistService } from '../../core/services/wishlist.service';
+import { SeoService } from '../../core/services/seo.service';
 import { IProduct } from '../../core/models/product.model';
 import { ImageGalleryComponent } from './components/image-gallery/image-gallery.component';
 import { RelatedProductsComponent } from './components/related-products/related-products.component';
@@ -33,6 +35,8 @@ export class ProductDetailsComponent implements OnInit {
   private sanitizer = inject(DomSanitizer);
   cartService = inject(CartService);
   private wishlistService = inject(WishlistService);
+  private seoService = inject(SeoService);
+  private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   product: IProduct | undefined;
   relatedProducts: IProduct[] = [];
@@ -60,6 +64,8 @@ export class ProductDetailsComponent implements OnInit {
           this.relatedProducts = result.relatedProducts;
           this.trackRecentlyViewed(result.product.id);
           this.buildDescriptionHtml(result.product);
+          this.seoService.setProductMeta(result.product);
+          this.seoService.setProductJsonLd(result.product);
         } else {
           this.product = undefined;
           this.relatedProducts = [];
@@ -151,6 +157,7 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   private trackRecentlyViewed(productId: string): void {
+    if (!this.isBrowser) return;
     try {
       const key = 'recently_viewed_products';
       let ids: string[] = JSON.parse(localStorage.getItem(key) || '[]');

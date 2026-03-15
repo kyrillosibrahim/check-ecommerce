@@ -1,122 +1,38 @@
-const path = require('path');
-const fse = require('fs-extra');
+const Expense = require('../models/Expense');
 
-const DATA_FILE = path.join(__dirname, '..', 'data', 'expenses.json');
+async function getNextId() { const last = await Expense.findOne({}, { id: 1 }).sort({ id: -1 }); return last ? last.id + 1 : 1; }
 
-async function readExpenses() {
-  if (!(await fse.pathExists(DATA_FILE))) {
-    await fse.writeJson(DATA_FILE, [], { spaces: 2 });
-    return [];
-  }
-  return fse.readJson(DATA_FILE);
-}
-
-async function writeExpenses(expenses) {
-  await fse.writeJson(DATA_FILE, expenses, { spaces: 2 });
-}
-
-function getNextId(expenses) {
-  if (expenses.length === 0) return 1;
-  return Math.max(...expenses.map(e => e.id)) + 1;
-}
-
-// GET /api/expenses
 async function getAllExpenses(_req, res, next) {
-  try {
-    const expenses = await readExpenses();
-    res.json(expenses);
-  } catch (err) {
-    next(err);
-  }
+  try { const expenses = await Expense.find({}, { __v: 0 }); res.json(expenses.map(e => { const o = e.toObject(); delete o._id; return o; })); }
+  catch (err) { next(err); }
 }
 
-// POST /api/expenses
 async function createExpense(req, res, next) {
   try {
     const { title, category, amount, month, notes } = req.body;
-
-    if (!title || !title.trim()) {
-      return res.status(400).json({ error: 'Expense title is required.' });
-    }
-    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
-      return res.status(400).json({ error: 'A valid amount is required.' });
-    }
-
-    const expenses = await readExpenses();
-
+    if (!title?.trim()) return res.status(400).json({ error: 'Expense title is required.' });
+    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) return res.status(400).json({ error: 'A valid amount is required.' });
     const now = new Date();
-    const defaultMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-
-    const newExpense = {
-      id: getNextId(expenses),
-      title: title.trim(),
-      category: (category || 'أخرى').trim(),
-      amount: Number(amount),
-      month: (month || defaultMonth).trim(),
-      notes: (notes || '').trim(),
-      createdAt: now.toISOString(),
-    };
-
-    expenses.push(newExpense);
-    await writeExpenses(expenses);
-
-    res.status(201).json(newExpense);
-  } catch (err) {
-    next(err);
-  }
+    const defaultMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+    const exp = await Expense.create({ id: await getNextId(), title: title.trim(), category: (category || 'أخرى').trim(), amount: Number(amount), month: (month || defaultMonth).trim(), notes: (notes || '').trim(), createdAt: now.toISOString() });
+    const o = exp.toObject(); delete o._id; delete o.__v; res.status(201).json(o);
+  } catch (err) { next(err); }
 }
 
-// PUT /api/expenses/:id
 async function updateExpense(req, res, next) {
   try {
-    const id = parseInt(req.params.id, 10);
-    const { title, category, amount, month, notes } = req.body;
-
-    if (!title || !title.trim()) {
-      return res.status(400).json({ error: 'Expense title is required.' });
-    }
-    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
-      return res.status(400).json({ error: 'A valid amount is required.' });
-    }
-
-    const expenses = await readExpenses();
-    const index = expenses.findIndex(e => e.id === id);
-
-    if (index === -1) {
-      return res.status(404).json({ error: 'Expense not found.' });
-    }
-
-    expenses[index].title = title.trim();
-    expenses[index].category = (category || 'أخرى').trim();
-    expenses[index].amount = Number(amount);
-    expenses[index].month = (month || expenses[index].month).trim();
-    expenses[index].notes = (notes || '').trim();
-
-    await writeExpenses(expenses);
-    res.json(expenses[index]);
-  } catch (err) {
-    next(err);
-  }
+    const id = parseInt(req.params.id, 10); const { title, category, amount, month, notes } = req.body;
+    if (!title?.trim()) return res.status(400).json({ error: 'Expense title is required.' });
+    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) return res.status(400).json({ error: 'A valid amount is required.' });
+    const exp = await Expense.findOneAndUpdate({ id }, { title: title.trim(), category: (category || 'أخرى').trim(), amount: Number(amount), month: (month || '').trim(), notes: (notes || '').trim() }, { new: true, projection: { __v: 0 } });
+    if (!exp) return res.status(404).json({ error: 'Expense not found.' });
+    const o = exp.toObject(); delete o._id; res.json(o);
+  } catch (err) { next(err); }
 }
 
-// DELETE /api/expenses/:id
 async function deleteExpense(req, res, next) {
-  try {
-    const id = parseInt(req.params.id, 10);
-    const expenses = await readExpenses();
-    const index = expenses.findIndex(e => e.id === id);
-
-    if (index === -1) {
-      return res.status(404).json({ error: 'Expense not found.' });
-    }
-
-    expenses.splice(index, 1);
-    await writeExpenses(expenses);
-
-    res.json({ message: 'Expense deleted successfully.' });
-  } catch (err) {
-    next(err);
-  }
+  try { const result = await Expense.findOneAndDelete({ id: parseInt(req.params.id, 10) }); if (!result) return res.status(404).json({ error: 'Expense not found.' }); res.json({ message: 'Expense deleted successfully.' }); }
+  catch (err) { next(err); }
 }
 
 module.exports = { getAllExpenses, createExpense, updateExpense, deleteExpense };

@@ -42,7 +42,7 @@
       <p>{{ 'products.no_products_desc' | translate }}</p>
     </div>
   } @else {
-    <div class="row g-2 g-md-4 row-cols-lg-6">
+    <div class="row g-3 row-cols-lg-6">
       @for (product of products; track product.id) {
         <div class="col-6 col-md-4 col-lg">
           <app-product-card

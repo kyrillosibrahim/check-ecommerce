@@ -1,4 +1,4 @@
-<div class="container mt-3" style="padding: 2% 5%;">
+<div class="container mt-3" style="padding: 1% 3%;">
 <div id="heroCarousel" class="carousel slide rounded-3 overflow-hidden" data-bs-ride="carousel" data-bs-interval="3500">
   <!-- Indicators -->
   <div class="carousel-indicators">
@@ -16,10 +16,10 @@
   </div>
 
   <!-- Slides -->
-  <div class="carousel-inner">
+  <div class="carousel-inner hei">
     @if (useBanners) {
       @for (banner of banners(); track banner.id; let i = $index) {
-        <div class="carousel-item" [class.active]="i === 0">
+        <div class="carousel-item" style="height: 100%;" [class.active]="i === 0">
           @if (banner.link) {
             <a [routerLink]="banner.link">
               <img [src]="banner.image" class="d-block w-100 hero-image" alt="بنر">

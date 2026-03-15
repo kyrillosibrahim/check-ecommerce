@@ -1,10 +1,12 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 
 export type AuthDrawerView = 'login' | 'register' | 'forgot-password';
 
 @Injectable({ providedIn: 'root' })
 export class AuthDrawerService {
+  private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private isOpenSubject = new BehaviorSubject<boolean>(false);
   private activeViewSubject = new BehaviorSubject<AuthDrawerView>('login');
   private pendingUrl: string | null = null;
@@ -16,12 +18,12 @@ export class AuthDrawerService {
     this.pendingUrl = pendingUrl || null;
     this.activeViewSubject.next(view);
     this.isOpenSubject.next(true);
-    document.body.style.overflow = 'hidden';
+    if (this.isBrowser) document.body.style.overflow = 'hidden';
   }
 
   close(): void {
     this.isOpenSubject.next(false);
-    document.body.style.overflow = '';
+    if (this.isBrowser) document.body.style.overflow = '';
   }
 
   switchView(view: AuthDrawerView): void {

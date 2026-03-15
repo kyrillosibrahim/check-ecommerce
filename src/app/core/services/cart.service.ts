@@ -1,4 +1,5 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, combineLatest, map } from 'rxjs';
 import Swal from 'sweetalert2';
@@ -20,6 +21,7 @@ export class CartService {
   private http = inject(HttpClient);
   private translationService = inject(TranslationService);
   private productService = inject(ProductService);
+  private platformId = inject(PLATFORM_ID);
 
   private cartSubject = new BehaviorSubject<ICartItem[]>([]);
 
@@ -47,7 +49,9 @@ export class CartService {
   }
 
   constructor() {
-    this.loadCart();
+    if (isPlatformBrowser(this.platformId)) {
+      this.loadCart();
+    }
   }
 
   /**

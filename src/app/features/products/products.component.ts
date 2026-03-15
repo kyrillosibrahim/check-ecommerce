@@ -4,6 +4,7 @@ import { ProductService } from '../../core/services/product.service';
 import { CartService } from '../../core/services/cart.service';
 import { WishlistService } from '../../core/services/wishlist.service';
 import { CategoryService } from '../../core/services/category.service';
+import { SeoService } from '../../core/services/seo.service';
 import { IProduct } from '../../core/models/product.model';
 import { ICategory } from '../../core/models/category.model';
 import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
@@ -28,6 +29,7 @@ export class ProductsComponent implements OnInit {
   private cartService = inject(CartService);
   private wishlistService = inject(WishlistService);
   private categoryService = inject(CategoryService);
+  private seoService = inject(SeoService);
 
   products: IProduct[] = [];
   categories: ICategory[] = [];
@@ -45,6 +47,11 @@ export class ProductsComponent implements OnInit {
   isLoading = signal(true);
 
   ngOnInit(): void {
+    this.seoService.setPageMeta({
+      title: 'المنتجات',
+      description: 'تصفح جميع المنتجات المتاحة بأفضل الأسعار. فلاتر متقدمة للبحث حسب القسم والعلامة التجارية.',
+      path: '/products',
+    });
     this.categoryService.getAll().subscribe(c => this.categories = c);
 
     this.route.queryParams.subscribe(params => {
@@ -84,7 +91,7 @@ export class ProductsComponent implements OnInit {
   onPageChange(page: number): void {
     this.currentPage = page;
     this.fetchFromServer();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   onAddToCart(product: IProduct): void {

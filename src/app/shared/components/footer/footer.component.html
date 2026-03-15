@@ -39,6 +39,9 @@
           @if (social.phone) {
             <li class="mb-2"><a [href]="'tel:+2' + social.phone" class="text-secondary text-decoration-none"><i class="bi bi-telephone me-2"></i>{{ social.phone }}</a></li>
           }
+          @if (social.whatsapp) {
+            <li class="mb-2"><a [href]="'https://wa.me/' + social.whatsapp" target="_blank" rel="noopener" class="text-secondary text-decoration-none"><i class="bi bi-whatsapp me-2"></i>{{ social.whatsapp }}</a></li>
+          }
           <li class="mb-2"><i class="bi bi-clock me-2"></i>{{ 'footer.hours' | translate }}</li>
         </ul>
       </div>

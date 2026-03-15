@@ -1,4 +1,5 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, Input, PLATFORM_ID, ViewChild } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { IBrand } from '../../../../core/models/brand.model';
 import Swiper from 'swiper';
@@ -15,8 +16,10 @@ export class BrandsGridComponent implements AfterViewInit {
   @Input() brands: IBrand[] = [];
   @ViewChild('swiperRef') swiperRef!: ElementRef<HTMLElement>;
 
+  private platformId = inject(PLATFORM_ID);
+
   ngAfterViewInit() {
-    if (this.brands.length > 0) {
+    if (isPlatformBrowser(this.platformId) && this.brands.length > 0) {
       this.initSwiper();
     }
   }

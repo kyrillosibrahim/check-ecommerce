@@ -1,4 +1,5 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, map, Observable, tap } from 'rxjs';
 import { IUser, IAddress } from '../models/user.model';
@@ -9,6 +10,7 @@ export class AuthService {
   private readonly API = API_CONFIG.authUrl;
   private readonly STORAGE_KEY = 'sz-current-user';
   private http = inject(HttpClient);
+  private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   private currentUserSubject = new BehaviorSubject<IUser | null>(this.loadUser());
 
@@ -42,7 +44,7 @@ export class AuthService {
 
   logout(): void {
     this.currentUserSubject.next(null);
-    localStorage.removeItem(this.STORAGE_KEY);
+    if (this.isBrowser) localStorage.removeItem(this.STORAGE_KEY);
   }
 
   isLoggedIn(): boolean {
@@ -88,10 +90,11 @@ export class AuthService {
   private setSession(user: IUser, token: string): void {
     const userData = { ...user, token };
     this.currentUserSubject.next(userData);
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(userData));
+    if (this.isBrowser) localStorage.setItem(this.STORAGE_KEY, JSON.stringify(userData));
   }
 
   private loadUser(): IUser | null {
+    if (!this.isBrowser) return null;
     try {
       const data = localStorage.getItem(this.STORAGE_KEY);
       return data ? JSON.parse(data) : null;

@@ -37,6 +37,7 @@ export class SiteSettingsService {
 
   getLogoUrl(logo: string): string {
     if (!logo) return '';
+    if (logo.startsWith('http')) return logo;
     return `${SERVER_URL}/uploads/${logo}`;
   }
 }

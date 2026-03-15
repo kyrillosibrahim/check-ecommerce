@@ -1,29 +1,30 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 
 type Theme = 'light' | 'dark';
 
-/**
- * ThemeService — toggles Bootstrap 5.3 native dark mode.
- * Sets data-bs-theme attribute on <html> element.
- * Persists preference in localStorage.
- */
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
   private readonly STORAGE_KEY = 'sz-theme';
+  private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private themeSubject = new BehaviorSubject<Theme>(this.loadTheme());
 
   theme$ = this.themeSubject.asObservable();
 
   constructor() {
-    this.applyTheme(this.themeSubject.getValue());
+    if (this.isBrowser) {
+      this.applyTheme(this.themeSubject.getValue());
+    }
   }
 
   toggleTheme(): void {
     const next: Theme = this.themeSubject.getValue() === 'light' ? 'dark' : 'light';
     this.themeSubject.next(next);
-    this.applyTheme(next);
-    localStorage.setItem(this.STORAGE_KEY, next);
+    if (this.isBrowser) {
+      this.applyTheme(next);
+      localStorage.setItem(this.STORAGE_KEY, next);
+    }
   }
 
   isDark(): boolean {
@@ -35,6 +36,7 @@ export class ThemeService {
   }
 
   private loadTheme(): Theme {
+    if (!this.isBrowser) return 'light';
     return (localStorage.getItem(this.STORAGE_KEY) as Theme) || 'light';
   }
 }

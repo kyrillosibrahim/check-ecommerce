@@ -6,6 +6,7 @@ import { CategoryService } from '../../core/services/category.service';
 import { BrandService } from '../../core/services/brand.service';
 import { BannerService } from '../../core/services/banner.service';
 import { SiteSettingsService } from '../../core/services/settings.service';
+import { SeoService } from '../../core/services/seo.service';
 import { IProduct } from '../../core/models/product.model';
 import { IBanner } from '../../core/models/banner.model';
 import { ICategory } from '../../core/models/category.model';
@@ -33,14 +34,22 @@ export class HomeComponent implements OnInit {
   private brandService = inject(BrandService);
   private bannerService = inject(BannerService);
   private settingsService = inject(SiteSettingsService);
+  private seoService = inject(SeoService);
 
   bestSellingProducts: IProduct[] = [];
   categories: ICategory[] = [];
   brands: IBrand[] = [];
   homeBanners: IBanner[] = [];
   isLoading = signal(true);
+  isLoadingProducts = signal(true);
+  isLoadingBrands = signal(true);
 
   ngOnInit(): void {
+    this.seoService.setPageMeta({
+      title: 'الرئيسية',
+      description: 'Check - متجرك الإلكتروني للتسوق أونلاين. اكتشف أفضل المنتجات بأفضل الأسعار مع شحن سريع لجميع محافظات مصر.',
+      path: '/',
+    });
     this.bannerService.getByPage('home').subscribe(b => {
       this.homeBanners = b;
       this.cdr.markForCheck();
@@ -52,6 +61,7 @@ export class HomeComponent implements OnInit {
     });
     this.brandService.getAll().subscribe(b => {
       this.brands = b;
+      this.isLoadingBrands.set(false);
       this.cdr.markForCheck();
     });
     this.settingsService.getSettings().subscribe(settings => {
@@ -59,8 +69,9 @@ export class HomeComponent implements OnInit {
         this.bestSellingProducts = settings.bestSellingProducts.map(
           (p: any) => this.productService.mapServerProduct(p)
         );
-        this.cdr.markForCheck();
       }
+      this.isLoadingProducts.set(false);
+      this.cdr.markForCheck();
     });
   }
 

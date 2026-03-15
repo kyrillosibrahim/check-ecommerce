@@ -1,5 +1,7 @@
+import { environment } from '../../../environments/environment';
+
 export const API_CONFIG = {
-  baseUrl: 'https://check-ecommerce.onrender.com',
+  baseUrl: environment.baseUrl,
   get productsUrl() { return `${this.baseUrl}/api/products`; },
   get categoriesUrl() { return `${this.baseUrl}/api/categories`; },
   get brandsUrl() { return `${this.baseUrl}/api/brands`; },

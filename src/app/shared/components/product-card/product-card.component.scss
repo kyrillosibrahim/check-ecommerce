@@ -16,9 +16,12 @@
 .product-title {
   font-size: 0.78rem;
   display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   line-height: 1.4;
+  min-height: calc(1.4em * 2);
 }
 
 .discount-badge-sm {

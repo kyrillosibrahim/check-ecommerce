@@ -1,154 +1,69 @@
-const path = require('path');
-const fse = require('fs-extra');
+const Product = require('../models/Product');
+const Favorite = require('../models/Favorite');
 
-const FAV_FILE = path.join(__dirname, '..', 'data', 'favorites.json');
-const UPLOADS_DIR = path.join(__dirname, '..', 'uploads');
-
-// ── Product Index Cache ──
-let productIndex = null;   // Map<id, productData>
-let indexBuiltAt = 0;
-const INDEX_TTL = 60_000;  // rebuild every 60s
-
-async function buildProductIndex() {
-  const now = Date.now();
-  if (productIndex && (now - indexBuiltAt) < INDEX_TTL) return productIndex;
-
-  const idx = new Map();
-  if (!(await fse.pathExists(UPLOADS_DIR))) { productIndex = idx; indexBuiltAt = now; return idx; }
-
-  const categories = await fse.readdir(UPLOADS_DIR);
-  await Promise.all(categories.map(async (cat) => {
-    const catPath = path.join(UPLOADS_DIR, cat);
-    try {
-      const stat = await fse.stat(catPath);
-      if (!stat.isDirectory()) return;
-      const folders = await fse.readdir(catPath);
-      await Promise.all(folders.map(async (folder) => {
-        const jsonPath = path.join(catPath, folder, 'data', 'product.json');
-        if (await fse.pathExists(jsonPath)) {
-          try {
-            const data = await fse.readJson(jsonPath);
-            const imgPrefix = `${cat}/${folder}`;
-            const fixPaths = (arr) => arr ? arr.map(p => p.startsWith('http') || p.startsWith(cat) ? p : `${imgPrefix}/${p}`) : [];
-            data.mainImages = fixPaths(data.mainImages);
-            data.swiperImages = fixPaths(data.swiperImages);
-            data.normalImages = fixPaths(data.normalImages);
-            if (data.images) data.images = fixPaths(data.images);
-            idx.set(data.id, data);
-          } catch { /* skip corrupt files */ }
-        }
-      }));
-    } catch { /* skip */ }
-  }));
-
-  productIndex = idx;
-  indexBuiltAt = now;
-  return idx;
+async function getFavDoc() {
+  let fav = await Favorite.findById('global');
+  if (!fav) { fav = await Favorite.create({ _id: 'global', ids: [] }); }
+  return fav;
 }
-
-// Invalidate cache when products change (called externally if needed)
-function invalidateProductIndex() { productIndex = null; }
-
-// ── Helpers ──
 
 async function readFavorites() {
-  if (!(await fse.pathExists(FAV_FILE))) return [];
-  return fse.readJson(FAV_FILE);
+  const fav = await getFavDoc();
+  return fav.ids || [];
 }
 
-async function writeFavorites(favs) {
-  await fse.writeJson(FAV_FILE, favs, { spaces: 2 });
+function fixImagePaths(product) {
+  const cat = product.categoryFolder;
+  const slug = product.slug;
+  if (!cat || !slug) return product;
+  const fixPaths = (arr) => arr ? arr.map(p => p.startsWith('http') || p.startsWith(cat) ? p : cat + '/' + slug + '/' + p) : [];
+  const obj = product.toObject ? product.toObject() : { ...product };
+  obj.mainImages = fixPaths(obj.mainImages);
+  obj.swiperImages = fixPaths(obj.swiperImages);
+  obj.normalImages = fixPaths(obj.normalImages);
+  if (obj._id) delete obj._id; if (obj.__v !== undefined) delete obj.__v;
+  return obj;
 }
 
-// ── Route handlers ──
-
-/**
- * GET /api/favorites/getfavorit
- * Returns favorite products with full product data.
- */
 async function getFavorites(req, res, next) {
   try {
     const favIds = await readFavorites();
-    const idx = await buildProductIndex();
-    const result = [];
-    const validIds = [];
-    for (const id of favIds) {
-      const product = idx.get(id);
-      if (product) {
-        result.push(product);
-        validIds.push(id);
-      }
-    }
-    // Auto-clean stale IDs
-    if (validIds.length < favIds.length) {
-      await writeFavorites(validIds);
-    }
-    return res.json(result);
-  } catch (err) {
-    next(err);
-  }
+    const products = await Product.find({ id: { $in: favIds } });
+    const validIds = products.map(p => p.id);
+    if (validIds.length < favIds.length) { const fav = await getFavDoc(); fav.ids = validIds; await fav.save(); }
+    res.json(products.map(fixImagePaths));
+  } catch (err) { next(err); }
 }
 
-/**
- * POST /api/favorites/addtofavorit
- * Body: { productId: string }
- */
+async function getFavoriteIds(req, res, next) {
+  try { res.json(await readFavorites()); } catch (err) { next(err); }
+}
+
 async function addToFavorites(req, res, next) {
   try {
     const { productId } = req.body;
     if (!productId) return res.status(400).json({ error: 'productId is required.' });
-
-    const favs = await readFavorites();
-    if (favs.includes(productId)) {
-      return res.json({ message: 'Already in favorites.', favorites: favs });
-    }
-
-    favs.push(productId);
-    await writeFavorites(favs);
-    return res.json({ message: 'Added to favorites.', favorites: favs });
-  } catch (err) {
-    next(err);
-  }
+    const fav = await getFavDoc();
+    if (fav.ids.includes(productId)) return res.json({ message: 'Already in favorites.', favorites: fav.ids });
+    fav.ids.push(productId); await fav.save();
+    res.json({ message: 'Added to favorites.', favorites: fav.ids });
+  } catch (err) { next(err); }
 }
 
-/**
- * DELETE /api/favorites/remove/:productId
- */
 async function removeFromFavorites(req, res, next) {
   try {
     const { productId } = req.params;
-    const favs = await readFavorites();
-    const filtered = favs.filter(id => id !== productId);
-    await writeFavorites(filtered);
-    return res.json({ message: 'Removed from favorites.', favorites: filtered });
-  } catch (err) {
-    next(err);
-  }
+    const fav = await getFavDoc();
+    fav.ids = fav.ids.filter(id => id !== productId); await fav.save();
+    res.json({ message: 'Removed from favorites.', favorites: fav.ids });
+  } catch (err) { next(err); }
 }
 
-/**
- * GET /api/favorites/ids
- * Returns just the array of favorite product IDs (lightweight, no product scanning).
- */
-async function getFavoriteIds(req, res, next) {
-  try {
-    const favIds = await readFavorites();
-    return res.json(favIds);
-  } catch (err) {
-    next(err);
-  }
-}
-
-/**
- * DELETE /api/favorites/clear
- */
 async function clearFavorites(req, res, next) {
-  try {
-    await writeFavorites([]);
-    return res.json({ message: 'Favorites cleared.', favorites: [] });
-  } catch (err) {
-    next(err);
-  }
+  try { const fav = await getFavDoc(); fav.ids = []; await fav.save(); res.json({ message: 'Favorites cleared.', favorites: [] }); }
+  catch (err) { next(err); }
 }
+
+function invalidateProductIndex() {}
 
 module.exports = { getFavorites, getFavoriteIds, addToFavorites, removeFromFavorites, clearFavorites, readFavorites, invalidateProductIndex };

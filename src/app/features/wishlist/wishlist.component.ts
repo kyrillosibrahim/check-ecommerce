@@ -38,7 +38,7 @@ export class WishlistComponent implements OnInit {
   onPageChange(page: number): void {
     this.currentPage = page;
     this.fetchPage();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   moveToCart(productId: string): void {

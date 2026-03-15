@@ -1,6 +1,8 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const connectDB = require('./config/db');
 const productRoutes = require('./routes/product.routes');
 const categoryRoutes = require('./routes/category.routes');
 const brandRoutes = require('./routes/brand.routes');
@@ -112,7 +114,9 @@ app.use((err, _req, res, _next) => {
 });
 
 // --- Start ---
-app.listen(PORT, () => {
-  console.log(`\n  Product Server running at http://localhost:${PORT}`);
-  console.log(`  Uploads dir: ${path.join(__dirname, 'uploads')}\n`);
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`\n  Product Server running at http://localhost:${PORT}`);
+    console.log(`  Uploads dir: ${path.join(__dirname, 'uploads')}\n`);
+  });
 });
