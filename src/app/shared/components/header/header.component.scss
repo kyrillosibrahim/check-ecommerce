@@ -220,7 +220,7 @@
 }
 
 .mega-menu-content {
-  width: 100%;
+  width: 94%;
   display: flex;
   direction: rtl;
   background: var(--sz-bg-card);
@@ -229,11 +229,12 @@
   overflow: hidden;
   min-height: 420px;
   max-height: 70vh;
+  margin: auto;
 }
 
 /* ── Right column: All categories list ── */
 .mega-menu-categories {
-  width: 250px;
+  width: 300px;
   min-width: 250px;
   border-inline-start: 1px solid var(--sz-border-color);
   background: var(--sz-bg-secondary);
@@ -276,9 +277,9 @@
   }
 
   &:hover, &.active {
-    background: var(--sz-bg-card);
-    color: var(--sz-accent);
-    border-inline-end-color: var(--sz-accent);
+    background:  var(--sz-accent) ;
+    color: var(--sz-bg-card);
+    border-inline-end-color:var(--sz-bg-card);
 
     i:first-child {
       color: var(--sz-accent);
@@ -318,7 +319,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0.75rem;
   border-radius: 5px;
   text-decoration: none;
   cursor: pointer;
@@ -326,7 +326,6 @@
   color: var(--sz-text-primary);
 
   &:hover {
-    background: var(--sz-bg-secondary);
     transform: translateY(-2px);
   }
 }
@@ -360,7 +359,7 @@
 
 /* ── Left column: Famous Brands ── */
 .mega-menu-brands {
-  width: 280px;
+  width: 550px;
   min-width: 240px;
   padding: 1.5rem 1.25rem;
   border-inline-end: 1px solid var(--sz-border-color);
@@ -369,8 +368,7 @@
 
 .mega-menu-brand-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.5rem;
+  grid-template-columns: repeat(5, 1fr);
 }
 
 .mega-menu-brand-card {
@@ -671,7 +669,7 @@
   color: #fff;
   padding: 0.4rem 1rem;
   border-radius: 5px;
-  font-size: 0.82rem;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -800,7 +798,7 @@
 .profile-dropdown-item {
   display: block;
   padding: 0.5rem 1rem;
-  font-size: 0.82rem;
+  font-size: 1rem;
   color: var(--sz-text-primary);
   text-decoration: none;
   cursor: pointer;
