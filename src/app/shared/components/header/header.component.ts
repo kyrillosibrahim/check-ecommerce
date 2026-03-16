@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, ChangeDetectorRef, OnInit, OnDestroy, HostListener, ElementRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, ChangeDetectorRef, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -47,6 +47,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   showSearchOverlay = false;
   showCartDropdown = false;
   showProfileDropdown = false;
+  showMobileDrawer = false;
 
   // Mega-menu hover state
   hoveredCategory: ICategory | null = null;
@@ -248,16 +249,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.cartService.removeFromCart(productId);
   }
 
-  // ── Mobile menu ──
-  private elRef = inject(ElementRef);
+  // ── Mobile drawer ──
+  openMobileDrawer(): void {
+    this.showMobileDrawer = true;
+    this.cdr.markForCheck();
+  }
 
   closeMobileMenu(): void {
-    const navbarCollapse = this.elRef.nativeElement.querySelector('#navbarMain');
-    if (navbarCollapse?.classList.contains('show')) {
-      const bsCollapse = (window as any).bootstrap?.Collapse?.getInstance(navbarCollapse)
-        || new (window as any).bootstrap.Collapse(navbarCollapse);
-      bsCollapse.hide();
-    }
+    this.showMobileDrawer = false;
+    this.cdr.markForCheck();
   }
 
   logout(): void {
