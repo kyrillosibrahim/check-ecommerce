@@ -115,6 +115,8 @@
 }
 
 .footer-bottom {
+  background-color: #bb9066;
+  margin: 0 -calc(var(--bs-gutter-x) * .5);
   display: flex;
   justify-content: space-between;
   align-items: center;
