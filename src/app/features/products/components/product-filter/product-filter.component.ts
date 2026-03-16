@@ -16,6 +16,7 @@ export class ProductFilterComponent {
   @Input() sortBy = 'default';
   @Input() searchTerm = '';
   @Input() selectedFilterTags: string[] = [];
+  @Input() drawerMode = false;
 
   @Output() categoryChange = new EventEmitter<string>();
   @Output() sortChange = new EventEmitter<string>();

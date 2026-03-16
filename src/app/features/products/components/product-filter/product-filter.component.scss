@@ -114,6 +114,40 @@
   }
 }
 
+// ── Drawer mode: sort as vertical list ──
+.sort-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.sort-list-item {
+  display: block;
+  width: 100%;
+  text-align: start;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid var(--sz-border-color, #dee2e6);
+  border-radius: 10px;
+  background: var(--sz-bg-secondary, #f8f9fa);
+  color: var(--sz-text-primary, #212529);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: var(--sz-accent, #1bbc9b);
+    color: var(--sz-accent, #1bbc9b);
+  }
+
+  &.active {
+    background: var(--sz-accent, #1bbc9b);
+    border-color: var(--sz-accent, #1bbc9b);
+    color: #fff;
+    font-weight: 600;
+  }
+}
+
 @media (max-width: 576px) {
   .category-img-wrapper {
     width: 55px;
