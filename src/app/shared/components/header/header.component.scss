@@ -735,6 +735,47 @@
   color: var(--sz-text-muted);
 }
 
+/* ── Mobile Language Button ─────── */
+.mobile-lang-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--sz-border-color);
+  border-radius: 8px;
+  background: var(--sz-bg-secondary);
+  color: var(--sz-text-primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  i {
+    font-size: 1rem;
+    color: var(--sz-accent);
+  }
+
+  &:hover {
+    border-color: var(--sz-accent);
+    background: var(--sz-bg-card);
+  }
+}
+
+.lang-flag {
+  width: 22px;
+  height: 16px;
+  object-fit: cover;
+  border-radius: 3px;
+  border: 1px solid var(--sz-border-color);
+}
+
+.lang-flag-sm {
+  width: 18px;
+  height: 13px;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
 /* ── Mobile overrides ────────────── */
 @media (max-width: 991.98px) {
   .brand-logo-card {

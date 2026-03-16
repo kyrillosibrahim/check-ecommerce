@@ -31,8 +31,14 @@
       </div>
     </div>
     <div class="d-flex align-items-center gap-3">
-      <button class="top-bar-btn" (click)="translationService.toggleLanguage()">
-        <i class="bi bi-globe2 me-1"></i>{{ translationService.currentLang() === 'ar' ? 'الإنجليزية' : 'العربية' }}
+      <button class="top-bar-btn d-flex align-items-center gap-1" (click)="translationService.toggleLanguage()">
+        @if (translationService.currentLang() === 'ar') {
+          <img src="assets/baners/New folder/en.png" alt="English" class="lang-flag-sm">
+          <span>English</span>
+        } @else {
+          <img src="assets/baners/New folder/ar.png" alt="العربية" class="lang-flag-sm">
+          <span>العربية</span>
+        }
       </button>
       <button class="top-bar-btn" (click)="themeService.toggleTheme()">
         @if (themeService.theme$ | async; as theme) {
@@ -307,8 +313,14 @@
 
       <!-- Mobile: language + auth inside collapse -->
       <div class="d-lg-none d-flex align-items-center gap-3 my-2 py-2" style="border-top: 1px solid var(--sz-border-color);">
-        <button class="btn btn-link nav-icon p-0" (click)="translationService.toggleLanguage()">
-          <i class="bi bi-translate" style="font-size: 1rem;"></i>
+        <button class="mobile-lang-btn" (click)="translationService.toggleLanguage()">
+          @if (translationService.currentLang() === 'ar') {
+            <img src="assets/baners/New folder/en.png" alt="English" class="lang-flag">
+            <span>English</span>
+          } @else {
+            <img src="assets/baners/New folder/ar.png" alt="العربية" class="lang-flag">
+            <span>العربية</span>
+          }
         </button>
         @if (authService.isLoggedIn$ | async) {
           <a class="btn btn-sm btn-outline-secondary" routerLink="/profile" (click)="closeMobileMenu()">
