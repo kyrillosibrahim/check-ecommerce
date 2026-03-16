@@ -1,7 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, AfterViewInit, ElementRef, input, OnChanges } from '@angular/core';
 import { Router } from '@angular/router';
-import { SLIDES_DATA, ISlide } from '../../data/slides.data';
-import { TranslationService } from '../../../../core/services/translation.service';
 import { IBanner } from '../../../../core/models/banner.model';
 
 declare var bootstrap: any;
@@ -13,23 +11,11 @@ declare var bootstrap: any;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeroSliderComponent implements AfterViewInit, OnChanges {
-  private translationService = inject(TranslationService);
   private el = inject(ElementRef);
   private router = inject(Router);
 
   banners = input<IBanner[]>([]);
-
-  slides: ISlide[] = SLIDES_DATA;
-  translatedSlides = this.slides.map((slide, i) => ({
-    ...slide,
-    title: this.translationService.translate(`hero.slide${i + 1}_title`),
-    subtitle: this.translationService.translate(`hero.slide${i + 1}_subtitle`),
-    ctaText: this.translationService.translate(`hero.slide${i + 1}_cta`),
-  }));
-
-  get useBanners(): boolean {
-    return this.banners().length > 0;
-  }
+  loading = input(true);
 
   ngAfterViewInit(): void {
     this.initCarousel();

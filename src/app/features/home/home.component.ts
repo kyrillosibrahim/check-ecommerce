@@ -41,6 +41,7 @@ export class HomeComponent implements OnInit {
   brands: IBrand[] = [];
   homeBanners: IBanner[] = [];
   belowSliderBanners: IBanner[] = [];
+  isLoadingBanners = signal(true);
   isLoading = signal(true);
   isLoadingProducts = signal(true);
   isLoadingBrands = signal(true);
@@ -53,6 +54,7 @@ export class HomeComponent implements OnInit {
     });
     this.bannerService.getByPage('home').subscribe(b => {
       this.homeBanners = b;
+      this.isLoadingBanners.set(false);
       this.cdr.markForCheck();
     });
     this.bannerService.getByPage('home-below').subscribe(b => {

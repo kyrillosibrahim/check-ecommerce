@@ -38,10 +38,33 @@
   }
 }
 .hei{
-  // height: 250px;
-  // max-height: 250px;
   @media (max-width: 768px) {
     height: auto;
     max-height: none;
   }
+}
+
+.skeleton-slider {
+  width: 100%;
+  aspect-ratio: 16 / 5;
+  background: #e9ecef;
+  position: relative;
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    aspect-ratio: 16 / 7;
+  }
+}
+
+.skeleton-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #e9ecef 25%, #f8f9fa 50%, #e9ecef 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite ease-in-out;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
