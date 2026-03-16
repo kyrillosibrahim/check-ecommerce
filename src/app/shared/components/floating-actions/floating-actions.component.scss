@@ -149,9 +149,15 @@
 }
 
 // ── Mobile ──
+@media (max-width: 991.98px) {
+  .fab-container {
+    bottom: 4.5rem;
+    right: 1.2rem;
+  }
+}
+
 @media (max-width: 576px) {
   .fab-container {
-    bottom: 1.2rem;
     right: 1.2rem;
   }
 
