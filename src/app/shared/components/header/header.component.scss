@@ -483,6 +483,9 @@
   overflow-y: auto;
   animation: slideDown 0.25s ease;
   padding-top: 60px;
+   @media (max-width: 576px) {
+    padding-top: 0px;
+  }
 }
 
 .search-overlay-backdrop {
@@ -1063,7 +1066,7 @@
   cursor: pointer;
 
   i {
-    font-size: 1.25rem;
+    font-size: 1.4rem;
     line-height: 1;
   }
 
@@ -1080,14 +1083,14 @@
 .mobile-bottom-nav-badge {
   position: absolute;
   top: -6px;
-  inset-inline-end: -8px;
-  font-size: 0.5rem;
-  padding: 0.1rem 0.3rem;
+  inset-inline-end: -10px;
+  font-size: 0.6rem;
+  padding: 0.15rem 0.35rem;
   border-radius: 10px;
   background: var(--sz-accent);
   color: #fff;
   line-height: 1;
   font-weight: 700;
-  min-width: 14px;
+  min-width: 16px;
   text-align: center;
 }

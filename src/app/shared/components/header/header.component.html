@@ -169,28 +169,28 @@
     </div>
 
     <!-- Mobile: action icons -->
-    <div class="d-flex align-items-center gap-2 d-lg-none">
+    <div class="d-flex align-items-center gap-3 d-lg-none">
       <button class="btn btn-link nav-icon p-0" (click)="openSearchOverlay()">
-        <i class="bi bi-search" style="font-size: 1rem;"></i>
+        <i class="bi bi-search" style="font-size: 1.3rem;"></i>
       </button>
       <button class="btn btn-link nav-icon p-0" (click)="themeService.toggleTheme()">
         @if (themeService.theme$ | async; as theme) {
-          <i class="bi" [class.bi-moon-fill]="theme === 'light'" [class.bi-sun-fill]="theme === 'dark'" style="font-size: 1rem;"></i>
+          <i class="bi" [class.bi-moon-fill]="theme === 'light'" [class.bi-sun-fill]="theme === 'dark'" style="font-size: 1.3rem;"></i>
         }
       </button>
       <a routerLink="/wishlist" class="btn btn-link nav-icon p-0 position-relative">
-        <i class="bi bi-heart" style="font-size: 1rem;"></i>
+        <i class="bi bi-heart" style="font-size: 1.3rem;"></i>
         @if ((wishlistService.wishlistCount$ | async) ?? 0; as count) {
           @if (count > 0) {
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.55rem;">{{ count }}</span>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">{{ count }}</span>
           }
         }
       </a>
       <a routerLink="/cart" class="btn btn-link nav-icon p-0 position-relative">
-        <i class="bi bi-cart3" style="font-size: 1rem;"></i>
+        <i class="bi bi-cart3" style="font-size: 1.3rem;"></i>
         @if ((cartService.cartCount$ | async) ?? 0; as count) {
           @if (count > 0) {
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary" style="font-size: 0.55rem;">{{ count }}</span>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary" style="font-size: 0.65rem;">{{ count }}</span>
           }
         }
       </a>
