@@ -2,3 +2,53 @@
   display: block;
   padding-inline: 30px;
 }
+
+@media (max-width: 767.98px) {
+  :host {
+    padding-inline: 8px;
+  }
+
+  .card-img-top {
+    height: 150px !important;
+  }
+
+  .card-body {
+    padding: 0.5rem !important;
+
+    small {
+      font-size: 0.6rem !important;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: block;
+    }
+
+    h6 {
+      font-size: 0.75rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 0.3rem !important;
+    }
+  }
+
+  .price-current {
+    font-size: 0.8rem;
+  }
+
+  .price-original {
+    font-size: 0.7rem;
+  }
+
+  .card-footer {
+    padding: 0 0.5rem 0.5rem !important;
+    flex-direction: column !important;
+    gap: 0.35rem !important;
+
+    .btn {
+      font-size: 0.7rem;
+      padding: 0.3rem 0.4rem;
+    }
+  }
+}
