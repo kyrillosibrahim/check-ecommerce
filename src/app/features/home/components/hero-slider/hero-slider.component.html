@@ -21,7 +21,7 @@
       @for (banner of banners(); track banner.id; let i = $index) {
         <div class="carousel-item" style="height: 100%;" [class.active]="i === 0">
           @if (banner.link) {
-            <a [routerLink]="banner.link">
+            <a style="cursor: pointer;" (click)="navigateTo(banner.link)">
               <img [src]="banner.image" class="d-block w-100 hero-image" alt="بنر">
             </a>
           } @else {

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, AfterViewInit, ElementRef, input, OnChanges } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { SLIDES_DATA, ISlide } from '../../data/slides.data';
 import { TranslationService } from '../../../../core/services/translation.service';
 import { IBanner } from '../../../../core/models/banner.model';
@@ -8,7 +8,6 @@ declare var bootstrap: any;
 
 @Component({
   selector: 'app-hero-slider',
-  imports: [RouterLink],
   templateUrl: './hero-slider.component.html',
   styleUrl: './hero-slider.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -16,6 +15,7 @@ declare var bootstrap: any;
 export class HeroSliderComponent implements AfterViewInit, OnChanges {
   private translationService = inject(TranslationService);
   private el = inject(ElementRef);
+  private router = inject(Router);
 
   banners = input<IBanner[]>([]);
 
@@ -37,6 +37,10 @@ export class HeroSliderComponent implements AfterViewInit, OnChanges {
 
   ngOnChanges(): void {
     setTimeout(() => this.initCarousel(), 100);
+  }
+
+  navigateTo(link: string): void {
+    this.router.navigateByUrl(link);
   }
 
   private initCarousel(): void {

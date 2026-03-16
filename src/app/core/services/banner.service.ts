@@ -13,7 +13,12 @@ export class BannerService {
   private banners$ = this.http.get<IBanner[]>(`${SERVER_URL}/api/banners`).pipe(
     map(banners => banners.map(b => ({
       ...b,
-      image: b.image ? `${SERVER_URL}/uploads/${b.image}` : ''
+      image: b.image
+        ? b.image.startsWith('http') ? b.image : `${SERVER_URL}/uploads/${b.image}`
+        : '',
+      link: b.link && b.link.startsWith('http')
+        ? b.link.replace(/^https?:\/\/[^/]+/, '')
+        : b.link
     }))),
     shareReplay(1),
   );
