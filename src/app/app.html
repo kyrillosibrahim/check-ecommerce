@@ -2,6 +2,6 @@
 <main class="main-content">
   <router-outlet />
 </main>
-<app-footer />
+<app-footer [class.hide-on-mobile]="hideFooterOnMobile()" />
 <app-floating-actions />
 <app-auth-drawer />

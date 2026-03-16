@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { HeaderComponent } from './shared/components/header/header.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
 import { FloatingActionsComponent } from './shared/components/floating-actions/floating-actions.component';
@@ -17,8 +18,19 @@ import { SiteSettingsService } from './core/services/settings.service';
 export class App implements OnInit {
   private settingsService = inject(SiteSettingsService);
   private platformId = inject(PLATFORM_ID);
+  private router = inject(Router);
+
+  /** Pages where the footer should be hidden on mobile */
+  private noFooterRoutes = ['/profile', '/wishlist', '/cart', '/offers'];
+  hideFooterOnMobile = signal(false);
 
   ngOnInit(): void {
+    this.router.events.pipe(
+      filter((e): e is NavigationEnd => e instanceof NavigationEnd)
+    ).subscribe(e => {
+      const url = e.urlAfterRedirects.split('?')[0];
+      this.hideFooterOnMobile.set(this.noFooterRoutes.includes(url));
+    });
     if (!isPlatformBrowser(this.platformId)) return;
 
     this.settingsService.getSettings().subscribe(settings => {
