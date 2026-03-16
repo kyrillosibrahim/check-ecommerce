@@ -53,6 +53,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private hoverTimeout: any;
 
   logoUrl = 'assets/logobluewithoutbg.png';
+  logoLoaded = false;
   social = { facebook: '', instagram: '', whatsapp: '', phone: '' };
   recentlyViewed: IProduct[] = [];
   brands: IBrand[] = [];

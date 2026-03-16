@@ -54,7 +54,13 @@
   <div class="container">
     <!-- Brand -->
     <a class="navbar-brand fw-bold ms-lg-5" routerLink="/">
-      <img [src]="logoUrl" alt="Store" class="header-logo">
+      @if (!logoLoaded) {
+        <div class="logo-spinner">
+          <div class="spinner-border spinner-border-sm" role="status" style="color: var(--sz-accent);"></div>
+        </div>
+      }
+      <img [src]="logoUrl" alt="Store" class="header-logo" [class.d-none]="!logoLoaded"
+           (load)="logoLoaded = true" (error)="logoLoaded = true">
     </a>
 
     <!-- Search Bar (desktop) — centered & wide -->
