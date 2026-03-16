@@ -10,8 +10,21 @@
   h6 {
     font-size: 0.85rem;
   }
+}
 
-  a:hover {
-    color: var(--sz-accent) !important;
+.footer-heading {
+  color: #fff;
+}
+
+.footer-text {
+  color: rgba(230, 230, 245, 0.7);
+}
+
+.footer-link {
+  color: rgba(230, 230, 245, 0.7);
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #fff !important;
   }
 }
