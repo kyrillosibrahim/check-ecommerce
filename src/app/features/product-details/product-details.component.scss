@@ -70,6 +70,18 @@
   white-space: nowrap;
 }
 
+// ── Mobile overrides ──
+@media (max-width: 767.98px) {
+  :host {
+    padding-inline: 8px;
+  }
+
+  .add-cart-btn {
+    width: auto;
+    flex: 1;
+  }
+}
+
 // Delivery Quality Button
 .btn-delivery-quality {
   display: inline-flex;
