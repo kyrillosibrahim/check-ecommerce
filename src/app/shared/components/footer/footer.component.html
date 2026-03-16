@@ -47,7 +47,7 @@
   <div class="container">
     <div class="row g-4">
       <!-- Brand + Contact -->
-      <div class="col-lg-3 col-md-6">
+      <div class="col-lg-4 col-md-6">
         <div class="mb-3">
           <img [src]="logoUrl" alt="Check" class="footer-logo">
         </div>
@@ -60,6 +60,7 @@
           @if (social.whatsapp) {
             <li class="mb-2"><a [href]="'https://wa.me/' + social.whatsapp" target="_blank" rel="noopener" class="footer-link"><i class="bi bi-whatsapp me-2"></i>{{ social.whatsapp }}</a></li>
           }
+          <li class="mb-2"><span class="footer-text"><i class="bi bi-clock me-2"></i>{{ 'footer.hours' | translate }}</span></li>
         </ul>
         <div class="d-flex gap-2 mt-3">
           @if (social.facebook) {
@@ -74,19 +75,8 @@
         </div>
       </div>
 
-      <!-- Main Menu -->
-      <div class="col-lg-2 col-md-6 col-6">
-        <h6 class="footer-heading">{{ 'footer.main_menu' | translate }}</h6>
-        <ul class="list-unstyled footer-links">
-          <li><a routerLink="/" class="footer-link">{{ 'footer.home' | translate }}</a></li>
-          <li><a routerLink="/products" class="footer-link">{{ 'footer.shop' | translate }}</a></li>
-          <li><a routerLink="/products" [queryParams]="{ search: '' }" class="footer-link">{{ 'footer.search' | translate }}</a></li>
-          <li><a routerLink="/" class="footer-link">{{ 'footer.about_us' | translate }}</a></li>
-        </ul>
-      </div>
-
       <!-- Categories -->
-      <div class="col-lg-2 col-md-6 col-6">
+      <div class="col-lg-4 col-md-6 col-6">
         <h6 class="footer-heading">{{ 'footer.categories' | translate }}</h6>
         <ul class="list-unstyled footer-links">
           @for (cat of categories; track cat.id) {
@@ -95,8 +85,8 @@
         </ul>
       </div>
 
-      <!-- Help -->
-      <div class="col-lg-2 col-md-6 col-6">
+      <!-- Help / Contact -->
+      <div class="col-lg-4 col-md-6 col-6">
         <h6 class="footer-heading">{{ 'footer.help' | translate }}</h6>
         <ul class="list-unstyled footer-links">
           <li><a href="#" class="footer-link">{{ 'footer.contact_us' | translate }}</a></li>
@@ -105,16 +95,6 @@
           <li><a href="#" class="footer-link">{{ 'footer.privacy_policy' | translate }}</a></li>
         </ul>
       </div>
-
-      <!-- Newsletter -->
-      <div class="col-lg-3 col-md-6">
-        <h6 class="footer-heading">{{ 'footer.newsletter' | translate }}</h6>
-        <p class="footer-text mb-3">{{ 'footer.newsletter_text' | translate }}</p>
-        <div class="newsletter-form">
-          <input type="email" class="newsletter-input" [placeholder]="'footer.email_placeholder' | translate">
-          <button class="newsletter-btn">{{ 'footer.subscribe' | translate }} <i class="bi bi-arrow-left ms-1"></i></button>
-        </div>
-      </div>
     </div>
 
     <!-- Bottom Bar -->
@@ -122,9 +102,9 @@
     <div class="footer-bottom">
       <p class="footer-text mb-0 small">Copyright &copy; {{ currentYear }} {{ 'footer.rights' | translate }}</p>
       <div class="payment-icons">
-        <img src="assets/security/visa.png" alt="Visa">
-        <img src="assets/security/mastercard.png" alt="Mastercard">
         <img src="assets/security/value.png" alt="ValU">
+        <img src="assets/security/mastercard.png" alt="Mastercard">
+        <img src="assets/security/visa.png" alt="Visa">
       </div>
     </div>
   </div>

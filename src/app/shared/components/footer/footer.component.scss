@@ -98,59 +98,6 @@
   }
 }
 
-/* ── Newsletter ── */
-.newsletter-form {
-  display: flex;
-  gap: 0;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.newsletter-input {
-  flex: 1;
-  padding: 0.6rem 0.85rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-inline-end: none;
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
-  font-size: 0.78rem;
-  border-radius: 8px 0 0 8px;
-  outline: none;
-
-  &::placeholder {
-    color: rgba(255, 255, 255, 0.4);
-  }
-}
-
-:host-context([dir="rtl"]) {
-  .newsletter-input {
-    border-radius: 0 8px 8px 0;
-    border-inline-end: 1px solid rgba(255, 255, 255, 0.2);
-    border-inline-start: none;
-  }
-
-  .newsletter-btn {
-    border-radius: 8px 0 0 8px;
-  }
-}
-
-.newsletter-btn {
-  padding: 0.6rem 1.2rem;
-  background: #c9a96e;
-  color: #fff;
-  border: none;
-  font-size: 0.78rem;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  border-radius: 0 8px 8px 0;
-  transition: background 0.2s ease;
-
-  &:hover {
-    background: #b8954f;
-  }
-}
-
 /* ── Bottom Bar ── */
 .footer-divider {
   border-color: rgba(255, 255, 255, 0.12);
@@ -213,16 +160,5 @@
   .footer-bottom {
     flex-direction: column;
     text-align: center;
-  }
-
-  .newsletter-form {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .newsletter-input,
-  .newsletter-btn {
-    border-radius: 8px !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
   }
 }

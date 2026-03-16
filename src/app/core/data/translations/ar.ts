@@ -35,6 +35,18 @@ export const AR_TRANSLATIONS: Record<string, string> = {
   'footer.cat_clothing': 'ملابس',
   'footer.cat_sports': 'رياضة',
   'footer.Vitamins': 'فيتامينات ومكملات غذائية',
+  'footer.fast_delivery': 'تسليم سريع',
+  'footer.fast_delivery_desc': 'في جميع أنحاء البلاد',
+  'footer.original_products': 'منتجات أصلية',
+  'footer.original_products_desc': 'منتجاتنا أصلية 100%',
+  'footer.easy_returns': 'إرجاع خلال 7 أيام',
+  'footer.easy_returns_desc': 'يمكنك إرجاعه بسهولة خلال 7 ايام',
+  'footer.secure_payment': 'الدفع آمن بنسبة 100%',
+  'footer.secure_payment_desc': 'يتم إجراء الدفع بشكل آمن',
+  'footer.help': 'المساعدة',
+  'footer.shipping_policy': 'سياسة الشحن',
+  'footer.return_policy': 'سياسة الاسترجاع',
+  'footer.privacy_policy': 'سياسة الخصوصية',
 
   // ── Home Page ──
   'home.featured_products': 'منتجات مميزة',
