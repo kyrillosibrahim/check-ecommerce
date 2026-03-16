@@ -108,7 +108,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 0;
+  padding: 1rem 7%;
   flex-wrap: wrap;
   gap: 0.75rem;
 }
@@ -160,5 +160,11 @@
   .footer-bottom {
     flex-direction: column;
     text-align: center;
+  }
+}
+.lm{
+  padding: 0px 7%;
+  @media (max-width: 767.98px) {
+    padding: 0px;
   }
 }

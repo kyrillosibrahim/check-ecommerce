@@ -45,9 +45,9 @@
 <!-- ── Main Footer ── -->
 <footer class="footer mt-auto">
   <div class="container">
-    <div class="row g-4">
+    <div class="row g-4 lm">
       <!-- Brand + Contact -->
-      <div class="col-lg-4 col-md-6">
+      <div class="col-lg-6 col-md-6">
         <div class="mb-3">
           <img [src]="logoUrl" alt="Check" class="footer-logo">
         </div>
@@ -76,7 +76,7 @@
       </div>
 
       <!-- Categories -->
-      <div class="col-lg-4 col-md-6 col-6">
+      <div class="col-lg-3 col-md-6 col-6">
         <h6 class="footer-heading">{{ 'footer.categories' | translate }}</h6>
         <ul class="list-unstyled footer-links">
           @for (cat of categories; track cat.id) {
@@ -86,7 +86,7 @@
       </div>
 
       <!-- Help / Contact -->
-      <div class="col-lg-4 col-md-6 col-6">
+      <div class="col-lg-3 col-md-6 col-6">
         <h6 class="footer-heading">{{ 'footer.help' | translate }}</h6>
         <ul class="list-unstyled footer-links">
           <li><a href="#" class="footer-link">{{ 'footer.contact_us' | translate }}</a></li>
