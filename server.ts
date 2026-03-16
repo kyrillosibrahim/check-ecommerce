@@ -14,7 +14,7 @@ app.use(express.static(browserDistFolder, {
   index: false,
 }));
 
-app.use('/**', (req, res, next) => {
+app.use('{*path}', (req, res, next) => {
   angularApp.handle(req)
     .then((response) => {
       if (response) {
