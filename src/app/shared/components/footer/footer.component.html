@@ -1,60 +1,130 @@
-<footer class="footer mt-auto py-5" style="background-color: var(--sz-bg-secondary); border-top: 1px solid var(--sz-border-color);">
+<!-- ── Trust / Features Bar ── -->
+<section class="trust-bar">
+  <div class="container">
+    <div class="row g-3">
+      <div class="col-6 col-lg-3">
+        <div class="trust-item">
+          <i class="bi bi-truck"></i>
+          <div>
+            <h6>{{ 'footer.fast_delivery' | translate }}</h6>
+            <p>{{ 'footer.fast_delivery_desc' | translate }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3">
+        <div class="trust-item">
+          <i class="bi bi-patch-check"></i>
+          <div>
+            <h6>{{ 'footer.original_products' | translate }}</h6>
+            <p>{{ 'footer.original_products_desc' | translate }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3">
+        <div class="trust-item">
+          <i class="bi bi-arrow-return-left"></i>
+          <div>
+            <h6>{{ 'footer.easy_returns' | translate }}</h6>
+            <p>{{ 'footer.easy_returns_desc' | translate }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3">
+        <div class="trust-item">
+          <i class="bi bi-shield-lock"></i>
+          <div>
+            <h6>{{ 'footer.secure_payment' | translate }}</h6>
+            <p>{{ 'footer.secure_payment_desc' | translate }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Main Footer ── -->
+<footer class="footer mt-auto">
   <div class="container">
     <div class="row g-4">
-      <!-- Brand -->
-      <div class="col-lg-4 col-md-6 footer-brand-col">
+      <!-- Brand + Contact -->
+      <div class="col-lg-3 col-md-6">
         <div class="mb-3">
-          <img [src]="logoUrl" alt="Check" style="height: 50px;">
+          <img [src]="logoUrl" alt="Check" class="footer-logo">
         </div>
-        <p class="text-secondary mb-3">{{ 'footer.description' | translate }}</p>
-        <div class="d-flex gap-3">
+        <p class="footer-text mb-3">{{ 'footer.description' | translate }}</p>
+        <ul class="list-unstyled footer-contact">
+          <li class="mb-2"><a href="mailto:checkinfo@gmail.com" class="footer-link"><i class="bi bi-envelope me-2"></i>{{ 'footer.email' | translate }}</a></li>
+          @if (social.phone) {
+            <li class="mb-2"><a [href]="'tel:+2' + social.phone" class="footer-link"><i class="bi bi-telephone me-2"></i>{{ social.phone }}</a></li>
+          }
+          @if (social.whatsapp) {
+            <li class="mb-2"><a [href]="'https://wa.me/' + social.whatsapp" target="_blank" rel="noopener" class="footer-link"><i class="bi bi-whatsapp me-2"></i>{{ social.whatsapp }}</a></li>
+          }
+        </ul>
+        <div class="d-flex gap-2 mt-3">
           @if (social.facebook) {
-            <a [href]="social.facebook" target="_blank" rel="noopener" class="text-secondary fs-5"><i class="bi bi-facebook"></i></a>
+            <a [href]="social.facebook" target="_blank" rel="noopener" class="social-icon"><i class="bi bi-facebook"></i></a>
           }
           @if (social.instagram) {
-            <a [href]="social.instagram" target="_blank" rel="noopener" class="text-secondary fs-5"><i class="bi bi-instagram"></i></a>
+            <a [href]="social.instagram" target="_blank" rel="noopener" class="social-icon"><i class="bi bi-instagram"></i></a>
           }
           @if (social.whatsapp) {
-            <a [href]="'https://wa.me/' + social.whatsapp" target="_blank" rel="noopener" class="text-secondary fs-5"><i class="bi bi-whatsapp"></i></a>
+            <a [href]="'https://wa.me/' + social.whatsapp" target="_blank" rel="noopener" class="social-icon"><i class="bi bi-whatsapp"></i></a>
           }
         </div>
       </div>
 
+      <!-- Main Menu -->
+      <div class="col-lg-2 col-md-6 col-6">
+        <h6 class="footer-heading">{{ 'footer.main_menu' | translate }}</h6>
+        <ul class="list-unstyled footer-links">
+          <li><a routerLink="/" class="footer-link">{{ 'footer.home' | translate }}</a></li>
+          <li><a routerLink="/products" class="footer-link">{{ 'footer.shop' | translate }}</a></li>
+          <li><a routerLink="/products" [queryParams]="{ search: '' }" class="footer-link">{{ 'footer.search' | translate }}</a></li>
+          <li><a routerLink="/" class="footer-link">{{ 'footer.about_us' | translate }}</a></li>
+        </ul>
+      </div>
 
       <!-- Categories -->
-      <div class="col-lg-2 col-md-6">
-        <h6 class="fw-bold mb-3">{{ 'footer.categories' | translate }}</h6>
-        <ul class="list-unstyled">
+      <div class="col-lg-2 col-md-6 col-6">
+        <h6 class="footer-heading">{{ 'footer.categories' | translate }}</h6>
+        <ul class="list-unstyled footer-links">
           @for (cat of categories; track cat.id) {
-            <li class="mb-2"><a routerLink="/products" [queryParams]="{ category: cat.slug }" class="text-secondary text-decoration-none">{{ cat.name }}</a></li>
+            <li><a routerLink="/products" [queryParams]="{ category: cat.slug }" class="footer-link">{{ cat.name }}</a></li>
           }
         </ul>
       </div>
 
-      <!-- Contact -->
-      <div class="col-lg-4 col-md-6">
-        <h6 class="fw-bold mb-3">{{ 'footer.contact_us' | translate }}</h6>
-        <ul class="list-unstyled text-secondary">
-          <li class="mb-2"><a href="mailto:checkinfo@gmail.com" class="text-secondary text-decoration-none"><i class="bi bi-envelope me-2"></i>{{ 'footer.email' | translate }}</a></li>
-          @if (social.phone) {
-            <li class="mb-2"><a [href]="'tel:+2' + social.phone" class="text-secondary text-decoration-none"><i class="bi bi-telephone me-2"></i>{{ social.phone }}</a></li>
-          }
-          @if (social.whatsapp) {
-            <li class="mb-2"><a [href]="'https://wa.me/' + social.whatsapp" target="_blank" rel="noopener" class="text-secondary text-decoration-none"><i class="bi bi-whatsapp me-2"></i>{{ social.whatsapp }}</a></li>
-          }
-          <li class="mb-2"><i class="bi bi-clock me-2"></i>{{ 'footer.hours' | translate }}</li>
+      <!-- Help -->
+      <div class="col-lg-2 col-md-6 col-6">
+        <h6 class="footer-heading">{{ 'footer.help' | translate }}</h6>
+        <ul class="list-unstyled footer-links">
+          <li><a href="#" class="footer-link">{{ 'footer.contact_us' | translate }}</a></li>
+          <li><a href="#" class="footer-link">{{ 'footer.shipping_policy' | translate }}</a></li>
+          <li><a href="#" class="footer-link">{{ 'footer.return_policy' | translate }}</a></li>
+          <li><a href="#" class="footer-link">{{ 'footer.privacy_policy' | translate }}</a></li>
         </ul>
+      </div>
+
+      <!-- Newsletter -->
+      <div class="col-lg-3 col-md-6">
+        <h6 class="footer-heading">{{ 'footer.newsletter' | translate }}</h6>
+        <p class="footer-text mb-3">{{ 'footer.newsletter_text' | translate }}</p>
+        <div class="newsletter-form">
+          <input type="email" class="newsletter-input" [placeholder]="'footer.email_placeholder' | translate">
+          <button class="newsletter-btn">{{ 'footer.subscribe' | translate }} <i class="bi bi-arrow-left ms-1"></i></button>
+        </div>
       </div>
     </div>
 
-    <hr class="my-4" style="border-color: var(--sz-border-color);">
-
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
-      <p class="text-secondary mb-0 small">&copy; {{ currentYear }} {{ 'footer.rights' | translate }}</p>
-      <div class="d-flex gap-3 mt-2 mt-md-0">
-        <a href="#" class="text-secondary small text-decoration-none">{{ 'footer.privacy' | translate }}</a>
-        <a href="#" class="text-secondary small text-decoration-none">{{ 'footer.terms' | translate }}</a>
-        <a href="#" class="text-secondary small text-decoration-none">{{ 'footer.refund' | translate }}</a>
+    <!-- Bottom Bar -->
+    <hr class="footer-divider">
+    <div class="footer-bottom">
+      <p class="footer-text mb-0 small">Copyright &copy; {{ currentYear }} {{ 'footer.rights' | translate }}</p>
+      <div class="payment-icons">
+        <img src="assets/security/visa.png" alt="Visa">
+        <img src="assets/security/mastercard.png" alt="Mastercard">
+        <img src="assets/security/value.png" alt="ValU">
       </div>
     </div>
   </div>
