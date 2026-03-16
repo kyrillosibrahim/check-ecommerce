@@ -70,6 +70,7 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'products.products': 'products',
   'products.no_products': 'No products found',
   'products.no_products_desc': 'Try adjusting your filters or search terms',
+  'products.filter': 'Filter',
 
   // ── Product Filter ──
   'filter.search': 'Search',

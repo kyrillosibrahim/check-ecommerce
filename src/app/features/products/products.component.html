@@ -1,17 +1,57 @@
 <div class="container section-padding">
   <h2 class="section-title">{{ 'products.title' | translate }}</h2>
 
-  <!-- Filters -->
-  <app-product-filter
-    [categories]="categories"
-    [selectedCategory]="selectedCategory"
-    [sortBy]="sortBy"
-    [searchTerm]="searchTerm"
-    [selectedFilterTags]="selectedFilterTags"
-    (categoryChange)="onCategoryChange($event)"
-    (sortChange)="onSortChange($event)"
-    (searchChange)="onSearchChange($event)"
-    (filterTagsChange)="onFilterTagsChange($event)" />
+  <!-- Filters (desktop) -->
+  <div class="d-none d-lg-block">
+    <app-product-filter
+      [categories]="categories"
+      [selectedCategory]="selectedCategory"
+      [sortBy]="sortBy"
+      [searchTerm]="searchTerm"
+      [selectedFilterTags]="selectedFilterTags"
+      (categoryChange)="onCategoryChange($event)"
+      (sortChange)="onSortChange($event)"
+      (searchChange)="onSearchChange($event)"
+      (filterTagsChange)="onFilterTagsChange($event)" />
+  </div>
+
+  <!-- Mobile filter button -->
+  <div class="d-lg-none mb-3">
+    <button class="btn btn-filter-mobile" (click)="openFilterDrawer()">
+      <i class="bi bi-funnel"></i>
+      {{ 'products.filter' | translate }}
+      @if (activeFilterCount > 0) {
+        <span class="filter-badge">{{ activeFilterCount }}</span>
+      }
+    </button>
+  </div>
+
+  <!-- Mobile filter drawer backdrop -->
+  @if (showFilterDrawer) {
+    <div class="filter-drawer-backdrop" (click)="closeFilterDrawer()"></div>
+  }
+
+  <!-- Mobile filter drawer -->
+  <div class="filter-drawer" [class.open]="showFilterDrawer">
+    <div class="filter-drawer-header">
+      <h5 class="m-0 fw-bold">{{ 'products.filter' | translate }}</h5>
+      <button class="filter-drawer-close" (click)="closeFilterDrawer()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="filter-drawer-body">
+      <app-product-filter
+        [categories]="categories"
+        [selectedCategory]="selectedCategory"
+        [sortBy]="sortBy"
+        [searchTerm]="searchTerm"
+        [selectedFilterTags]="selectedFilterTags"
+        (categoryChange)="onCategoryChange($event)"
+        (sortChange)="onSortChange($event)"
+        (searchChange)="onSearchChange($event)"
+        (filterTagsChange)="onFilterTagsChange($event)" />
+    </div>
+  </div>
 
   <!-- Brand filter badge -->
   @if (selectedBrand) {

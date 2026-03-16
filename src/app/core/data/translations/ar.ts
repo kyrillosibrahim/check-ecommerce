@@ -70,6 +70,7 @@ export const AR_TRANSLATIONS: Record<string, string> = {
   'products.products': 'منتجات',
   'products.no_products': 'لم يتم العثور على منتجات',
   'products.no_products_desc': 'حاول تعديل الفلاتر أو مصطلحات البحث',
+  'products.filter': 'فلترة',
 
   // ── Product Filter ──
   'filter.search': 'البحث',

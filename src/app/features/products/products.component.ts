@@ -45,6 +45,27 @@ export class ProductsComponent implements OnInit {
   totalProducts = 0;
 
   isLoading = signal(true);
+  showFilterDrawer = false;
+
+  get activeFilterCount(): number {
+    let count = 0;
+    if (this.selectedCategory) count++;
+    if (this.selectedBrand) count++;
+    if (this.searchTerm) count++;
+    if (this.sortBy !== 'default') count++;
+    count += this.selectedFilterTags.length;
+    return count;
+  }
+
+  openFilterDrawer(): void {
+    this.showFilterDrawer = true;
+    this.cdr.markForCheck();
+  }
+
+  closeFilterDrawer(): void {
+    this.showFilterDrawer = false;
+    this.cdr.markForCheck();
+  }
 
   ngOnInit(): void {
     this.seoService.setPageMeta({
@@ -67,6 +88,7 @@ export class ProductsComponent implements OnInit {
     this.selectedCategory = category;
     this.selectedFilterTags = [];
     this.currentPage = 1;
+    this.closeFilterDrawer();
     this.fetchFromServer();
   }
 
@@ -79,12 +101,14 @@ export class ProductsComponent implements OnInit {
   onSortChange(sort: string): void {
     this.sortBy = sort;
     this.currentPage = 1;
+    this.closeFilterDrawer();
     this.fetchFromServer();
   }
 
   onSearchChange(term: string): void {
     this.searchTerm = term;
     this.currentPage = 1;
+    this.closeFilterDrawer();
     this.fetchFromServer();
   }
 
