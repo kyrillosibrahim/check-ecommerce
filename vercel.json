@@ -1,5 +1,7 @@
 {
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/e-commerce/browser",
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/(.*)", "destination": "/index.csr.html" }
   ]
 }
