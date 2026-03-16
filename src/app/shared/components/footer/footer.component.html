@@ -64,13 +64,13 @@
         </ul>
         <div class="d-flex gap-2 mt-3">
           @if (social.facebook) {
-            <a [href]="social.facebook" target="_blank" rel="noopener" class="social-icon"><i class="bi bi-facebook"></i></a>
+            <a [href]="social.facebook" target="_blank" rel="noopener" class="social-icon social-facebook" title="Facebook"><i class="bi bi-facebook"></i></a>
           }
           @if (social.instagram) {
-            <a [href]="social.instagram" target="_blank" rel="noopener" class="social-icon"><i class="bi bi-instagram"></i></a>
+            <a [href]="social.instagram" target="_blank" rel="noopener" class="social-icon social-instagram" title="Instagram"><i class="bi bi-instagram"></i></a>
           }
           @if (social.whatsapp) {
-            <a [href]="'https://wa.me/' + social.whatsapp" target="_blank" rel="noopener" class="social-icon"><i class="bi bi-whatsapp"></i></a>
+            <a [href]="'https://wa.me/' + social.whatsapp" target="_blank" rel="noopener" class="social-icon social-whatsapp" title="WhatsApp"><i class="bi bi-whatsapp"></i></a>
           }
         </div>
       </div>

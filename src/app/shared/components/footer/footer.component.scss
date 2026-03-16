@@ -92,9 +92,19 @@
   transition: all 0.2s ease;
   font-size: 0.9rem;
 
-  &:hover {
-    border-color: #c9a96e;
-    color: #c9a96e;
+  &.social-facebook:hover {
+    border-color: #1877F2;
+    color: #1877F2;
+  }
+
+  &.social-instagram:hover {
+    border-color: #E4405F;
+    color: #E4405F;
+  }
+
+  &.social-whatsapp:hover {
+    border-color: #25D366;
+    color: #25D366;
   }
 }
 
