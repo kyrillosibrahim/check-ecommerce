@@ -1,4 +1,4 @@
-<footer class="footer mt-auto py-5" style="background-color: var(--sz-footer-bg); border-top: none;">
+<footer class="footer mt-auto py-5" style="background-color: var(--sz-bg-secondary); border-top: 1px solid var(--sz-border-color);">
   <div class="container">
     <div class="row g-4">
       <!-- Brand -->
@@ -6,16 +6,16 @@
         <div class="mb-3">
           <img [src]="logoUrl" alt="Check" style="height: 50px;">
         </div>
-        <p class="footer-text mb-3">{{ 'footer.description' | translate }}</p>
+        <p class="text-secondary mb-3">{{ 'footer.description' | translate }}</p>
         <div class="d-flex gap-3">
           @if (social.facebook) {
-            <a [href]="social.facebook" target="_blank" rel="noopener" class="footer-link fs-5"><i class="bi bi-facebook"></i></a>
+            <a [href]="social.facebook" target="_blank" rel="noopener" class="text-secondary fs-5"><i class="bi bi-facebook"></i></a>
           }
           @if (social.instagram) {
-            <a [href]="social.instagram" target="_blank" rel="noopener" class="footer-link fs-5"><i class="bi bi-instagram"></i></a>
+            <a [href]="social.instagram" target="_blank" rel="noopener" class="text-secondary fs-5"><i class="bi bi-instagram"></i></a>
           }
           @if (social.whatsapp) {
-            <a [href]="'https://wa.me/' + social.whatsapp" target="_blank" rel="noopener" class="footer-link fs-5"><i class="bi bi-whatsapp"></i></a>
+            <a [href]="'https://wa.me/' + social.whatsapp" target="_blank" rel="noopener" class="text-secondary fs-5"><i class="bi bi-whatsapp"></i></a>
           }
         </div>
       </div>
@@ -23,38 +23,38 @@
 
       <!-- Categories -->
       <div class="col-lg-2 col-md-6">
-        <h6 class="footer-heading fw-bold mb-3">{{ 'footer.categories' | translate }}</h6>
+        <h6 class="fw-bold mb-3">{{ 'footer.categories' | translate }}</h6>
         <ul class="list-unstyled">
           @for (cat of categories; track cat.id) {
-            <li class="mb-2"><a routerLink="/products" [queryParams]="{ category: cat.slug }" class="footer-link text-decoration-none">{{ cat.name }}</a></li>
+            <li class="mb-2"><a routerLink="/products" [queryParams]="{ category: cat.slug }" class="text-secondary text-decoration-none">{{ cat.name }}</a></li>
           }
         </ul>
       </div>
 
       <!-- Contact -->
       <div class="col-lg-4 col-md-6">
-        <h6 class="footer-heading fw-bold mb-3">{{ 'footer.contact_us' | translate }}</h6>
-        <ul class="list-unstyled footer-text">
-          <li class="mb-2"><a href="mailto:checkinfo@gmail.com" class="footer-link text-decoration-none"><i class="bi bi-envelope me-2"></i>{{ 'footer.email' | translate }}</a></li>
+        <h6 class="fw-bold mb-3">{{ 'footer.contact_us' | translate }}</h6>
+        <ul class="list-unstyled text-secondary">
+          <li class="mb-2"><a href="mailto:checkinfo@gmail.com" class="text-secondary text-decoration-none"><i class="bi bi-envelope me-2"></i>{{ 'footer.email' | translate }}</a></li>
           @if (social.phone) {
-            <li class="mb-2"><a [href]="'tel:+2' + social.phone" class="footer-link text-decoration-none"><i class="bi bi-telephone me-2"></i>{{ social.phone }}</a></li>
+            <li class="mb-2"><a [href]="'tel:+2' + social.phone" class="text-secondary text-decoration-none"><i class="bi bi-telephone me-2"></i>{{ social.phone }}</a></li>
           }
           @if (social.whatsapp) {
-            <li class="mb-2"><a [href]="'https://wa.me/' + social.whatsapp" target="_blank" rel="noopener" class="footer-link text-decoration-none"><i class="bi bi-whatsapp me-2"></i>{{ social.whatsapp }}</a></li>
+            <li class="mb-2"><a [href]="'https://wa.me/' + social.whatsapp" target="_blank" rel="noopener" class="text-secondary text-decoration-none"><i class="bi bi-whatsapp me-2"></i>{{ social.whatsapp }}</a></li>
           }
           <li class="mb-2"><i class="bi bi-clock me-2"></i>{{ 'footer.hours' | translate }}</li>
         </ul>
       </div>
     </div>
 
-    <hr class="my-4" style="border-color: rgba(230, 230, 245, 0.2);">
+    <hr class="my-4" style="border-color: var(--sz-border-color);">
 
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
-      <p class="footer-text mb-0 small">&copy; {{ currentYear }} {{ 'footer.rights' | translate }}</p>
+      <p class="text-secondary mb-0 small">&copy; {{ currentYear }} {{ 'footer.rights' | translate }}</p>
       <div class="d-flex gap-3 mt-2 mt-md-0">
-        <a href="#" class="footer-link small text-decoration-none">{{ 'footer.privacy' | translate }}</a>
-        <a href="#" class="footer-link small text-decoration-none">{{ 'footer.terms' | translate }}</a>
-        <a href="#" class="footer-link small text-decoration-none">{{ 'footer.refund' | translate }}</a>
+        <a href="#" class="text-secondary small text-decoration-none">{{ 'footer.privacy' | translate }}</a>
+        <a href="#" class="text-secondary small text-decoration-none">{{ 'footer.terms' | translate }}</a>
+        <a href="#" class="text-secondary small text-decoration-none">{{ 'footer.refund' | translate }}</a>
       </div>
     </div>
   </div>

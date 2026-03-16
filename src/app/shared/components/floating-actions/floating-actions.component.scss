@@ -25,7 +25,7 @@
   height: 52px;
   border-radius: 50%;
   border: none;
-  background: var(--sz-accent);
+  background: #2bb5a0;
   color: #fff;
   font-size: 1.4rem;
   cursor: pointer;
@@ -40,7 +40,7 @@
   }
 
   &.open {
-    background: var(--sz-accent-hover);
+    background: #2bb5a0;
     transform: rotate(90deg);
 
     &:hover {

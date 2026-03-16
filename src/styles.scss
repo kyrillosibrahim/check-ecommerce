@@ -18,27 +18,20 @@
 /* ---------- Theme Variables ---------- */
 :root,
 [data-bs-theme="light"] {
-  --sz-bg-primary: #FAFAFA;
-  --sz-bg-secondary: #E6E6F5;
+  --sz-bg-primary: #ffffff;
+  --sz-bg-secondary: #f1f3f5;
   --sz-bg-card: #ffffff;
-  --sz-text-primary: #2D2D2D;
-  --sz-text-secondary: #6B7280;
-  --sz-text-muted: #9CA3AF;
-  --sz-border-color: #D1C4E9;
-  --sz-shadow: 0 2px 12px rgba(102, 51, 153, 0.08);
-  --sz-shadow-hover: 0 8px 24px rgba(102, 51, 153, 0.15);
-  --sz-accent: #663399;
-  --sz-accent-hover: #522A80;
-  --sz-secondary: #0B6E4F;
-  --sz-secondary-hover: #095A40;
-  --sz-highlight: #D4A843;
-  --sz-highlight-hover: #C09A3A;
-  --sz-top-bar-bg: #44144D;
-  --sz-footer-bg: #2E1A47;
-  --sz-hero-overlay: rgba(46, 26, 71, 0.5);
-  --sz-skeleton-base: #E6E6F5;
-  --sz-skeleton-shine: #F3F0FA;
-  --sz-accordion-arrow-filter: none;
+  --sz-text-primary: #1a1a2e;
+  --sz-text-secondary: #495057;
+  --sz-text-muted: #6c757d;
+  --sz-border-color: #b0b7bf;
+  --sz-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  --sz-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.15);
+  --sz-accent: #101b3a;
+  --sz-accent-hover: #101b3a;
+  --sz-hero-overlay: rgba(0, 0, 0, 0.4);
+  --sz-skeleton-base: #dee2e6;
+  --sz-skeleton-shine: #f1f3f5;
 }
 
 [data-bs-theme="dark"] {
@@ -51,18 +44,11 @@
   --sz-border-color: #333333;
   --sz-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
   --sz-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.5);
-  --sz-accent: #B388FF;
-  --sz-accent-hover: #9C6FE4;
-  --sz-secondary: #2DD4A8;
-  --sz-secondary-hover: #26B892;
-  --sz-highlight: #F0C94D;
-  --sz-highlight-hover: #D4A843;
-  --sz-top-bar-bg: #1a1a2e;
-  --sz-footer-bg: #1a1a2e;
+  --sz-accent: #4dabf7;
+  --sz-accent-hover: #339af0;
   --sz-hero-overlay: rgba(0, 0, 0, 0.6);
   --sz-skeleton-base: #2a2a2a;
   --sz-skeleton-shine: #3a3a3a;
-  --sz-accordion-arrow-filter: invert(1);
 }
 
 * {
@@ -183,7 +169,7 @@ a {
 
 .price-current {
   font-weight: 700;
-  color: var(--sz-secondary);
+  color: var(--sz-accent);
   font-size: 0.95rem;
 }
 
@@ -200,38 +186,38 @@ a {
 /* ---------- Light Mode — Bootstrap Overrides ---------- */
 [data-bs-theme="light"] {
   .text-secondary {
-    color: #6B7280 !important;
+    color: #495057 !important;
   }
 
   .text-muted {
-    color: #9CA3AF !important;
+    color: #6c757d !important;
   }
 
   .badge.bg-secondary.bg-opacity-10 {
-    background-color: rgba(102, 51, 153, 0.1) !important;
-    color: #2D2D2D !important;
+    background-color: rgba(73, 80, 87, 0.15) !important;
+    color: #343a40 !important;
   }
 
   .badge.bg-primary.bg-opacity-10 {
-    background-color: rgba(102, 51, 153, 0.1) !important;
+    background-color: rgba(13, 110, 253, 0.15) !important;
   }
 
   .breadcrumb-item a {
-    color: #6B7280;
+    color: #495057;
     &:hover { color: var(--sz-accent); }
   }
 
   .breadcrumb-item.active {
-    color: #2D2D2D;
+    color: #1a1a2e;
   }
 
   .form-control,
   .form-select {
-    border-color: #D1C4E9;
-    color: #2D2D2D;
+    border-color: #ced4da;
+    color: #1a1a2e;
 
     &::placeholder {
-      color: #9CA3AF;
+      color: #6c757d;
     }
   }
 
@@ -240,7 +226,7 @@ a {
   }
 
   .input-group-text {
-    color: #2D2D2D;
+    color: #1a1a2e;
   }
 
   .btn-primary {
@@ -256,31 +242,31 @@ a {
   }
 
   .btn-outline-secondary {
-    border-color: #D1C4E9;
-    color: #6B7280;
+    border-color: #adb5bd;
+    color: #495057;
 
     &:hover {
-      background-color: var(--sz-accent);
-      border-color: var(--sz-accent);
+      background-color: #495057;
+      border-color: #495057;
       color: #fff;
     }
   }
 
   .card {
-    border-color: #D1C4E9;
+    border-color: #ced4da;
   }
 
   .table {
-    color: #2D2D2D;
-    th { color: #2D2D2D; }
+    color: #1a1a2e;
+    th { color: #343a40; }
   }
 
   .accordion-button {
-    color: #2D2D2D;
+    color: #1a1a2e;
   }
 
   small.text-secondary {
-    color: #6B7280 !important;
+    color: #495057 !important;
   }
 }
 

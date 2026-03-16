@@ -1,6 +1,6 @@
 /* ── Top Bar ──────────────────────────── */
 .top-bar {
-  background-color: var(--sz-top-bar-bg);
+  background-color: var(--sz-accent);
   color: #fff;
   font-size: 0.75rem;
   padding-block: 0.35rem;
@@ -168,7 +168,7 @@
 .categories-bar {
   position: relative;
   z-index: 1090;
-  background-color: var(--sz-accent);
+  background-color: var(--sz-accent-hover);
   border-bottom: none;
 }
 
