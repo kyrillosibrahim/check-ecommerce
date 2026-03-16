@@ -1,6 +1,27 @@
 <!-- Hero Slider -->
 <app-hero-slider [banners]="homeBanners" />
 
+<!-- Below Slider Banners -->
+@if (belowSliderBanners.length > 0) {
+  <section class="section-padding pb-0">
+    <div class="container">
+      <div class="row g-3">
+        @for (banner of belowSliderBanners; track banner.id) {
+          <div [class]="belowSliderBanners.length === 1 ? 'col-12' : 'col-12 col-md-6'">
+            @if (banner.link) {
+              <a [href]="banner.link">
+                <img [src]="banner.image" [alt]="'بنر ' + banner.id" class="w-100 rounded-3 shadow-sm" loading="lazy" />
+              </a>
+            } @else {
+              <img [src]="banner.image" [alt]="'بنر ' + banner.id" class="w-100 rounded-3 shadow-sm" loading="lazy" />
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+}
+
 <!-- Best Selling Products -->
 <section class="section-padding" style="background-color: var(--sz-bg-secondary);">
   <div class="container">

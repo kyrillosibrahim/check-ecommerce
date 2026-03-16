@@ -5,7 +5,7 @@
 
 .hero-image {
   height: 100%;
-  object-fit: contain;
+  object-fit: fill;
   filter: brightness(0.9);
   @media (max-width: 768px) {
     height: auto;
@@ -38,8 +38,8 @@
   }
 }
 .hei{
-  height: 250px;
-  max-height: 250px;
+  // height: 250px;
+  // max-height: 250px;
   @media (max-width: 768px) {
     height: auto;
     max-height: none;

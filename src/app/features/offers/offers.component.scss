@@ -13,8 +13,8 @@
 }
 
 .offers-banner-img {
-  height: 300px;
-  object-fit: contain;
+  height: 320px;
+  object-fit: fill;
 
   @media (max-width: 768px) {
     height: 180px;
