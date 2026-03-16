@@ -1,7 +1,14 @@
 <div class="container section-padding">
   <h2 class="section-title">{{ 'products.title' | translate }}</h2>
 
-  <!-- Filters (desktop) -->
+  <!-- Categories (always visible) -->
+  <app-product-filter
+    [categories]="categories"
+    [selectedCategory]="selectedCategory"
+    [hideSort]="true"
+    (categoryChange)="onCategoryChange($event)" />
+
+  <!-- Sort + Tags (desktop only, inline) -->
   <div class="d-none d-lg-block">
     <app-product-filter
       [categories]="categories"
@@ -9,7 +16,7 @@
       [sortBy]="sortBy"
       [searchTerm]="searchTerm"
       [selectedFilterTags]="selectedFilterTags"
-      (categoryChange)="onCategoryChange($event)"
+      [hideCategories]="true"
       (sortChange)="onSortChange($event)"
       (searchChange)="onSearchChange($event)"
       (filterTagsChange)="onFilterTagsChange($event)" />
@@ -46,8 +53,8 @@
         [sortBy]="sortBy"
         [searchTerm]="searchTerm"
         [selectedFilterTags]="selectedFilterTags"
+        [hideCategories]="true"
         [drawerMode]="true"
-        (categoryChange)="onCategoryChange($event)"
         (sortChange)="onSortChange($event)"
         (searchChange)="onSearchChange($event)"
         (filterTagsChange)="onFilterTagsChange($event)" />
