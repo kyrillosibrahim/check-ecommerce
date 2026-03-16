@@ -211,10 +211,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   // ── Mega-menu hover ──
   onCategoryHover(cat: ICategory): void {
     clearTimeout(this.hoverTimeout);
-    if ((cat.subcategories?.length || 0) > 0 || (cat.famousBrands?.length || 0) > 0) {
-      this.hoveredCategory = cat;
-      this.cdr.markForCheck();
-    }
+    this.hoveredCategory = cat;
+    this.cdr.markForCheck();
   }
 
   onCategoryLeave(): void {

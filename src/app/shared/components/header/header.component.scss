@@ -199,7 +199,7 @@
   }
 }
 
-/* ── Mega Menu (Noon-style full-width) ─── */
+/* ── Mega Menu ─── */
 .mega-menu-drop {
   position: absolute;
   top: 100%;
@@ -222,26 +222,81 @@
 .mega-menu-content {
   width: 100%;
   display: flex;
-  gap: 0;
+  direction: rtl;
   background: var(--sz-bg-card);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
   animation: cartDropdownIn 0.2s ease;
   overflow: hidden;
+  min-height: 350px;
+  max-height: 65vh;
 }
 
-/* ── Left side (subcategories + brands) ── */
-.mega-menu-left {
-  flex: 1;
-  padding: 1.5rem 2rem;
-  min-width: 0;
-}
+/* ── Right column: All categories list ── */
+.mega-menu-categories {
+  width: 220px;
+  min-width: 220px;
+  border-inline-start: 1px solid var(--sz-border-color);
+  background: var(--sz-bg-secondary);
+  overflow-y: auto;
+  padding: 0.5rem 0;
 
-.mega-menu-section {
-  margin-bottom: .5rem;
-
-  &:last-child {
-    margin-bottom: 0;
+  &::-webkit-scrollbar {
+    width: 3px;
   }
+  &::-webkit-scrollbar-thumb {
+    background: var(--sz-border-color);
+    border-radius: 3px;
+  }
+}
+
+.mega-menu-cat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--sz-text-primary);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s;
+  border-inline-end: 3px solid transparent;
+
+  i:first-child {
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
+    color: var(--sz-text-secondary);
+  }
+
+  .bi-chevron-left {
+    font-size: 0.7rem;
+    color: var(--sz-text-muted);
+    transition: transform 0.2s;
+  }
+
+  &:hover, &.active {
+    background: var(--sz-bg-card);
+    color: var(--sz-accent);
+    border-inline-end-color: var(--sz-accent);
+
+    i:first-child {
+      color: var(--sz-accent);
+    }
+
+    .bi-chevron-left {
+      transform: translateX(-3px);
+      color: var(--sz-accent);
+    }
+  }
+}
+
+/* ── Middle column: Subcategories ── */
+.mega-menu-subcategories {
+  flex: 1;
+  padding: 1.25rem 1.5rem;
+  overflow-y: auto;
+  min-width: 0;
 }
 
 .mega-menu-section-title {
@@ -249,6 +304,7 @@
   font-size: 0.85rem;
   color: var(--sz-accent);
   padding-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
   border-bottom: 1px solid var(--sz-border-color);
 }
 
@@ -300,16 +356,26 @@
   margin-top: 0.35rem;
 }
 
+/* ── Left column: Famous Brands ── */
+.mega-menu-brands {
+  width: 240px;
+  min-width: 200px;
+  padding: 1.25rem 1rem;
+  border-inline-end: 1px solid var(--sz-border-color);
+  overflow-y: auto;
+}
+
 .mega-menu-brand-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.25rem;
 }
 
 .mega-menu-brand-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0.75rem 0.5rem 0.5rem;
+  padding: 0.5rem 0.25rem;
   border-radius: 5px;
   text-decoration: none;
   cursor: pointer;
@@ -325,11 +391,12 @@
 }
 
 .mega-menu-brand-img, .mega-menu-brand-img-placeholder {
-  width: 80px;
-  height: 80px;
+  width: 70px;
+  height: 70px;
   border: 1px solid var(--sz-border-color);
   background: #fff;
   padding: 5px;
+  border-radius: 8px;
 }
 
 .mega-menu-brand-img {
@@ -348,27 +415,8 @@
   font-size: 0.7rem;
   font-weight: 600;
   text-align: center;
-  margin-top: 0.5rem;
+  margin-top: 0.35rem;
   color: var(--sz-text-primary);
-}
-
-/* ── Right side (category image) ── */
-.mega-menu-right {
-  width: 550px;
-  min-width: 280px;
-  background: var(--sz-bg-secondary);
-  justify-content: center;
-  padding: 1rem;
-
-  a {
-    cursor: default;
-  }
-}
-
-.mega-menu-category-img {
-  width: 100%;
-  height: 100%;
-  border-radius: 12px;
 }
 
 /* ── Search Bar Desktop ────────────── */
