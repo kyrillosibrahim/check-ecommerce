@@ -72,6 +72,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.allBrands = allBrands;
       this.settingsService.getSettings().subscribe(settings => {
         if (settings.logo) {
+          this.logoLoaded = false;
           this.logoUrl = this.settingsService.getLogoUrl(settings.logo);
         }
         if (settings.social) {

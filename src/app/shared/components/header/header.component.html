@@ -59,8 +59,8 @@
           <div class="spinner-border spinner-border-sm" role="status" style="color: var(--sz-accent);"></div>
         </div>
       }
-      <img [src]="logoUrl" alt="Store" class="header-logo" [class.d-none]="!logoLoaded"
-           (load)="logoLoaded = true" (error)="logoLoaded = true">
+      <img [src]="logoUrl" alt="" class="header-logo" [style.display]="logoLoaded ? '' : 'none'"
+           (load)="logoLoaded = true">
     </a>
 
     <!-- Search Bar (desktop) — centered & wide -->
