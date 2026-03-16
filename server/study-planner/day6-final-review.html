@@ -1,0 +1,1557 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المراجعة الشاملة النهائية - اليوم السادس</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root{--bg:#06060f;--bg-card:#0d0d1f;--bg-code:#0a0a1a;--border:#1a1a3e;--text:#e2e2f0;--text-dim:#8888aa;--accent:#ff8c00;--accent2:#ff4d4d;--accent3:#00d47e;--accent4:#4d8cff;--accent5:#a855f7;--glow:0 0 30px rgba(255,140,0,0.15)}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);line-height:1.8;min-height:100vh}
+        .sidebar{position:fixed;top:0;right:0;width:300px;height:100vh;background:var(--bg-card);border-left:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:100;transition:transform .3s}
+        .sidebar-header{padding:0 24px 20px;border-bottom:1px solid var(--border);margin-bottom:16px}
+        .sidebar-header h3{font-size:1rem;color:var(--accent);margin-bottom:4px}
+        .sidebar-header p{font-size:.8rem;color:var(--text-dim)}
+        .sidebar-nav a{display:flex;align-items:center;gap:10px;padding:10px 24px;color:var(--text-dim);text-decoration:none;font-size:.85rem;transition:all .2s;border-right:3px solid transparent}
+        .sidebar-nav a:hover,.sidebar-nav a.active{color:var(--text);background:rgba(255,140,0,.05);border-right-color:var(--accent)}
+        .sidebar-nav .num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--border);font-size:.7rem;font-weight:700;color:var(--accent);flex-shrink:0}
+        .sidebar-toggle{display:none;position:fixed;top:20px;right:20px;z-index:200;background:var(--accent);border:none;color:#fff;width:44px;height:44px;border-radius:12px;font-size:1.3rem;cursor:pointer}
+        .main{margin-right:300px}
+        .hero{padding:80px 60px 60px;background:linear-gradient(135deg,rgba(255,140,0,.08),rgba(255,77,77,.06));border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+        .hero::before{content:'';position:absolute;top:-100px;left:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(255,140,0,.06),transparent 70%);pointer-events:none}
+        .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,140,0,.1);border:1px solid rgba(255,140,0,.2);padding:6px 16px;border-radius:100px;font-size:.85rem;color:var(--accent);margin-bottom:20px}
+        .hero h1{font-size:2.5rem;font-weight:900;margin-bottom:16px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .hero p{font-size:1.1rem;color:var(--text-dim);max-width:600px}
+        .section{padding:60px;border-bottom:1px solid var(--border)}
+        .section-label{display:inline-flex;align-items:center;gap:8px;font-size:.8rem;color:var(--accent);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;font-weight:700}
+        .section h2{font-size:1.8rem;font-weight:800;margin-bottom:24px}
+        .section h3{font-size:1.3rem;font-weight:700;margin:24px 0 16px;color:var(--accent4)}
+        .section p,.section li{font-size:1rem;color:var(--text-dim);margin-bottom:12px}
+        .section ul,.section ol{padding-right:24px;margin-bottom:16px}
+        .content-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;margin:20px 0;box-shadow:var(--glow)}
+        .content-card h4{font-size:1.1rem;color:var(--accent3);margin-bottom:16px}
+        .code-block{background:var(--bg-code);border:1px solid var(--border);border-radius:12px;margin:16px 0;overflow:hidden}
+        .code-header{display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--border)}
+        .code-header span{font-size:.8rem;color:var(--text-dim)}
+        .code-header .copy-btn{background:rgba(255,140,0,.1);border:1px solid rgba(255,140,0,.2);color:var(--accent);padding:4px 12px;border-radius:6px;font-size:.75rem;cursor:pointer;font-family:'Cairo',sans-serif;transition:all .2s}
+        .code-header .copy-btn:hover{background:rgba(255,140,0,.2)}
+        .code-block pre{padding:20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.9rem;line-height:1.7;direction:ltr;text-align:left}
+        .kw{color:#ff7b72;font-weight:700}.str{color:#a5d6ff}.cm{color:#6a737d;font-style:italic}.num{color:#79c0ff}.fn{color:#d2a8ff}.tp{color:#ff8c00}.op{color:#ff4d4d}.tbl{color:#00d47e}
+        .info-box{background:rgba(77,140,255,.05);border:1px solid rgba(77,140,255,.15);border-radius:12px;padding:20px 24px;margin:16px 0}
+        .info-box.warning{background:rgba(255,140,0,.05);border-color:rgba(255,140,0,.15)}
+        .info-box.success{background:rgba(0,212,126,.05);border-color:rgba(0,212,126,.15)}
+        .info-box.danger{background:rgba(255,77,77,.05);border-color:rgba(255,77,77,.15)}
+        .info-box strong{color:var(--accent4)}
+        .info-box.warning strong{color:var(--accent)}
+        .info-box.success strong{color:var(--accent3)}
+        .info-box.danger strong{color:var(--accent2)}
+        .quote-box{border-right:4px solid var(--accent);background:rgba(255,140,0,.05);padding:20px 24px;border-radius:0 12px 12px 0;margin:16px 0;font-style:italic}
+        .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin:20px 0}
+        .feature-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;text-align:center;transition:all .3s}
+        .feature-card:hover{border-color:var(--accent);transform:translateY(-4px);box-shadow:0 8px 30px rgba(255,140,0,.1)}
+        .feature-card .icon{font-size:2.5rem;margin-bottom:16px}
+        .feature-card h4{color:var(--accent);margin-bottom:8px;font-size:1.1rem}
+        .feature-card p{font-size:.85rem;color:var(--text-dim)}
+        .analogy-box{background:linear-gradient(135deg,rgba(255,140,0,.08),rgba(168,85,247,.08));border:1px solid rgba(255,140,0,.2);border-radius:16px;padding:28px;margin:24px 0}
+        .analogy-box h4{color:var(--accent);font-size:1.1rem;margin-bottom:12px}
+        .analogy-box .emoji{font-size:2rem;margin-bottom:12px;display:block}
+        .table-visual{width:100%;border-collapse:collapse;margin:16px 0;font-size:.9rem}
+        .table-visual th{background:rgba(255,140,0,.1);color:var(--accent);padding:12px 16px;text-align:right;font-weight:700;border-bottom:2px solid var(--accent)}
+        .table-visual td{padding:10px 16px;border-bottom:1px solid var(--border);color:var(--text-dim)}
+        .table-visual tr:hover td{background:rgba(255,140,0,.03)}
+        .table-visual code{font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--accent2);background:rgba(255,77,77,.08);padding:2px 6px;border-radius:4px}
+        .exercise-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;margin:20px 0;overflow:hidden}
+        .exercise-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;cursor:pointer;transition:background .2s}
+        .exercise-header:hover{background:rgba(255,140,0,.03)}
+        .exercise-header h4{color:var(--text);font-size:1rem}
+        .exercise-badge{padding:4px 12px;border-radius:100px;font-size:.75rem;font-weight:700}
+        .exercise-badge.easy{background:rgba(0,212,126,.1);color:var(--accent3)}
+        .exercise-badge.medium{background:rgba(255,140,0,.1);color:var(--accent)}
+        .exercise-badge.hard{background:rgba(255,77,77,.1);color:var(--accent2)}
+        .exercise-badge.challenge{background:rgba(168,85,247,.1);color:var(--accent5)}
+        .exercise-body{display:none;padding:0 24px 24px;border-top:1px solid var(--border)}
+        .exercise-body.show{display:block}
+        .exercise-body p{padding-top:16px}
+        .hint-btn,.solution-toggle{background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);color:var(--accent5);padding:8px 20px;border-radius:8px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.85rem;margin-top:12px;margin-left:8px;transition:all .2s}
+        .hint-btn:hover,.solution-toggle:hover{background:rgba(168,85,247,.2)}
+        .hint-content,.solution-content{display:none;margin-top:12px}
+        .hint-content.show,.solution-content.show{display:block}
+        .summary-box{background:linear-gradient(135deg,rgba(255,140,0,.06),rgba(168,85,247,.06));border:1px solid rgba(255,140,0,.15);border-radius:16px;padding:32px;margin:24px 0}
+        .summary-box h3{color:var(--accent);margin-bottom:16px}
+        .summary-box ul{list-style:none;padding:0}
+        .summary-box li{padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);color:var(--text-dim)}
+        .summary-box li::before{content:'✅ '}
+        .vs-container{display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:start;margin:24px 0}
+        .vs-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px}
+        .vs-card h4{font-size:1.2rem;margin-bottom:16px}
+        .vs-card.left h4{color:var(--accent)}.vs-card.right h4{color:var(--accent3)}
+        .vs-badge{background:var(--accent2);color:#fff;padding:10px 16px;border-radius:50%;font-weight:900;font-size:1rem;align-self:center}
+        .steps-list{counter-reset:steps;list-style:none;padding:0}
+        .steps-list li{counter-increment:steps;padding:16px 20px 16px 0;border-bottom:1px solid var(--border);position:relative;padding-right:50px}
+        .steps-list li::before{content:counter(steps);position:absolute;right:0;top:16px;width:32px;height:32px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem}
+        .back-btn{position:fixed;bottom:30px;left:30px;background:var(--accent);color:#fff;border:none;width:50px;height:50px;border-radius:50%;font-size:1.3rem;cursor:pointer;z-index:200;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 4px 20px rgba(255,140,0,.3);transition:transform .2s}
+        .back-btn:hover{transform:scale(1.1)}
+        .interview-q{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin:12px 0}
+        .interview-q h4{color:var(--accent);font-size:1rem;margin-bottom:8px}
+        .interview-q p{color:var(--text-dim);font-size:.95rem;margin:0}
+        @media(max-width:900px){.sidebar{transform:translateX(100%)}.sidebar.open{transform:translateX(0)}.sidebar-toggle{display:flex;align-items:center;justify-content:center}.main{margin-right:0}.hero{padding:60px 24px 40px}.hero h1{font-size:1.8rem}.section{padding:40px 24px}.vs-container{grid-template-columns:1fr}.vs-badge{justify-self:center}}
+    </style>
+</head>
+<body>
+<button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <h3>المراجعة النهائية</h3>
+        <p>اليوم السادس - النهاية</p>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="#intro"><span class="num">1</span> مقدمة - مراجعة شاملة</a>
+        <a href="#sql-basics"><span class="num">2</span> ملخص SQL الأساسي</a>
+        <a href="#sql-advanced"><span class="num">3</span> ملخص SQL المتقدم</a>
+        <a href="#plsql-summary"><span class="num">4</span> ملخص PL/SQL</a>
+        <a href="#excel-lookup"><span class="num">5</span> Excel - Lookup Functions</a>
+        <a href="#excel-tools"><span class="num">6</span> Excel - الدوال والأدوات</a>
+        <a href="#interview"><span class="num">7</span> أسئلة مقابلة متوقعة</a>
+        <a href="#exercises"><span class="num">8</span> تمارين شاملة نهائية</a>
+    </nav>
+</aside>
+<main class="main">
+    <section class="hero">
+        <div class="hero-badge">🏆 اليوم السادس - النهاية</div>
+        <h1>المراجعة الشاملة النهائية</h1>
+        <p>مراجعة كل ما تعلمته في 6 أيام - Oracle Database + Excel Advanced</p>
+    </section>
+
+    <!-- Section 1: Introduction -->
+    <section class="section" id="intro">
+        <span class="section-label">مقدمة</span>
+        <h2>مراجعة شاملة - مبروك عليك!</h2>
+
+        <div class="quote-box">
+            <strong>"النجاح ليس نهاية الطريق، والفشل ليس قاتلاً... الشجاعة للاستمرار هي ما يهم."</strong> - ونستون تشرشل
+        </div>
+
+        <p>مبروك عليك! في 6 أيام قدرت تتعلم حاجات كتير جداً. من أساسيات SQL لحد PL/SQL المتقدم، ومن دوال Excel الأساسية لحد Pivot Tables والماكروز. الصفحة دي هتكون مرجعك الشامل لكل حاجة اتعلمتها.</p>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="icon">🗃️</div>
+                <h4>SQL الأساسي</h4>
+                <p>CREATE, INSERT, SELECT, UPDATE, DELETE, WHERE, ORDER BY</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">🔗</div>
+                <h4>JOINs والتجميع</h4>
+                <p>INNER, LEFT, RIGHT, FULL, GROUP BY, HAVING, Functions</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">🔍</div>
+                <h4>Subqueries والـ Views</h4>
+                <p>IN, EXISTS, ANY, ALL, Views, Indexes</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">⚙️</div>
+                <h4>PL/SQL</h4>
+                <p>Variables, IF/ELSE, Loops, Cursors, Exceptions</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">📦</div>
+                <h4>Procedures & Triggers</h4>
+                <p>Stored Procedures, Functions, Triggers, Packages</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">📊</div>
+                <h4>Excel Advanced</h4>
+                <p>VLOOKUP, INDEX+MATCH, Pivot Tables, Macros, What-If</p>
+            </div>
+        </div>
+
+        <div class="info-box success">
+            <strong>نصيحة مهمة:</strong> استخدم الصفحة دي كـ Cheat Sheet قبل أي امتحان أو مقابلة عمل. كل حاجة اتعلمتها موجودة هنا بشكل مختصر ومنظم.
+        </div>
+    </section>
+
+    <!-- Section 2: SQL Basics Summary -->
+    <section class="section" id="sql-basics">
+        <span class="section-label">Days 1-2</span>
+        <h2>ملخص SQL الأساسي</h2>
+
+        <h3>CREATE TABLE - إنشاء جدول</h3>
+        <div class="code-block">
+            <div class="code-header"><span>SQL - CREATE TABLE</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">CREATE TABLE</span> <span class="tbl">employees</span> (
+    employee_id    <span class="tp">NUMBER</span>(<span class="num">6</span>)    <span class="kw">PRIMARY KEY</span>,
+    first_name     <span class="tp">VARCHAR2</span>(<span class="num">30</span>) <span class="kw">NOT NULL</span>,
+    salary         <span class="tp">NUMBER</span>(<span class="num">8</span>,<span class="num">2</span>)  <span class="kw">DEFAULT</span> <span class="num">0</span>,
+    hire_date      <span class="tp">DATE</span>          <span class="kw">DEFAULT</span> <span class="kw">SYSDATE</span>,
+    department_id  <span class="tp">NUMBER</span>(<span class="num">4</span>)    <span class="kw">REFERENCES</span> <span class="tbl">departments</span>(department_id)
+);</pre>
+        </div>
+
+        <div class="content-card">
+            <h4>أنواع البيانات الشائعة</h4>
+            <table class="table-visual">
+                <thead><tr><th>النوع</th><th>الوصف</th><th>مثال</th></tr></thead>
+                <tbody>
+                    <tr><td><code>NUMBER(p,s)</code></td><td>أرقام (دقة، كسور)</td><td><code>NUMBER(8,2)</code> = 999999.99</td></tr>
+                    <tr><td><code>VARCHAR2(n)</code></td><td>نص متغير الطول</td><td><code>VARCHAR2(50)</code></td></tr>
+                    <tr><td><code>CHAR(n)</code></td><td>نص ثابت الطول</td><td><code>CHAR(10)</code></td></tr>
+                    <tr><td><code>DATE</code></td><td>تاريخ ووقت</td><td><code>SYSDATE</code></td></tr>
+                    <tr><td><code>CLOB</code></td><td>نص كبير جداً</td><td>لحد 4 GB</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>INSERT - إدخال بيانات</h3>
+        <div class="code-block">
+            <div class="code-header"><span>SQL - INSERT</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="cm">-- إدخال صف واحد</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">employees</span> (employee_id, first_name, salary)
+<span class="kw">VALUES</span> (<span class="num">101</span>, <span class="str">'Ahmed'</span>, <span class="num">8000</span>);
+
+<span class="cm">-- إدخال من SELECT</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">emp_backup</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">employees</span> <span class="kw">WHERE</span> department_id = <span class="num">20</span>;</pre>
+        </div>
+
+        <h3>SELECT - استعلام البيانات</h3>
+        <div class="code-block">
+            <div class="code-header"><span>SQL - SELECT</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">SELECT</span> first_name, salary, department_id
+<span class="kw">FROM</span> <span class="tbl">employees</span>
+<span class="kw">WHERE</span> salary <span class="op">></span> <span class="num">5000</span>
+  <span class="kw">AND</span> department_id <span class="kw">IN</span> (<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>)
+<span class="kw">ORDER BY</span> salary <span class="kw">DESC</span>;</pre>
+        </div>
+
+        <h3>UPDATE و DELETE</h3>
+        <div class="code-block">
+            <div class="code-header"><span>SQL - UPDATE & DELETE</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="cm">-- تحديث</span>
+<span class="kw">UPDATE</span> <span class="tbl">employees</span>
+<span class="kw">SET</span> salary = salary <span class="op">*</span> <span class="num">1.10</span>, commission_pct = <span class="num">0.15</span>
+<span class="kw">WHERE</span> department_id = <span class="num">20</span>;
+
+<span class="cm">-- حذف</span>
+<span class="kw">DELETE FROM</span> <span class="tbl">employees</span>
+<span class="kw">WHERE</span> employee_id = <span class="num">999</span>;</pre>
+        </div>
+
+        <h3>WHERE Operators - عوامل الشرط</h3>
+        <div class="content-card">
+            <table class="table-visual">
+                <thead><tr><th>العامل</th><th>الوصف</th><th>مثال</th></tr></thead>
+                <tbody>
+                    <tr><td><code>=, &gt;, &lt;, &gt;=, &lt;=, &lt;&gt;</code></td><td>مقارنة أساسية</td><td><code>salary &gt; 5000</code></td></tr>
+                    <tr><td><code>BETWEEN</code></td><td>نطاق بين قيمتين</td><td><code>salary BETWEEN 3000 AND 8000</code></td></tr>
+                    <tr><td><code>IN</code></td><td>قائمة قيم</td><td><code>dept_id IN (10, 20, 30)</code></td></tr>
+                    <tr><td><code>LIKE</code></td><td>نمط نصي</td><td><code>name LIKE 'A%'</code></td></tr>
+                    <tr><td><code>IS NULL / IS NOT NULL</code></td><td>قيمة فارغة</td><td><code>commission IS NULL</code></td></tr>
+                    <tr><td><code>AND / OR / NOT</code></td><td>ربط شروط</td><td><code>sal &gt; 5000 AND dept = 10</code></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>GROUP BY + HAVING + Aggregate Functions</h3>
+        <div class="code-block">
+            <div class="code-header"><span>SQL - GROUP BY</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">SELECT</span> department_id,
+       <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> emp_count,
+       <span class="fn">AVG</span>(salary) <span class="kw">AS</span> avg_sal,
+       <span class="fn">MAX</span>(salary) <span class="kw">AS</span> max_sal,
+       <span class="fn">MIN</span>(salary) <span class="kw">AS</span> min_sal,
+       <span class="fn">SUM</span>(salary) <span class="kw">AS</span> total_sal
+<span class="kw">FROM</span> <span class="tbl">employees</span>
+<span class="kw">GROUP BY</span> department_id
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="op">&gt;</span> <span class="num">5</span>
+<span class="kw">ORDER BY</span> avg_sal <span class="kw">DESC</span>;</pre>
+        </div>
+
+        <h3>Built-in Functions - الدوال المدمجة</h3>
+        <div class="content-card">
+            <table class="table-visual">
+                <thead><tr><th>النوع</th><th>الدالة</th><th>الوصف</th></tr></thead>
+                <tbody>
+                    <tr><td>نصية</td><td><code>UPPER, LOWER, INITCAP</code></td><td>تغيير حالة الحروف</td></tr>
+                    <tr><td>نصية</td><td><code>SUBSTR, LENGTH, TRIM</code></td><td>قطع ومعالجة النصوص</td></tr>
+                    <tr><td>رقمية</td><td><code>ROUND, TRUNC, MOD</code></td><td>تقريب وتقسيم الأرقام</td></tr>
+                    <tr><td>تاريخ</td><td><code>SYSDATE, MONTHS_BETWEEN</code></td><td>العمليات على التواريخ</td></tr>
+                    <tr><td>تحويل</td><td><code>TO_CHAR, TO_NUMBER, TO_DATE</code></td><td>تحويل بين الأنواع</td></tr>
+                    <tr><td>عامة</td><td><code>NVL, NVL2, DECODE, CASE</code></td><td>التعامل مع NULL والشروط</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>JOINs - ربط الجداول</h3>
+        <div class="content-card">
+            <table class="table-visual">
+                <thead><tr><th>النوع</th><th>الصيغة</th><th>الوصف</th></tr></thead>
+                <tbody>
+                    <tr><td><code>INNER JOIN</code></td><td><code>FROM a JOIN b ON a.id = b.id</code></td><td>الصفوف المشتركة فقط</td></tr>
+                    <tr><td><code>LEFT JOIN</code></td><td><code>FROM a LEFT JOIN b ON ...</code></td><td>كل صفوف الجدول الأيسر + المشترك</td></tr>
+                    <tr><td><code>RIGHT JOIN</code></td><td><code>FROM a RIGHT JOIN b ON ...</code></td><td>كل صفوف الجدول الأيمن + المشترك</td></tr>
+                    <tr><td><code>FULL JOIN</code></td><td><code>FROM a FULL JOIN b ON ...</code></td><td>كل الصفوف من الجدولين</td></tr>
+                    <tr><td><code>SELF JOIN</code></td><td><code>FROM a e JOIN a m ON e.mgr=m.id</code></td><td>الجدول يربط مع نفسه</td></tr>
+                    <tr><td><code>CROSS JOIN</code></td><td><code>FROM a CROSS JOIN b</code></td><td>كل التركيبات الممكنة (Cartesian)</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="code-block">
+            <div class="code-header"><span>SQL - JOIN Example</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">SELECT</span> e.first_name, e.salary, d.department_name
+<span class="kw">FROM</span> <span class="tbl">employees</span> e
+<span class="kw">JOIN</span> <span class="tbl">departments</span> d <span class="kw">ON</span> e.department_id = d.department_id
+<span class="kw">WHERE</span> e.salary <span class="op">&gt;</span> <span class="num">5000</span>
+<span class="kw">ORDER BY</span> e.salary <span class="kw">DESC</span>;</pre>
+        </div>
+
+        <h3>Subqueries - الاستعلامات الفرعية</h3>
+        <div class="code-block">
+            <div class="code-header"><span>SQL - Subqueries</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="cm">-- IN: هل القيمة موجودة في القائمة؟</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">employees</span>
+<span class="kw">WHERE</span> department_id <span class="kw">IN</span> (
+    <span class="kw">SELECT</span> department_id <span class="kw">FROM</span> <span class="tbl">departments</span> <span class="kw">WHERE</span> location_id = <span class="num">1700</span>
+);
+
+<span class="cm">-- EXISTS: هل في نتائج؟</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">departments</span> d
+<span class="kw">WHERE EXISTS</span> (
+    <span class="kw">SELECT</span> <span class="num">1</span> <span class="kw">FROM</span> <span class="tbl">employees</span> e <span class="kw">WHERE</span> e.department_id = d.department_id
+);
+
+<span class="cm">-- ANY / ALL</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">employees</span>
+<span class="kw">WHERE</span> salary <span class="op">&gt;</span> <span class="kw">ALL</span> (<span class="kw">SELECT</span> salary <span class="kw">FROM</span> <span class="tbl">employees</span> <span class="kw">WHERE</span> dept_id = <span class="num">30</span>);</pre>
+        </div>
+    </section>
+
+    <!-- Section 3: SQL Advanced -->
+    <section class="section" id="sql-advanced">
+        <span class="section-label">Day 3</span>
+        <h2>ملخص SQL المتقدم</h2>
+
+        <h3>Views - العروض</h3>
+        <div class="code-block">
+            <div class="code-header"><span>SQL - Views</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="cm">-- إنشاء View بسيط</span>
+<span class="kw">CREATE OR REPLACE VIEW</span> <span class="tbl">v_emp_details</span> <span class="kw">AS</span>
+<span class="kw">SELECT</span> e.first_name, e.salary, d.department_name
+<span class="kw">FROM</span> <span class="tbl">employees</span> e
+<span class="kw">JOIN</span> <span class="tbl">departments</span> d <span class="kw">ON</span> e.department_id = d.department_id
+<span class="kw">WHERE</span> e.salary <span class="op">&gt;</span> <span class="num">5000</span>;
+
+<span class="cm">-- View مع CHECK OPTION (يمنع إدخال بيانات تخالف الشرط)</span>
+<span class="kw">CREATE VIEW</span> <span class="tbl">v_high_sal</span> <span class="kw">AS</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">employees</span> <span class="kw">WHERE</span> salary <span class="op">&gt;</span> <span class="num">10000</span>
+<span class="kw">WITH CHECK OPTION</span>;
+
+<span class="cm">-- View للقراءة فقط</span>
+<span class="kw">CREATE VIEW</span> <span class="tbl">v_readonly</span> <span class="kw">AS</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">employees</span>
+<span class="kw">WITH READ ONLY</span>;</pre>
+        </div>
+
+        <h3>Indexes - الفهارس</h3>
+        <div class="content-card">
+            <table class="table-visual">
+                <thead><tr><th>النوع</th><th>الاستخدام</th><th>الصيغة</th></tr></thead>
+                <tbody>
+                    <tr><td><code>B-Tree</code></td><td>الافتراضي - للقيم المتنوعة</td><td><code>CREATE INDEX idx ON emp(salary)</code></td></tr>
+                    <tr><td><code>Bitmap</code></td><td>للقيم المتكررة (مثل الجنس)</td><td><code>CREATE BITMAP INDEX idx ON emp(gender)</code></td></tr>
+                    <tr><td><code>Unique</code></td><td>يمنع التكرار</td><td><code>CREATE UNIQUE INDEX idx ON emp(email)</code></td></tr>
+                    <tr><td><code>Composite</code></td><td>على أكثر من عمود</td><td><code>CREATE INDEX idx ON emp(dept_id, salary)</code></td></tr>
+                    <tr><td><code>Function-Based</code></td><td>على نتيجة دالة</td><td><code>CREATE INDEX idx ON emp(UPPER(name))</code></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="info-box warning">
+            <strong>متى تستخدم Index؟</strong> في الأعمدة اللي بتستخدمها كتير في WHERE أو JOIN. لكن كتر الفهارس يبطئ INSERT/UPDATE/DELETE.
+        </div>
+    </section>
+
+    <!-- Section 4: PL/SQL Summary -->
+    <section class="section" id="plsql-summary">
+        <span class="section-label">Days 3-4</span>
+        <h2>ملخص PL/SQL</h2>
+
+        <h3>الهيكل الأساسي - Block Structure</h3>
+        <div class="code-block">
+            <div class="code-header"><span>PL/SQL - Basic Block</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">DECLARE</span>
+    v_name  <span class="tp">VARCHAR2</span>(<span class="num">50</span>);
+    v_sal   <span class="tp">NUMBER</span>(<span class="num">8</span>,<span class="num">2</span>) <span class="op">:=</span> <span class="num">0</span>;
+    v_date  <span class="tp">DATE</span> <span class="op">:=</span> <span class="kw">SYSDATE</span>;
+<span class="kw">BEGIN</span>
+    <span class="kw">SELECT</span> first_name, salary
+    <span class="kw">INTO</span> v_name, v_sal
+    <span class="kw">FROM</span> <span class="tbl">employees</span>
+    <span class="kw">WHERE</span> employee_id = <span class="num">100</span>;
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(v_name <span class="op">||</span> <span class="str">': '</span> <span class="op">||</span> v_sal);
+<span class="kw">EXCEPTION</span>
+    <span class="kw">WHEN</span> NO_DATA_FOUND <span class="kw">THEN</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'Not found!'</span>);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+
+        <h3>المتغيرات - %TYPE و %ROWTYPE</h3>
+        <div class="code-block">
+            <div class="code-header"><span>PL/SQL - Variables</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">DECLARE</span>
+    <span class="cm">-- %TYPE: نفس نوع العمود</span>
+    v_name <span class="tbl">employees</span>.first_name<span class="tp">%TYPE</span>;
+
+    <span class="cm">-- %ROWTYPE: نفس هيكل الصف</span>
+    v_emp  <span class="tbl">employees</span><span class="tp">%ROWTYPE</span>;
+<span class="kw">BEGIN</span>
+    <span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">INTO</span> v_emp <span class="kw">FROM</span> <span class="tbl">employees</span> <span class="kw">WHERE</span> employee_id = <span class="num">100</span>;
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(v_emp.first_name <span class="op">||</span> <span class="str">' - '</span> <span class="op">||</span> v_emp.salary);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+
+        <h3>IF / ELSIF / ELSE و CASE</h3>
+        <div class="code-block">
+            <div class="code-header"><span>PL/SQL - Conditionals</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="cm">-- IF/ELSIF/ELSE</span>
+<span class="kw">IF</span> salary <span class="op">&gt;</span> <span class="num">10000</span> <span class="kw">THEN</span>
+    grade <span class="op">:=</span> <span class="str">'A'</span>;
+<span class="kw">ELSIF</span> salary <span class="op">&gt;</span> <span class="num">5000</span> <span class="kw">THEN</span>
+    grade <span class="op">:=</span> <span class="str">'B'</span>;
+<span class="kw">ELSE</span>
+    grade <span class="op">:=</span> <span class="str">'C'</span>;
+<span class="kw">END IF</span>;
+
+<span class="cm">-- CASE Expression</span>
+grade <span class="op">:=</span> <span class="kw">CASE</span>
+    <span class="kw">WHEN</span> salary <span class="op">&gt;</span> <span class="num">10000</span> <span class="kw">THEN</span> <span class="str">'A'</span>
+    <span class="kw">WHEN</span> salary <span class="op">&gt;</span> <span class="num">5000</span>  <span class="kw">THEN</span> <span class="str">'B'</span>
+    <span class="kw">ELSE</span> <span class="str">'C'</span>
+<span class="kw">END</span>;</pre>
+        </div>
+
+        <h3>Loops - الحلقات</h3>
+        <div class="code-block">
+            <div class="code-header"><span>PL/SQL - Loops</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="cm">-- FOR LOOP</span>
+<span class="kw">FOR</span> i <span class="kw">IN</span> <span class="num">1</span>..<span class="num">10</span> <span class="kw">LOOP</span>
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(i);
+<span class="kw">END LOOP</span>;
+
+<span class="cm">-- WHILE LOOP</span>
+<span class="kw">WHILE</span> counter <span class="op">&lt;</span> <span class="num">10</span> <span class="kw">LOOP</span>
+    counter <span class="op">:=</span> counter <span class="op">+</span> <span class="num">1</span>;
+<span class="kw">END LOOP</span>;
+
+<span class="cm">-- BASIC LOOP with EXIT WHEN</span>
+<span class="kw">LOOP</span>
+    <span class="kw">EXIT WHEN</span> counter <span class="op">&gt;</span> <span class="num">10</span>;
+    counter <span class="op">:=</span> counter <span class="op">+</span> <span class="num">1</span>;
+<span class="kw">END LOOP</span>;</pre>
+        </div>
+
+        <h3>Cursors - المؤشرات</h3>
+        <div class="code-block">
+            <div class="code-header"><span>PL/SQL - Cursors</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="cm">-- Implicit Cursor (SELECT INTO)</span>
+<span class="kw">SELECT</span> salary <span class="kw">INTO</span> v_sal <span class="kw">FROM</span> <span class="tbl">employees</span> <span class="kw">WHERE</span> employee_id = <span class="num">100</span>;
+
+<span class="cm">-- Cursor FOR LOOP (الأسهل والأفضل)</span>
+<span class="kw">FOR</span> emp <span class="kw">IN</span> (<span class="kw">SELECT</span> first_name, salary <span class="kw">FROM</span> <span class="tbl">employees</span>) <span class="kw">LOOP</span>
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(emp.first_name <span class="op">||</span> <span class="str">': '</span> <span class="op">||</span> emp.salary);
+<span class="kw">END LOOP</span>;
+
+<span class="cm">-- Explicit Cursor</span>
+<span class="kw">DECLARE</span>
+    <span class="kw">CURSOR</span> c_emp <span class="kw">IS</span> <span class="kw">SELECT</span> first_name, salary <span class="kw">FROM</span> <span class="tbl">employees</span>;
+    v_rec c_emp<span class="tp">%ROWTYPE</span>;
+<span class="kw">BEGIN</span>
+    <span class="kw">OPEN</span> c_emp;
+    <span class="kw">LOOP</span>
+        <span class="kw">FETCH</span> c_emp <span class="kw">INTO</span> v_rec;
+        <span class="kw">EXIT WHEN</span> c_emp<span class="tp">%NOTFOUND</span>;
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(v_rec.first_name);
+    <span class="kw">END LOOP</span>;
+    <span class="kw">CLOSE</span> c_emp;
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+
+        <h3>Exception Handling - التعامل مع الأخطاء</h3>
+        <div class="code-block">
+            <div class="code-header"><span>PL/SQL - Exceptions</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">DECLARE</span>
+    e_custom <span class="kw">EXCEPTION</span>;
+<span class="kw">BEGIN</span>
+    <span class="cm">-- الكود</span>
+    <span class="kw">IF</span> condition <span class="kw">THEN</span>
+        <span class="kw">RAISE</span> e_custom;
+    <span class="kw">END IF</span>;
+<span class="kw">EXCEPTION</span>
+    <span class="kw">WHEN</span> NO_DATA_FOUND <span class="kw">THEN</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'No data!'</span>);
+    <span class="kw">WHEN</span> TOO_MANY_ROWS <span class="kw">THEN</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'Too many rows!'</span>);
+    <span class="kw">WHEN</span> e_custom <span class="kw">THEN</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'Custom error!'</span>);
+    <span class="kw">WHEN OTHERS THEN</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'Error: '</span> <span class="op">||</span> <span class="fn">SQLERRM</span>);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+
+        <h3>Procedures vs Functions - مقارنة</h3>
+        <div class="content-card">
+            <table class="table-visual">
+                <thead><tr><th>الخاصية</th><th>Procedure</th><th>Function</th></tr></thead>
+                <tbody>
+                    <tr><td>ترجع قيمة؟</td><td>لا (تستخدم OUT parameters)</td><td>نعم (RETURN)</td></tr>
+                    <tr><td>استخدام في SELECT؟</td><td>لا</td><td>نعم</td></tr>
+                    <tr><td>الاستدعاء</td><td><code>EXEC proc_name(params)</code></td><td><code>SELECT func_name(params) FROM dual</code></td></tr>
+                    <tr><td>الاستخدام الشائع</td><td>تنفيذ عمليات (DML)</td><td>حسابات وإرجاع قيم</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="code-block">
+            <div class="code-header"><span>PL/SQL - Procedure</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">CREATE OR REPLACE PROCEDURE</span> <span class="fn">raise_salary</span>(
+    p_emp_id <span class="kw">IN</span>  <span class="tp">NUMBER</span>,
+    p_amount <span class="kw">IN</span>  <span class="tp">NUMBER</span>,
+    p_result <span class="kw">OUT</span> <span class="tp">VARCHAR2</span>
+) <span class="kw">IS</span>
+<span class="kw">BEGIN</span>
+    <span class="kw">UPDATE</span> <span class="tbl">employees</span> <span class="kw">SET</span> salary = salary + p_amount
+    <span class="kw">WHERE</span> employee_id = p_emp_id;
+    p_result <span class="op">:=</span> <span class="str">'Done'</span>;
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+
+        <div class="code-block">
+            <div class="code-header"><span>PL/SQL - Function</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">CREATE OR REPLACE FUNCTION</span> <span class="fn">get_tax</span>(
+    p_salary <span class="kw">IN</span> <span class="tp">NUMBER</span>
+) <span class="kw">RETURN</span> <span class="tp">NUMBER</span>
+<span class="kw">IS</span>
+<span class="kw">BEGIN</span>
+    <span class="kw">RETURN</span> p_salary <span class="op">*</span> <span class="num">0.15</span>;
+<span class="kw">END</span>;
+<span class="op">/</span>
+<span class="cm">-- استخدام في SELECT</span>
+<span class="kw">SELECT</span> first_name, <span class="fn">get_tax</span>(salary) <span class="kw">AS</span> tax <span class="kw">FROM</span> <span class="tbl">employees</span>;</pre>
+        </div>
+
+        <h3>Triggers - المشغلات</h3>
+        <div class="code-block">
+            <div class="code-header"><span>PL/SQL - Trigger</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">CREATE OR REPLACE TRIGGER</span> <span class="fn">trg_salary_check</span>
+<span class="kw">BEFORE INSERT OR UPDATE ON</span> <span class="tbl">employees</span>
+<span class="kw">FOR EACH ROW</span>
+<span class="kw">BEGIN</span>
+    <span class="cm">-- :NEW = القيمة الجديدة, :OLD = القيمة القديمة</span>
+    <span class="kw">IF</span> :NEW.salary <span class="op">&lt;</span> <span class="num">0</span> <span class="kw">THEN</span>
+        <span class="fn">RAISE_APPLICATION_ERROR</span>(<span class="num">-20001</span>, <span class="str">'Salary must be positive!'</span>);
+    <span class="kw">END IF</span>;
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+
+        <div class="info-box">
+            <strong>أنواع Triggers:</strong> BEFORE INSERT, AFTER INSERT, BEFORE UPDATE, AFTER UPDATE, BEFORE DELETE, AFTER DELETE. ممكن FOR EACH ROW (لكل صف) أو Statement Level (مرة واحدة).
+        </div>
+
+        <h3>Packages - الحزم</h3>
+        <div class="code-block">
+            <div class="code-header"><span>PL/SQL - Package Spec</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="cm">-- Package Specification (الواجهة العامة)</span>
+<span class="kw">CREATE OR REPLACE PACKAGE</span> <span class="fn">emp_pkg</span> <span class="kw">IS</span>
+    <span class="kw">PROCEDURE</span> <span class="fn">hire_emp</span>(p_name <span class="tp">VARCHAR2</span>, p_sal <span class="tp">NUMBER</span>);
+    <span class="kw">FUNCTION</span>  <span class="fn">get_sal</span>(p_id <span class="tp">NUMBER</span>) <span class="kw">RETURN</span> <span class="tp">NUMBER</span>;
+<span class="kw">END</span> emp_pkg;
+<span class="op">/</span></pre>
+        </div>
+
+        <div class="code-block">
+            <div class="code-header"><span>PL/SQL - Package Body</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="cm">-- Package Body (التنفيذ)</span>
+<span class="kw">CREATE OR REPLACE PACKAGE BODY</span> <span class="fn">emp_pkg</span> <span class="kw">IS</span>
+    <span class="kw">PROCEDURE</span> <span class="fn">hire_emp</span>(p_name <span class="tp">VARCHAR2</span>, p_sal <span class="tp">NUMBER</span>) <span class="kw">IS</span>
+    <span class="kw">BEGIN</span>
+        <span class="kw">INSERT INTO</span> <span class="tbl">employees</span>(first_name, salary)
+        <span class="kw">VALUES</span>(p_name, p_sal);
+    <span class="kw">END</span>;
+
+    <span class="kw">FUNCTION</span> <span class="fn">get_sal</span>(p_id <span class="tp">NUMBER</span>) <span class="kw">RETURN</span> <span class="tp">NUMBER</span> <span class="kw">IS</span>
+        v_sal <span class="tp">NUMBER</span>;
+    <span class="kw">BEGIN</span>
+        <span class="kw">SELECT</span> salary <span class="kw">INTO</span> v_sal <span class="kw">FROM</span> <span class="tbl">employees</span> <span class="kw">WHERE</span> employee_id = p_id;
+        <span class="kw">RETURN</span> v_sal;
+    <span class="kw">END</span>;
+<span class="kw">END</span> emp_pkg;
+<span class="op">/</span></pre>
+        </div>
+    </section>
+
+    <!-- Section 5: Excel Lookup Functions -->
+    <section class="section" id="excel-lookup">
+        <span class="section-label">Day 5</span>
+        <h2>ملخص Excel - Lookup Functions</h2>
+
+        <h3>VLOOKUP - البحث العمودي</h3>
+        <div class="code-block">
+            <div class="code-header"><span>Excel - VLOOKUP</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre>=VLOOKUP(lookup_value, table_array, col_index_num, [range_lookup])
+
+<span class="cm">// مثال: البحث عن اسم موظف بالـ ID</span>
+=VLOOKUP(A2, Sheet2!A:D, 2, FALSE)
+
+<span class="cm">// FALSE = تطابق تام (Exact Match)</span>
+<span class="cm">// TRUE  = تطابق تقريبي (Approximate Match)</span></pre>
+        </div>
+
+        <div class="info-box warning">
+            <strong>قواعد VLOOKUP المهمة:</strong> قيمة البحث لازم تكون في أول عمود من الـ table_array. بيبحث من اليسار لليمين فقط. لو عايز تبحث لليسار استخدم INDEX+MATCH.
+        </div>
+
+        <h3>HLOOKUP - البحث الأفقي</h3>
+        <div class="code-block">
+            <div class="code-header"><span>Excel - HLOOKUP</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre>=HLOOKUP(lookup_value, table_array, row_index_num, [range_lookup])
+
+<span class="cm">// مثال: البحث في جدول أفقي</span>
+=HLOOKUP("Q1", A1:D3, 2, FALSE)</pre>
+        </div>
+
+        <h3>XLOOKUP - البديل الحديث</h3>
+        <div class="code-block">
+            <div class="code-header"><span>Excel - XLOOKUP</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre>=XLOOKUP(lookup_value, lookup_array, return_array, [if_not_found], [match_mode], [search_mode])
+
+<span class="cm">// مثال: بحث مع رسالة لو مش لاقي</span>
+=XLOOKUP(A2, IDs, Names, "Not Found")
+
+<span class="cm">// المميزات: بيبحث يمين ويسار، بيدعم if_not_found</span></pre>
+        </div>
+
+        <h3>INDEX + MATCH - الكومبو القوي</h3>
+        <div class="code-block">
+            <div class="code-header"><span>Excel - INDEX + MATCH</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="cm">// INDEX: بيجيب قيمة من صف ومود محددين</span>
+=INDEX(array, row_num, [col_num])
+
+<span class="cm">// MATCH: بيجيب رقم الصف أو العمود</span>
+=MATCH(lookup_value, lookup_array, [match_type])
+
+<span class="cm">// الكومبو: بحث في أي اتجاه!</span>
+=INDEX(B2:B100, MATCH(A2, C2:C100, 0))
+
+<span class="cm">// مثال: البحث عن المرتب بالاسم</span>
+=INDEX(SalaryColumn, MATCH("Ahmed", NameColumn, 0))</pre>
+        </div>
+
+        <h3>مقارنة سريعة بين دوال البحث</h3>
+        <div class="content-card">
+            <table class="table-visual">
+                <thead><tr><th>الخاصية</th><th>VLOOKUP</th><th>HLOOKUP</th><th>XLOOKUP</th><th>INDEX+MATCH</th></tr></thead>
+                <tbody>
+                    <tr><td>اتجاه البحث</td><td>يمين فقط</td><td>لأسفل فقط</td><td>أي اتجاه</td><td>أي اتجاه</td></tr>
+                    <tr><td>لو مش لاقي</td><td>#N/A</td><td>#N/A</td><td>رسالة مخصصة</td><td>يحتاج IFERROR</td></tr>
+                    <tr><td>الأداء</td><td>بطيء مع بيانات كبيرة</td><td>بطيء</td><td>سريع</td><td>سريع</td></tr>
+                    <tr><td>السهولة</td><td>سهل</td><td>سهل</td><td>سهل</td><td>متوسط</td></tr>
+                    <tr><td>التوافق</td><td>كل الإصدارات</td><td>كل الإصدارات</td><td>365/2021+</td><td>كل الإصدارات</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Section 6: Excel Functions & Tools -->
+    <section class="section" id="excel-tools">
+        <span class="section-label">Days 5-6</span>
+        <h2>ملخص Excel - الدوال والأدوات</h2>
+
+        <h3>IF و IFS - الدوال الشرطية</h3>
+        <div class="code-block">
+            <div class="code-header"><span>Excel - IF / IFS</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="cm">// IF: شرط واحد</span>
+=IF(A2&gt;90, "Excellent", IF(A2&gt;70, "Good", "Fail"))
+
+<span class="cm">// IFS: شروط متعددة (أسهل)</span>
+=IFS(A2&gt;90, "Excellent", A2&gt;70, "Good", A2&gt;50, "Pass", TRUE, "Fail")</pre>
+        </div>
+
+        <h3>COUNTIF / SUMIF / AVERAGEIF - دوال الشرط</h3>
+        <div class="code-block">
+            <div class="code-header"><span>Excel - Conditional Functions</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="cm">// COUNTIF: عدد الخلايا اللي تحقق شرط</span>
+=COUNTIF(B2:B100, "&gt;5000")
+=COUNTIF(A2:A100, "Ahmed")
+=COUNTIFS(A2:A100, "Sales", B2:B100, "&gt;5000")
+
+<span class="cm">// SUMIF: مجموع الخلايا اللي تحقق شرط</span>
+=SUMIF(A2:A100, "Sales", C2:C100)
+=SUMIFS(C2:C100, A2:A100, "Sales", B2:B100, "&gt;2020")
+
+<span class="cm">// AVERAGEIF: متوسط بشرط</span>
+=AVERAGEIF(A2:A100, "IT", B2:B100)</pre>
+        </div>
+
+        <h3>TEXT Functions - دوال النصوص</h3>
+        <div class="content-card">
+            <table class="table-visual">
+                <thead><tr><th>الدالة</th><th>الوصف</th><th>مثال</th></tr></thead>
+                <tbody>
+                    <tr><td><code>LEFT(text, n)</code></td><td>أول n حروف</td><td><code>=LEFT("Ahmed", 3)</code> = Ahm</td></tr>
+                    <tr><td><code>RIGHT(text, n)</code></td><td>آخر n حروف</td><td><code>=RIGHT("Ahmed", 2)</code> = ed</td></tr>
+                    <tr><td><code>MID(text, start, n)</code></td><td>n حروف من الموقع start</td><td><code>=MID("Ahmed", 2, 3)</code> = hme</td></tr>
+                    <tr><td><code>LEN(text)</code></td><td>طول النص</td><td><code>=LEN("Ahmed")</code> = 5</td></tr>
+                    <tr><td><code>CONCATENATE / &amp;</code></td><td>دمج نصوص</td><td><code>=A1&amp;" "&amp;B1</code></td></tr>
+                    <tr><td><code>TEXT(value, format)</code></td><td>تنسيق كنص</td><td><code>=TEXT(A1, "dd/mm/yyyy")</code></td></tr>
+                    <tr><td><code>UPPER / LOWER / PROPER</code></td><td>حالة الحروف</td><td><code>=UPPER("ahmed")</code> = AHMED</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>Date Functions - دوال التاريخ</h3>
+        <div class="content-card">
+            <table class="table-visual">
+                <thead><tr><th>الدالة</th><th>الوصف</th><th>مثال</th></tr></thead>
+                <tbody>
+                    <tr><td><code>TODAY()</code></td><td>تاريخ اليوم</td><td><code>=TODAY()</code></td></tr>
+                    <tr><td><code>NOW()</code></td><td>التاريخ والوقت الحالي</td><td><code>=NOW()</code></td></tr>
+                    <tr><td><code>DATEDIF(start, end, unit)</code></td><td>الفرق بين تاريخين</td><td><code>=DATEDIF(A1, B1, "Y")</code> = سنوات</td></tr>
+                    <tr><td><code>NETWORKDAYS(start, end)</code></td><td>أيام العمل (بدون ويكند)</td><td><code>=NETWORKDAYS(A1, B1)</code></td></tr>
+                    <tr><td><code>YEAR / MONTH / DAY</code></td><td>استخراج جزء من تاريخ</td><td><code>=YEAR(A1)</code></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>Conditional Formatting - التنسيق الشرطي</h3>
+        <div class="content-card">
+            <h4>أهم استخدامات التنسيق الشرطي</h4>
+            <ul>
+                <li><strong>Highlight Cells Rules:</strong> تلوين الخلايا حسب قيمتها (أكبر من، أقل من، بين، يحتوي نص)</li>
+                <li><strong>Top/Bottom Rules:</strong> تمييز أعلى/أقل 10 قيم أو نسبة مئوية</li>
+                <li><strong>Data Bars:</strong> أشرطة بيانات داخل الخلايا لتمثيل القيم بصريًا</li>
+                <li><strong>Color Scales:</strong> تدرج ألوان (أخضر-أصفر-أحمر) حسب القيمة</li>
+                <li><strong>Icon Sets:</strong> أيقونات (أسهم، إشارات مرور) حسب القيمة</li>
+                <li><strong>Custom Formula:</strong> تنسيق مخصص بمعادلة <code>=A1&gt;100</code></li>
+            </ul>
+        </div>
+
+        <h3>Data Validation - التحقق من البيانات</h3>
+        <div class="content-card">
+            <h4>أنواع التحقق</h4>
+            <ul>
+                <li><strong>Whole Number:</strong> أرقام صحيحة بين حد أدنى وأقصى</li>
+                <li><strong>Decimal:</strong> أرقام عشرية في نطاق معين</li>
+                <li><strong>List:</strong> قائمة منسدلة بخيارات محددة (Dropdown)</li>
+                <li><strong>Date / Time:</strong> تواريخ أو أوقات في نطاق معين</li>
+                <li><strong>Text Length:</strong> طول النص بين حد أدنى وأقصى</li>
+                <li><strong>Custom Formula:</strong> شرط مخصص بمعادلة</li>
+            </ul>
+        </div>
+
+        <h3>Named Ranges - النطاقات المسماة</h3>
+        <div class="info-box success">
+            <strong>فوائد Named Ranges:</strong> بتخلي المعادلات أسهل في القراءة (بدل <code>B2:B100</code> تكتب <code>Salaries</code>)، بتسهل الصيانة، وبتشتغل في كل الـ Sheets.
+        </div>
+
+        <h3>Pivot Tables - الجداول المحورية</h3>
+        <div class="analogy-box">
+            <span class="emoji">📊</span>
+            <h4>Pivot Table = أداة التلخيص السحرية</h4>
+            <p>بتاخد بيانات كتير (آلاف الصفوف) وتلخصها في جدول صغير منظم. تقدر تحط أي عمود في Rows أو Columns أو Values أو Filters. وتقدر تعمل منها Pivot Chart بضغطة زر!</p>
+        </div>
+
+        <div class="content-card">
+            <h4>مناطق Pivot Table الأربعة</h4>
+            <table class="table-visual">
+                <thead><tr><th>المنطقة</th><th>الوظيفة</th><th>مثال</th></tr></thead>
+                <tbody>
+                    <tr><td><code>Rows</code></td><td>العناوين في الصفوف</td><td>أسماء الأقسام</td></tr>
+                    <tr><td><code>Columns</code></td><td>العناوين في الأعمدة</td><td>السنوات</td></tr>
+                    <tr><td><code>Values</code></td><td>القيم المحسوبة</td><td>SUM of Salary</td></tr>
+                    <tr><td><code>Filters</code></td><td>فلتر عام للجدول</td><td>اختيار قسم معين</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>Macros - الماكروز</h3>
+        <div class="content-card">
+            <h4>أساسيات الماكرو</h4>
+            <ul>
+                <li><strong>تسجيل ماكرو:</strong> View &gt; Macros &gt; Record Macro - بيسجل كل حركاتك</li>
+                <li><strong>تشغيل ماكرو:</strong> View &gt; Macros &gt; View Macros - اختار وشغّل</li>
+                <li><strong>VBA Editor:</strong> Alt+F11 - لتعديل الكود يدويًا</li>
+                <li><strong>حفظ الملف:</strong> لازم تحفظ كـ <code>.xlsm</code> (Macro-Enabled Workbook)</li>
+            </ul>
+        </div>
+
+        <div class="code-block">
+            <div class="code-header"><span>VBA - Macro Example</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre>Sub FormatReport()
+    <span class="cm">' تنسيق العناوين</span>
+    Range("A1:E1").Font.Bold = True
+    Range("A1:E1").Interior.Color = RGB(255, 140, 0)
+
+    <span class="cm">' AutoFit الأعمدة</span>
+    Columns("A:E").AutoFit
+
+    <span class="cm">' رسالة تأكيد</span>
+    MsgBox "Report formatted!"
+End Sub</pre>
+        </div>
+
+        <h3>What-If Analysis - تحليل ماذا لو</h3>
+        <div class="content-card">
+            <table class="table-visual">
+                <thead><tr><th>الأداة</th><th>الوظيفة</th><th>متى تستخدمها</th></tr></thead>
+                <tbody>
+                    <tr><td><code>Goal Seek</code></td><td>إيجاد قيمة المدخل لتحقيق نتيجة معينة</td><td>عايز تعرف المرتب اللي يوصل الضريبة لـ 5000</td></tr>
+                    <tr><td><code>Data Tables</code></td><td>جدول يعرض نتائج متعددة لقيم مختلفة</td><td>مقارنة سيناريوهات أسعار مختلفة</td></tr>
+                    <tr><td><code>Scenario Manager</code></td><td>حفظ ومقارنة سيناريوهات متعددة</td><td>سيناريو متفائل/متشائم/واقعي</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Section 7: Interview Questions -->
+    <section class="section" id="interview">
+        <span class="section-label">مقابلات العمل</span>
+        <h2>أسئلة مقابلة متوقعة</h2>
+
+        <p>أهم 20 سؤال ممكن يتسألوا في مقابلات العمل على Oracle و Excel. كل سؤال مع إجابة مختصرة ومباشرة.</p>
+
+        <h3>أسئلة Oracle Database (10 أسئلة)</h3>
+
+        <div class="interview-q">
+            <h4>1. ما الفرق بين WHERE و HAVING؟</h4>
+            <p><strong>WHERE</strong> بتفلتر الصفوف قبل التجميع (GROUP BY) وبتشتغل على صفوف فردية. <strong>HAVING</strong> بتفلتر بعد التجميع وبتشتغل على نتائج الدوال التجميعية (COUNT, SUM, AVG). مثلاً: <code>HAVING COUNT(*) > 5</code> مش هتشتغل في WHERE.</p>
+        </div>
+
+        <div class="interview-q">
+            <h4>2. ما هو JOIN؟ وما أنواعه؟</h4>
+            <p><strong>JOIN</strong> بيربط جدولين أو أكتر بناءً على شرط مشترك. الأنواع: <strong>INNER JOIN</strong> (المشترك فقط)، <strong>LEFT JOIN</strong> (كل اليسار + المشترك)، <strong>RIGHT JOIN</strong> (كل اليمين + المشترك)، <strong>FULL JOIN</strong> (كل الصفوف)، <strong>CROSS JOIN</strong> (كل التركيبات)، <strong>SELF JOIN</strong> (الجدول مع نفسه).</p>
+        </div>
+
+        <div class="interview-q">
+            <h4>3. ما هو PL/SQL؟</h4>
+            <p><strong>PL/SQL</strong> (Procedural Language/SQL) هو امتداد لـ SQL من Oracle بيضيف إمكانيات البرمجة: متغيرات، شروط (IF/ELSE)، حلقات (LOOP)، التعامل مع الأخطاء (EXCEPTION)، وإنشاء Procedures و Functions و Triggers. بيشتغل على جانب السيرفر وبيحسّن الأداء.</p>
+        </div>
+
+        <div class="interview-q">
+            <h4>4. ما الفرق بين Procedure و Function؟</h4>
+            <p><strong>Procedure:</strong> مش بترجع قيمة مباشرة (بتستخدم OUT parameters)، ومش بتتسخدم في SELECT. <strong>Function:</strong> بترجع قيمة واحدة بـ RETURN، وتقدر تستخدمها في SELECT. الـ Procedure للعمليات (DML)، والـ Function للحسابات.</p>
+        </div>
+
+        <div class="interview-q">
+            <h4>5. ما هو Trigger؟</h4>
+            <p><strong>Trigger</strong> هو كود PL/SQL بيتنفذ تلقائياً لما يحصل حدث معين على جدول (INSERT, UPDATE, DELETE). ممكن يكون BEFORE أو AFTER الحدث، ولكل صف (FOR EACH ROW) أو مرة واحدة. بيستخدم <code>:NEW</code> و <code>:OLD</code> للوصول للقيم الجديدة والقديمة.</p>
+        </div>
+
+        <div class="interview-q">
+            <h4>6. ما هو Cursor؟</h4>
+            <p><strong>Cursor</strong> هو مؤشر بيقرأ نتائج استعلام صف بصف. في نوعين: <strong>Implicit</strong> (SELECT INTO لصف واحد) و <strong>Explicit</strong> (DECLARE, OPEN, FETCH, CLOSE لصفوف متعددة). أسهل طريقة هي <strong>Cursor FOR LOOP</strong> اللي بيعمل كل الخطوات تلقائياً.</p>
+        </div>
+
+        <div class="interview-q">
+            <h4>7. ما هو Index ولماذا نستخدمه؟</h4>
+            <p><strong>Index</strong> هو هيكل بيانات بيسرّع عمليات البحث (SELECT) زي فهرس الكتاب. بدل ما يقرأ كل الصفوف (Full Table Scan)، بيروح للبيانات مباشرة. لكن كتر الفهارس بيبطئ INSERT/UPDATE/DELETE لأنه لازم يحدّث الفهرس مع كل تغيير.</p>
+        </div>
+
+        <div class="interview-q">
+            <h4>8. ما هو View؟</h4>
+            <p><strong>View</strong> هو استعلام محفوظ بيتعامل معاه كأنه جدول افتراضي. مش بيخزن بيانات - بس بيحفظ الـ SELECT. فوائده: تبسيط الاستعلامات المعقدة، أمان (إخفاء أعمدة حساسة)، وإعادة استخدام. ممكن يكون WITH CHECK OPTION أو READ ONLY.</p>
+        </div>
+
+        <div class="interview-q">
+            <h4>9. كيف تتعامل مع الأخطاء في PL/SQL؟</h4>
+            <p>باستخدام <strong>EXCEPTION block</strong>. الأخطاء الشائعة: <code>NO_DATA_FOUND</code> (ما لقيش بيانات)، <code>TOO_MANY_ROWS</code> (SELECT INTO رجع أكتر من صف)، <code>WHEN OTHERS</code> (أي خطأ تاني). تقدر تعمل Custom Exception بـ <code>RAISE</code> أو <code>RAISE_APPLICATION_ERROR(-20001, 'msg')</code>.</p>
+        </div>
+
+        <div class="interview-q">
+            <h4>10. ما هو Package؟</h4>
+            <p><strong>Package</strong> هو حاوية بتجمع Procedures و Functions و Variables و Cursors مع بعض. بيتكون من جزئين: <strong>Specification</strong> (الواجهة العامة - بيحدد إيه المتاح) و <strong>Body</strong> (التنفيذ الفعلي). الفوائد: تنظيم الكود، Encapsulation، وأداء أفضل.</p>
+        </div>
+
+        <h3>أسئلة Excel (10 أسئلة)</h3>
+
+        <div class="interview-q">
+            <h4>1. ما الفرق بين VLOOKUP و INDEX+MATCH؟</h4>
+            <p><strong>VLOOKUP</strong> بيبحث في أول عمود ويرجع قيمة من عمود على اليمين فقط. <strong>INDEX+MATCH</strong> بيبحث في أي اتجاه (يمين أو يسار)، أسرع في الأداء، وأكثر مرونة. VLOOKUP أسهل في الكتابة لكن INDEX+MATCH أقوى.</p>
+        </div>
+
+        <div class="interview-q">
+            <h4>2. ما هو Pivot Table؟</h4>
+            <p><strong>Pivot Table</strong> أداة تلخيص بتاخد بيانات كبيرة (آلاف الصفوف) وتلخصها في جدول صغير. بتسحب الأعمدة لأربع مناطق: Rows, Columns, Values (SUM/COUNT/AVG), Filters. تقدر تغيّر التلخيص بالسحب والإفلات بدون معادلات.</p>
+        </div>
+
+        <div class="interview-q">
+            <h4>3. ما الفرق بين COUNTIF و SUMIF؟</h4>
+            <p><strong>COUNTIF</strong> بيعدّ عدد الخلايا اللي تحقق شرط معين (كم موظف مرتبه أكتر من 5000). <strong>SUMIF</strong> بيجمع قيم الخلايا اللي تحقق شرط (مجموع مرتبات قسم معين). في كمان COUNTIFS و SUMIFS لشروط متعددة.</p>
+        </div>
+
+        <div class="interview-q">
+            <h4>4. ما هو Conditional Formatting؟</h4>
+            <p><strong>Conditional Formatting</strong> بيغيّر شكل الخلايا تلقائياً حسب قيمتها. مثلاً: تلوين المرتبات العالية بالأخضر والمنخفضة بالأحمر، Data Bars لتمثيل القيم بصريًا، Icon Sets لإشارات المرور. ممكن تستخدم معادلة مخصصة كمان.</p>
+        </div>
+
+        <div class="interview-q">
+            <h4>5. ما هو Data Validation؟</h4>
+            <p><strong>Data Validation</strong> بيحدد إيه البيانات المسموح إدخالها في خلية. مثلاً: أرقام بين 1 و 100، قائمة منسدلة (Dropdown) بخيارات محددة، تواريخ في نطاق معين. بيمنع الأخطاء في إدخال البيانات وبيحافظ على جودة البيانات.</p>
+        </div>
+
+        <div class="interview-q">
+            <h4>6. ما هو Macro؟</h4>
+            <p><strong>Macro</strong> هو تسجيل لمجموعة خطوات بتتنفذ تلقائياً. تقدر تسجل حركاتك (Record Macro) أو تكتب كود VBA يدوياً. الملف لازم يتحفظ كـ <code>.xlsm</code>. الماكروز بتوفر وقت كبير في المهام المتكررة زي تنسيق التقارير.</p>
+        </div>
+
+        <div class="interview-q">
+            <h4>7. ما هو XLOOKUP؟</h4>
+            <p><strong>XLOOKUP</strong> هو البديل الحديث لـ VLOOKUP (متوفر في Excel 365/2021+). مميزاته: بيبحث في أي اتجاه، بيدعم رسالة مخصصة لو مش لاقي (if_not_found)، أسرع في الأداء، وأبسط في الكتابة. الصيغة: <code>=XLOOKUP(value, lookup, return, "Not Found")</code>.</p>
+        </div>
+
+        <div class="interview-q">
+            <h4>8. ما الفرق بين IF و IFS؟</h4>
+            <p><strong>IF</strong> بتتعامل مع شرط واحد (ولو عايز شروط متعددة تعمل Nested IF وده بيبقى معقد). <strong>IFS</strong> (Excel 2019+) بتتعامل مع شروط متعددة في دالة واحدة بدون تداخل. IFS أسهل في القراءة والصيانة لما يكون عندك أكتر من شرطين.</p>
+        </div>
+
+        <div class="interview-q">
+            <h4>9. ما هي فوائد Named Ranges؟</h4>
+            <p><strong>Named Ranges</strong> بتسمي نطاق خلايا باسم واضح (مثلاً Salaries بدل B2:B100). الفوائد: المعادلات أسهل في القراءة والفهم، أسهل في الصيانة (تغيّر النطاق مرة واحدة)، بتشتغل عبر كل الشيتات، وبتقلل الأخطاء.</p>
+        </div>
+
+        <div class="interview-q">
+            <h4>10. ما هي أدوات What-If Analysis؟</h4>
+            <p>ثلاث أدوات: <strong>Goal Seek</strong> (عكس المعادلة - بتحدد النتيجة وبيلاقيلك المدخل)، <strong>Data Tables</strong> (بتعرض نتائج معادلة لقيم مختلفة في جدول)، <strong>Scenario Manager</strong> (بتحفظ سيناريوهات مختلفة وتقارن بينها - متفائل/متشائم/واقعي).</p>
+        </div>
+    </section>
+
+    <!-- Section 8: Comprehensive Exercises -->
+    <section class="section" id="exercises">
+        <span class="section-label">تمارين نهائية</span>
+        <h2>تمارين شاملة نهائية</h2>
+
+        <p>12 تمرين شامل على كل المواضيع. حاول تحل كل تمرين لوحدك قبل ما تشوف التلميح أو الحل!</p>
+
+        <div class="info-box warning">
+            <strong>ملاحظة:</strong> التمارين مترتبة من السهل للصعب. حاول تحل لوحدك الأول! لو محتاج مساعدة، اضغط على التلميح. الحل الكامل موجود تحت زرار الحل.
+        </div>
+
+        <h3>تمارين Oracle Database (6 تمارين)</h3>
+
+        <!-- Oracle Exercise 1 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين Oracle 1: SELECT + WHERE + ORDER BY</h4>
+                <span class="exercise-badge easy">سهل</span>
+            </div>
+            <div class="exercise-body">
+                <p>عندك جدول employees فيه (employee_id, first_name, last_name, salary, department_id, hire_date). اكتب استعلام يجيب اسم الموظف الأول والأخير والمرتب لكل الموظفين اللي مرتبهم بين 5000 و 12000 ومن قسم 20 أو 30 أو 40. رتّب النتائج بالمرتب تنازلياً ثم بالاسم الأول تصاعدياً.</p>
+                <button class="hint-btn" onclick="toggleHint(this)">تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> استخدم BETWEEN للنطاق و IN لقائمة الأقسام. ORDER BY بيقبل أكتر من عمود.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">SELECT</span> first_name, last_name, salary
+<span class="kw">FROM</span> <span class="tbl">employees</span>
+<span class="kw">WHERE</span> salary <span class="kw">BETWEEN</span> <span class="num">5000</span> <span class="kw">AND</span> <span class="num">12000</span>
+  <span class="kw">AND</span> department_id <span class="kw">IN</span> (<span class="num">20</span>, <span class="num">30</span>, <span class="num">40</span>)
+<span class="kw">ORDER BY</span> salary <span class="kw">DESC</span>, first_name <span class="kw">ASC</span>;</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Oracle Exercise 2 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين Oracle 2: JOIN + GROUP BY + HAVING</h4>
+                <span class="exercise-badge medium">متوسط</span>
+            </div>
+            <div class="exercise-body">
+                <p>اكتب استعلام يعرض اسم كل قسم وعدد الموظفين فيه ومتوسط المرتبات وأعلى مرتب. اعرض بس الأقسام اللي فيها أكتر من 3 موظفين ومتوسط المرتبات أكبر من 6000. رتّب بمتوسط المرتبات تنازلياً.</p>
+                <button class="hint-btn" onclick="toggleHint(this)">تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> هتحتاج JOIN بين employees و departments. استخدم GROUP BY على اسم القسم، و HAVING لفلترة التجميع. الدوال: COUNT, AVG, MAX.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">SELECT</span> d.department_name,
+       <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> emp_count,
+       <span class="fn">ROUND</span>(<span class="fn">AVG</span>(e.salary), <span class="num">2</span>) <span class="kw">AS</span> avg_salary,
+       <span class="fn">MAX</span>(e.salary) <span class="kw">AS</span> max_salary
+<span class="kw">FROM</span> <span class="tbl">employees</span> e
+<span class="kw">JOIN</span> <span class="tbl">departments</span> d <span class="kw">ON</span> e.department_id = d.department_id
+<span class="kw">GROUP BY</span> d.department_name
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="op">&gt;</span> <span class="num">3</span>
+   <span class="kw">AND</span> <span class="fn">AVG</span>(e.salary) <span class="op">&gt;</span> <span class="num">6000</span>
+<span class="kw">ORDER BY</span> avg_salary <span class="kw">DESC</span>;</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Oracle Exercise 3 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين Oracle 3: Subquery + View</h4>
+                <span class="exercise-badge medium">متوسط</span>
+            </div>
+            <div class="exercise-body">
+                <p>1) اكتب استعلام يجيب كل الموظفين اللي مرتبهم أكبر من متوسط مرتبات القسم بتاعهم (Correlated Subquery). 2) حوّل الاستعلام ده لـ View اسمها v_above_avg_salary.</p>
+                <button class="hint-btn" onclick="toggleHint(this)">تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> في الـ Subquery، احسب AVG(salary) لنفس القسم باستخدام WHERE department_id = e.department_id (Correlated). بعدين حط الاستعلام في CREATE VIEW.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="cm">-- 1) Correlated Subquery</span>
+<span class="kw">SELECT</span> e.first_name, e.salary, e.department_id
+<span class="kw">FROM</span> <span class="tbl">employees</span> e
+<span class="kw">WHERE</span> e.salary <span class="op">&gt;</span> (
+    <span class="kw">SELECT</span> <span class="fn">AVG</span>(e2.salary)
+    <span class="kw">FROM</span> <span class="tbl">employees</span> e2
+    <span class="kw">WHERE</span> e2.department_id = e.department_id
+);
+
+<span class="cm">-- 2) تحويل لـ View</span>
+<span class="kw">CREATE OR REPLACE VIEW</span> <span class="tbl">v_above_avg_salary</span> <span class="kw">AS</span>
+<span class="kw">SELECT</span> e.first_name, e.salary, e.department_id
+<span class="kw">FROM</span> <span class="tbl">employees</span> e
+<span class="kw">WHERE</span> e.salary <span class="op">&gt;</span> (
+    <span class="kw">SELECT</span> <span class="fn">AVG</span>(e2.salary)
+    <span class="kw">FROM</span> <span class="tbl">employees</span> e2
+    <span class="kw">WHERE</span> e2.department_id = e.department_id
+);</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Oracle Exercise 4 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين Oracle 4: PL/SQL Block + Cursor + Exception</h4>
+                <span class="exercise-badge hard">صعب</span>
+            </div>
+            <div class="exercise-body">
+                <p>اكتب PL/SQL block يقرأ كل الموظفين في قسم 30 باستخدام Cursor FOR LOOP. لكل موظف: لو مرتبه أقل من 5000 اطبع "Low Salary" مع اسمه، لو بين 5000 و 10000 اطبع "Medium"، لو أكتر اطبع "High". في الآخر اطبع عدد الموظفين الكلي. تعامل مع الأخطاء.</p>
+                <button class="hint-btn" onclick="toggleHint(this)">تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> استخدم Cursor FOR LOOP مع SELECT من employees WHERE department_id = 30. جوا الـ LOOP استخدم IF/ELSIF. عرّف counter وزوّده كل لفة. حط EXCEPTION WHEN OTHERS في الآخر.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>PL/SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">DECLARE</span>
+    v_count <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">0</span>;
+    v_level <span class="tp">VARCHAR2</span>(<span class="num">20</span>);
+<span class="kw">BEGIN</span>
+    <span class="kw">FOR</span> emp <span class="kw">IN</span> (
+        <span class="kw">SELECT</span> first_name, salary
+        <span class="kw">FROM</span> <span class="tbl">employees</span>
+        <span class="kw">WHERE</span> department_id = <span class="num">30</span>
+    ) <span class="kw">LOOP</span>
+        v_count <span class="op">:=</span> v_count <span class="op">+</span> <span class="num">1</span>;
+
+        <span class="kw">IF</span> emp.salary <span class="op">&lt;</span> <span class="num">5000</span> <span class="kw">THEN</span>
+            v_level <span class="op">:=</span> <span class="str">'Low Salary'</span>;
+        <span class="kw">ELSIF</span> emp.salary <span class="op">&lt;=</span> <span class="num">10000</span> <span class="kw">THEN</span>
+            v_level <span class="op">:=</span> <span class="str">'Medium'</span>;
+        <span class="kw">ELSE</span>
+            v_level <span class="op">:=</span> <span class="str">'High'</span>;
+        <span class="kw">END IF</span>;
+
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(emp.first_name <span class="op">||</span> <span class="str">' - '</span> <span class="op">||</span> emp.salary <span class="op">||</span> <span class="str">' - '</span> <span class="op">||</span> v_level);
+    <span class="kw">END LOOP</span>;
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'Total employees: '</span> <span class="op">||</span> v_count);
+<span class="kw">EXCEPTION</span>
+    <span class="kw">WHEN OTHERS THEN</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'Error: '</span> <span class="op">||</span> <span class="fn">SQLERRM</span>);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Oracle Exercise 5 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين Oracle 5: Procedure + Function</h4>
+                <span class="exercise-badge hard">صعب</span>
+            </div>
+            <div class="exercise-body">
+                <p>1) اكتب Function اسمها get_annual_salary تاخد employee_id وترجع المرتب السنوي (salary * 12 + salary * NVL(commission_pct, 0) * 12). 2) اكتب Procedure اسمها transfer_employee تنقل موظف من قسم لقسم (تاخد emp_id و new_dept_id). لو الموظف مش موجود، ارفع خطأ مخصص.</p>
+                <button class="hint-btn" onclick="toggleHint(this)">تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> الـ Function تستخدم SELECT INTO لجلب salary و commission_pct. الـ Procedure تستخدم UPDATE SET department_id = new_dept_id WHERE employee_id = emp_id. تحقق بـ SQL%ROWCOUNT لو الموظف موجود.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>PL/SQL - Function</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">CREATE OR REPLACE FUNCTION</span> <span class="fn">get_annual_salary</span>(
+    p_emp_id <span class="kw">IN</span> <span class="tp">NUMBER</span>
+) <span class="kw">RETURN</span> <span class="tp">NUMBER</span>
+<span class="kw">IS</span>
+    v_salary <span class="tp">NUMBER</span>;
+    v_comm   <span class="tp">NUMBER</span>;
+<span class="kw">BEGIN</span>
+    <span class="kw">SELECT</span> salary, <span class="fn">NVL</span>(commission_pct, <span class="num">0</span>)
+    <span class="kw">INTO</span> v_salary, v_comm
+    <span class="kw">FROM</span> <span class="tbl">employees</span>
+    <span class="kw">WHERE</span> employee_id = p_emp_id;
+
+    <span class="kw">RETURN</span> (v_salary <span class="op">+</span> v_salary <span class="op">*</span> v_comm) <span class="op">*</span> <span class="num">12</span>;
+<span class="kw">EXCEPTION</span>
+    <span class="kw">WHEN</span> NO_DATA_FOUND <span class="kw">THEN</span>
+        <span class="kw">RETURN</span> <span class="num">-1</span>;
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header"><span>PL/SQL - Procedure</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">CREATE OR REPLACE PROCEDURE</span> <span class="fn">transfer_employee</span>(
+    p_emp_id   <span class="kw">IN</span> <span class="tp">NUMBER</span>,
+    p_new_dept <span class="kw">IN</span> <span class="tp">NUMBER</span>
+) <span class="kw">IS</span>
+<span class="kw">BEGIN</span>
+    <span class="kw">UPDATE</span> <span class="tbl">employees</span>
+    <span class="kw">SET</span> department_id = p_new_dept
+    <span class="kw">WHERE</span> employee_id = p_emp_id;
+
+    <span class="kw">IF</span> <span class="fn">SQL%ROWCOUNT</span> = <span class="num">0</span> <span class="kw">THEN</span>
+        <span class="fn">RAISE_APPLICATION_ERROR</span>(<span class="num">-20001</span>, <span class="str">'Employee not found: '</span> <span class="op">||</span> p_emp_id);
+    <span class="kw">END IF</span>;
+
+    <span class="kw">COMMIT</span>;
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'Transfer done!'</span>);
+<span class="kw">EXCEPTION</span>
+    <span class="kw">WHEN OTHERS THEN</span>
+        <span class="kw">ROLLBACK</span>;
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'Error: '</span> <span class="op">||</span> <span class="fn">SQLERRM</span>);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Oracle Exercise 6 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين Oracle 6: Trigger + Package (تحدي)</h4>
+                <span class="exercise-badge challenge">تحدي</span>
+            </div>
+            <div class="exercise-body">
+                <p>1) اكتب Trigger اسمه trg_salary_audit: قبل أي UPDATE على salary في جدول employees، يسجّل في جدول salary_log (emp_id, old_salary, new_salary, change_date, changed_by). 2) اكتب Package اسمه emp_reports فيه: Function تحسب متوسط مرتبات قسم، و Procedure تطبع تقرير بكل الموظفين في قسم معين مع تصنيفهم.</p>
+                <button class="hint-btn" onclick="toggleHint(this)">تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> الـ Trigger يكون BEFORE UPDATE OF salary ON employees FOR EACH ROW. استخدم :OLD.salary و :NEW.salary. الـ Package Spec يعلن عن الـ Function و Procedure، والـ Body يحتوي التنفيذ.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>SQL - Create Log Table</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">CREATE TABLE</span> <span class="tbl">salary_log</span> (
+    log_id       <span class="tp">NUMBER</span> <span class="kw">GENERATED ALWAYS AS IDENTITY PRIMARY KEY</span>,
+    emp_id       <span class="tp">NUMBER</span>(<span class="num">6</span>),
+    old_salary   <span class="tp">NUMBER</span>(<span class="num">8</span>,<span class="num">2</span>),
+    new_salary   <span class="tp">NUMBER</span>(<span class="num">8</span>,<span class="num">2</span>),
+    change_date  <span class="tp">DATE</span> <span class="kw">DEFAULT</span> <span class="kw">SYSDATE</span>,
+    changed_by   <span class="tp">VARCHAR2</span>(<span class="num">50</span>) <span class="kw">DEFAULT</span> <span class="fn">USER</span>
+);</pre>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header"><span>PL/SQL - Trigger</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">CREATE OR REPLACE TRIGGER</span> <span class="fn">trg_salary_audit</span>
+<span class="kw">BEFORE UPDATE OF</span> salary <span class="kw">ON</span> <span class="tbl">employees</span>
+<span class="kw">FOR EACH ROW</span>
+<span class="kw">BEGIN</span>
+    <span class="kw">INSERT INTO</span> <span class="tbl">salary_log</span> (emp_id, old_salary, new_salary)
+    <span class="kw">VALUES</span> (:OLD.employee_id, :OLD.salary, :NEW.salary);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header"><span>PL/SQL - Package</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="cm">-- Package Specification</span>
+<span class="kw">CREATE OR REPLACE PACKAGE</span> <span class="fn">emp_reports</span> <span class="kw">IS</span>
+    <span class="kw">FUNCTION</span>  <span class="fn">get_dept_avg</span>(p_dept_id <span class="tp">NUMBER</span>) <span class="kw">RETURN</span> <span class="tp">NUMBER</span>;
+    <span class="kw">PROCEDURE</span> <span class="fn">print_dept_report</span>(p_dept_id <span class="tp">NUMBER</span>);
+<span class="kw">END</span> emp_reports;
+<span class="op">/</span>
+
+<span class="cm">-- Package Body</span>
+<span class="kw">CREATE OR REPLACE PACKAGE BODY</span> <span class="fn">emp_reports</span> <span class="kw">IS</span>
+
+    <span class="kw">FUNCTION</span> <span class="fn">get_dept_avg</span>(p_dept_id <span class="tp">NUMBER</span>) <span class="kw">RETURN</span> <span class="tp">NUMBER</span> <span class="kw">IS</span>
+        v_avg <span class="tp">NUMBER</span>;
+    <span class="kw">BEGIN</span>
+        <span class="kw">SELECT</span> <span class="fn">AVG</span>(salary) <span class="kw">INTO</span> v_avg
+        <span class="kw">FROM</span> <span class="tbl">employees</span> <span class="kw">WHERE</span> department_id = p_dept_id;
+        <span class="kw">RETURN</span> <span class="fn">ROUND</span>(v_avg, <span class="num">2</span>);
+    <span class="kw">END</span>;
+
+    <span class="kw">PROCEDURE</span> <span class="fn">print_dept_report</span>(p_dept_id <span class="tp">NUMBER</span>) <span class="kw">IS</span>
+    <span class="kw">BEGIN</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'=== Department '</span> <span class="op">||</span> p_dept_id <span class="op">||</span> <span class="str">' Report ==='</span>);
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'Avg Salary: '</span> <span class="op">||</span> get_dept_avg(p_dept_id));
+        <span class="kw">FOR</span> emp <span class="kw">IN</span> (
+            <span class="kw">SELECT</span> first_name, salary <span class="kw">FROM</span> <span class="tbl">employees</span>
+            <span class="kw">WHERE</span> department_id = p_dept_id <span class="kw">ORDER BY</span> salary <span class="kw">DESC</span>
+        ) <span class="kw">LOOP</span>
+            <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(
+                emp.first_name <span class="op">||</span> <span class="str">' - '</span> <span class="op">||</span> emp.salary <span class="op">||</span> <span class="str">' - '</span> <span class="op">||</span>
+                <span class="kw">CASE</span> <span class="kw">WHEN</span> emp.salary <span class="op">&gt;</span> <span class="num">10000</span> <span class="kw">THEN</span> <span class="str">'Senior'</span>
+                     <span class="kw">WHEN</span> emp.salary <span class="op">&gt;</span> <span class="num">5000</span>  <span class="kw">THEN</span> <span class="str">'Mid'</span>
+                     <span class="kw">ELSE</span> <span class="str">'Junior'</span> <span class="kw">END</span>
+            );
+        <span class="kw">END LOOP</span>;
+    <span class="kw">END</span>;
+
+<span class="kw">END</span> emp_reports;
+<span class="op">/</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h3>تمارين Excel (6 تمارين)</h3>
+
+        <!-- Excel Exercise 1 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين Excel 1: VLOOKUP + IF</h4>
+                <span class="exercise-badge easy">سهل</span>
+            </div>
+            <div class="exercise-body">
+                <p>عندك شيت "Products" فيه (ProductID في A, ProductName في B, Price في C) وشيت "Orders" فيه (OrderID في A, ProductID في B). في شيت Orders: 1) استخدم VLOOKUP لجلب اسم المنتج في العمود C. 2) استخدم VLOOKUP لجلب السعر في العمود D. 3) في العمود E، استخدم IF: لو السعر أكبر من 100 اكتب "Premium" وإلا اكتب "Standard".</p>
+                <button class="hint-btn" onclick="toggleHint(this)">تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> VLOOKUP(B2, Products!A:C, 2, FALSE) للاسم. غيّر رقم العمود لـ 3 للسعر. IF(D2>100, "Premium", "Standard").
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>Excel Formulas</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="cm">// C2 - اسم المنتج:</span>
+=VLOOKUP(B2, Products!A:C, 2, FALSE)
+
+<span class="cm">// D2 - السعر:</span>
+=VLOOKUP(B2, Products!A:C, 3, FALSE)
+
+<span class="cm">// E2 - التصنيف:</span>
+=IF(D2&gt;100, "Premium", "Standard")</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Excel Exercise 2 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين Excel 2: INDEX + MATCH (بحث عكسي)</h4>
+                <span class="exercise-badge medium">متوسط</span>
+            </div>
+            <div class="exercise-body">
+                <p>عندك جدول فيه (اسم الموظف في العمود B، القسم في العمود C، المرتب في العمود D). المطلوب: 1) ابحث عن اسم الموظف اللي مرتبه 15000 (بحث عكسي - المرتب مش في أول عمود). 2) ابحث عن القسم بتاع موظف اسمه "Hana".</p>
+                <button class="hint-btn" onclick="toggleHint(this)">تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> INDEX(B:B, MATCH(15000, D:D, 0)) - البحث في D والنتيجة من B. للسؤال الثاني: INDEX(C:C, MATCH("Hana", B:B, 0)).
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>Excel Formulas</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="cm">// 1) اسم الموظف اللي مرتبه 15000:</span>
+=INDEX(B2:B100, MATCH(15000, D2:D100, 0))
+
+<span class="cm">// 2) القسم بتاع Hana:</span>
+=INDEX(C2:C100, MATCH("Hana", B2:B100, 0))
+
+<span class="cm">// بديل بـ XLOOKUP (لو متاح):</span>
+=XLOOKUP(15000, D2:D100, B2:B100, "Not Found")
+=XLOOKUP("Hana", B2:B100, C2:C100, "Not Found")</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Excel Exercise 3 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين Excel 3: COUNTIFS + SUMIFS + IFS</h4>
+                <span class="exercise-badge medium">متوسط</span>
+            </div>
+            <div class="exercise-body">
+                <p>عندك جدول موظفين (الاسم A، القسم B، المرتب C، سنة التعيين D). المطلوب: 1) عدد موظفين قسم "Sales" اللي مرتبهم أكبر من 5000. 2) مجموع مرتبات قسم "IT" اللي اتعيّنوا بعد 2020. 3) في عمود E، صنّف كل موظف: مرتب > 10000 = "Senior"، > 5000 = "Mid"، > 3000 = "Junior"، غير كده = "Trainee".</p>
+                <button class="hint-btn" onclick="toggleHint(this)">تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> COUNTIFS لشرطين: القسم والمرتب. SUMIFS: range المرتبات، criteria القسم وسنة التعيين. IFS للتصنيف بأربع مستويات.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>Excel Formulas</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="cm">// 1) عدد موظفين Sales مرتبهم > 5000:</span>
+=COUNTIFS(B2:B100, "Sales", C2:C100, "&gt;5000")
+
+<span class="cm">// 2) مجموع مرتبات IT بعد 2020:</span>
+=SUMIFS(C2:C100, B2:B100, "IT", D2:D100, "&gt;2020")
+
+<span class="cm">// 3) التصنيف (E2):</span>
+=IFS(C2&gt;10000, "Senior", C2&gt;5000, "Mid", C2&gt;3000, "Junior", TRUE, "Trainee")</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Excel Exercise 4 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين Excel 4: Text Functions + Date Functions</h4>
+                <span class="exercise-badge hard">صعب</span>
+            </div>
+            <div class="exercise-body">
+                <p>عندك جدول فيه (الاسم الكامل في A بالشكل "Ahmed Hassan"، تاريخ التعيين في B، الإيميل في C بالشكل "ahmed.hassan@company.com"). المطلوب: 1) استخرج الاسم الأول في D. 2) استخرج الاسم الأخير في E. 3) احسب سنوات الخبرة في F. 4) احسب أيام العمل (بدون ويكند) من التعيين لليوم في G. 5) اعمل إيميل جديد في H بالشكل "first.last@newcompany.com" من الاسم في A.</p>
+                <button class="hint-btn" onclick="toggleHint(this)">تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> LEFT + FIND للاسم الأول. MID + FIND + LEN للاسم الأخير. DATEDIF للسنوات. NETWORKDAYS لأيام العمل. LOWER + CONCATENATE أو &amp; للإيميل.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>Excel Formulas</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="cm">// D2 - الاسم الأول:</span>
+=LEFT(A2, FIND(" ", A2) - 1)
+
+<span class="cm">// E2 - الاسم الأخير:</span>
+=MID(A2, FIND(" ", A2) + 1, LEN(A2) - FIND(" ", A2))
+
+<span class="cm">// F2 - سنوات الخبرة:</span>
+=DATEDIF(B2, TODAY(), "Y")
+
+<span class="cm">// G2 - أيام العمل:</span>
+=NETWORKDAYS(B2, TODAY())
+
+<span class="cm">// H2 - الإيميل الجديد:</span>
+=LOWER(D2 &amp; "." &amp; E2 &amp; "@newcompany.com")</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Excel Exercise 5 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين Excel 5: Pivot Table + Conditional Formatting</h4>
+                <span class="exercise-badge hard">صعب</span>
+            </div>
+            <div class="exercise-body">
+                <p>عندك بيانات مبيعات (التاريخ، المنطقة، المنتج، الكمية، السعر، الإجمالي). المطلوب: 1) اعمل Pivot Table يعرض إجمالي المبيعات لكل منطقة (Rows) حسب كل منتج (Columns). 2) أضف فلتر على التاريخ. 3) طبّق Conditional Formatting على القيم: Data Bars للأرقام، وتلوين أعلى 3 قيم بالأخضر وأقل 3 بالأحمر. 4) اعمل Pivot Chart (Column Chart) من الـ Pivot Table.</p>
+                <button class="hint-btn" onclick="toggleHint(this)">تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> Insert > Pivot Table. اسحب المنطقة لـ Rows والمنتج لـ Columns والإجمالي لـ Values والتاريخ لـ Filters. للـ Conditional Formatting: حدد القيم > Home > Conditional Formatting > Data Bars ثم Top/Bottom Rules.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">الحل</button>
+                <div class="solution-content">
+                    <div class="content-card">
+                        <h4>الخطوات:</h4>
+                        <ol>
+                            <li><strong>Pivot Table:</strong> حدد البيانات > Insert > PivotTable > اختار شيت جديد</li>
+                            <li><strong>ترتيب المناطق:</strong> اسحب "المنطقة" لـ Rows</li>
+                            <li><strong>ترتيب المنتجات:</strong> اسحب "المنتج" لـ Columns</li>
+                            <li><strong>القيم:</strong> اسحب "الإجمالي" لـ Values (تأكد إنه Sum)</li>
+                            <li><strong>الفلتر:</strong> اسحب "التاريخ" لـ Filters</li>
+                            <li><strong>Data Bars:</strong> حدد القيم > Home > Conditional Formatting > Data Bars</li>
+                            <li><strong>أعلى 3:</strong> Conditional Formatting > Top/Bottom Rules > Top 10 Items > غيّر لـ 3 واختار أخضر</li>
+                            <li><strong>أقل 3:</strong> Top/Bottom Rules > Bottom 10 Items > غيّر لـ 3 واختار أحمر</li>
+                            <li><strong>Pivot Chart:</strong> اضغط على الـ Pivot Table > Insert > Pivot Chart > Column</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Excel Exercise 6 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين Excel 6: Macro + What-If + Data Validation (تحدي)</h4>
+                <span class="exercise-badge challenge">تحدي</span>
+            </div>
+            <div class="exercise-body">
+                <p>اعمل شيت "Budget Calculator" فيه: 1) Data Validation: قائمة منسدلة للقسم (Sales, IT, HR, Finance) في B2، وأرقام بين 1000 و 100000 للميزانية في B3. 2) معادلة في B5 تحسب الضريبة (B3 * 15%). 3) استخدم Goal Seek: لو عايز الضريبة تكون 7500 بالضبط، كم لازم تكون الميزانية؟ 4) اعمل Data Table بقيم ميزانية مختلفة (10000, 20000, 30000, 40000, 50000) وأعرض الضريبة لكل واحدة. 5) سجّل Macro اسمه "FormatBudget" يعمل: Bold للعناوين، تلوين خلفية B2:B5 بالأصفر، AutoFit للأعمدة.</p>
+                <button class="hint-btn" onclick="toggleHint(this)">تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> Data Validation: حدد B2 > Data > Validation > List واكتب القيم. لـ B3: Whole Number بين 1000 و 100000. Goal Seek: Data > What-If > Goal Seek: Set cell B5, To value 7500, By changing B3. Data Table: اكتب القيم في عمود وحط المعادلة في الخلية المجاورة العلوية.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">الحل</button>
+                <div class="solution-content">
+                    <div class="content-card">
+                        <h4>الحل التفصيلي:</h4>
+                        <ol>
+                            <li><strong>Data Validation - القسم (B2):</strong> Data > Validation > Allow: List > Source: Sales,IT,HR,Finance</li>
+                            <li><strong>Data Validation - الميزانية (B3):</strong> Data > Validation > Allow: Whole Number > Between 1000 and 100000</li>
+                            <li><strong>معادلة الضريبة (B5):</strong> <code>=B3*15%</code> أو <code>=B3*0.15</code></li>
+                            <li><strong>Goal Seek:</strong> Data > What-If Analysis > Goal Seek > Set cell: B5 > To value: 7500 > By changing cell: B3 > النتيجة: B3 = 50000</li>
+                            <li><strong>Data Table:</strong> اكتب القيم (10000-50000) في D3:D7. في E2 حط <code>=B5</code>. حدد D2:E7 > Data > What-If > Data Table > Column input cell: B3</li>
+                            <li><strong>Macro:</strong> View > Macros > Record Macro > اسم: FormatBudget. نفّذ: حدد A1:A5 واعمل Bold. حدد B2:B5 واختار خلفية صفراء. حدد A:B واعمل AutoFit. وقّف التسجيل.</li>
+                        </ol>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header"><span>VBA - Macro Code</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre>Sub FormatBudget()
+    <span class="cm">' Bold للعناوين</span>
+    Range("A1:A5").Font.Bold = True
+
+    <span class="cm">' خلفية صفراء للقيم</span>
+    Range("B2:B5").Interior.Color = RGB(255, 255, 200)
+
+    <span class="cm">' AutoFit</span>
+    Columns("A:B").AutoFit
+
+    MsgBox "Budget formatted successfully!"
+End Sub</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary-box">
+            <h3>مبروك! أنت خلّصت الكورس كامل!</h3>
+            <ul>
+                <li>SQL الأساسي: CREATE, INSERT, SELECT, UPDATE, DELETE</li>
+                <li>WHERE, ORDER BY, GROUP BY, HAVING, Functions</li>
+                <li>JOINs: INNER, LEFT, RIGHT, FULL, SELF, CROSS</li>
+                <li>Subqueries: IN, EXISTS, ANY, ALL</li>
+                <li>Views, Indexes (B-Tree, Bitmap, Unique, Composite)</li>
+                <li>PL/SQL: Variables, IF/ELSE, CASE, Loops</li>
+                <li>Cursors: Implicit, Explicit, FOR LOOP</li>
+                <li>Exception Handling و Custom Exceptions</li>
+                <li>Procedures, Functions, Triggers, Packages</li>
+                <li>VLOOKUP, HLOOKUP, XLOOKUP, INDEX+MATCH</li>
+                <li>IF, IFS, COUNTIF, SUMIF, AVERAGEIF</li>
+                <li>Text Functions, Date Functions</li>
+                <li>Conditional Formatting, Data Validation, Named Ranges</li>
+                <li>Pivot Tables, Pivot Charts</li>
+                <li>Macros و VBA Basics</li>
+                <li>What-If Analysis: Goal Seek, Data Tables, Scenarios</li>
+            </ul>
+        </div>
+
+        <div class="quote-box">
+            <strong>"التعلم لا ينتهي أبداً. كل يوم هو فرصة جديدة لتتعلم شيئاً جديداً. استمر في الممارسة وطبّق كل اللي اتعلمته في مشاريع حقيقية!"</strong>
+        </div>
+    </section>
+
+</main>
+
+<a href="index.html" class="back-btn" title="العودة للفهرس">↩</a>
+
+<script>
+function toggleExercise(header) {
+    const body = header.nextElementSibling;
+    body.classList.toggle('show');
+}
+
+function toggleHint(btn) {
+    const hint = btn.nextElementSibling;
+    hint.classList.toggle('show');
+    btn.textContent = hint.classList.contains('show') ? 'إخفاء التلميح' : 'تلميح';
+}
+
+function toggleSolution(btn) {
+    const solution = btn.nextElementSibling;
+    solution.classList.toggle('show');
+    btn.textContent = solution.classList.contains('show') ? 'إخفاء الحل' : 'الحل';
+}
+
+function copyCode(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre');
+    const text = pre.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+        const original = btn.textContent;
+        btn.textContent = 'تم النسخ!';
+        btn.style.background = 'rgba(0,212,126,.2)';
+        btn.style.color = '#00d47e';
+        setTimeout(() => {
+            btn.textContent = original;
+            btn.style.background = '';
+            btn.style.color = '';
+        }, 2000);
+    });
+}
+
+// Sidebar scroll tracking
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.sidebar-nav a');
+
+window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (pageYOffset >= sectionTop - 200) {
+            current = section.getAttribute('id');
+        }
+    });
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) {
+            link.classList.add('active');
+        }
+    });
+});
+
+// Mobile sidebar toggle - close on link click
+navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+        if (window.innerWidth <= 900) {
+            document.querySelector('.sidebar').classList.remove('open');
+        }
+    });
+});
+</script>
+</body>
+</html>

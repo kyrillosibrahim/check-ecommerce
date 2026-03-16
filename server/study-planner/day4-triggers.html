@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triggers - اليوم الرابع</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root{--bg:#06060f;--bg-card:#0d0d1f;--bg-code:#0a0a1a;--border:#1a1a3e;--text:#e2e2f0;--text-dim:#8888aa;--accent:#ff4d4d;--accent2:#ff8c00;--accent3:#00d47e;--accent4:#4d8cff;--accent5:#a855f7;--glow:0 0 30px rgba(168,85,247,0.15)}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);line-height:1.8;min-height:100vh}
+        .sidebar{position:fixed;top:0;right:0;width:300px;height:100vh;background:var(--bg-card);border-left:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:100;transition:transform .3s}
+        .sidebar-header{padding:0 24px 20px;border-bottom:1px solid var(--border);margin-bottom:16px}
+        .sidebar-header h3{font-size:1rem;color:var(--accent5);margin-bottom:4px}
+        .sidebar-header p{font-size:.8rem;color:var(--text-dim)}
+        .sidebar-nav a{display:flex;align-items:center;gap:10px;padding:10px 24px;color:var(--text-dim);text-decoration:none;font-size:.85rem;transition:all .2s;border-right:3px solid transparent}
+        .sidebar-nav a:hover,.sidebar-nav a.active{color:var(--text);background:rgba(168,85,247,.05);border-right-color:var(--accent5)}
+        .sidebar-nav .num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--border);font-size:.7rem;font-weight:700;color:var(--accent5);flex-shrink:0}
+        .sidebar-toggle{display:none;position:fixed;top:20px;right:20px;z-index:200;background:var(--accent5);border:none;color:#fff;width:44px;height:44px;border-radius:12px;font-size:1.3rem;cursor:pointer}
+        .main{margin-right:300px}
+        .hero{padding:80px 60px 60px;background:linear-gradient(135deg,rgba(168,85,247,.08),rgba(77,140,255,.06));border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+        .hero::before{content:'';position:absolute;top:-100px;left:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(168,85,247,.06),transparent 70%);pointer-events:none}
+        .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);padding:6px 16px;border-radius:100px;font-size:.85rem;color:var(--accent5);margin-bottom:20px}
+        .hero h1{font-size:2.5rem;font-weight:900;margin-bottom:16px;background:linear-gradient(135deg,var(--accent5),var(--accent4));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .hero p{font-size:1.1rem;color:var(--text-dim);max-width:600px}
+        .section{padding:60px;border-bottom:1px solid var(--border)}
+        .section-label{display:inline-flex;align-items:center;gap:8px;font-size:.8rem;color:var(--accent5);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;font-weight:700}
+        .section h2{font-size:1.8rem;font-weight:800;margin-bottom:24px}
+        .section h3{font-size:1.3rem;font-weight:700;margin:24px 0 16px;color:var(--accent4)}
+        .section p,.section li{font-size:1rem;color:var(--text-dim);margin-bottom:12px}
+        .section ul,.section ol{padding-right:24px;margin-bottom:16px}
+        .content-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;margin:20px 0;box-shadow:var(--glow)}
+        .content-card h4{font-size:1.1rem;color:var(--accent5);margin-bottom:16px}
+        .code-block{background:var(--bg-code);border:1px solid var(--border);border-radius:12px;margin:16px 0;overflow:hidden}
+        .code-header{display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--border)}
+        .code-header span{font-size:.8rem;color:var(--text-dim)}
+        .code-header .copy-btn{background:rgba(77,140,255,.1);border:1px solid rgba(77,140,255,.2);color:var(--accent4);padding:4px 12px;border-radius:6px;font-size:.75rem;cursor:pointer;font-family:'Cairo',sans-serif;transition:all .2s}
+        .code-header .copy-btn:hover{background:rgba(77,140,255,.2)}
+        .code-block pre{padding:20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.9rem;line-height:1.7;direction:ltr;text-align:left}
+        .kw{color:#ff7b72;font-weight:700}.str{color:#a5d6ff}.cm{color:#6a737d;font-style:italic}.num{color:#79c0ff}.fn{color:#d2a8ff}.tp{color:#ff8c00}.op{color:#ff4d4d}.tbl{color:#00d47e}
+        .info-box{background:rgba(77,140,255,.05);border:1px solid rgba(77,140,255,.15);border-radius:12px;padding:20px 24px;margin:16px 0}
+        .info-box.warning{background:rgba(255,140,0,.05);border-color:rgba(255,140,0,.15)}
+        .info-box.success{background:rgba(0,212,126,.05);border-color:rgba(0,212,126,.15)}
+        .info-box.danger{background:rgba(255,77,77,.05);border-color:rgba(255,77,77,.15)}
+        .info-box strong{color:var(--accent4)}
+        .info-box.warning strong{color:var(--accent2)}
+        .info-box.success strong{color:var(--accent3)}
+        .info-box.danger strong{color:var(--accent)}
+        .quote-box{border-right:4px solid var(--accent5);background:rgba(168,85,247,.05);padding:20px 24px;border-radius:0 12px 12px 0;margin:16px 0;font-style:italic}
+        .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin:20px 0}
+        .feature-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;text-align:center;transition:all .3s}
+        .feature-card:hover{border-color:var(--accent5);transform:translateY(-4px)}
+        .feature-card .icon{font-size:2.5rem;margin-bottom:16px}
+        .feature-card h4{color:var(--accent5);margin-bottom:8px;font-size:1.1rem}
+        .feature-card p{font-size:.85rem;color:var(--text-dim)}
+        .analogy-box{background:linear-gradient(135deg,rgba(168,85,247,.08),rgba(77,140,255,.08));border:1px solid rgba(168,85,247,.2);border-radius:16px;padding:28px;margin:24px 0}
+        .analogy-box h4{color:var(--accent5);font-size:1.1rem;margin-bottom:12px}
+        .analogy-box .emoji{font-size:2rem;margin-bottom:12px;display:block}
+        .table-visual{width:100%;border-collapse:collapse;margin:16px 0;font-size:.9rem}
+        .table-visual th{background:rgba(168,85,247,.1);color:var(--accent5);padding:12px 16px;text-align:right;font-weight:700;border-bottom:2px solid var(--accent5)}
+        .table-visual td{padding:10px 16px;border-bottom:1px solid var(--border);color:var(--text-dim)}
+        .table-visual tr:hover td{background:rgba(168,85,247,.03)}
+        .vs-container{display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:start;margin:24px 0}
+        .vs-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px}
+        .vs-card h4{font-size:1.2rem;margin-bottom:16px}
+        .vs-card.left h4{color:var(--accent2)}.vs-card.right h4{color:var(--accent5)}
+        .vs-badge{background:var(--accent5);color:#fff;padding:10px 16px;border-radius:50%;font-weight:900;font-size:1rem;align-self:center}
+        .exercise-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;margin:20px 0;overflow:hidden}
+        .exercise-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;cursor:pointer;transition:background .2s}
+        .exercise-header:hover{background:rgba(168,85,247,.03)}
+        .exercise-header h4{color:var(--text);font-size:1rem}
+        .exercise-badge{padding:4px 12px;border-radius:100px;font-size:.75rem;font-weight:700}
+        .exercise-badge.easy{background:rgba(0,212,126,.1);color:var(--accent3)}
+        .exercise-badge.medium{background:rgba(255,140,0,.1);color:var(--accent2)}
+        .exercise-badge.hard{background:rgba(255,77,77,.1);color:var(--accent)}
+        .exercise-body{display:none;padding:0 24px 24px;border-top:1px solid var(--border)}
+        .exercise-body.show{display:block}
+        .exercise-body p{padding-top:16px}
+        .hint-btn,.solution-toggle{background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);color:var(--accent5);padding:8px 20px;border-radius:8px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.85rem;margin-top:12px;margin-left:8px;transition:all .2s}
+        .hint-btn:hover,.solution-toggle:hover{background:rgba(168,85,247,.2)}
+        .hint-content,.solution-content{display:none;margin-top:12px}
+        .hint-content.show,.solution-content.show{display:block}
+        .summary-box{background:linear-gradient(135deg,rgba(168,85,247,.06),rgba(77,140,255,.06));border:1px solid rgba(168,85,247,.15);border-radius:16px;padding:32px;margin:24px 0}
+        .summary-box h3{color:var(--accent5);margin-bottom:16px}
+        .summary-box ul{list-style:none;padding:0}
+        .summary-box li{padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);color:var(--text-dim)}
+        .summary-box li::before{content:'✅ '}
+        .back-btn{position:fixed;bottom:30px;left:30px;background:var(--accent5);color:#fff;border:none;width:50px;height:50px;border-radius:50%;font-size:1.3rem;cursor:pointer;z-index:200;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 4px 20px rgba(168,85,247,.3);transition:transform .2s}
+        .back-btn:hover{transform:scale(1.1)}
+        @media(max-width:900px){.sidebar{transform:translateX(100%)}.sidebar.open{transform:translateX(0)}.sidebar-toggle{display:flex;align-items:center;justify-content:center}.main{margin-right:0}.hero{padding:60px 24px 40px}.hero h1{font-size:1.8rem}.section{padding:40px 24px}.vs-container{grid-template-columns:1fr}.vs-badge{justify-self:center}}
+    </style>
+</head>
+<body>
+<button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+<aside class="sidebar">
+    <div class="sidebar-header"><h3>Triggers</h3><p>اليوم الرابع - الحصة الثالثة</p></div>
+    <nav class="sidebar-nav">
+        <a href="#trigger-intro"><span class="num">1</span> إيه هو الـ Trigger؟</a>
+        <a href="#trigger-types"><span class="num">2</span> BEFORE vs AFTER</a>
+        <a href="#trigger-events"><span class="num">3</span> أحداث الـ Trigger</a>
+        <a href="#row-vs-stmt"><span class="num">4</span> ROW vs STATEMENT</a>
+        <a href="#new-old"><span class="num">5</span> :NEW و :OLD</a>
+        <a href="#first-trigger"><span class="num">6</span> أول Trigger: Audit Log</a>
+        <a href="#before-insert"><span class="num">7</span> BEFORE INSERT</a>
+        <a href="#before-update"><span class="num">8</span> BEFORE UPDATE</a>
+        <a href="#after-insert"><span class="num">9</span> AFTER INSERT</a>
+        <a href="#manage-triggers"><span class="num">10</span> إدارة Triggers</a>
+        <a href="#best-practices"><span class="num">11</span> أفضل الممارسات</a>
+        <a href="#exercises"><span class="num">12</span> تمارين عملية</a>
+    </nav>
+</aside>
+<main class="main">
+    <section class="hero">
+        <div class="hero-badge">⚡ اليوم الرابع - الحصة الثالثة</div>
+        <h1>Triggers - إيه هي وامتى تستخدمها</h1>
+        <p>هتتعلم إيه هو الـ Trigger، أنواعه، وإزاي تخلي الداتابيز تتصرف تلقائياً لما حاجة تحصل - بدون ما تتدخل!</p>
+    </section>
+
+    <section class="section" id="trigger-intro">
+        <span class="section-label">المقدمة</span>
+        <h2>إيه هو الـ Trigger؟</h2>
+        <div class="analogy-box">
+            <span class="emoji">🔔</span>
+            <h4>تشبيه: جرس الباب!</h4>
+            <p>الـ Trigger زي جرس الباب بالظبط: لما حد يدوس عليه (حدث يحصل على الجدول - INSERT/UPDATE/DELETE)، الجرس بيرن تلقائياً (الكود بيشتغل لوحده). إنت مش محتاج تفضل تراقب الباب - الجرس هيعرفك تلقائياً!</p>
+        </div>
+        <p>الـ Trigger هو كود PL/SQL بيشتغل <strong style="color:var(--accent5)">تلقائياً</strong> لما حدث معين يحصل على جدول معين. مش بتستدعيه بإيدك - هو بيشتغل لوحده!</p>
+        <div class="features-grid">
+            <div class="feature-card"><span class="icon">⚡</span><h4>تلقائي</h4><p>بيشتغل لوحده - مفيش استدعاء يدوي</p></div>
+            <div class="feature-card"><span class="icon">🔗</span><h4>مربوط بجدول</h4><p>كل Trigger مرتبط بجدول معين</p></div>
+            <div class="feature-card"><span class="icon">🎯</span><h4>مربوط بحدث</h4><p>INSERT أو UPDATE أو DELETE</p></div>
+        </div>
+        <div class="code-block"><div class="code-header"><span>PL/SQL - الصيغة العامة</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">CREATE OR REPLACE TRIGGER</span> trigger_name
+<span class="kw">BEFORE</span> | <span class="kw">AFTER</span>
+<span class="kw">INSERT</span> | <span class="kw">UPDATE</span> | <span class="kw">DELETE</span>
+<span class="kw">ON</span> <span class="tbl">table_name</span>
+[<span class="kw">FOR EACH ROW</span>]
+<span class="kw">BEGIN</span>
+    <span class="cm">-- الكود اللي هيشتغل تلقائياً</span>
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+    </section>
+
+    <section class="section" id="trigger-types">
+        <span class="section-label">الأنواع</span>
+        <h2>BEFORE vs AFTER</h2>
+        <p>كل Trigger لازم تحدد: هيشتغل <strong style="color:var(--accent2)">قبل</strong> العملية ولا <strong style="color:var(--accent5)">بعدها</strong>؟</p>
+        <div class="vs-container">
+            <div class="vs-card left">
+                <h4>⏪ BEFORE Trigger</h4>
+                <ul>
+                    <li>بيشتغل <strong>قبل</strong> ما العملية تتنفذ</li>
+                    <li>تقدر تعدّل البيانات قبل ما تتحفظ</li>
+                    <li>تقدر تمنع العملية بـ RAISE_APPLICATION_ERROR</li>
+                    <li>مثال: تعبي created_date تلقائياً</li>
+                    <li>مثال: تتحقق من بيانات قبل ما تتحفظ</li>
+                </ul>
+            </div>
+            <span class="vs-badge">VS</span>
+            <div class="vs-card right">
+                <h4>⏩ AFTER Trigger</h4>
+                <ul>
+                    <li>بيشتغل <strong>بعد</strong> ما العملية تتنفذ</li>
+                    <li>مش تقدر تعدل البيانات (خلاص اتحفظت!)</li>
+                    <li>بيستخدم للـ logging و auditing</li>
+                    <li>مثال: تسجل في audit log</li>
+                    <li>مثال: تبعت notification</li>
+                </ul>
+            </div>
+        </div>
+        <div class="info-box">
+            <strong>القاعدة:</strong> لو عايز تعدّل أو تمنع = <code style="color:var(--accent2)">BEFORE</code>. لو عايز تسجّل أو تراقب = <code style="color:var(--accent5)">AFTER</code>.
+        </div>
+    </section>
+
+    <section class="section" id="trigger-events">
+        <span class="section-label">الأحداث</span>
+        <h2>INSERT / UPDATE / DELETE Events</h2>
+        <p>الـ Trigger بيشتغل لما حدث معين يحصل. تقدر تربطه بحدث واحد أو أكتر:</p>
+        <div class="features-grid">
+            <div class="feature-card"><span class="icon">➕</span><h4>INSERT</h4><p>لما صف جديد يتضاف للجدول</p></div>
+            <div class="feature-card"><span class="icon">✏️</span><h4>UPDATE</h4><p>لما بيانات صف موجود تتعدّل</p></div>
+            <div class="feature-card"><span class="icon">🗑️</span><h4>DELETE</h4><p>لما صف يتمسح من الجدول</p></div>
+        </div>
+        <div class="code-block"><div class="code-header"><span>PL/SQL - حدث واحد</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="cm">-- Trigger على INSERT بس</span>
+<span class="kw">CREATE OR REPLACE TRIGGER</span> trg_after_insert
+<span class="kw">AFTER INSERT ON</span> <span class="tbl">employees</span>
+<span class="kw">FOR EACH ROW</span>
+<span class="kw">BEGIN</span>
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'تم إضافة موظف جديد!'</span>);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+        <div class="code-block"><div class="code-header"><span>PL/SQL - أحداث متعددة</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="cm">-- Trigger على أكتر من حدث</span>
+<span class="kw">CREATE OR REPLACE TRIGGER</span> trg_emp_changes
+<span class="kw">AFTER INSERT OR UPDATE OR DELETE ON</span> <span class="tbl">employees</span>
+<span class="kw">FOR EACH ROW</span>
+<span class="kw">BEGIN</span>
+    <span class="kw">IF</span> <span class="fn">INSERTING</span> <span class="kw">THEN</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'تم إضافة موظف'</span>);
+    <span class="kw">ELSIF</span> <span class="fn">UPDATING</span> <span class="kw">THEN</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'تم تعديل موظف'</span>);
+    <span class="kw">ELSIF</span> <span class="fn">DELETING</span> <span class="kw">THEN</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'تم حذف موظف'</span>);
+    <span class="kw">END IF</span>;
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+        <div class="info-box success">
+            <strong>✅ ملحوظة:</strong> <code>INSERTING</code> و <code>UPDATING</code> و <code>DELETING</code> هي conditional predicates بتقولك أنهي عملية اللي حصلت.
+        </div>
+    </section>
+
+    <section class="section" id="row-vs-stmt">
+        <span class="section-label">المستوى</span>
+        <h2>ROW-level vs STATEMENT-level</h2>
+        <div class="vs-container">
+            <div class="vs-card left">
+                <h4>📝 STATEMENT-level</h4>
+                <ul>
+                    <li>بيشتغل <strong>مرة واحدة</strong> لكل أمر SQL</li>
+                    <li>مش بنكتب FOR EACH ROW</li>
+                    <li>مش بيقدر يوصل لـ :NEW و :OLD</li>
+                    <li>لو عملت UPDATE لـ 100 صف = الـ Trigger بيشتغل مرة واحدة بس</li>
+                </ul>
+            </div>
+            <span class="vs-badge">VS</span>
+            <div class="vs-card right">
+                <h4>📋 ROW-level (FOR EACH ROW)</h4>
+                <ul>
+                    <li>بيشتغل <strong>مرة لكل صف</strong> متأثر</li>
+                    <li>بنكتب <code style="color:var(--accent5)">FOR EACH ROW</code></li>
+                    <li>بيقدر يوصل لـ :NEW و :OLD</li>
+                    <li>لو عملت UPDATE لـ 100 صف = الـ Trigger بيشتغل 100 مرة!</li>
+                </ul>
+            </div>
+        </div>
+        <div class="code-block"><div class="code-header"><span>PL/SQL - الفرق</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="cm">-- STATEMENT-level (مرة واحدة)</span>
+<span class="kw">CREATE OR REPLACE TRIGGER</span> trg_stmt_level
+<span class="kw">AFTER UPDATE ON</span> <span class="tbl">employees</span>
+<span class="cm">-- بدون FOR EACH ROW</span>
+<span class="kw">BEGIN</span>
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'حصل تعديل على جدول الموظفين'</span>);
+<span class="kw">END</span>;
+<span class="op">/</span>
+
+<span class="cm">-- ROW-level (مرة لكل صف)</span>
+<span class="kw">CREATE OR REPLACE TRIGGER</span> trg_row_level
+<span class="kw">AFTER UPDATE ON</span> <span class="tbl">employees</span>
+<span class="kw">FOR EACH ROW</span>
+<span class="kw">BEGIN</span>
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'تم تعديل موظف: '</span> <span class="op">||</span> <span class="fn">:OLD</span>.first_name);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+        <div class="quote-box">
+            <strong>خلاصة:</strong> أغلب الـ Triggers بتكون ROW-level (FOR EACH ROW) عشان محتاج توصل لبيانات كل صف.
+        </div>
+    </section>
+
+    <section class="section" id="new-old">
+        <span class="section-label">البيانات</span>
+        <h2>:NEW و :OLD - Pseudo-Records</h2>
+        <p>في ROW-level Trigger، تقدر توصل للبيانات <strong style="color:var(--accent2)">القديمة</strong> والبيانات <strong style="color:var(--accent5)">الجديدة</strong> لكل صف:</p>
+        <div class="content-card">
+            <h4>جدول المقارنة:</h4>
+            <table class="table-visual">
+                <thead><tr><th>العملية</th><th>:OLD</th><th>:NEW</th></tr></thead>
+                <tbody>
+                    <tr><td><strong style="color:var(--accent3)">INSERT</strong></td><td>❌ NULL (مفيش بيانات قديمة)</td><td>✅ البيانات الجديدة اللي هتتضاف</td></tr>
+                    <tr><td><strong style="color:var(--accent4)">UPDATE</strong></td><td>✅ البيانات قبل التعديل</td><td>✅ البيانات بعد التعديل</td></tr>
+                    <tr><td><strong style="color:var(--accent)">DELETE</strong></td><td>✅ البيانات اللي هتتمسح</td><td>❌ NULL (مفيش بيانات جديدة)</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="code-block"><div class="code-header"><span>PL/SQL - استخدام :NEW و :OLD</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">CREATE OR REPLACE TRIGGER</span> trg_salary_change
+<span class="kw">AFTER UPDATE OF</span> salary <span class="kw">ON</span> <span class="tbl">employees</span>
+<span class="kw">FOR EACH ROW</span>
+<span class="kw">BEGIN</span>
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(
+        <span class="str">'الموظف: '</span> <span class="op">||</span> <span class="fn">:OLD</span>.first_name <span class="op">||</span>
+        <span class="str">' - المرتب القديم: '</span> <span class="op">||</span> <span class="fn">:OLD</span>.salary <span class="op">||</span>
+        <span class="str">' - المرتب الجديد: '</span> <span class="op">||</span> <span class="fn">:NEW</span>.salary
+    );
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+        <div class="info-box warning">
+            <strong>⚠️ مهم:</strong> في BEFORE trigger تقدر تعدّل <code>:NEW</code> (مثلاً <code>:NEW.salary := 5000</code>). لكن في AFTER trigger مش تقدر تعدّل لأن البيانات خلاص اتحفظت!
+        </div>
+    </section>
+
+    <section class="section" id="first-trigger">
+        <span class="section-label">تطبيق عملي</span>
+        <h2>أول Trigger: تسجيل في Audit Log</h2>
+        <p>هنعمل جدول audit_log عشان نسجل فيه كل عملية حذف تحصل على جدول الموظفين.</p>
+        <h3>الخطوة 1: إنشاء جدول الـ Audit Log</h3>
+        <div class="code-block"><div class="code-header"><span>SQL - CREATE TABLE</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">CREATE TABLE</span> <span class="tbl">audit_log</span> (
+    audit_id     <span class="tp">NUMBER</span> <span class="kw">GENERATED ALWAYS AS IDENTITY PRIMARY KEY</span>,
+    table_name   <span class="tp">VARCHAR2</span>(<span class="num">50</span>),
+    operation    <span class="tp">VARCHAR2</span>(<span class="num">10</span>),
+    old_data     <span class="tp">VARCHAR2</span>(<span class="num">500</span>),
+    changed_by   <span class="tp">VARCHAR2</span>(<span class="num">50</span>),
+    changed_date <span class="tp">DATE</span> <span class="kw">DEFAULT</span> <span class="fn">SYSDATE</span>
+);</pre>
+        </div>
+        <h3>الخطوة 2: إنشاء الـ Trigger</h3>
+        <div class="code-block"><div class="code-header"><span>PL/SQL - AFTER DELETE Trigger</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">CREATE OR REPLACE TRIGGER</span> trg_audit_emp_delete
+<span class="kw">AFTER DELETE ON</span> <span class="tbl">employees</span>
+<span class="kw">FOR EACH ROW</span>
+<span class="kw">BEGIN</span>
+    <span class="kw">INSERT INTO</span> <span class="tbl">audit_log</span> (table_name, operation, old_data, changed_by)
+    <span class="kw">VALUES</span> (
+        <span class="str">'EMPLOYEES'</span>,
+        <span class="str">'DELETE'</span>,
+        <span class="str">'ID='</span> <span class="op">||</span> <span class="fn">:OLD</span>.employee_id <span class="op">||</span>
+        <span class="str">', Name='</span> <span class="op">||</span> <span class="fn">:OLD</span>.first_name <span class="op">||</span>
+        <span class="str">', Salary='</span> <span class="op">||</span> <span class="fn">:OLD</span>.salary,
+        <span class="fn">USER</span>
+    );
+<span class="kw">END</span>;
+<span class="op">/</span>
+
+<span class="cm">-- جرّب:</span>
+<span class="kw">DELETE FROM</span> <span class="tbl">employees</span> <span class="kw">WHERE</span> employee_id = <span class="num">999</span>;
+
+<span class="cm">-- شوف الـ audit log:</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">audit_log</span>;</pre>
+        </div>
+        <div class="info-box success">
+            <strong>✅ كده:</strong> كل مرة حد يحذف موظف، الـ Trigger هيسجل التفاصيل تلقائياً في جدول الـ audit_log. محدش يقدر يحذف من غير ما يتسجل!
+        </div>
+    </section>
+
+    <section class="section" id="before-insert">
+        <span class="section-label">BEFORE INSERT</span>
+        <h2>BEFORE INSERT: تعبئة بيانات تلقائياً</h2>
+        <p>أشهر استخدام للـ BEFORE INSERT هو تعبئة بيانات تلقائياً قبل ما الصف يتحفظ:</p>
+        <div class="code-block"><div class="code-header"><span>PL/SQL - Auto-fill defaults</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">CREATE OR REPLACE TRIGGER</span> trg_emp_defaults
+<span class="kw">BEFORE INSERT ON</span> <span class="tbl">employees</span>
+<span class="kw">FOR EACH ROW</span>
+<span class="kw">BEGIN</span>
+    <span class="cm">-- تعبئة تاريخ الإنشاء تلقائياً</span>
+    <span class="fn">:NEW</span>.hire_date <span class="op">:=</span> <span class="fn">SYSDATE</span>;
+
+    <span class="cm">-- لو المرتب فاضي، حط قيمة افتراضية</span>
+    <span class="kw">IF</span> <span class="fn">:NEW</span>.salary <span class="kw">IS NULL THEN</span>
+        <span class="fn">:NEW</span>.salary <span class="op">:=</span> <span class="num">3000</span>;
+    <span class="kw">END IF</span>;
+
+    <span class="cm">-- خلي الاسم يبدأ بحرف كبير</span>
+    <span class="fn">:NEW</span>.first_name <span class="op">:=</span> <span class="fn">INITCAP</span>(<span class="fn">:NEW</span>.first_name);
+    <span class="fn">:NEW</span>.last_name  <span class="op">:=</span> <span class="fn">INITCAP</span>(<span class="fn">:NEW</span>.last_name);
+<span class="kw">END</span>;
+<span class="op">/</span>
+
+<span class="cm">-- جرّب:</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">employees</span> (employee_id, first_name, last_name, email, job_id)
+<span class="kw">VALUES</span> (<span class="num">999</span>, <span class="str">'ahmed'</span>, <span class="str">'mohamed'</span>, <span class="str">'AHMEDM'</span>, <span class="str">'IT_PROG'</span>);
+
+<span class="cm">-- شوف النتيجة - hire_date اتملت و salary = 3000 و الاسم بحرف كبير!</span>
+<span class="kw">SELECT</span> first_name, last_name, hire_date, salary
+<span class="kw">FROM</span> <span class="tbl">employees</span> <span class="kw">WHERE</span> employee_id = <span class="num">999</span>;</pre>
+        </div>
+        <div class="quote-box">
+            <strong>الفكرة:</strong> الـ BEFORE INSERT بيديك فرصة تتحكم في البيانات قبل ما تتحفظ. تقدر تعدّل :NEW بحرية!
+        </div>
+    </section>
+
+    <section class="section" id="before-update">
+        <span class="section-label">BEFORE UPDATE</span>
+        <h2>BEFORE UPDATE: منع تقليل المرتب</h2>
+        <p>هنا الـ Trigger بيشتغل كـ <strong style="color:var(--accent)">حارس</strong> - بيمنع أي تعديل غلط:</p>
+        <div class="code-block"><div class="code-header"><span>PL/SQL - Validation Trigger</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">CREATE OR REPLACE TRIGGER</span> trg_prevent_salary_decrease
+<span class="kw">BEFORE UPDATE OF</span> salary <span class="kw">ON</span> <span class="tbl">employees</span>
+<span class="kw">FOR EACH ROW</span>
+<span class="kw">BEGIN</span>
+    <span class="cm">-- لو المرتب الجديد أقل من القديم = ارفض!</span>
+    <span class="kw">IF</span> <span class="fn">:NEW</span>.salary <span class="op">&lt;</span> <span class="fn">:OLD</span>.salary <span class="kw">THEN</span>
+        <span class="fn">RAISE_APPLICATION_ERROR</span>(
+            <span class="num">-20001</span>,
+            <span class="str">'ممنوع تقلّل المرتب! القديم: '</span> <span class="op">||</span> <span class="fn">:OLD</span>.salary <span class="op">||</span>
+            <span class="str">' الجديد: '</span> <span class="op">||</span> <span class="fn">:NEW</span>.salary
+        );
+    <span class="kw">END IF</span>;
+<span class="kw">END</span>;
+<span class="op">/</span>
+
+<span class="cm">-- جرّب - ده هينجح:</span>
+<span class="kw">UPDATE</span> <span class="tbl">employees</span> <span class="kw">SET</span> salary = salary <span class="op">+</span> <span class="num">500</span>
+<span class="kw">WHERE</span> employee_id = <span class="num">100</span>;
+
+<span class="cm">-- جرّب - ده هيفشل!</span>
+<span class="kw">UPDATE</span> <span class="tbl">employees</span> <span class="kw">SET</span> salary = <span class="num">1000</span>
+<span class="kw">WHERE</span> employee_id = <span class="num">100</span>;
+<span class="cm">-- ORA-20001: ممنوع تقلّل المرتب!</span></pre>
+        </div>
+        <div class="info-box danger">
+            <strong>🚨 RAISE_APPLICATION_ERROR:</strong> دي الطريقة عشان تمنع العملية وترجع رسالة خطأ. الرقم لازم يكون بين -20000 و -20999.
+        </div>
+        <div class="code-block"><div class="code-header"><span>PL/SQL - مثال تاني: منع التعديل في الأجازات</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">CREATE OR REPLACE TRIGGER</span> trg_no_weekend_changes
+<span class="kw">BEFORE UPDATE ON</span> <span class="tbl">employees</span>
+<span class="kw">FOR EACH ROW</span>
+<span class="kw">BEGIN</span>
+    <span class="kw">IF</span> <span class="fn">TO_CHAR</span>(<span class="fn">SYSDATE</span>, <span class="str">'DY'</span>) <span class="kw">IN</span> (<span class="str">'FRI'</span>, <span class="str">'SAT'</span>) <span class="kw">THEN</span>
+        <span class="fn">RAISE_APPLICATION_ERROR</span>(
+            <span class="num">-20002</span>,
+            <span class="str">'ممنوع التعديل في أيام الأجازة!'</span>
+        );
+    <span class="kw">END IF</span>;
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+    </section>
+
+    <section class="section" id="after-insert">
+        <span class="section-label">AFTER INSERT</span>
+        <h2>AFTER INSERT: تسجيل الإضافات</h2>
+        <p>بعد ما الموظف الجديد يتضاف بنجاح، نسجل العملية دي:</p>
+        <div class="code-block"><div class="code-header"><span>PL/SQL - Logging Trigger</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">CREATE OR REPLACE TRIGGER</span> trg_log_new_employee
+<span class="kw">AFTER INSERT ON</span> <span class="tbl">employees</span>
+<span class="kw">FOR EACH ROW</span>
+<span class="kw">BEGIN</span>
+    <span class="kw">INSERT INTO</span> <span class="tbl">audit_log</span> (table_name, operation, old_data, changed_by)
+    <span class="kw">VALUES</span> (
+        <span class="str">'EMPLOYEES'</span>,
+        <span class="str">'INSERT'</span>,
+        <span class="str">'New ID='</span> <span class="op">||</span> <span class="fn">:NEW</span>.employee_id <span class="op">||</span>
+        <span class="str">', Name='</span> <span class="op">||</span> <span class="fn">:NEW</span>.first_name <span class="op">||</span> <span class="str">' '</span> <span class="op">||</span> <span class="fn">:NEW</span>.last_name <span class="op">||</span>
+        <span class="str">', Salary='</span> <span class="op">||</span> <span class="fn">:NEW</span>.salary,
+        <span class="fn">USER</span>
+    );
+<span class="kw">END</span>;
+<span class="op">/</span>
+
+<span class="cm">-- جرّب:</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">employees</span> (employee_id, first_name, last_name, email, hire_date, job_id, salary)
+<span class="kw">VALUES</span> (<span class="num">998</span>, <span class="str">'Sara'</span>, <span class="str">'Ali'</span>, <span class="str">'SARAA'</span>, <span class="fn">SYSDATE</span>, <span class="str">'IT_PROG'</span>, <span class="num">7000</span>);
+
+<span class="cm">-- شوف الـ log:</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">audit_log</span> <span class="kw">WHERE</span> operation = <span class="str">'INSERT'</span>;</pre>
+        </div>
+        <div class="code-block"><div class="code-header"><span>PL/SQL - تسجيل تعديل المرتبات</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">CREATE OR REPLACE TRIGGER</span> trg_log_salary_change
+<span class="kw">AFTER UPDATE OF</span> salary <span class="kw">ON</span> <span class="tbl">employees</span>
+<span class="kw">FOR EACH ROW</span>
+<span class="kw">BEGIN</span>
+    <span class="kw">INSERT INTO</span> <span class="tbl">audit_log</span> (table_name, operation, old_data, changed_by)
+    <span class="kw">VALUES</span> (
+        <span class="str">'EMPLOYEES'</span>,
+        <span class="str">'UPDATE'</span>,
+        <span class="str">'EmpID='</span> <span class="op">||</span> <span class="fn">:OLD</span>.employee_id <span class="op">||</span>
+        <span class="str">' OldSalary='</span> <span class="op">||</span> <span class="fn">:OLD</span>.salary <span class="op">||</span>
+        <span class="str">' NewSalary='</span> <span class="op">||</span> <span class="fn">:NEW</span>.salary,
+        <span class="fn">USER</span>
+    );
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+    </section>
+
+    <section class="section" id="manage-triggers">
+        <span class="section-label">الإدارة</span>
+        <h2>إدارة Triggers</h2>
+        <h3>تعطيل وتفعيل Trigger</h3>
+        <div class="code-block"><div class="code-header"><span>SQL - ENABLE / DISABLE</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="cm">-- تعطيل Trigger واحد</span>
+<span class="kw">ALTER TRIGGER</span> trg_prevent_salary_decrease <span class="kw">DISABLE</span>;
+
+<span class="cm">-- تفعيل Trigger واحد</span>
+<span class="kw">ALTER TRIGGER</span> trg_prevent_salary_decrease <span class="kw">ENABLE</span>;
+
+<span class="cm">-- تعطيل كل Triggers على جدول معين</span>
+<span class="kw">ALTER TABLE</span> <span class="tbl">employees</span> <span class="kw">DISABLE ALL TRIGGERS</span>;
+
+<span class="cm">-- تفعيل كل Triggers على جدول معين</span>
+<span class="kw">ALTER TABLE</span> <span class="tbl">employees</span> <span class="kw">ENABLE ALL TRIGGERS</span>;</pre>
+        </div>
+        <h3>حذف Trigger</h3>
+        <div class="code-block"><div class="code-header"><span>SQL - DROP TRIGGER</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">DROP TRIGGER</span> trg_prevent_salary_decrease;</pre>
+        </div>
+        <h3>عرض كل الـ Triggers</h3>
+        <div class="code-block"><div class="code-header"><span>SQL - عرض من user_triggers</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="cm">-- كل الـ Triggers الخاصة بيك</span>
+<span class="kw">SELECT</span> trigger_name, trigger_type, triggering_event,
+       table_name, status
+<span class="kw">FROM</span> <span class="tbl">user_triggers</span>;
+
+<span class="cm">-- Triggers على جدول معين</span>
+<span class="kw">SELECT</span> trigger_name, trigger_type, triggering_event, status
+<span class="kw">FROM</span> <span class="tbl">user_triggers</span>
+<span class="kw">WHERE</span> table_name = <span class="str">'EMPLOYEES'</span>;
+
+<span class="cm">-- كود الـ Trigger</span>
+<span class="kw">SELECT</span> trigger_body
+<span class="kw">FROM</span> <span class="tbl">user_triggers</span>
+<span class="kw">WHERE</span> trigger_name = <span class="str">'TRG_PREVENT_SALARY_DECREASE'</span>;</pre>
+        </div>
+        <div class="content-card">
+            <h4>أهم أعمدة user_triggers:</h4>
+            <table class="table-visual">
+                <thead><tr><th>العمود</th><th>الوصف</th></tr></thead>
+                <tbody>
+                    <tr><td>TRIGGER_NAME</td><td>اسم الـ Trigger</td></tr>
+                    <tr><td>TRIGGER_TYPE</td><td>BEFORE/AFTER + EACH ROW/STATEMENT</td></tr>
+                    <tr><td>TRIGGERING_EVENT</td><td>INSERT / UPDATE / DELETE</td></tr>
+                    <tr><td>TABLE_NAME</td><td>الجدول المرتبط بيه</td></tr>
+                    <tr><td>STATUS</td><td>ENABLED أو DISABLED</td></tr>
+                    <tr><td>TRIGGER_BODY</td><td>كود الـ Trigger</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="section" id="best-practices">
+        <span class="section-label">نصائح</span>
+        <h2>أفضل الممارسات</h2>
+        <div class="features-grid">
+            <div class="feature-card"><span class="icon">📏</span><h4>خليه قصير</h4><p>الـ Trigger لازم يكون قصير وبسيط. لو الكود طويل، حطه في Procedure واستدعيها</p></div>
+            <div class="feature-card"><span class="icon">🚫</span><h4>لا COMMIT جواه</h4><p>ممنوع COMMIT أو ROLLBACK جوه الـ Trigger! هو جزء من الـ transaction الأصلية</p></div>
+            <div class="feature-card"><span class="icon">⛓️</span><h4>تجنب التسلسل</h4><p>لا تخلي Trigger يعمل عملية تشغّل Trigger تاني (cascading) - ده بيسبب مشاكل</p></div>
+        </div>
+        <div class="info-box danger">
+            <strong>🚨 أخطاء شائعة:</strong>
+            <ul style="margin-top:12px">
+                <li>كتابة COMMIT جوه الـ Trigger = <code style="color:var(--accent)">ORA-04092</code></li>
+                <li>الـ Trigger بيعمل UPDATE على نفس الجدول = <code style="color:var(--accent)">ORA-04091 (Mutating Table)</code></li>
+                <li>Trigger بيشغّل Trigger تاني بيشغّل التالت = infinite loop محتمل!</li>
+            </ul>
+        </div>
+        <div class="info-box warning">
+            <strong>⚠️ Mutating Table Error:</strong> لو الـ ROW-level Trigger حاول يعمل SELECT أو UPDATE على نفس الجدول اللي الـ Trigger عليه = خطأ ORA-04091. الحل: استخدم STATEMENT-level trigger أو compound trigger.
+        </div>
+        <div class="content-card">
+            <h4>قواعد ذهبية:</h4>
+            <table class="table-visual">
+                <thead><tr><th>القاعدة</th><th>السبب</th></tr></thead>
+                <tbody>
+                    <tr><td>خلي الـ Trigger قصير</td><td>الأداء - الـ Trigger بيشتغل مع كل عملية</td></tr>
+                    <tr><td>لا COMMIT / ROLLBACK</td><td>الـ Trigger جزء من الـ transaction</td></tr>
+                    <tr><td>تجنب cascading triggers</td><td>صعب الـ debugging وممكن يسبب infinite loop</td></tr>
+                    <tr><td>استخدم naming convention</td><td>مثلاً: trg_before_insert_emp</td></tr>
+                    <tr><td>وثّق الـ Trigger</td><td>اكتب comments توضح ليه الـ Trigger موجود</td></tr>
+                    <tr><td>لا تستخدمه لـ business logic معقد</td><td>استخدم Procedures بدل كده</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="section" id="exercises">
+        <span class="section-label">تمارين</span>
+        <h2>تمارين عملية</h2>
+
+        <div class="exercise-card"><div class="exercise-header" onclick="toggleExercise(this)"><h4>تمرين 1: Trigger بسيط للطباعة</h4><span class="exercise-badge easy">سهل</span></div><div class="exercise-body"><p>اكتب AFTER INSERT Trigger على جدول <code style="color:var(--accent4)">employees</code> بيطبع "مرحباً بالموظف الجديد!" مع اسم الموظف.</p><button class="hint-btn" onclick="toggleHint(this)">💡 تلميح</button><div class="hint-content"><p>استخدم <code>:NEW.first_name</code> عشان توصل لاسم الموظف الجديد، و <code>DBMS_OUTPUT.PUT_LINE</code> للطباعة.</p></div><button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button><div class="solution-content"><div class="code-block"><div class="code-header"><span>PL/SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div><pre><span class="kw">CREATE OR REPLACE TRIGGER</span> trg_welcome_emp
+<span class="kw">AFTER INSERT ON</span> <span class="tbl">employees</span>
+<span class="kw">FOR EACH ROW</span>
+<span class="kw">BEGIN</span>
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(
+        <span class="str">'مرحباً بالموظف الجديد: '</span> <span class="op">||</span> <span class="fn">:NEW</span>.first_name
+    );
+<span class="kw">END</span>;
+<span class="op">/</span></pre></div></div></div></div>
+
+        <div class="exercise-card"><div class="exercise-header" onclick="toggleExercise(this)"><h4>تمرين 2: Auto-fill تاريخ التعيين</h4><span class="exercise-badge easy">سهل</span></div><div class="exercise-body"><p>اكتب BEFORE INSERT Trigger على <code style="color:var(--accent4)">employees</code> بيملأ <code>hire_date</code> بالتاريخ الحالي لو كانت فاضية.</p><button class="hint-btn" onclick="toggleHint(this)">💡 تلميح</button><div class="hint-content"><p>استخدم <code>IF :NEW.hire_date IS NULL THEN</code> وبعدها <code>:NEW.hire_date := SYSDATE;</code></p></div><button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button><div class="solution-content"><div class="code-block"><div class="code-header"><span>PL/SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div><pre><span class="kw">CREATE OR REPLACE TRIGGER</span> trg_auto_hire_date
+<span class="kw">BEFORE INSERT ON</span> <span class="tbl">employees</span>
+<span class="kw">FOR EACH ROW</span>
+<span class="kw">BEGIN</span>
+    <span class="kw">IF</span> <span class="fn">:NEW</span>.hire_date <span class="kw">IS NULL THEN</span>
+        <span class="fn">:NEW</span>.hire_date <span class="op">:=</span> <span class="fn">SYSDATE</span>;
+    <span class="kw">END IF</span>;
+<span class="kw">END</span>;
+<span class="op">/</span></pre></div></div></div></div>
+
+        <div class="exercise-card"><div class="exercise-header" onclick="toggleExercise(this)"><h4>تمرين 3: منع حذف المديرين</h4><span class="exercise-badge medium">متوسط</span></div><div class="exercise-body"><p>اكتب BEFORE DELETE Trigger على <code style="color:var(--accent4)">employees</code> بيمنع حذف أي موظف job_id بتاعه <code>'AD_PRES'</code> أو <code>'AD_VP'</code>.</p><button class="hint-btn" onclick="toggleHint(this)">💡 تلميح</button><div class="hint-content"><p>استخدم <code>:OLD.job_id IN ('AD_PRES', 'AD_VP')</code> و <code>RAISE_APPLICATION_ERROR</code>.</p></div><button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button><div class="solution-content"><div class="code-block"><div class="code-header"><span>PL/SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div><pre><span class="kw">CREATE OR REPLACE TRIGGER</span> trg_protect_managers
+<span class="kw">BEFORE DELETE ON</span> <span class="tbl">employees</span>
+<span class="kw">FOR EACH ROW</span>
+<span class="kw">BEGIN</span>
+    <span class="kw">IF</span> <span class="fn">:OLD</span>.job_id <span class="kw">IN</span> (<span class="str">'AD_PRES'</span>, <span class="str">'AD_VP'</span>) <span class="kw">THEN</span>
+        <span class="fn">RAISE_APPLICATION_ERROR</span>(
+            <span class="num">-20003</span>,
+            <span class="str">'ممنوع حذف المديرين! الموظف: '</span> <span class="op">||</span> <span class="fn">:OLD</span>.first_name
+        );
+    <span class="kw">END IF</span>;
+<span class="kw">END</span>;
+<span class="op">/</span></pre></div></div></div></div>
+
+        <div class="exercise-card"><div class="exercise-header" onclick="toggleExercise(this)"><h4>تمرين 4: تسجيل تعديلات المرتب</h4><span class="exercise-badge medium">متوسط</span></div><div class="exercise-body"><p>اعمل جدول <code style="color:var(--accent4)">salary_history</code> (emp_id, old_salary, new_salary, change_date) واكتب AFTER UPDATE Trigger بيسجل كل تعديل مرتب فيه.</p><button class="hint-btn" onclick="toggleHint(this)">💡 تلميح</button><div class="hint-content"><p>اعمل الجدول الأول بـ CREATE TABLE، وبعدين اكتب AFTER UPDATE OF salary Trigger بيعمل INSERT في الجدول الجديد.</p></div><button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button><div class="solution-content"><div class="code-block"><div class="code-header"><span>PL/SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div><pre><span class="kw">CREATE TABLE</span> <span class="tbl">salary_history</span> (
+    history_id   <span class="tp">NUMBER</span> <span class="kw">GENERATED ALWAYS AS IDENTITY PRIMARY KEY</span>,
+    emp_id       <span class="tp">NUMBER</span>,
+    old_salary   <span class="tp">NUMBER</span>,
+    new_salary   <span class="tp">NUMBER</span>,
+    change_date  <span class="tp">DATE</span> <span class="kw">DEFAULT</span> <span class="fn">SYSDATE</span>
+);
+
+<span class="kw">CREATE OR REPLACE TRIGGER</span> trg_salary_history
+<span class="kw">AFTER UPDATE OF</span> salary <span class="kw">ON</span> <span class="tbl">employees</span>
+<span class="kw">FOR EACH ROW</span>
+<span class="kw">BEGIN</span>
+    <span class="kw">INSERT INTO</span> <span class="tbl">salary_history</span> (emp_id, old_salary, new_salary)
+    <span class="kw">VALUES</span> (<span class="fn">:OLD</span>.employee_id, <span class="fn">:OLD</span>.salary, <span class="fn">:NEW</span>.salary);
+<span class="kw">END</span>;
+<span class="op">/</span></pre></div></div></div></div>
+
+        <div class="exercise-card"><div class="exercise-header" onclick="toggleExercise(this)"><h4>تمرين 5: Trigger بأحداث متعددة</h4><span class="exercise-badge medium">متوسط</span></div><div class="exercise-body"><p>اكتب Trigger على <code style="color:var(--accent4)">employees</code> بيشتغل على INSERT و UPDATE و DELETE وبيسجل نوع العملية في <code>audit_log</code> باستخدام INSERTING و UPDATING و DELETING.</p><button class="hint-btn" onclick="toggleHint(this)">💡 تلميح</button><div class="hint-content"><p>استخدم <code>IF INSERTING THEN ... ELSIF UPDATING THEN ... ELSIF DELETING THEN ...</code> جوه الـ Trigger.</p></div><button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button><div class="solution-content"><div class="code-block"><div class="code-header"><span>PL/SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div><pre><span class="kw">CREATE OR REPLACE TRIGGER</span> trg_all_emp_changes
+<span class="kw">AFTER INSERT OR UPDATE OR DELETE ON</span> <span class="tbl">employees</span>
+<span class="kw">FOR EACH ROW</span>
+<span class="kw">DECLARE</span>
+    v_operation <span class="tp">VARCHAR2</span>(<span class="num">10</span>);
+    v_details   <span class="tp">VARCHAR2</span>(<span class="num">500</span>);
+<span class="kw">BEGIN</span>
+    <span class="kw">IF</span> <span class="fn">INSERTING</span> <span class="kw">THEN</span>
+        v_operation <span class="op">:=</span> <span class="str">'INSERT'</span>;
+        v_details <span class="op">:=</span> <span class="str">'New: '</span> <span class="op">||</span> <span class="fn">:NEW</span>.first_name <span class="op">||</span> <span class="str">' Sal='</span> <span class="op">||</span> <span class="fn">:NEW</span>.salary;
+    <span class="kw">ELSIF</span> <span class="fn">UPDATING</span> <span class="kw">THEN</span>
+        v_operation <span class="op">:=</span> <span class="str">'UPDATE'</span>;
+        v_details <span class="op">:=</span> <span class="str">'Old='</span> <span class="op">||</span> <span class="fn">:OLD</span>.salary <span class="op">||</span> <span class="str">' New='</span> <span class="op">||</span> <span class="fn">:NEW</span>.salary;
+    <span class="kw">ELSIF</span> <span class="fn">DELETING</span> <span class="kw">THEN</span>
+        v_operation <span class="op">:=</span> <span class="str">'DELETE'</span>;
+        v_details <span class="op">:=</span> <span class="str">'Deleted: '</span> <span class="op">||</span> <span class="fn">:OLD</span>.first_name;
+    <span class="kw">END IF</span>;
+
+    <span class="kw">INSERT INTO</span> <span class="tbl">audit_log</span> (table_name, operation, old_data, changed_by)
+    <span class="kw">VALUES</span> (<span class="str">'EMPLOYEES'</span>, v_operation, v_details, <span class="fn">USER</span>);
+<span class="kw">END</span>;
+<span class="op">/</span></pre></div></div></div></div>
+
+        <div class="exercise-card"><div class="exercise-header" onclick="toggleExercise(this)"><h4>تمرين 6: منع زيادة المرتب أكتر من 50%</h4><span class="exercise-badge hard">صعب</span></div><div class="exercise-body"><p>اكتب BEFORE UPDATE Trigger على <code style="color:var(--accent4)">employees</code> بيمنع زيادة المرتب لو الزيادة أكتر من 50% من المرتب الأصلي.</p><button class="hint-btn" onclick="toggleHint(this)">💡 تلميح</button><div class="hint-content"><p>قارن <code>:NEW.salary</code> مع <code>:OLD.salary * 1.5</code>. لو أكبر، ارفض بـ RAISE_APPLICATION_ERROR.</p></div><button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button><div class="solution-content"><div class="code-block"><div class="code-header"><span>PL/SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div><pre><span class="kw">CREATE OR REPLACE TRIGGER</span> trg_limit_raise
+<span class="kw">BEFORE UPDATE OF</span> salary <span class="kw">ON</span> <span class="tbl">employees</span>
+<span class="kw">FOR EACH ROW</span>
+<span class="kw">BEGIN</span>
+    <span class="kw">IF</span> <span class="fn">:NEW</span>.salary <span class="op">></span> <span class="fn">:OLD</span>.salary <span class="op">*</span> <span class="num">1.5</span> <span class="kw">THEN</span>
+        <span class="fn">RAISE_APPLICATION_ERROR</span>(
+            <span class="num">-20004</span>,
+            <span class="str">'ممنوع زيادة المرتب أكتر من 50%! القديم: '</span> <span class="op">||</span>
+            <span class="fn">:OLD</span>.salary <span class="op">||</span> <span class="str">' الحد الأقصى: '</span> <span class="op">||</span>
+            <span class="fn">:OLD</span>.salary <span class="op">*</span> <span class="num">1.5</span>
+        );
+    <span class="kw">END IF</span>;
+<span class="kw">END</span>;
+<span class="op">/</span></pre></div></div></div></div>
+
+        <div class="exercise-card"><div class="exercise-header" onclick="toggleExercise(this)"><h4>تمرين 7: Trigger لتحويل البريد لحروف كبيرة</h4><span class="exercise-badge hard">صعب</span></div><div class="exercise-body"><p>اكتب BEFORE INSERT OR UPDATE Trigger على <code style="color:var(--accent4)">employees</code> بيحوّل الـ email لحروف كبيرة تلقائياً ويتأكد إنه مش NULL.</p><button class="hint-btn" onclick="toggleHint(this)">💡 تلميح</button><div class="hint-content"><p>استخدم <code>:NEW.email := UPPER(:NEW.email)</code> واتحقق بـ <code>IF :NEW.email IS NULL THEN RAISE_APPLICATION_ERROR</code>.</p></div><button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button><div class="solution-content"><div class="code-block"><div class="code-header"><span>PL/SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div><pre><span class="kw">CREATE OR REPLACE TRIGGER</span> trg_email_format
+<span class="kw">BEFORE INSERT OR UPDATE OF</span> email <span class="kw">ON</span> <span class="tbl">employees</span>
+<span class="kw">FOR EACH ROW</span>
+<span class="kw">BEGIN</span>
+    <span class="kw">IF</span> <span class="fn">:NEW</span>.email <span class="kw">IS NULL THEN</span>
+        <span class="fn">RAISE_APPLICATION_ERROR</span>(
+            <span class="num">-20005</span>,
+            <span class="str">'البريد الإلكتروني مطلوب!'</span>
+        );
+    <span class="kw">END IF</span>;
+
+    <span class="fn">:NEW</span>.email <span class="op">:=</span> <span class="fn">UPPER</span>(<span class="fn">:NEW</span>.email);
+<span class="kw">END</span>;
+<span class="op">/</span></pre></div></div></div></div>
+
+        <div class="exercise-card"><div class="exercise-header" onclick="toggleExercise(this)"><h4>تمرين 8: Trigger شامل - نظام Audit كامل</h4><span class="exercise-badge hard">تحدي</span></div><div class="exercise-body"><p>اعمل جدول <code style="color:var(--accent4)">full_audit</code> فيه (audit_id, table_name, operation, column_changed, old_value, new_value, changed_by, changed_date). واكتب AFTER UPDATE Trigger على employees بيسجل بالتفصيل أي عمود اتغيّر (salary, job_id, department_id).</p><button class="hint-btn" onclick="toggleHint(this)">💡 تلميح</button><div class="hint-content"><p>اعمل الجدول الأول. في الـ Trigger، اعمل 3 شروط IF: واحد لـ salary، واحد لـ job_id، وواحد لـ department_id. كل واحد يعمل INSERT لو العمود اتغيّر.</p></div><button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button><div class="solution-content"><div class="code-block"><div class="code-header"><span>PL/SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div><pre><span class="kw">CREATE TABLE</span> <span class="tbl">full_audit</span> (
+    audit_id       <span class="tp">NUMBER</span> <span class="kw">GENERATED ALWAYS AS IDENTITY PRIMARY KEY</span>,
+    table_name     <span class="tp">VARCHAR2</span>(<span class="num">50</span>),
+    operation      <span class="tp">VARCHAR2</span>(<span class="num">10</span>),
+    column_changed <span class="tp">VARCHAR2</span>(<span class="num">50</span>),
+    old_value      <span class="tp">VARCHAR2</span>(<span class="num">200</span>),
+    new_value      <span class="tp">VARCHAR2</span>(<span class="num">200</span>),
+    changed_by     <span class="tp">VARCHAR2</span>(<span class="num">50</span>),
+    changed_date   <span class="tp">DATE</span> <span class="kw">DEFAULT</span> <span class="fn">SYSDATE</span>
+);
+
+<span class="kw">CREATE OR REPLACE TRIGGER</span> trg_full_audit_emp
+<span class="kw">AFTER UPDATE ON</span> <span class="tbl">employees</span>
+<span class="kw">FOR EACH ROW</span>
+<span class="kw">BEGIN</span>
+    <span class="cm">-- تسجيل تغيير المرتب</span>
+    <span class="kw">IF</span> <span class="fn">:OLD</span>.salary <span class="op">!=</span> <span class="fn">:NEW</span>.salary <span class="kw">THEN</span>
+        <span class="kw">INSERT INTO</span> <span class="tbl">full_audit</span>
+            (table_name, operation, column_changed, old_value, new_value, changed_by)
+        <span class="kw">VALUES</span> (<span class="str">'EMPLOYEES'</span>, <span class="str">'UPDATE'</span>, <span class="str">'SALARY'</span>,
+            <span class="fn">TO_CHAR</span>(<span class="fn">:OLD</span>.salary), <span class="fn">TO_CHAR</span>(<span class="fn">:NEW</span>.salary), <span class="fn">USER</span>);
+    <span class="kw">END IF</span>;
+
+    <span class="cm">-- تسجيل تغيير الوظيفة</span>
+    <span class="kw">IF</span> <span class="fn">:OLD</span>.job_id <span class="op">!=</span> <span class="fn">:NEW</span>.job_id <span class="kw">THEN</span>
+        <span class="kw">INSERT INTO</span> <span class="tbl">full_audit</span>
+            (table_name, operation, column_changed, old_value, new_value, changed_by)
+        <span class="kw">VALUES</span> (<span class="str">'EMPLOYEES'</span>, <span class="str">'UPDATE'</span>, <span class="str">'JOB_ID'</span>,
+            <span class="fn">:OLD</span>.job_id, <span class="fn">:NEW</span>.job_id, <span class="fn">USER</span>);
+    <span class="kw">END IF</span>;
+
+    <span class="cm">-- تسجيل تغيير القسم</span>
+    <span class="kw">IF</span> <span class="fn">NVL</span>(<span class="fn">:OLD</span>.department_id, <span class="num">0</span>) <span class="op">!=</span> <span class="fn">NVL</span>(<span class="fn">:NEW</span>.department_id, <span class="num">0</span>) <span class="kw">THEN</span>
+        <span class="kw">INSERT INTO</span> <span class="tbl">full_audit</span>
+            (table_name, operation, column_changed, old_value, new_value, changed_by)
+        <span class="kw">VALUES</span> (<span class="str">'EMPLOYEES'</span>, <span class="str">'UPDATE'</span>, <span class="str">'DEPARTMENT_ID'</span>,
+            <span class="fn">TO_CHAR</span>(<span class="fn">:OLD</span>.department_id), <span class="fn">TO_CHAR</span>(<span class="fn">:NEW</span>.department_id), <span class="fn">USER</span>);
+    <span class="kw">END IF</span>;
+<span class="kw">END</span>;
+<span class="op">/</span></pre></div></div></div></div>
+
+        <div class="summary-box">
+            <h3>ملخص اللي اتعلمناه</h3>
+            <ul>
+                <li>الـ Trigger كود PL/SQL بيشتغل تلقائياً لما حدث يحصل على جدول</li>
+                <li>BEFORE = قبل العملية (للتعديل والمنع) / AFTER = بعد العملية (للتسجيل)</li>
+                <li>الأحداث: INSERT / UPDATE / DELETE أو مجموعة منهم</li>
+                <li>FOR EACH ROW = مرة لكل صف / بدونها = مرة لكل أمر SQL</li>
+                <li>:NEW = البيانات الجديدة / :OLD = البيانات القديمة</li>
+                <li>RAISE_APPLICATION_ERROR لمنع العملية وإرجاع رسالة خطأ</li>
+                <li>ALTER TRIGGER لتعطيل/تفعيل / DROP TRIGGER للحذف</li>
+                <li>خلي الـ Trigger قصير، ولا تستخدم COMMIT جواه، وتجنب cascading</li>
+            </ul>
+        </div>
+    </section>
+</main>
+<a href="index.html" class="back-btn" title="العودة للخطة">↩</a>
+<script>
+function toggleExercise(h){h.nextElementSibling.classList.toggle('show')}
+function toggleHint(b){const h=b.nextElementSibling;h.classList.toggle('show');b.textContent=h.classList.contains('show')?'🙈 إخفاء':'💡 تلميح'}
+function toggleSolution(b){const s=b.nextElementSibling;s.classList.toggle('show');b.textContent=s.classList.contains('show')?'🔒 إخفاء':'🔓 الحل'}
+function copyCode(b){const c=b.closest('.code-block').querySelector('pre').textContent;navigator.clipboard.writeText(c).then(()=>{b.textContent='تم ✓';setTimeout(()=>b.textContent='نسخ',2000)})}
+const sections=document.querySelectorAll('.section[id]');const navLinks=document.querySelectorAll('.sidebar-nav a');
+window.addEventListener('scroll',()=>{let c='';sections.forEach(s=>{if(pageYOffset>=s.offsetTop-100)c=s.getAttribute('id')});navLinks.forEach(l=>{l.classList.remove('active');if(l.getAttribute('href')==='#'+c)l.classList.add('active')})});
+</script>
+</body>
+</html>

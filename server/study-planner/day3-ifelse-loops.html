@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IF/ELSE، LOOP، Stored Procedures - اليوم الثالث</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root{--bg:#06060f;--bg-card:#0d0d1f;--bg-code:#0a0a1a;--border:#1a1a3e;--text:#e2e2f0;--text-dim:#8888aa;--accent:#ff4d4d;--accent2:#ff8c00;--accent3:#00d47e;--accent4:#4d8cff;--accent5:#a855f7;--glow:0 0 30px rgba(77,140,255,0.15)}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);line-height:1.8;min-height:100vh}
+        .sidebar{position:fixed;top:0;right:0;width:300px;height:100vh;background:var(--bg-card);border-left:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:100;transition:transform .3s}
+        .sidebar-header{padding:0 24px 20px;border-bottom:1px solid var(--border);margin-bottom:16px}
+        .sidebar-header h3{font-size:1rem;color:var(--accent2);margin-bottom:4px}
+        .sidebar-header p{font-size:.8rem;color:var(--text-dim)}
+        .sidebar-nav a{display:flex;align-items:center;gap:10px;padding:10px 24px;color:var(--text-dim);text-decoration:none;font-size:.85rem;transition:all .2s;border-right:3px solid transparent}
+        .sidebar-nav a:hover,.sidebar-nav a.active{color:var(--text);background:rgba(255,140,0,.05);border-right-color:var(--accent2)}
+        .sidebar-nav .num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--border);font-size:.7rem;font-weight:700;color:var(--accent2);flex-shrink:0}
+        .sidebar-toggle{display:none;position:fixed;top:20px;right:20px;z-index:200;background:var(--accent2);border:none;color:#fff;width:44px;height:44px;border-radius:12px;font-size:1.3rem;cursor:pointer}
+        .main{margin-right:300px}
+        .hero{padding:80px 60px 60px;background:linear-gradient(135deg,rgba(255,140,0,.08),rgba(255,77,77,.06));border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+        .hero::before{content:'';position:absolute;top:-100px;left:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(255,140,0,.06),transparent 70%);pointer-events:none}
+        .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,140,0,.1);border:1px solid rgba(255,140,0,.2);padding:6px 16px;border-radius:100px;font-size:.85rem;color:var(--accent2);margin-bottom:20px}
+        .hero h1{font-size:2.5rem;font-weight:900;margin-bottom:16px;background:linear-gradient(135deg,var(--accent2),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .hero p{font-size:1.1rem;color:var(--text-dim);max-width:600px}
+        .section{padding:60px;border-bottom:1px solid var(--border)}
+        .section-label{display:inline-flex;align-items:center;gap:8px;font-size:.8rem;color:var(--accent2);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;font-weight:700}
+        .section h2{font-size:1.8rem;font-weight:800;margin-bottom:24px}
+        .section h3{font-size:1.3rem;font-weight:700;margin:24px 0 16px;color:var(--accent4)}
+        .section p,.section li{font-size:1rem;color:var(--text-dim);margin-bottom:12px}
+        .section ul,.section ol{padding-right:24px;margin-bottom:16px}
+        .content-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;margin:20px 0;box-shadow:var(--glow)}
+        .content-card h4{font-size:1.1rem;color:var(--accent3);margin-bottom:16px}
+        .code-block{background:var(--bg-code);border:1px solid var(--border);border-radius:12px;margin:16px 0;overflow:hidden}
+        .code-header{display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--border)}
+        .code-header span{font-size:.8rem;color:var(--text-dim)}
+        .code-header .copy-btn{background:rgba(77,140,255,.1);border:1px solid rgba(77,140,255,.2);color:var(--accent4);padding:4px 12px;border-radius:6px;font-size:.75rem;cursor:pointer;font-family:'Cairo',sans-serif;transition:all .2s}
+        .code-header .copy-btn:hover{background:rgba(77,140,255,.2)}
+        .code-block pre{padding:20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.9rem;line-height:1.7;direction:ltr;text-align:left}
+        .kw{color:#ff7b72;font-weight:700}.str{color:#a5d6ff}.cm{color:#6a737d;font-style:italic}.num{color:#79c0ff}.fn{color:#d2a8ff}.tp{color:#ff8c00}.op{color:#ff4d4d}.tbl{color:#00d47e}
+        .info-box{background:rgba(77,140,255,.05);border:1px solid rgba(77,140,255,.15);border-radius:12px;padding:20px 24px;margin:16px 0}
+        .info-box.warning{background:rgba(255,140,0,.05);border-color:rgba(255,140,0,.15)}
+        .info-box.success{background:rgba(0,212,126,.05);border-color:rgba(0,212,126,.15)}
+        .info-box.danger{background:rgba(255,77,77,.05);border-color:rgba(255,77,77,.15)}
+        .info-box strong{color:var(--accent4)}
+        .info-box.warning strong{color:var(--accent2)}
+        .info-box.success strong{color:var(--accent3)}
+        .info-box.danger strong{color:var(--accent)}
+        .quote-box{border-right:4px solid var(--accent2);background:rgba(255,140,0,.05);padding:20px 24px;border-radius:0 12px 12px 0;margin:16px 0;font-style:italic}
+        .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin:20px 0}
+        .feature-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;text-align:center;transition:all .3s}
+        .feature-card:hover{border-color:var(--accent2);transform:translateY(-4px);box-shadow:0 8px 30px rgba(255,140,0,.1)}
+        .feature-card .icon{font-size:2.5rem;margin-bottom:16px}
+        .feature-card h4{color:var(--accent2);margin-bottom:8px;font-size:1.1rem}
+        .feature-card p{font-size:.85rem;color:var(--text-dim)}
+        .analogy-box{background:linear-gradient(135deg,rgba(255,140,0,.08),rgba(255,77,77,.08));border:1px solid rgba(255,140,0,.2);border-radius:16px;padding:28px;margin:24px 0}
+        .analogy-box h4{color:var(--accent2);font-size:1.1rem;margin-bottom:12px}
+        .analogy-box .emoji{font-size:2rem;margin-bottom:12px;display:block}
+        .table-visual{width:100%;border-collapse:collapse;margin:16px 0;font-size:.9rem}
+        .table-visual th{background:rgba(255,140,0,.1);color:var(--accent2);padding:12px 16px;text-align:right;font-weight:700;border-bottom:2px solid var(--accent2)}
+        .table-visual td{padding:10px 16px;border-bottom:1px solid var(--border);color:var(--text-dim)}
+        .table-visual tr:hover td{background:rgba(255,140,0,.03)}
+        .flow-diagram{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;align-items:center;margin:24px 0;direction:ltr}
+        .flow-step{background:var(--bg-card);border:1px solid var(--border);padding:14px 20px;border-radius:12px;text-align:center;min-width:130px}
+        .flow-step .label{font-size:.75rem;color:var(--text-dim);display:block;margin-bottom:4px}
+        .flow-step .value{font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--accent2);font-weight:700}
+        .flow-arrow{color:var(--accent);font-size:1.5rem}
+        .vs-container{display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:start;margin:24px 0}
+        .vs-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px}
+        .vs-card h4{font-size:1.1rem;margin-bottom:16px}
+        .vs-card.left h4{color:var(--accent3)}.vs-card.right h4{color:var(--accent4)}
+        .vs-badge{background:var(--accent2);color:#fff;padding:10px 16px;border-radius:50%;font-weight:900;font-size:1rem;align-self:center}
+        .exercise-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;margin:20px 0;overflow:hidden}
+        .exercise-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;cursor:pointer;transition:background .2s}
+        .exercise-header:hover{background:rgba(255,140,0,.03)}
+        .exercise-header h4{color:var(--text);font-size:1rem}
+        .exercise-badge{padding:4px 12px;border-radius:100px;font-size:.75rem;font-weight:700}
+        .exercise-badge.easy{background:rgba(0,212,126,.1);color:var(--accent3)}
+        .exercise-badge.medium{background:rgba(255,140,0,.1);color:var(--accent2)}
+        .exercise-badge.hard{background:rgba(255,77,77,.1);color:var(--accent)}
+        .exercise-body{display:none;padding:0 24px 24px;border-top:1px solid var(--border)}
+        .exercise-body.show{display:block}
+        .exercise-body p{padding-top:16px}
+        .hint-btn,.solution-toggle{background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);color:var(--accent5);padding:8px 20px;border-radius:8px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.85rem;margin-top:12px;margin-left:8px;transition:all .2s}
+        .hint-btn:hover,.solution-toggle:hover{background:rgba(168,85,247,.2)}
+        .hint-content,.solution-content{display:none;margin-top:12px}
+        .hint-content.show,.solution-content.show{display:block}
+        .summary-box{background:linear-gradient(135deg,rgba(255,140,0,.06),rgba(0,212,126,.06));border:1px solid rgba(255,140,0,.15);border-radius:16px;padding:32px;margin:24px 0}
+        .summary-box h3{color:var(--accent2);margin-bottom:16px}
+        .summary-box ul{list-style:none;padding:0}
+        .summary-box li{padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);color:var(--text-dim)}
+        .summary-box li::before{content:'✅ '}
+        .back-btn{position:fixed;bottom:30px;left:30px;background:var(--accent2);color:#fff;border:none;width:50px;height:50px;border-radius:50%;font-size:1.3rem;cursor:pointer;z-index:200;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 4px 20px rgba(255,140,0,.3);transition:transform .2s}
+        .back-btn:hover{transform:scale(1.1)}
+        @media(max-width:900px){.sidebar{transform:translateX(100%)}.sidebar.open{transform:translateX(0)}.sidebar-toggle{display:flex;align-items:center;justify-content:center}.main{margin-right:0}.hero{padding:60px 24px 40px}.hero h1{font-size:1.8rem}.section{padding:40px 24px}.vs-container{grid-template-columns:1fr}.vs-badge{justify-self:center}}
+    </style>
+</head>
+<body>
+
+<button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <h3>IF/ELSE, LOOP, Procedures</h3>
+        <p>اليوم الثالث - الحصة الرابعة</p>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="#if-intro"><span class="num">1</span> IF Statement</a>
+        <a href="#if-else"><span class="num">2</span> IF...ELSE</a>
+        <a href="#if-elsif"><span class="num">3</span> IF...ELSIF...ELSE</a>
+        <a href="#case-statement"><span class="num">4</span> CASE Statement</a>
+        <a href="#basic-loop"><span class="num">5</span> Basic LOOP</a>
+        <a href="#while-loop"><span class="num">6</span> WHILE LOOP</a>
+        <a href="#for-loop"><span class="num">7</span> FOR LOOP</a>
+        <a href="#nested-loops"><span class="num">8</span> Nested Loops</a>
+        <a href="#loop-compare"><span class="num">9</span> مقارنة الـ Loops</a>
+        <a href="#proc-intro"><span class="num">10</span> إيه هو Stored Procedure؟</a>
+        <a href="#create-proc"><span class="num">11</span> إنشاء أول Procedure</a>
+        <a href="#proc-params"><span class="num">12</span> Parameters: IN, OUT, IN OUT</a>
+        <a href="#proc-advanced"><span class="num">13</span> أمثلة متقدمة</a>
+        <a href="#proc-manage"><span class="num">14</span> إدارة Procedures</a>
+        <a href="#exercises"><span class="num">15</span> تمارين عملية</a>
+    </nav>
+</aside>
+
+<main class="main">
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-badge">🔥 اليوم الثالث - الحصة الرابعة</div>
+        <h1>IF/ELSE، LOOP، Stored Procedures</h1>
+        <p>هتتعلم إزاي تتحكم في تدفق البرنامج بالشروط والتكرار، وتكتب أول Stored Procedure بتاعك!</p>
+    </section>
+
+    <!-- 1: IF Statement -->
+    <section class="section" id="if-intro">
+        <span class="section-label">الجزء الأول - الشروط</span>
+        <h2>IF Statement</h2>
+
+        <div class="analogy-box">
+            <span class="emoji">🚦</span>
+            <h4>تشبيه: إشارة المرور!</h4>
+            <p>لو الإشارة خضراء → امشي. لو حمراء → وقّف. كده بالظبط الـ IF بتشتغل: بتفحص شرط ولو متحقق بتنفذ كود معين.</p>
+        </div>
+
+        <h3>الصيغة البسيطة</h3>
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - IF Syntax</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">IF</span> condition <span class="kw">THEN</span>
+    <span class="cm">-- الكود ده هيتنفذ لو الشرط TRUE</span>
+    statements;
+<span class="kw">END IF</span>;</pre>
+        </div>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - IF مثال عملي</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">DECLARE</span>
+    v_salary <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">3500</span>;
+<span class="kw">BEGIN</span>
+    <span class="kw">IF</span> v_salary <span class="op">&lt;</span> <span class="num">5000</span> <span class="kw">THEN</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'المرتب تحت المتوسط - يحتاج زيادة!'</span>);
+    <span class="kw">END IF</span>;
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'تم الفحص'</span>);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+
+        <div class="info-box">
+            <strong>💡 ملاحظة:</strong> لازم تكتب <code style="color:var(--accent4)">END IF;</code> (بمسافة!) مش <code>ENDIF</code>. ولازم الفاصلة المنقوطة ; بعدها.
+        </div>
+    </section>
+
+    <!-- 2: IF...ELSE -->
+    <section class="section" id="if-else">
+        <span class="section-label">شرط مزدوج</span>
+        <h2>IF...ELSE</h2>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - IF...ELSE</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">DECLARE</span>
+    v_grade <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">75</span>;
+<span class="kw">BEGIN</span>
+    <span class="kw">IF</span> v_grade <span class="op">>=</span> <span class="num">50</span> <span class="kw">THEN</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'ناجح ✅'</span>);
+    <span class="kw">ELSE</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'راسب ❌'</span>);
+    <span class="kw">END IF</span>;
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+
+        <h3>مثال مع بيانات من الجدول</h3>
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - IF...ELSE مع SELECT INTO</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">DECLARE</span>
+    v_salary employees.salary<span class="tp">%TYPE</span>;
+    v_name   employees.first_name<span class="tp">%TYPE</span>;
+<span class="kw">BEGIN</span>
+    <span class="kw">SELECT</span> first_name, salary
+    <span class="kw">INTO</span> v_name, v_salary
+    <span class="kw">FROM</span> employees
+    <span class="kw">WHERE</span> employee_id = <span class="num">100</span>;
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'الموظف: '</span> <span class="op">||</span> v_name);
+
+    <span class="kw">IF</span> v_salary <span class="op">></span> <span class="num">10000</span> <span class="kw">THEN</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'مرتب عالي 💰'</span>);
+    <span class="kw">ELSE</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'مرتب عادي'</span>);
+    <span class="kw">END IF</span>;
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+    </section>
+
+    <!-- 3: IF...ELSIF -->
+    <section class="section" id="if-elsif">
+        <span class="section-label">شروط متعددة</span>
+        <h2>IF...ELSIF...ELSE</h2>
+
+        <p>لما يكون عندك أكتر من شرطين:</p>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - IF...ELSIF...ELSE</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">DECLARE</span>
+    v_salary <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">7500</span>;
+    v_level  <span class="tp">VARCHAR2</span>(<span class="num">20</span>);
+<span class="kw">BEGIN</span>
+    <span class="kw">IF</span> v_salary <span class="op">>=</span> <span class="num">15000</span> <span class="kw">THEN</span>
+        v_level <span class="op">:=</span> <span class="str">'Senior'</span>;
+    <span class="kw">ELSIF</span> v_salary <span class="op">>=</span> <span class="num">10000</span> <span class="kw">THEN</span>
+        v_level <span class="op">:=</span> <span class="str">'Mid-Level'</span>;
+    <span class="kw">ELSIF</span> v_salary <span class="op">>=</span> <span class="num">5000</span> <span class="kw">THEN</span>
+        v_level <span class="op">:=</span> <span class="str">'Junior'</span>;
+    <span class="kw">ELSE</span>
+        v_level <span class="op">:=</span> <span class="str">'Trainee'</span>;
+    <span class="kw">END IF</span>;
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'المرتب: '</span> <span class="op">||</span> v_salary);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'المستوى: '</span> <span class="op">||</span> v_level);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+
+        <div class="info-box warning">
+            <strong>⚠️ لاحظ:</strong> الكلمة هي <code style="color:var(--accent2)">ELSIF</code> مش ELSEIF ولا ELSE IF! دي من أشهر الأخطاء عند المبتدئين.
+        </div>
+
+        <h3>IF مع عمليات منطقية (AND, OR, NOT)</h3>
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - Logical Operators</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">DECLARE</span>
+    v_age     <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">28</span>;
+    v_salary  <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">8000</span>;
+    v_dept_id <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">20</span>;
+<span class="kw">BEGIN</span>
+    <span class="cm">-- AND: الشرطين لازم يتحققوا</span>
+    <span class="kw">IF</span> v_age <span class="op">></span> <span class="num">25</span> <span class="kw">AND</span> v_salary <span class="op">></span> <span class="num">7000</span> <span class="kw">THEN</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'مؤهل للترقية ✅'</span>);
+    <span class="kw">END IF</span>;
+
+    <span class="cm">-- OR: واحد من الشرطين يكفي</span>
+    <span class="kw">IF</span> v_dept_id = <span class="num">10</span> <span class="kw">OR</span> v_dept_id = <span class="num">20</span> <span class="kw">THEN</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'في قسم رئيسي'</span>);
+    <span class="kw">END IF</span>;
+
+    <span class="cm">-- NOT: عكس الشرط</span>
+    <span class="kw">IF NOT</span> (v_salary <span class="op">&lt;</span> <span class="num">5000</span>) <span class="kw">THEN</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'المرتب فوق الحد الأدنى'</span>);
+    <span class="kw">END IF</span>;
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+    </section>
+
+    <!-- 4: CASE Statement -->
+    <section class="section" id="case-statement">
+        <span class="section-label">بديل أنظف</span>
+        <h2>CASE Statement</h2>
+
+        <p>لو عندك شروط كتير على نفس المتغير، CASE أنظف وأوضح من ELSIF:</p>
+
+        <h3>Simple CASE</h3>
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - Simple CASE</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">DECLARE</span>
+    v_dept_id <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">20</span>;
+    v_dept_name <span class="tp">VARCHAR2</span>(<span class="num">50</span>);
+<span class="kw">BEGIN</span>
+    <span class="kw">CASE</span> v_dept_id
+        <span class="kw">WHEN</span> <span class="num">10</span> <span class="kw">THEN</span> v_dept_name <span class="op">:=</span> <span class="str">'Administration'</span>;
+        <span class="kw">WHEN</span> <span class="num">20</span> <span class="kw">THEN</span> v_dept_name <span class="op">:=</span> <span class="str">'Marketing'</span>;
+        <span class="kw">WHEN</span> <span class="num">30</span> <span class="kw">THEN</span> v_dept_name <span class="op">:=</span> <span class="str">'IT'</span>;
+        <span class="kw">WHEN</span> <span class="num">40</span> <span class="kw">THEN</span> v_dept_name <span class="op">:=</span> <span class="str">'HR'</span>;
+        <span class="kw">ELSE</span> v_dept_name <span class="op">:=</span> <span class="str">'Unknown'</span>;
+    <span class="kw">END CASE</span>;
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'القسم: '</span> <span class="op">||</span> v_dept_name);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+
+        <h3>Searched CASE (مع شروط مختلفة)</h3>
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - Searched CASE</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">DECLARE</span>
+    v_salary <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">12000</span>;
+    v_bonus  <span class="tp">NUMBER</span>;
+<span class="kw">BEGIN</span>
+    <span class="kw">CASE</span>
+        <span class="kw">WHEN</span> v_salary <span class="op">>=</span> <span class="num">15000</span> <span class="kw">THEN</span> v_bonus <span class="op">:=</span> v_salary <span class="op">*</span> <span class="num">0.20</span>;
+        <span class="kw">WHEN</span> v_salary <span class="op">>=</span> <span class="num">10000</span> <span class="kw">THEN</span> v_bonus <span class="op">:=</span> v_salary <span class="op">*</span> <span class="num">0.15</span>;
+        <span class="kw">WHEN</span> v_salary <span class="op">>=</span> <span class="num">5000</span>  <span class="kw">THEN</span> v_bonus <span class="op">:=</span> v_salary <span class="op">*</span> <span class="num">0.10</span>;
+        <span class="kw">ELSE</span> v_bonus <span class="op">:=</span> v_salary <span class="op">*</span> <span class="num">0.05</span>;
+    <span class="kw">END CASE</span>;
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'المرتب: '</span> <span class="op">||</span> v_salary);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'البونص: '</span> <span class="op">||</span> v_bonus);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+    </section>
+
+    <!-- 5: Basic LOOP -->
+    <section class="section" id="basic-loop">
+        <span class="section-label">الجزء الثاني - التكرار</span>
+        <h2>Basic LOOP</h2>
+
+        <div class="analogy-box">
+            <span class="emoji">🔁</span>
+            <h4>تشبيه: الـ Loop زي الغسالة!</h4>
+            <p>بتفضل تدور لحد ما تنتهي الدورة (الشرط يتحقق). لو منسيتش تحط شرط الإيقاف، هتفضل تدور للأبد! (infinite loop)</p>
+        </div>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - Basic LOOP</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">DECLARE</span>
+    v_counter <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">1</span>;
+<span class="kw">BEGIN</span>
+    <span class="kw">LOOP</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'العدد: '</span> <span class="op">||</span> v_counter);
+        v_counter <span class="op">:=</span> v_counter <span class="op">+</span> <span class="num">1</span>;
+
+        <span class="kw">EXIT WHEN</span> v_counter <span class="op">></span> <span class="num">5</span>;  <span class="cm">-- شرط الإيقاف!</span>
+    <span class="kw">END LOOP</span>;
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'انتهى!'</span>);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+
+        <div class="content-card">
+            <h4>النتيجة:</h4>
+            <div class="code-block">
+                <div class="code-header"><span>Output</span></div>
+                <pre>العدد: 1
+العدد: 2
+العدد: 3
+العدد: 4
+العدد: 5
+انتهى!</pre>
+            </div>
+        </div>
+
+        <div class="info-box danger">
+            <strong>🚨 تحذير:</strong> لو نسيت <code style="color:var(--accent)">EXIT WHEN</code> هيكون عندك infinite loop! دايماً تأكد إن فيه شرط إيقاف.
+        </div>
+    </section>
+
+    <!-- 6: WHILE LOOP -->
+    <section class="section" id="while-loop">
+        <span class="section-label">تكرار بشرط</span>
+        <h2>WHILE LOOP</h2>
+
+        <p>بتفحص الشرط <strong style="color:var(--accent2)">قبل</strong> كل دورة. لو الشرط FALSE من البداية، مش هينفذ حاجة:</p>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - WHILE LOOP</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">DECLARE</span>
+    v_counter <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">1</span>;
+    v_sum     <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">0</span>;
+<span class="kw">BEGIN</span>
+    <span class="kw">WHILE</span> v_counter <span class="op">&lt;=</span> <span class="num">10</span> <span class="kw">LOOP</span>
+        v_sum <span class="op">:=</span> v_sum <span class="op">+</span> v_counter;
+        v_counter <span class="op">:=</span> v_counter <span class="op">+</span> <span class="num">1</span>;
+    <span class="kw">END LOOP</span>;
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'مجموع الأرقام من 1 لـ 10 = '</span> <span class="op">||</span> v_sum);
+    <span class="cm">-- Output: مجموع الأرقام من 1 لـ 10 = 55</span>
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+
+        <h3>مثال عملي: مضاعفة المرتب</h3>
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - WHILE مثال</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">DECLARE</span>
+    v_salary <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">3000</span>;
+    v_years  <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">0</span>;
+<span class="kw">BEGIN</span>
+    <span class="cm">-- كل سنة زيادة 10% - كام سنة عشان يوصل 10000؟</span>
+    <span class="kw">WHILE</span> v_salary <span class="op">&lt;</span> <span class="num">10000</span> <span class="kw">LOOP</span>
+        v_salary <span class="op">:=</span> v_salary <span class="op">*</span> <span class="num">1.10</span>;
+        v_years <span class="op">:=</span> v_years <span class="op">+</span> <span class="num">1</span>;
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'سنة '</span> <span class="op">||</span> v_years <span class="op">||</span> <span class="str">': '</span> <span class="op">||</span> <span class="fn">ROUND</span>(v_salary));
+    <span class="kw">END LOOP</span>;
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'هيوصل 10000 بعد '</span> <span class="op">||</span> v_years <span class="op">||</span> <span class="str">' سنة'</span>);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+    </section>
+
+    <!-- 7: FOR LOOP -->
+    <section class="section" id="for-loop">
+        <span class="section-label">الأكثر استخداماً</span>
+        <h2>FOR LOOP</h2>
+
+        <p>الـ FOR LOOP هو <strong style="color:var(--accent3)">الأسهل والأكثر استخداماً!</strong> مش محتاج تعرّف counter ولا تزوّده - كل ده بيحصل تلقائي:</p>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - FOR LOOP</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">BEGIN</span>
+    <span class="cm">-- من 1 لـ 5</span>
+    <span class="kw">FOR</span> i <span class="kw">IN</span> <span class="num">1</span>..<span class="num">5</span> <span class="kw">LOOP</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'i = '</span> <span class="op">||</span> i);
+    <span class="kw">END LOOP</span>;
+<span class="kw">END</span>;
+<span class="op">/</span>
+
+<span class="cm">-- Output:</span>
+<span class="cm">-- i = 1</span>
+<span class="cm">-- i = 2</span>
+<span class="cm">-- i = 3</span>
+<span class="cm">-- i = 4</span>
+<span class="cm">-- i = 5</span></pre>
+        </div>
+
+        <h3>FOR LOOP بالعكس (REVERSE)</h3>
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - FOR REVERSE</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">BEGIN</span>
+    <span class="cm">-- العد التنازلي!</span>
+    <span class="kw">FOR</span> i <span class="kw">IN REVERSE</span> <span class="num">1</span>..<span class="num">5</span> <span class="kw">LOOP</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(i);
+    <span class="kw">END LOOP</span>;
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'🚀 انطلاق!'</span>);
+<span class="kw">END</span>;
+<span class="op">/</span>
+
+<span class="cm">-- Output: 5, 4, 3, 2, 1, 🚀 انطلاق!</span></pre>
+        </div>
+
+        <h3>مثال عملي: جدول الضرب</h3>
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - جدول الضرب</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">DECLARE</span>
+    v_num <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">7</span>;
+<span class="kw">BEGIN</span>
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'جدول ضرب '</span> <span class="op">||</span> v_num);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'-------------------'</span>);
+
+    <span class="kw">FOR</span> i <span class="kw">IN</span> <span class="num">1</span>..<span class="num">12</span> <span class="kw">LOOP</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(v_num <span class="op">||</span> <span class="str">' × '</span> <span class="op">||</span> i <span class="op">||</span> <span class="str">' = '</span> <span class="op">||</span> (v_num <span class="op">*</span> i));
+    <span class="kw">END LOOP</span>;
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+
+        <div class="info-box success">
+            <strong>✅ ميزة FOR LOOP:</strong>
+            <ul style="margin-top:8px;">
+                <li>مش محتاج DECLARE للـ counter (i بيتعرف تلقائي)</li>
+                <li>مش محتاج تزوّد الـ counter (بيزيد لوحده)</li>
+                <li>مفيش خطر infinite loop (العدد محدد)</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 8: Nested Loops -->
+    <section class="section" id="nested-loops">
+        <span class="section-label">متقدم</span>
+        <h2>Nested Loops + Labels</h2>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - Nested FOR Loops</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">BEGIN</span>
+    <span class="cm">-- طباعة مستطيل من نجوم 5×3</span>
+    <span class="op">&lt;&lt;outer_loop&gt;&gt;</span>
+    <span class="kw">FOR</span> row_num <span class="kw">IN</span> <span class="num">1</span>..<span class="num">3</span> <span class="kw">LOOP</span>
+        <span class="kw">FOR</span> col_num <span class="kw">IN</span> <span class="num">1</span>..<span class="num">5</span> <span class="kw">LOOP</span>
+            <span class="fn">DBMS_OUTPUT.PUT</span>(<span class="str">'* '</span>);
+        <span class="kw">END LOOP</span>;
+        <span class="fn">DBMS_OUTPUT.NEW_LINE</span>;
+    <span class="kw">END LOOP</span> outer_loop;
+<span class="kw">END</span>;
+<span class="op">/</span>
+
+<span class="cm">-- Output:</span>
+<span class="cm">-- * * * * *</span>
+<span class="cm">-- * * * * *</span>
+<span class="cm">-- * * * * *</span></pre>
+        </div>
+
+        <div class="info-box">
+            <strong>💡 Labels:</strong> الـ <code style="color:var(--accent4)">&lt;&lt;outer_loop&gt;&gt;</code> دي label بتسميها. مفيدة لما يكون عندك loops جوه بعض وعايز تعمل EXIT للـ loop الخارجي: <code>EXIT outer_loop WHEN ...</code>
+        </div>
+    </section>
+
+    <!-- 9: Loop Comparison -->
+    <section class="section" id="loop-compare">
+        <span class="section-label">مقارنة</span>
+        <h2>مقارنة الـ Loops الثلاثة</h2>
+
+        <div class="content-card">
+            <table class="table-visual">
+                <thead>
+                    <tr>
+                        <th>النوع</th>
+                        <th>الفحص</th>
+                        <th>استخدمها لما...</th>
+                        <th>مثال</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code style="color:var(--accent)">Basic LOOP</code></td>
+                        <td>بعد التنفيذ</td>
+                        <td>عايز ينفذ مرة على الأقل</td>
+                        <td>LOOP...EXIT WHEN</td>
+                    </tr>
+                    <tr>
+                        <td><code style="color:var(--accent2)">WHILE LOOP</code></td>
+                        <td>قبل التنفيذ</td>
+                        <td>مش عارف هينفذ كام مرة</td>
+                        <td>WHILE x &lt; 100 LOOP</td>
+                    </tr>
+                    <tr>
+                        <td><code style="color:var(--accent3)">FOR LOOP</code></td>
+                        <td>عدد محدد</td>
+                        <td>عارف عدد التكرارات</td>
+                        <td>FOR i IN 1..10 LOOP</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="quote-box">
+            <strong>نصيحة:</strong> في 90% من الحالات هتستخدم FOR LOOP. استخدم WHILE لما يكون الشرط ديناميكي. واستخدم Basic LOOP في حالات نادرة (مثلاً لما تقرأ من cursor).
+        </div>
+    </section>
+
+    <!-- 10: Stored Procedure Intro -->
+    <section class="section" id="proc-intro">
+        <span class="section-label">الجزء الثالث - PROCEDURES</span>
+        <h2>إيه هو الـ Stored Procedure؟</h2>
+
+        <div class="analogy-box">
+            <span class="emoji">📦</span>
+            <h4>تشبيه: الريسيبي في المطبخ!</h4>
+            <p>بدل ما تفتكر خطوات عمل الكيكة كل مرة، بتكتبها في ورقة مرة واحدة. بعد كده بس بتقول "اعمل كيكة" وتمشي على الخطوات. الـ Procedure هو نفس الفكرة: بتكتب الكود مرة واحدة وبتنادي عليه بالاسم!</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="icon">♻️</span>
+                <h4>إعادة الاستخدام</h4>
+                <p>اكتب مرة، استخدم 100 مرة</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">🧩</span>
+                <h4>التنظيم</h4>
+                <p>قسّم كودك لوحدات منظمة</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">⚡</span>
+                <h4>الأداء</h4>
+                <p>بيتـ compile مرة واحدة وبيتخزن في الداتابيز</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">🔒</span>
+                <h4>الأمان</h4>
+                <p>تقدر تدي صلاحية تنفيذ Procedure بدون صلاحية الجدول</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 11: Create Procedure -->
+    <section class="section" id="create-proc">
+        <span class="section-label">أول Procedure</span>
+        <h2>إنشاء أول Stored Procedure</h2>
+
+        <h3>الصيغة الأساسية</h3>
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - Procedure Syntax</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">CREATE OR REPLACE PROCEDURE</span> procedure_name
+<span class="kw">IS</span>
+    <span class="cm">-- تعريف المتغيرات (بدل DECLARE)</span>
+<span class="kw">BEGIN</span>
+    <span class="cm">-- الكود</span>
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+
+        <div class="info-box warning">
+            <strong>⚠️ لاحظ الفرق:</strong> في الـ Procedure بنكتب <code style="color:var(--accent2)">IS</code> (أو AS) بدل <code>DECLARE</code>!
+        </div>
+
+        <h3>أول Procedure: تحية!</h3>
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - أول Procedure</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="cm">-- إنشاء الـ Procedure</span>
+<span class="kw">CREATE OR REPLACE PROCEDURE</span> say_hello
+<span class="kw">IS</span>
+<span class="kw">BEGIN</span>
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'مرحباً! أنا أول Procedure 🎉'</span>);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'التاريخ: '</span> <span class="op">||</span> <span class="fn">TO_CHAR</span>(<span class="fn">SYSDATE</span>, <span class="str">'YYYY-MM-DD HH24:MI'</span>));
+<span class="kw">END</span>;
+<span class="op">/</span>
+
+<span class="cm">-- تنفيذ الـ Procedure</span>
+<span class="kw">BEGIN</span>
+    say_hello;
+<span class="kw">END</span>;
+<span class="op">/</span>
+
+<span class="cm">-- أو في SQL*Plus:</span>
+<span class="kw">EXEC</span> say_hello;</pre>
+        </div>
+
+        <h3>Procedure مع Parameter</h3>
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - Procedure مع Input</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">CREATE OR REPLACE PROCEDURE</span> greet_employee(
+    p_emp_id <span class="kw">IN</span> <span class="tp">NUMBER</span>
+)
+<span class="kw">IS</span>
+    v_name employees.first_name<span class="tp">%TYPE</span>;
+<span class="kw">BEGIN</span>
+    <span class="kw">SELECT</span> first_name <span class="kw">INTO</span> v_name
+    <span class="kw">FROM</span> employees
+    <span class="kw">WHERE</span> employee_id = p_emp_id;
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'مرحباً يا '</span> <span class="op">||</span> v_name <span class="op">||</span> <span class="str">'! 👋'</span>);
+<span class="kw">EXCEPTION</span>
+    <span class="kw">WHEN</span> NO_DATA_FOUND <span class="kw">THEN</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'الموظف رقم '</span> <span class="op">||</span> p_emp_id <span class="op">||</span> <span class="str">' مش موجود!'</span>);
+<span class="kw">END</span>;
+<span class="op">/</span>
+
+<span class="cm">-- استخدام:</span>
+<span class="kw">BEGIN</span>
+    greet_employee(<span class="num">100</span>);  <span class="cm">-- مرحباً يا Steven! 👋</span>
+    greet_employee(<span class="num">999</span>);  <span class="cm">-- الموظف رقم 999 مش موجود!</span>
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+
+        <div class="quote-box">
+            <strong>نصيحة:</strong> استخدم <code style="color:var(--accent2)">p_</code> كبداية لأسماء الـ Parameters عشان تفرّقها عن المتغيرات <code>v_</code> والثوابت <code>c_</code>.
+        </div>
+    </section>
+
+    <!-- 12: Parameters -->
+    <section class="section" id="proc-params">
+        <span class="section-label">Parameters</span>
+        <h2>أنواع الـ Parameters: IN, OUT, IN OUT</h2>
+
+        <div class="content-card">
+            <table class="table-visual">
+                <thead>
+                    <tr>
+                        <th>النوع</th>
+                        <th>الاتجاه</th>
+                        <th>الوصف</th>
+                        <th>Default?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code style="color:var(--accent3)">IN</code></td>
+                        <td>داخل ←</td>
+                        <td>بتبعت قيمة للـ Procedure (للقراءة بس)</td>
+                        <td>✅ نعم (الـ Default)</td>
+                    </tr>
+                    <tr>
+                        <td><code style="color:var(--accent4)">OUT</code></td>
+                        <td>→ خارج</td>
+                        <td>الـ Procedure بتبعت قيمة للي ناداها</td>
+                        <td>❌</td>
+                    </tr>
+                    <tr>
+                        <td><code style="color:var(--accent2)">IN OUT</code></td>
+                        <td>← → الاتنين</td>
+                        <td>بتستقبل وبتبعت</td>
+                        <td>❌</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>مثال: OUT Parameter</h3>
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - OUT Parameter</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">CREATE OR REPLACE PROCEDURE</span> get_employee_info(
+    p_emp_id    <span class="kw">IN</span>  <span class="tp">NUMBER</span>,
+    p_name      <span class="kw">OUT</span> <span class="tp">VARCHAR2</span>,
+    p_salary    <span class="kw">OUT</span> <span class="tp">NUMBER</span>,
+    p_dept_name <span class="kw">OUT</span> <span class="tp">VARCHAR2</span>
+)
+<span class="kw">IS</span>
+<span class="kw">BEGIN</span>
+    <span class="kw">SELECT</span> e.first_name <span class="op">||</span> <span class="str">' '</span> <span class="op">||</span> e.last_name,
+           e.salary,
+           d.department_name
+    <span class="kw">INTO</span> p_name, p_salary, p_dept_name
+    <span class="kw">FROM</span> employees e
+    <span class="kw">JOIN</span> departments d <span class="kw">ON</span> e.department_id = d.department_id
+    <span class="kw">WHERE</span> e.employee_id = p_emp_id;
+<span class="kw">END</span>;
+<span class="op">/</span>
+
+<span class="cm">-- استخدام:</span>
+<span class="kw">DECLARE</span>
+    v_name <span class="tp">VARCHAR2</span>(<span class="num">100</span>);
+    v_sal  <span class="tp">NUMBER</span>;
+    v_dept <span class="tp">VARCHAR2</span>(<span class="num">50</span>);
+<span class="kw">BEGIN</span>
+    get_employee_info(<span class="num">100</span>, v_name, v_sal, v_dept);
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'الاسم: '</span> <span class="op">||</span> v_name);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'المرتب: '</span> <span class="op">||</span> v_sal);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'القسم: '</span> <span class="op">||</span> v_dept);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+
+        <h3>مثال: IN OUT Parameter</h3>
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - IN OUT Parameter</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="cm">-- Procedure بتاخد مرتب وتحوّله لمرتب بعد الزيادة</span>
+<span class="kw">CREATE OR REPLACE PROCEDURE</span> apply_raise(
+    p_salary    <span class="kw">IN OUT</span> <span class="tp">NUMBER</span>,
+    p_percentage <span class="kw">IN</span>     <span class="tp">NUMBER</span> <span class="kw">DEFAULT</span> <span class="num">10</span>  <span class="cm">-- قيمة افتراضية 10%</span>
+)
+<span class="kw">IS</span>
+<span class="kw">BEGIN</span>
+    p_salary <span class="op">:=</span> p_salary <span class="op">+</span> (p_salary <span class="op">*</span> p_percentage <span class="op">/</span> <span class="num">100</span>);
+<span class="kw">END</span>;
+<span class="op">/</span>
+
+<span class="cm">-- استخدام:</span>
+<span class="kw">DECLARE</span>
+    v_salary <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">5000</span>;
+<span class="kw">BEGIN</span>
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'قبل: '</span> <span class="op">||</span> v_salary);   <span class="cm">-- 5000</span>
+
+    apply_raise(v_salary);         <span class="cm">-- 10% default</span>
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'بعد 10%: '</span> <span class="op">||</span> v_salary); <span class="cm">-- 5500</span>
+
+    apply_raise(v_salary, <span class="num">20</span>);     <span class="cm">-- 20% زيادة</span>
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'بعد 20%: '</span> <span class="op">||</span> v_salary); <span class="cm">-- 6600</span>
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+
+        <div class="info-box">
+            <strong>💡 DEFAULT:</strong> تقدر تحط قيمة افتراضية للـ IN Parameters. كده لو مبعتش قيمة، هياخد الـ Default.
+        </div>
+    </section>
+
+    <!-- 13: Advanced Examples -->
+    <section class="section" id="proc-advanced">
+        <span class="section-label">أمثلة عملية</span>
+        <h2>أمثلة متقدمة على Procedures</h2>
+
+        <h3>Procedure: زيادة مرتب موظف في الجدول</h3>
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - UPDATE في Procedure</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">CREATE OR REPLACE PROCEDURE</span> raise_salary(
+    p_emp_id     <span class="kw">IN</span> <span class="tp">NUMBER</span>,
+    p_percentage <span class="kw">IN</span> <span class="tp">NUMBER</span>
+)
+<span class="kw">IS</span>
+    v_old_salary employees.salary<span class="tp">%TYPE</span>;
+    v_new_salary employees.salary<span class="tp">%TYPE</span>;
+<span class="kw">BEGIN</span>
+    <span class="cm">-- جيب المرتب الحالي</span>
+    <span class="kw">SELECT</span> salary <span class="kw">INTO</span> v_old_salary
+    <span class="kw">FROM</span> employees <span class="kw">WHERE</span> employee_id = p_emp_id;
+
+    <span class="cm">-- احسب المرتب الجديد</span>
+    v_new_salary <span class="op">:=</span> v_old_salary <span class="op">+</span> (v_old_salary <span class="op">*</span> p_percentage <span class="op">/</span> <span class="num">100</span>);
+
+    <span class="cm">-- حدّث الجدول</span>
+    <span class="kw">UPDATE</span> employees
+    <span class="kw">SET</span> salary = v_new_salary
+    <span class="kw">WHERE</span> employee_id = p_emp_id;
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'الموظف '</span> <span class="op">||</span> p_emp_id <span class="op">||</span> <span class="str">':'</span>);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'  المرتب القديم: '</span> <span class="op">||</span> v_old_salary);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'  المرتب الجديد: '</span> <span class="op">||</span> v_new_salary);
+
+    <span class="kw">COMMIT</span>;
+<span class="kw">EXCEPTION</span>
+    <span class="kw">WHEN</span> NO_DATA_FOUND <span class="kw">THEN</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'خطأ: الموظف '</span> <span class="op">||</span> p_emp_id <span class="op">||</span> <span class="str">' مش موجود!'</span>);
+<span class="kw">END</span>;
+<span class="op">/</span>
+
+<span class="cm">-- استخدام: زوّد مرتب الموظف 100 بنسبة 15%</span>
+<span class="kw">EXEC</span> raise_salary(<span class="num">100</span>, <span class="num">15</span>);</pre>
+        </div>
+
+        <h3>Procedure: تقرير قسم كامل</h3>
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - Procedure مع IF + Loop</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">CREATE OR REPLACE PROCEDURE</span> dept_report(
+    p_dept_id <span class="kw">IN</span> <span class="tp">NUMBER</span>
+)
+<span class="kw">IS</span>
+    v_dept_name departments.department_name<span class="tp">%TYPE</span>;
+    v_count     <span class="tp">NUMBER</span>;
+    v_avg_sal   <span class="tp">NUMBER</span>;
+    v_max_sal   <span class="tp">NUMBER</span>;
+    v_min_sal   <span class="tp">NUMBER</span>;
+    v_status    <span class="tp">VARCHAR2</span>(<span class="num">20</span>);
+<span class="kw">BEGIN</span>
+    <span class="cm">-- اسم القسم</span>
+    <span class="kw">SELECT</span> department_name <span class="kw">INTO</span> v_dept_name
+    <span class="kw">FROM</span> departments <span class="kw">WHERE</span> department_id = p_dept_id;
+
+    <span class="cm">-- الإحصائيات</span>
+    <span class="kw">SELECT</span> <span class="fn">COUNT</span>(<span class="op">*</span>), <span class="fn">ROUND</span>(<span class="fn">AVG</span>(salary)), <span class="fn">MAX</span>(salary), <span class="fn">MIN</span>(salary)
+    <span class="kw">INTO</span> v_count, v_avg_sal, v_max_sal, v_min_sal
+    <span class="kw">FROM</span> employees <span class="kw">WHERE</span> department_id = p_dept_id;
+
+    <span class="cm">-- تحديد الحالة</span>
+    <span class="kw">IF</span> v_count <span class="op">></span> <span class="num">10</span> <span class="kw">THEN</span>
+        v_status <span class="op">:=</span> <span class="str">'قسم كبير'</span>;
+    <span class="kw">ELSIF</span> v_count <span class="op">></span> <span class="num">5</span> <span class="kw">THEN</span>
+        v_status <span class="op">:=</span> <span class="str">'قسم متوسط'</span>;
+    <span class="kw">ELSE</span>
+        v_status <span class="op">:=</span> <span class="str">'قسم صغير'</span>;
+    <span class="kw">END IF</span>;
+
+    <span class="cm">-- الطباعة</span>
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'╔══════════════════════════╗'</span>);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'  تقرير قسم: '</span> <span class="op">||</span> v_dept_name);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'╠══════════════════════════╣'</span>);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'  عدد الموظفين: '</span> <span class="op">||</span> v_count);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'  متوسط المرتب: '</span> <span class="op">||</span> v_avg_sal);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'  أعلى مرتب: '</span> <span class="op">||</span> v_max_sal);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'  أقل مرتب: '</span> <span class="op">||</span> v_min_sal);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'  الحالة: '</span> <span class="op">||</span> v_status);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'╚══════════════════════════╝'</span>);
+<span class="kw">EXCEPTION</span>
+    <span class="kw">WHEN</span> NO_DATA_FOUND <span class="kw">THEN</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'القسم مش موجود!'</span>);
+<span class="kw">END</span>;
+<span class="op">/</span>
+
+<span class="kw">EXEC</span> dept_report(<span class="num">20</span>);</pre>
+        </div>
+    </section>
+
+    <!-- 14: Manage Procedures -->
+    <section class="section" id="proc-manage">
+        <span class="section-label">إدارة</span>
+        <h2>إدارة الـ Stored Procedures</h2>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span>SQL - إدارة Procedures</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="cm">-- عرض كل الـ Procedures بتاعتك</span>
+<span class="kw">SELECT</span> object_name, status, created
+<span class="kw">FROM</span> user_objects
+<span class="kw">WHERE</span> object_type = <span class="str">'PROCEDURE'</span>
+<span class="kw">ORDER BY</span> created <span class="kw">DESC</span>;
+
+<span class="cm">-- عرض كود Procedure معين</span>
+<span class="kw">SELECT</span> text
+<span class="kw">FROM</span> user_source
+<span class="kw">WHERE</span> name = <span class="str">'RAISE_SALARY'</span>
+<span class="kw">ORDER BY</span> line;
+
+<span class="cm">-- حذف Procedure</span>
+<span class="kw">DROP PROCEDURE</span> say_hello;
+
+<span class="cm">-- لو فيه أخطاء compilation:</span>
+<span class="kw">SHOW ERRORS PROCEDURE</span> raise_salary;</pre>
+        </div>
+
+        <div class="info-box">
+            <strong>💡 CREATE OR REPLACE:</strong> دايماً استخدم <code style="color:var(--accent4)">CREATE OR REPLACE</code> بدل <code>CREATE</code>. كده لو الـ Procedure موجودة بيعدلها، ولو مش موجودة بيعملها جديدة. بدون REPLACE لو موجودة هيطلع error!
+        </div>
+
+        <div class="content-card">
+            <h4>الفرق بين Anonymous Block و Stored Procedure:</h4>
+            <table class="table-visual">
+                <thead>
+                    <tr>
+                        <th>الخاصية</th>
+                        <th>Anonymous Block</th>
+                        <th>Stored Procedure</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>التخزين</td>
+                        <td>مش بيتخزن</td>
+                        <td>بيتخزن في الداتابيز</td>
+                    </tr>
+                    <tr>
+                        <td>الاسم</td>
+                        <td>مفيش اسم</td>
+                        <td>ليه اسم</td>
+                    </tr>
+                    <tr>
+                        <td>إعادة الاستخدام</td>
+                        <td>لازم تكتبه كل مرة</td>
+                        <td>بتنادي عليه بالاسم</td>
+                    </tr>
+                    <tr>
+                        <td>Parameters</td>
+                        <td>لا</td>
+                        <td>نعم (IN, OUT, IN OUT)</td>
+                    </tr>
+                    <tr>
+                        <td>Compilation</td>
+                        <td>كل مرة بيتـ compile</td>
+                        <td>مرة واحدة بس</td>
+                    </tr>
+                    <tr>
+                        <td>البداية</td>
+                        <td><code>DECLARE / BEGIN</code></td>
+                        <td><code>CREATE PROCEDURE</code></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- 15: Exercises -->
+    <section class="section" id="exercises">
+        <span class="section-label">تمارين</span>
+        <h2>تمارين عملية</h2>
+
+        <!-- Ex 1 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 1: تصنيف الدرجات</h4>
+                <span class="exercise-badge easy">سهل</span>
+            </div>
+            <div class="exercise-body">
+                <p>اكتب برنامج يأخذ درجة (v_grade = 85) ويطبع التقدير: A (90+)، B (80+)، C (70+)، D (60+)، F (أقل).</p>
+                <button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>PL/SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">DECLARE</span>
+    v_grade <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">85</span>;
+    v_rating <span class="tp">VARCHAR2</span>(<span class="num">10</span>);
+<span class="kw">BEGIN</span>
+    <span class="kw">IF</span> v_grade <span class="op">>=</span> <span class="num">90</span> <span class="kw">THEN</span> v_rating <span class="op">:=</span> <span class="str">'A - ممتاز'</span>;
+    <span class="kw">ELSIF</span> v_grade <span class="op">>=</span> <span class="num">80</span> <span class="kw">THEN</span> v_rating <span class="op">:=</span> <span class="str">'B - جيد جداً'</span>;
+    <span class="kw">ELSIF</span> v_grade <span class="op">>=</span> <span class="num">70</span> <span class="kw">THEN</span> v_rating <span class="op">:=</span> <span class="str">'C - جيد'</span>;
+    <span class="kw">ELSIF</span> v_grade <span class="op">>=</span> <span class="num">60</span> <span class="kw">THEN</span> v_rating <span class="op">:=</span> <span class="str">'D - مقبول'</span>;
+    <span class="kw">ELSE</span> v_rating <span class="op">:=</span> <span class="str">'F - راسب'</span>;
+    <span class="kw">END IF</span>;
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'الدرجة: '</span> <span class="op">||</span> v_grade);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'التقدير: '</span> <span class="op">||</span> v_rating);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ex 2 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 2: CASE مع أيام الأسبوع</h4>
+                <span class="exercise-badge easy">سهل</span>
+            </div>
+            <div class="exercise-body">
+                <p>اكتب برنامج يأخذ رقم اليوم (1-7) ويطبع اسمه بالعربي واللو كان عطلة أو شغل.</p>
+                <button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>PL/SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">DECLARE</span>
+    v_day_num <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">6</span>;
+    v_day_name <span class="tp">VARCHAR2</span>(<span class="num">20</span>);
+    v_type <span class="tp">VARCHAR2</span>(<span class="num">10</span>);
+<span class="kw">BEGIN</span>
+    <span class="kw">CASE</span> v_day_num
+        <span class="kw">WHEN</span> <span class="num">1</span> <span class="kw">THEN</span> v_day_name <span class="op">:=</span> <span class="str">'الأحد'</span>;
+        <span class="kw">WHEN</span> <span class="num">2</span> <span class="kw">THEN</span> v_day_name <span class="op">:=</span> <span class="str">'الاثنين'</span>;
+        <span class="kw">WHEN</span> <span class="num">3</span> <span class="kw">THEN</span> v_day_name <span class="op">:=</span> <span class="str">'الثلاثاء'</span>;
+        <span class="kw">WHEN</span> <span class="num">4</span> <span class="kw">THEN</span> v_day_name <span class="op">:=</span> <span class="str">'الأربعاء'</span>;
+        <span class="kw">WHEN</span> <span class="num">5</span> <span class="kw">THEN</span> v_day_name <span class="op">:=</span> <span class="str">'الخميس'</span>;
+        <span class="kw">WHEN</span> <span class="num">6</span> <span class="kw">THEN</span> v_day_name <span class="op">:=</span> <span class="str">'الجمعة'</span>;
+        <span class="kw">WHEN</span> <span class="num">7</span> <span class="kw">THEN</span> v_day_name <span class="op">:=</span> <span class="str">'السبت'</span>;
+    <span class="kw">END CASE</span>;
+
+    <span class="kw">IF</span> v_day_num <span class="kw">IN</span> (<span class="num">6</span>, <span class="num">7</span>) <span class="kw">THEN</span>
+        v_type <span class="op">:=</span> <span class="str">'عطلة 🎉'</span>;
+    <span class="kw">ELSE</span>
+        v_type <span class="op">:=</span> <span class="str">'شغل 💼'</span>;
+    <span class="kw">END IF</span>;
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(v_day_name <span class="op">||</span> <span class="str">' - '</span> <span class="op">||</span> v_type);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ex 3 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 3: Factorial بالـ FOR</h4>
+                <span class="exercise-badge medium">متوسط</span>
+            </div>
+            <div class="exercise-body">
+                <p>اكتب برنامج يحسب الـ Factorial لعدد معين (مثلاً 5! = 5×4×3×2×1 = 120) باستخدام FOR LOOP.</p>
+                <button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>PL/SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">DECLARE</span>
+    v_num    <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">5</span>;
+    v_result <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">1</span>;
+<span class="kw">BEGIN</span>
+    <span class="kw">FOR</span> i <span class="kw">IN</span> <span class="num">1</span>..v_num <span class="kw">LOOP</span>
+        v_result <span class="op">:=</span> v_result <span class="op">*</span> i;
+    <span class="kw">END LOOP</span>;
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(v_num <span class="op">||</span> <span class="str">'! = '</span> <span class="op">||</span> v_result);
+    <span class="cm">-- Output: 5! = 120</span>
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ex 4 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 4: جدول الضرب بـ WHILE</h4>
+                <span class="exercise-badge medium">متوسط</span>
+            </div>
+            <div class="exercise-body">
+                <p>اكتب برنامج يطبع جدول ضرب الـ 9 من 1 لـ 12 باستخدام WHILE LOOP.</p>
+                <button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>PL/SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">DECLARE</span>
+    v_num <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">9</span>;
+    v_i   <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">1</span>;
+<span class="kw">BEGIN</span>
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'جدول ضرب '</span> <span class="op">||</span> v_num);
+    <span class="kw">WHILE</span> v_i <span class="op">&lt;=</span> <span class="num">12</span> <span class="kw">LOOP</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(v_num <span class="op">||</span> <span class="str">' × '</span> <span class="op">||</span> v_i <span class="op">||</span> <span class="str">' = '</span> <span class="op">||</span> (v_num <span class="op">*</span> v_i));
+        v_i <span class="op">:=</span> v_i <span class="op">+</span> <span class="num">1</span>;
+    <span class="kw">END LOOP</span>;
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ex 5 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 5: Fizz Buzz</h4>
+                <span class="exercise-badge medium">متوسط</span>
+            </div>
+            <div class="exercise-body">
+                <p>اكتب برنامج يطبع الأرقام من 1 لـ 30. لو العدد يقبل القسمة على 3 اطبع "Fizz"، لو على 5 اطبع "Buzz"، لو على 3 و 5 اطبع "FizzBuzz"، غير كده اطبع العدد.</p>
+                <button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>PL/SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">BEGIN</span>
+    <span class="kw">FOR</span> i <span class="kw">IN</span> <span class="num">1</span>..<span class="num">30</span> <span class="kw">LOOP</span>
+        <span class="kw">IF</span> <span class="fn">MOD</span>(i, <span class="num">15</span>) = <span class="num">0</span> <span class="kw">THEN</span>
+            <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(i <span class="op">||</span> <span class="str">' - FizzBuzz'</span>);
+        <span class="kw">ELSIF</span> <span class="fn">MOD</span>(i, <span class="num">3</span>) = <span class="num">0</span> <span class="kw">THEN</span>
+            <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(i <span class="op">||</span> <span class="str">' - Fizz'</span>);
+        <span class="kw">ELSIF</span> <span class="fn">MOD</span>(i, <span class="num">5</span>) = <span class="num">0</span> <span class="kw">THEN</span>
+            <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(i <span class="op">||</span> <span class="str">' - Buzz'</span>);
+        <span class="kw">ELSE</span>
+            <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(i);
+        <span class="kw">END IF</span>;
+    <span class="kw">END LOOP</span>;
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ex 6 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 6: أول Procedure بتاعك</h4>
+                <span class="exercise-badge medium">متوسط</span>
+            </div>
+            <div class="exercise-body">
+                <p>اعمل Procedure اسمها <code style="color:var(--accent4)">print_stars</code> بتاخد عدد (n) وبتطبع n نجمة في سطر واحد. مثلاً print_stars(5) بتطبع: *****</p>
+                <button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>PL/SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">CREATE OR REPLACE PROCEDURE</span> print_stars(
+    p_count <span class="kw">IN</span> <span class="tp">NUMBER</span>
+)
+<span class="kw">IS</span>
+    v_line <span class="tp">VARCHAR2</span>(<span class="num">200</span>) <span class="op">:=</span> <span class="str">''</span>;
+<span class="kw">BEGIN</span>
+    <span class="kw">FOR</span> i <span class="kw">IN</span> <span class="num">1</span>..p_count <span class="kw">LOOP</span>
+        v_line <span class="op">:=</span> v_line <span class="op">||</span> <span class="str">'*'</span>;
+    <span class="kw">END LOOP</span>;
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(v_line);
+<span class="kw">END</span>;
+<span class="op">/</span>
+
+<span class="kw">BEGIN</span>
+    print_stars(<span class="num">5</span>);   <span class="cm">-- *****</span>
+    print_stars(<span class="num">10</span>);  <span class="cm">-- **********</span>
+    print_stars(<span class="num">3</span>);   <span class="cm">-- ***</span>
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ex 7 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 7: Procedure مع OUT</h4>
+                <span class="exercise-badge hard">صعب</span>
+            </div>
+            <div class="exercise-body">
+                <p>اعمل Procedure اسمها <code style="color:var(--accent4)">calc_tax</code> بتاخد المرتب (IN) وبتطلع: الضريبة (OUT) والصافي (OUT). الضريبة 14%.</p>
+                <button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>PL/SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">CREATE OR REPLACE PROCEDURE</span> calc_tax(
+    p_salary <span class="kw">IN</span>  <span class="tp">NUMBER</span>,
+    p_tax    <span class="kw">OUT</span> <span class="tp">NUMBER</span>,
+    p_net    <span class="kw">OUT</span> <span class="tp">NUMBER</span>
+)
+<span class="kw">IS</span>
+    c_tax_rate <span class="kw">CONSTANT</span> <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">0.14</span>;
+<span class="kw">BEGIN</span>
+    p_tax <span class="op">:=</span> <span class="fn">ROUND</span>(p_salary <span class="op">*</span> c_tax_rate, <span class="num">2</span>);
+    p_net <span class="op">:=</span> p_salary <span class="op">-</span> p_tax;
+<span class="kw">END</span>;
+<span class="op">/</span>
+
+<span class="kw">DECLARE</span>
+    v_tax <span class="tp">NUMBER</span>;
+    v_net <span class="tp">NUMBER</span>;
+<span class="kw">BEGIN</span>
+    calc_tax(<span class="num">8000</span>, v_tax, v_net);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'الضريبة: '</span> <span class="op">||</span> v_tax);  <span class="cm">-- 1120</span>
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'الصافي: '</span> <span class="op">||</span> v_net);   <span class="cm">-- 6880</span>
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ex 8 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 8: Procedure لزيادة المرتبات</h4>
+                <span class="exercise-badge hard">صعب</span>
+            </div>
+            <div class="exercise-body">
+                <p>اعمل Procedure اسمها <code style="color:var(--accent4)">raise_dept_salary</code> بتأخد department_id ونسبة زيادة. بتزوّد مرتب كل موظفين القسم. بتطبع عدد الموظفين اللي اتأثروا.</p>
+                <button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>PL/SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">CREATE OR REPLACE PROCEDURE</span> raise_dept_salary(
+    p_dept_id    <span class="kw">IN</span> <span class="tp">NUMBER</span>,
+    p_percentage <span class="kw">IN</span> <span class="tp">NUMBER</span>
+)
+<span class="kw">IS</span>
+    v_count <span class="tp">NUMBER</span>;
+<span class="kw">BEGIN</span>
+    <span class="kw">UPDATE</span> employees
+    <span class="kw">SET</span> salary = salary <span class="op">+</span> (salary <span class="op">*</span> p_percentage <span class="op">/</span> <span class="num">100</span>)
+    <span class="kw">WHERE</span> department_id = p_dept_id;
+
+    v_count <span class="op">:=</span> <span class="fn">SQL%ROWCOUNT</span>;  <span class="cm">-- عدد الصفوف اللي اتأثرت</span>
+
+    <span class="kw">IF</span> v_count = <span class="num">0</span> <span class="kw">THEN</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'مفيش موظفين في القسم '</span> <span class="op">||</span> p_dept_id);
+    <span class="kw">ELSE</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'تم زيادة '</span> <span class="op">||</span> v_count <span class="op">||</span>
+            <span class="str">' موظف بنسبة '</span> <span class="op">||</span> p_percentage <span class="op">||</span> <span class="str">'%'</span>);
+        <span class="kw">COMMIT</span>;
+    <span class="kw">END IF</span>;
+<span class="kw">END</span>;
+<span class="op">/</span>
+
+<span class="kw">EXEC</span> raise_dept_salary(<span class="num">20</span>, <span class="num">10</span>);</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ex 9 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 9: هرم النجوم</h4>
+                <span class="exercise-badge hard">صعب</span>
+            </div>
+            <div class="exercise-body">
+                <p>اعمل Procedure اسمها <code style="color:var(--accent4)">print_pyramid</code> بتاخد عدد الصفوف وبتطبع هرم. مثلاً print_pyramid(4):</p>
+                <pre style="color:var(--accent3);margin:12px 0;direction:ltr;text-align:center">   *
+  ***
+ *****
+*******</pre>
+                <button class="hint-btn" onclick="toggleHint(this)">💡 تلميح</button>
+                <div class="hint-content">
+                    <p>كل صف فيه (2*i - 1) نجمة و(n - i) مسافة قبلها. استخدم RPAD أو loop داخلي.</p>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>PL/SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">CREATE OR REPLACE PROCEDURE</span> print_pyramid(
+    p_rows <span class="kw">IN</span> <span class="tp">NUMBER</span>
+)
+<span class="kw">IS</span>
+    v_line <span class="tp">VARCHAR2</span>(<span class="num">200</span>);
+<span class="kw">BEGIN</span>
+    <span class="kw">FOR</span> i <span class="kw">IN</span> <span class="num">1</span>..p_rows <span class="kw">LOOP</span>
+        v_line <span class="op">:=</span> <span class="fn">LPAD</span>(<span class="str">' '</span>, p_rows <span class="op">-</span> i) <span class="op">||</span>
+                 <span class="fn">RPAD</span>(<span class="str">'*'</span>, <span class="num">2</span> <span class="op">*</span> i <span class="op">-</span> <span class="num">1</span>, <span class="str">'*'</span>);
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(v_line);
+    <span class="kw">END LOOP</span>;
+<span class="kw">END</span>;
+<span class="op">/</span>
+
+<span class="kw">EXEC</span> print_pyramid(<span class="num">5</span>);</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ex 10 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 10: سيناريو متكامل</h4>
+                <span class="exercise-badge hard">تحدي</span>
+            </div>
+            <div class="exercise-body">
+                <p>اعمل Procedure اسمها <code style="color:var(--accent4)">employee_report</code> بتاخد employee_id وبتطبع:</p>
+                <ul>
+                    <li>اسم الموظف والقسم والمرتب</li>
+                    <li>التصنيف (Senior لو > 15000، Mid لو > 8000، Junior غير كده)</li>
+                    <li>المرتب السنوي</li>
+                    <li>عدد سنين الخبرة</li>
+                    <li>لو فيه عمولة اطبعها، غير كده اطبع "بدون عمولة"</li>
+                </ul>
+                <button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>PL/SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">CREATE OR REPLACE PROCEDURE</span> employee_report(
+    p_emp_id <span class="kw">IN</span> <span class="tp">NUMBER</span>
+)
+<span class="kw">IS</span>
+    v_emp     employees<span class="tp">%ROWTYPE</span>;
+    v_dept    departments.department_name<span class="tp">%TYPE</span>;
+    v_level   <span class="tp">VARCHAR2</span>(<span class="num">20</span>);
+    v_years   <span class="tp">NUMBER</span>;
+<span class="kw">BEGIN</span>
+    <span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">INTO</span> v_emp
+    <span class="kw">FROM</span> employees <span class="kw">WHERE</span> employee_id = p_emp_id;
+
+    <span class="kw">SELECT</span> department_name <span class="kw">INTO</span> v_dept
+    <span class="kw">FROM</span> departments <span class="kw">WHERE</span> department_id = v_emp.department_id;
+
+    <span class="cm">-- التصنيف</span>
+    <span class="kw">CASE</span>
+        <span class="kw">WHEN</span> v_emp.salary <span class="op">></span> <span class="num">15000</span> <span class="kw">THEN</span> v_level <span class="op">:=</span> <span class="str">'Senior'</span>;
+        <span class="kw">WHEN</span> v_emp.salary <span class="op">></span> <span class="num">8000</span>  <span class="kw">THEN</span> v_level <span class="op">:=</span> <span class="str">'Mid-Level'</span>;
+        <span class="kw">ELSE</span> v_level <span class="op">:=</span> <span class="str">'Junior'</span>;
+    <span class="kw">END CASE</span>;
+
+    v_years <span class="op">:=</span> <span class="fn">ROUND</span>(<span class="fn">MONTHS_BETWEEN</span>(<span class="fn">SYSDATE</span>, v_emp.hire_date) <span class="op">/</span> <span class="num">12</span>);
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'╔═══════════════════════════════╗'</span>);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'        تقرير موظف #'</span> <span class="op">||</span> p_emp_id);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'╠═══════════════════════════════╣'</span>);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'  الاسم: '</span> <span class="op">||</span> v_emp.first_name <span class="op">||</span> <span class="str">' '</span> <span class="op">||</span> v_emp.last_name);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'  القسم: '</span> <span class="op">||</span> v_dept);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'  المستوى: '</span> <span class="op">||</span> v_level);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'  المرتب الشهري: '</span> <span class="op">||</span> v_emp.salary);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'  المرتب السنوي: '</span> <span class="op">||</span> (v_emp.salary <span class="op">*</span> <span class="num">12</span>));
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'  سنين الخبرة: '</span> <span class="op">||</span> v_years);
+
+    <span class="kw">IF</span> v_emp.commission_pct <span class="kw">IS NOT NULL THEN</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'  العمولة: '</span> <span class="op">||</span>
+            <span class="fn">ROUND</span>(v_emp.salary <span class="op">*</span> v_emp.commission_pct));
+    <span class="kw">ELSE</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'  العمولة: بدون عمولة'</span>);
+    <span class="kw">END IF</span>;
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'╚═══════════════════════════════╝'</span>);
+
+<span class="kw">EXCEPTION</span>
+    <span class="kw">WHEN</span> NO_DATA_FOUND <span class="kw">THEN</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'الموظف #'</span> <span class="op">||</span> p_emp_id <span class="op">||</span> <span class="str">' مش موجود!'</span>);
+<span class="kw">END</span>;
+<span class="op">/</span>
+
+<span class="kw">EXEC</span> employee_report(<span class="num">100</span>);</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="summary-box">
+            <h3>ملخص اللي اتعلمناه</h3>
+            <ul>
+                <li>IF...THEN...END IF للشروط البسيطة</li>
+                <li>IF...ELSIF...ELSE للشروط المتعددة (لاحظ: ELSIF مش ELSEIF!)</li>
+                <li>CASE Statement بديل أنظف لما الشروط كتير على نفس المتغير</li>
+                <li>AND, OR, NOT للعمليات المنطقية</li>
+                <li>Basic LOOP + EXIT WHEN (بتنفذ مرة على الأقل)</li>
+                <li>WHILE LOOP (بتفحص الشرط قبل كل دورة)</li>
+                <li>FOR LOOP (الأسهل - counter تلقائي + REVERSE)</li>
+                <li>Stored Procedure = كود مخزن في الداتابيز بتنادي عليه بالاسم</li>
+                <li>CREATE OR REPLACE PROCEDURE (IS بدل DECLARE)</li>
+                <li>Parameters: IN (الـ default)، OUT (إرجاع قيمة)، IN OUT (الاتنين)</li>
+                <li>p_ لأسماء الـ Parameters، v_ للمتغيرات، c_ للثوابت</li>
+                <li>SQL%ROWCOUNT لعدد الصفوف اللي اتأثرت</li>
+            </ul>
+        </div>
+    </section>
+
+</main>
+
+<a href="index.html" class="back-btn" title="العودة للخطة">↩</a>
+
+<script>
+function toggleExercise(h){h.nextElementSibling.classList.toggle('show')}
+function toggleHint(b){const h=b.nextElementSibling;h.classList.toggle('show');b.textContent=h.classList.contains('show')?'🙈 إخفاء التلميح':'💡 تلميح'}
+function toggleSolution(b){const s=b.nextElementSibling;s.classList.toggle('show');b.textContent=s.classList.contains('show')?'🔒 إخفاء الحل':'🔓 الحل'}
+function copyCode(b){const c=b.closest('.code-block').querySelector('pre').textContent;navigator.clipboard.writeText(c).then(()=>{b.textContent='تم النسخ ✓';setTimeout(()=>b.textContent='نسخ',2000)})}
+const sections=document.querySelectorAll('.section[id]');const navLinks=document.querySelectorAll('.sidebar-nav a');
+window.addEventListener('scroll',()=>{let c='';sections.forEach(s=>{if(pageYOffset>=s.offsetTop-100)c=s.getAttribute('id')});navLinks.forEach(l=>{l.classList.remove('active');if(l.getAttribute('href')==='#'+c)l.classList.add('active')})});
+</script>
+</body>
+</html>

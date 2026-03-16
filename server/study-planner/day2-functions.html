@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الدوال التجميعية + GROUP BY + HAVING</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        :root{--bg:#06060f;--bg-card:#0d0d1f;--bg-code:#0a0a1a;--accent:#ff4d4d;--accent-glow:rgba(255,77,77,0.15);--accent2:#ff8c00;--accent3:#00d47e;--accent4:#4d8cff;--accent5:#a855f7;--text:#e8e8f0;--text-sec:#8888aa;--text-muted:#555577;--border:#1a1a35;--border-light:#252550;}
+        body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);line-height:1.8;overflow-x:hidden;}
+        body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 15%,rgba(168,85,247,0.07) 0%,transparent 50%),radial-gradient(ellipse at 80% 85%,rgba(0,212,126,0.06) 0%,transparent 50%);pointer-events:none;z-index:0;}
+        .sidebar{position:fixed;top:0;right:0;width:280px;height:100vh;background:var(--bg-card);border-left:1px solid var(--border);padding:30px 20px;overflow-y:auto;z-index:100;transition:transform .3s;}
+        .sidebar__title{font-size:.8rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:20px;font-weight:700;}
+        .sidebar__nav a{display:flex;align-items:center;gap:10px;padding:10px 14px;color:var(--text-sec);text-decoration:none;font-size:.82rem;font-weight:600;border-radius:10px;margin-bottom:4px;transition:all .2s;}
+        .sidebar__nav a:hover,.sidebar__nav a.active{background:rgba(168,85,247,0.12);color:var(--accent5);}
+        .sidebar__nav a .nav-num{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;background:var(--border);color:var(--text-muted);flex-shrink:0;}
+        .sidebar__nav a:hover .nav-num,.sidebar__nav a.active .nav-num{background:var(--accent5);color:#fff;}
+        .sidebar__back{display:flex;align-items:center;gap:8px;color:var(--accent5);text-decoration:none;font-weight:700;font-size:.9rem;margin-bottom:25px;padding:10px 14px;border-radius:10px;transition:background .2s;}
+        .sidebar__back:hover{background:rgba(168,85,247,0.12);}
+        .sidebar__divider{height:1px;background:var(--border);margin:12px 0;}
+        .menu-toggle{display:none;position:fixed;top:20px;right:20px;z-index:200;width:48px;height:48px;border-radius:12px;background:var(--bg-card);border:1px solid var(--border);color:var(--text);font-size:1.3rem;cursor:pointer;align-items:center;justify-content:center;}
+        @media(max-width:900px){.sidebar{transform:translateX(100%);width:270px;}.sidebar--open{transform:translateX(0);}.menu-toggle{display:flex;}.main{margin-right:0!important;}}
+        .main{margin-right:280px;padding:40px 50px 80px;max-width:900px;position:relative;z-index:1;}
+        @media(max-width:1100px){.main{padding:30px 25px 60px;}}
+        .hero{margin-bottom:50px;padding-bottom:40px;border-bottom:1px solid var(--border);}
+        .hero__badge{display:inline-flex;align-items:center;gap:8px;background:rgba(168,85,247,0.15);color:var(--accent5);padding:6px 16px;border-radius:8px;font-size:.8rem;font-weight:700;margin-bottom:16px;}
+        .hero__title{font-size:2.2rem;font-weight:900;line-height:1.3;margin-bottom:12px;background:linear-gradient(135deg,#fff,#ccc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+        .hero__desc{color:var(--text-sec);font-size:1.05rem;font-weight:600;max-width:600px;}
+        .hero__meta{display:flex;gap:24px;margin-top:20px;flex-wrap:wrap;}
+        .hero__meta-item{display:flex;align-items:center;gap:8px;color:var(--text-muted);font-size:.85rem;font-weight:600;}
+        .section{margin-bottom:55px;scroll-margin-top:30px;}
+        .section__header{display:flex;align-items:center;gap:14px;margin-bottom:24px;}
+        .section__icon{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+        .section__icon--red{background:rgba(255,77,77,0.15);}.section__icon--orange{background:rgba(255,140,0,0.15);}.section__icon--green{background:rgba(0,212,126,0.15);}.section__icon--blue{background:rgba(77,140,255,0.15);}.section__icon--purple{background:rgba(168,85,247,0.15);}
+        .section__title{font-size:1.5rem;font-weight:800;}
+        .content-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:20px;}
+        .content-card__title{font-size:1.1rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+        .content-card p,.content-card li{color:var(--text-sec);font-size:.95rem;font-weight:600;margin-bottom:8px;}
+        .content-card ul{list-style:none;padding:0;}.content-card ul li::before{content:"◈ ";color:var(--accent5);}
+        .quote-box{background:var(--accent-glow);border-right:4px solid var(--accent);padding:18px 22px;border-radius:0 12px 12px 0;margin:20px 0;font-weight:700;font-size:1rem;color:var(--text);}
+        .quote-box--blue{background:rgba(77,140,255,0.1);border-right-color:var(--accent4);}
+        .quote-box--green{background:rgba(0,212,126,0.1);border-right-color:var(--accent3);}
+        .quote-box--orange{background:rgba(255,140,0,0.1);border-right-color:var(--accent2);}
+        .quote-box--purple{background:rgba(168,85,247,0.1);border-right-color:var(--accent5);}
+        .code-block{background:var(--bg-code);border:1px solid var(--border);border-radius:12px;margin:16px 0;overflow:hidden;}
+        .code-block__header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;background:var(--border);font-size:.78rem;font-weight:700;color:var(--text-muted);}
+        .code-block__dots{display:flex;gap:6px;}
+        .code-block__dot{width:10px;height:10px;border-radius:50%;}.code-block__dot--red{background:#ff5f57;}.code-block__dot--yellow{background:#febc2e;}.code-block__dot--green{background:#28c840;}
+        .code-block__body{padding:18px 22px;font-family:'JetBrains Mono',monospace;font-size:.83rem;line-height:1.9;overflow-x:auto;direction:ltr;text-align:left;color:#c8c8e0;}
+        .kw{color:#ff79c6;font-weight:700;}.str{color:#f1fa8c;}.cm{color:#555577;font-style:italic;}.num{color:#bd93f9;}.fn{color:#50fa7b;}.tp{color:#8be9fd;}.ac{color:#ff4d4d;}.or{color:#ff8c00;}
+        code.inline{background:var(--bg-code);padding:2px 8px;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--accent2);direction:ltr;display:inline-block;}
+        .info-box{border-radius:12px;padding:18px 22px;margin:16px 0;display:flex;align-items:flex-start;gap:12px;}
+        .info-box--warn{background:rgba(255,140,0,0.1);border:1px solid rgba(255,140,0,0.25);}
+        .info-box--success{background:rgba(0,212,126,0.1);border:1px solid rgba(0,212,126,0.25);}
+        .info-box--tip{background:rgba(77,140,255,0.1);border:1px solid rgba(77,140,255,0.25);}
+        .info-box--danger{background:rgba(255,77,77,0.1);border:1px solid rgba(255,77,77,0.25);}
+        .info-box__icon{font-size:1.3rem;flex-shrink:0;}
+        .info-box__text{font-size:.9rem;font-weight:600;}
+        .info-box--warn .info-box__text{color:var(--accent2);}.info-box--success .info-box__text{color:var(--accent3);}.info-box--tip .info-box__text{color:var(--accent4);}.info-box--danger .info-box__text{color:var(--accent);}
+        .syntax-box{background:linear-gradient(135deg,rgba(168,85,247,0.08),rgba(77,140,255,0.08));border:1px solid rgba(168,85,247,0.2);border-radius:14px;padding:24px;margin:20px 0;}
+        .syntax-box__title{font-weight:800;font-size:1rem;color:var(--accent5);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+        .table-visual{background:var(--bg-code);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin:16px 0;}
+        .table-visual__header{padding:12px 18px;font-weight:700;font-size:.9rem;display:flex;align-items:center;gap:8px;}
+        .table-visual__header--blue{background:rgba(77,140,255,0.12);color:var(--accent4);}
+        .table-visual__header--green{background:rgba(0,212,126,0.12);color:var(--accent3);}
+        .table-visual__header--orange{background:rgba(255,140,0,0.12);color:var(--accent2);}
+        .table-visual__header--purple{background:rgba(168,85,247,0.12);color:var(--accent5);}
+        .table-visual table{width:100%;border-collapse:collapse;}
+        .table-visual th{background:var(--border);padding:10px 16px;text-align:right;font-size:.8rem;font-weight:700;color:var(--accent4);font-family:'JetBrains Mono',monospace;}
+        .table-visual td{padding:10px 16px;border-bottom:1px solid var(--border);font-size:.85rem;color:var(--text-sec);font-weight:600;}
+        .table-visual .row-highlight td{background:rgba(0,212,126,0.08);color:var(--accent3);}
+        .sub-title{font-size:1.15rem;font-weight:800;margin:30px 0 16px;color:var(--text);}
+        .func-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;margin:16px 0;}
+        .func-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;transition:all .2s;}
+        .func-card:hover{border-color:var(--border-light);transform:translateY(-2px);}
+        .func-card__name{font-family:'JetBrains Mono',monospace;font-size:1.2rem;font-weight:800;margin-bottom:8px;}
+        .func-card__desc{color:var(--text-sec);font-size:.82rem;font-weight:600;}
+        .func-card__example{color:var(--text-muted);font-size:.75rem;font-weight:600;margin-top:6px;font-family:'JetBrains Mono',monospace;}
+        .badge{display:inline-block;padding:3px 10px;border-radius:6px;font-size:.75rem;font-weight:700;}
+        .badge--red{background:rgba(255,77,77,0.15);color:var(--accent);}.badge--green{background:rgba(0,212,126,0.15);color:var(--accent3);}.badge--blue{background:rgba(77,140,255,0.15);color:var(--accent4);}.badge--orange{background:rgba(255,140,0,0.15);color:var(--accent2);}.badge--purple{background:rgba(168,85,247,0.15);color:var(--accent5);}
+        .flow-box{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;margin:20px 0;padding:20px;background:var(--bg-card);border:1px solid var(--border);border-radius:14px;}
+        .flow-step{padding:10px 18px;border-radius:10px;font-weight:700;font-size:.85rem;text-align:center;}
+        .flow-arrow{color:var(--text-muted);font-size:1.2rem;}
+        .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0;}
+        @media(max-width:600px){.compare-grid{grid-template-columns:1fr;}.func-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));}}
+        .compare-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:22px;}
+        .compare-card__title{font-weight:800;font-size:1rem;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+        .compare-card p{color:var(--text-sec);font-size:.9rem;font-weight:600;margin-bottom:6px;}
+        .exercise-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;margin-bottom:20px;overflow:hidden;}
+        .exercise-card__head{padding:20px 24px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:background .2s;}
+        .exercise-card__head:hover{background:rgba(255,255,255,0.02);}
+        .exercise-card__title{font-weight:700;font-size:1rem;display:flex;align-items:center;gap:10px;}
+        .exercise-card__arrow{transition:transform .3s;font-size:1.2rem;color:var(--text-muted);}
+        .exercise-card__arrow--open{transform:rotate(90deg);}
+        .exercise-card__body{padding:0 24px 24px;display:none;}
+        .exercise-card__body--open{display:block;}
+        .solution-btn{background:linear-gradient(135deg,var(--accent5),#7c3aed);color:#fff;border:none;padding:10px 22px;border-radius:10px;font-family:'Cairo',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;margin-top:14px;transition:opacity .2s;}
+        .solution-btn:hover{opacity:.85;}
+        .solution-content{display:none;margin-top:14px;}
+        .solution-content--open{display:block;}
+        .summary-box{background:linear-gradient(135deg,rgba(168,85,247,0.08),rgba(77,140,255,0.08));border:1px solid var(--border-light);border-radius:18px;padding:30px;margin:30px 0;}
+        .summary-box__title{font-size:1.2rem;font-weight:800;margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+        .summary-list{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+        @media(max-width:600px){.summary-list{grid-template-columns:1fr;}}
+        .summary-list li{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,0.03);border-radius:10px;font-size:.88rem;font-weight:600;color:var(--text-sec);}
+        .summary-list li .check{color:var(--accent3);font-weight:900;}
+        .summary-list li strong{color:var(--text);}
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('sidebar--open')">☰</button>
+    <aside class="sidebar">
+        <a href="index.html" class="sidebar__back">→ العودة للخطة</a>
+        <div class="sidebar__title">الدوال التجميعية</div>
+        <nav class="sidebar__nav">
+            <a href="#sample-data"><span class="nav-num">0</span> البيانات التجريبية</a>
+            <div class="sidebar__divider"></div>
+            <a href="#what-agg"><span class="nav-num">1</span> إيه هي الدوال التجميعية</a>
+            <a href="#count"><span class="nav-num">2</span> COUNT بالتفصيل</a>
+            <a href="#sum"><span class="nav-num">3</span> SUM - المجموع</a>
+            <a href="#avg"><span class="nav-num">4</span> AVG - المتوسط</a>
+            <a href="#max-min"><span class="nav-num">5</span> MAX و MIN</a>
+            <a href="#combine"><span class="nav-num">6</span> دمج الدوال معاً</a>
+            <a href="#null-effect"><span class="nav-num">7</span> تأثير NULL</a>
+            <div class="sidebar__divider"></div>
+            <a href="#groupby-intro"><span class="nav-num">8</span> GROUP BY - المفهوم</a>
+            <a href="#groupby-examples"><span class="nav-num">9</span> أمثلة GROUP BY</a>
+            <a href="#groupby-multi"><span class="nav-num">10</span> تجميع بأكتر من عمود</a>
+            <div class="sidebar__divider"></div>
+            <a href="#having-intro"><span class="nav-num">11</span> HAVING - فلترة المجموعات</a>
+            <a href="#where-vs-having"><span class="nav-num">12</span> WHERE vs HAVING</a>
+            <a href="#exec-order"><span class="nav-num">13</span> ترتيب التنفيذ</a>
+            <div class="sidebar__divider"></div>
+            <a href="#exercises"><span class="nav-num">14</span> تمارين عملية</a>
+            <a href="#summary"><span class="nav-num">15</span> الملخص</a>
+        </nav>
+    </aside>
+
+    <main class="main">
+        <div class="hero">
+            <div class="hero__badge">📊 اليوم الثاني - الجزء الثاني</div>
+            <h1 class="hero__title">الدوال التجميعية + GROUP BY + HAVING</h1>
+            <p class="hero__desc">اتعلم إزاي تعمل إحصائيات وتقارير من البيانات - زي Excel بالظبط بس بـ SQL!</p>
+            <div class="hero__meta">
+                <span class="hero__meta-item">⏱️ 90 دقيقة</span>
+                <span class="hero__meta-item">📊 15 موضوع</span>
+                <span class="hero__meta-item">💪 10 تمارين</span>
+            </div>
+        </div>
+
+        <!-- SECTION 0: Sample Data -->
+        <div class="section" id="sample-data">
+            <div class="section__header">
+                <div class="section__icon section__icon--blue">📋</div>
+                <h2 class="section__title">البيانات اللي هنشتغل عليها</h2>
+            </div>
+            <div class="content-card">
+                <p>لو معملتش الجداول دي قبل كده، انسخ الكود وشغله الأول:</p>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>إنشاء البيانات</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="kw">CREATE TABLE</span> departments (
+    dept_id   <span class="tp">NUMBER</span>(<span class="num">4</span>) <span class="kw">PRIMARY KEY</span>,
+    dept_name <span class="tp">VARCHAR2</span>(<span class="num">50</span>) <span class="kw">NOT NULL</span>,
+    location  <span class="tp">VARCHAR2</span>(<span class="num">50</span>)
+);
+
+<span class="kw">CREATE TABLE</span> employees (
+    emp_id     <span class="tp">NUMBER</span>(<span class="num">6</span>) <span class="kw">PRIMARY KEY</span>,
+    first_name <span class="tp">VARCHAR2</span>(<span class="num">30</span>),
+    last_name  <span class="tp">VARCHAR2</span>(<span class="num">30</span>),
+    email      <span class="tp">VARCHAR2</span>(<span class="num">60</span>) <span class="kw">UNIQUE</span>,
+    salary     <span class="tp">NUMBER</span>(<span class="num">10</span>,<span class="num">2</span>),
+    hire_date  <span class="tp">DATE</span>,
+    dept_id    <span class="tp">NUMBER</span>(<span class="num">4</span>) <span class="kw">REFERENCES</span> departments(dept_id)
+);
+
+<span class="kw">INSERT INTO</span> departments <span class="kw">VALUES</span> (<span class="num">10</span>, <span class="str">'المبيعات'</span>, <span class="str">'القاهرة'</span>);
+<span class="kw">INSERT INTO</span> departments <span class="kw">VALUES</span> (<span class="num">20</span>, <span class="str">'التقنية'</span>, <span class="str">'الإسكندرية'</span>);
+<span class="kw">INSERT INTO</span> departments <span class="kw">VALUES</span> (<span class="num">30</span>, <span class="str">'الموارد البشرية'</span>, <span class="str">'القاهرة'</span>);
+<span class="kw">INSERT INTO</span> departments <span class="kw">VALUES</span> (<span class="num">40</span>, <span class="str">'التسويق'</span>, <span class="str">'المنصورة'</span>);
+
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">101</span>,<span class="str">'أحمد'</span>,<span class="str">'محمد'</span>,<span class="str">'ahmed@mail.com'</span>,<span class="num">8000</span>,<span class="kw">DATE</span> <span class="str">'2023-01-15'</span>,<span class="num">10</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">102</span>,<span class="str">'سارة'</span>,<span class="str">'علي'</span>,<span class="str">'sara@mail.com'</span>,<span class="num">12000</span>,<span class="kw">DATE</span> <span class="str">'2022-06-01'</span>,<span class="num">20</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">103</span>,<span class="str">'محمد'</span>,<span class="str">'حسن'</span>,<span class="str">'moh@mail.com'</span>,<span class="num">6500</span>,<span class="kw">DATE</span> <span class="str">'2023-09-20'</span>,<span class="num">10</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">104</span>,<span class="str">'فاطمة'</span>,<span class="str">'أحمد'</span>,<span class="str">'fatma@mail.com'</span>,<span class="num">15000</span>,<span class="kw">DATE</span> <span class="str">'2021-03-10'</span>,<span class="num">20</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">105</span>,<span class="str">'عمر'</span>,<span class="str">'خالد'</span>,<span class="str">'omar@mail.com'</span>,<span class="num">7000</span>,<span class="kw">DATE</span> <span class="str">'2024-01-05'</span>,<span class="num">30</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">106</span>,<span class="str">'نور'</span>,<span class="str">'سعيد'</span>,<span class="str">'nour@mail.com'</span>,<span class="num">9500</span>,<span class="kw">DATE</span> <span class="str">'2022-11-15'</span>,<span class="num">20</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">107</span>,<span class="str">'يوسف'</span>,<span class="str">'إبراهيم'</span>,<span class="str">'yousef@mail.com'</span>,<span class="num">5500</span>,<span class="kw">DATE</span> <span class="str">'2024-03-01'</span>,<span class="num">10</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">108</span>,<span class="str">'منى'</span>,<span class="str">'عبدالله'</span>,<span class="str">'mona@mail.com'</span>,<span class="num">11000</span>,<span class="kw">DATE</span> <span class="str">'2023-07-20'</span>,<span class="kw">NULL</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">109</span>,<span class="str">'خالد'</span>,<span class="str">'محمود'</span>,<span class="str">'khaled@mail.com'</span>,<span class="num">4500</span>,<span class="kw">DATE</span> <span class="str">'2024-06-10'</span>,<span class="num">10</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">110</span>,<span class="str">'ريم'</span>,<span class="str">'حسين'</span>,<span class="str">'reem@mail.com'</span>,<span class="kw">NULL</span>,<span class="kw">DATE</span> <span class="str">'2024-08-01'</span>,<span class="num">30</span>);
+<span class="kw">COMMIT</span>;</div>
+            </div>
+            <div class="table-visual">
+                <div class="table-visual__header table-visual__header--blue">📊 employees - 10 موظفين</div>
+                <table>
+                    <thead><tr><th>emp_id</th><th>first_name</th><th>salary</th><th>dept_id</th></tr></thead>
+                    <tbody>
+                        <tr><td>101</td><td>أحمد</td><td>8,000</td><td>10</td></tr>
+                        <tr><td>102</td><td>سارة</td><td>12,000</td><td>20</td></tr>
+                        <tr><td>103</td><td>محمد</td><td>6,500</td><td>10</td></tr>
+                        <tr><td>104</td><td>فاطمة</td><td>15,000</td><td>20</td></tr>
+                        <tr><td>105</td><td>عمر</td><td>7,000</td><td>30</td></tr>
+                        <tr><td>106</td><td>نور</td><td>9,500</td><td>20</td></tr>
+                        <tr><td>107</td><td>يوسف</td><td>5,500</td><td>10</td></tr>
+                        <tr><td>108</td><td>منى</td><td>11,000</td><td>NULL</td></tr>
+                        <tr><td>109</td><td>خالد</td><td>4,500</td><td>10</td></tr>
+                        <tr><td>110</td><td>ريم</td><td>NULL</td><td>30</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="info-box info-box--tip">
+                <span class="info-box__icon">💡</span>
+                <span class="info-box__text">ضفنا موظفين جداد: خالد (مرتب 4500) وريم (مرتب NULL). ومنى مش في أي قسم. ده هيخلي الأمثلة أوضح.</span>
+            </div>
+        </div>
+
+        <!-- SECTION 1: What are Aggregate Functions -->
+        <div class="section" id="what-agg">
+            <div class="section__header">
+                <div class="section__icon section__icon--purple">📊</div>
+                <h2 class="section__title">إيه هي الدوال التجميعية؟</h2>
+            </div>
+            <div class="content-card">
+                <p>الدوال التجميعية (Aggregate Functions) بتاخد <strong>مجموعة صفوف</strong> وترجع <strong>نتيجة واحدة</strong>.</p>
+                <p>فكر فيها زي دوال Excel: لما بتكتب <code class="inline">=SUM(A1:A100)</code> بتاخد 100 خلية وترجع رقم واحد.</p>
+            </div>
+            <div class="func-grid">
+                <div class="func-card">
+                    <div class="func-card__name" style="color:var(--accent4)">COUNT</div>
+                    <div class="func-card__desc">بيعد الصفوف</div>
+                    <div class="func-card__example">كام موظف؟</div>
+                </div>
+                <div class="func-card">
+                    <div class="func-card__name" style="color:var(--accent2)">SUM</div>
+                    <div class="func-card__desc">مجموع الأرقام</div>
+                    <div class="func-card__example">إجمالي المرتبات؟</div>
+                </div>
+                <div class="func-card">
+                    <div class="func-card__name" style="color:var(--accent5)">AVG</div>
+                    <div class="func-card__desc">المتوسط الحسابي</div>
+                    <div class="func-card__example">متوسط المرتب؟</div>
+                </div>
+                <div class="func-card">
+                    <div class="func-card__name" style="color:var(--accent3)">MAX</div>
+                    <div class="func-card__desc">أكبر قيمة</div>
+                    <div class="func-card__example">أعلى مرتب؟</div>
+                </div>
+                <div class="func-card">
+                    <div class="func-card__name" style="color:var(--accent)">MIN</div>
+                    <div class="func-card__desc">أصغر قيمة</div>
+                    <div class="func-card__example">أقل مرتب؟</div>
+                </div>
+            </div>
+            <div class="quote-box quote-box--purple">🎯 القاعدة الذهبية: كل الدوال التجميعية بتتجاهل NULL تلقائياً (ما عدا COUNT(*)).</div>
+        </div>
+
+        <!-- SECTION 2: COUNT -->
+        <div class="section" id="count">
+            <div class="section__header">
+                <div class="section__icon section__icon--blue">🔢</div>
+                <h2 class="section__title">COUNT - عدّ الصفوف بالتفصيل</h2>
+            </div>
+            <div class="content-card">
+                <div class="content-card__title">COUNT ليها 3 أشكال مختلفة:</div>
+                <ul>
+                    <li><code class="inline">COUNT(*)</code> → بيعد <strong>كل الصفوف</strong> بما فيها اللي فيها NULL</li>
+                    <li><code class="inline">COUNT(column)</code> → بيعد الصفوف اللي العمود فيها <strong>مش NULL</strong></li>
+                    <li><code class="inline">COUNT(DISTINCT column)</code> → بيعد <strong>القيم المختلفة</strong> بس</li>
+                </ul>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>COUNT(*) - عد كل الصفوف</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="cm">-- كام موظف عندنا؟</span>
+<span class="kw">SELECT</span> <span class="fn">COUNT</span>(*) <span class="kw">AS</span> total_employees
+<span class="kw">FROM</span> employees;
+<span class="cm">-- النتيجة: 10 (عد كل الصفوف حتى اللي فيها NULL)</span></div>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>COUNT(column) - تجاهل NULL</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="cm">-- كام موظف عنده مرتب؟ (ريم مرتبها NULL)</span>
+<span class="kw">SELECT</span> <span class="fn">COUNT</span>(salary) <span class="kw">AS</span> with_salary
+<span class="kw">FROM</span> employees;
+<span class="cm">-- النتيجة: 9 (ريم مش محسوبة)</span>
+
+<span class="cm">-- كام موظف مرتبط بقسم؟</span>
+<span class="kw">SELECT</span> <span class="fn">COUNT</span>(dept_id) <span class="kw">AS</span> with_dept
+<span class="kw">FROM</span> employees;
+<span class="cm">-- النتيجة: 9 (منى مش محسوبة لأن dept_id = NULL)</span></div>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>COUNT(DISTINCT) - القيم المختلفة بس</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="cm">-- كام قسم مختلف عندنا موظفين فيه؟</span>
+<span class="kw">SELECT</span> <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> dept_id) <span class="kw">AS</span> dept_count
+<span class="kw">FROM</span> employees;
+<span class="cm">-- النتيجة: 3 (أقسام 10, 20, 30 - بدون NULL)</span></div>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>COUNT مع WHERE</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="cm">-- كام موظف مرتبه فوق 10000؟</span>
+<span class="kw">SELECT</span> <span class="fn">COUNT</span>(*) <span class="kw">AS</span> high_salary_count
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> salary > <span class="num">10000</span>;
+<span class="cm">-- النتيجة: 3 (سارة 12000 + فاطمة 15000 + منى 11000)</span></div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: SUM -->
+        <div class="section" id="sum">
+            <div class="section__header">
+                <div class="section__icon section__icon--orange">💰</div>
+                <h2 class="section__title">SUM - مجموع القيم</h2>
+            </div>
+            <div class="content-card">
+                <p><code class="inline">SUM</code> بيجمع كل الأرقام في عمود معين. <strong>بيشتغل مع الأرقام بس</strong> (مش نصوص أو تواريخ).</p>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>أمثلة SUM</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="cm">-- إجمالي كل المرتبات</span>
+<span class="kw">SELECT</span> <span class="fn">SUM</span>(salary) <span class="kw">AS</span> total_salaries
+<span class="kw">FROM</span> employees;
+<span class="cm">-- النتيجة: 79,000 (ريم متحسبتش لأن مرتبها NULL)</span>
+
+<span class="cm">-- إجمالي مرتبات قسم التقنية (20)</span>
+<span class="kw">SELECT</span> <span class="fn">SUM</span>(salary) <span class="kw">AS</span> tech_total
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> dept_id = <span class="num">20</span>;
+<span class="cm">-- النتيجة: 36,500 (12000 + 15000 + 9500)</span>
+
+<span class="cm">-- إجمالي مرتبات الموظفين الجداد (2024)</span>
+<span class="kw">SELECT</span> <span class="fn">SUM</span>(salary) <span class="kw">AS</span> new_hires_total
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> hire_date >= <span class="kw">DATE</span> <span class="str">'2024-01-01'</span>;
+<span class="cm">-- النتيجة: 17,000 (عمر 7000 + يوسف 5500 + خالد 4500)</span></div>
+            </div>
+            <div class="info-box info-box--warn">
+                <span class="info-box__icon">⚠️</span>
+                <span class="info-box__text">SUM بيتجاهل NULL تماماً. يعني ريم (مرتبها NULL) مش بتأثر على المجموع نهائياً.</span>
+            </div>
+        </div>
+
+        <!-- SECTION 4: AVG -->
+        <div class="section" id="avg">
+            <div class="section__header">
+                <div class="section__icon section__icon--purple">📈</div>
+                <h2 class="section__title">AVG - المتوسط الحسابي</h2>
+            </div>
+            <div class="content-card">
+                <p><code class="inline">AVG</code> = SUM ÷ COUNT (بس بيتجاهل NULL في الاتنين!)</p>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>أمثلة AVG</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="cm">-- متوسط المرتبات</span>
+<span class="kw">SELECT</span> <span class="fn">AVG</span>(salary) <span class="kw">AS</span> avg_salary
+<span class="kw">FROM</span> employees;
+<span class="cm">-- النتيجة: 8777.777... (79000 ÷ 9 مش ÷ 10!)</span>
+
+<span class="cm">-- ROUND عشان تنظف الرقم</span>
+<span class="kw">SELECT</span> <span class="fn">ROUND</span>(<span class="fn">AVG</span>(salary), <span class="num">2</span>) <span class="kw">AS</span> avg_salary
+<span class="kw">FROM</span> employees;
+<span class="cm">-- النتيجة: 8777.78</span>
+
+<span class="cm">-- بدون خانات عشرية</span>
+<span class="kw">SELECT</span> <span class="fn">ROUND</span>(<span class="fn">AVG</span>(salary)) <span class="kw">AS</span> avg_salary
+<span class="kw">FROM</span> employees;
+<span class="cm">-- النتيجة: 8778</span></div>
+            </div>
+            <div class="info-box info-box--danger">
+                <span class="info-box__icon">🚨</span>
+                <span class="info-box__text">مهم جداً: AVG بيقسم على 9 مش 10! لأنه بيتجاهل ريم (NULL). لو عايز تحسب NULL كـ 0 استخدم NVL:</span>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>NVL - تحويل NULL لقيمة</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="cm">-- AVG مع احتساب NULL كـ 0</span>
+<span class="kw">SELECT</span>
+    <span class="fn">ROUND</span>(<span class="fn">AVG</span>(salary))              <span class="kw">AS</span> avg_without_null,  <span class="cm">-- 8778 (÷9)</span>
+    <span class="fn">ROUND</span>(<span class="fn">AVG</span>(<span class="fn">NVL</span>(salary, <span class="num">0</span>)))     <span class="kw">AS</span> avg_with_null      <span class="cm">-- 7900 (÷10)</span>
+<span class="kw">FROM</span> employees;
+
+<span class="cm">-- NVL(salary, 0) يعني: لو salary = NULL حطها 0</span></div>
+            </div>
+        </div>
+
+        <!-- SECTION 5: MAX & MIN -->
+        <div class="section" id="max-min">
+            <div class="section__header">
+                <div class="section__icon section__icon--green">📊</div>
+                <h2 class="section__title">MAX و MIN - أعلى وأقل قيمة</h2>
+            </div>
+            <div class="content-card">
+                <p>بيشتغلوا مع <strong>أي نوع بيانات</strong>: أرقام، نصوص (ترتيب أبجدي)، وتواريخ!</p>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>MAX و MIN مع أرقام</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="kw">SELECT</span>
+    <span class="fn">MAX</span>(salary) <span class="kw">AS</span> highest,  <span class="cm">-- 15000 (فاطمة)</span>
+    <span class="fn">MIN</span>(salary) <span class="kw">AS</span> lowest,   <span class="cm">-- 4500 (خالد)</span>
+    <span class="fn">MAX</span>(salary) - <span class="fn">MIN</span>(salary) <span class="kw">AS</span> salary_range  <span class="cm">-- 10500</span>
+<span class="kw">FROM</span> employees;</div>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>MAX و MIN مع تواريخ</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="kw">SELECT</span>
+    <span class="fn">MAX</span>(hire_date) <span class="kw">AS</span> newest_hire,  <span class="cm">-- 2024-08-01 (ريم)</span>
+    <span class="fn">MIN</span>(hire_date) <span class="kw">AS</span> oldest_hire   <span class="cm">-- 2021-03-10 (فاطمة)</span>
+<span class="kw">FROM</span> employees;</div>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>MAX و MIN مع نصوص (أبجدي)</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="kw">SELECT</span>
+    <span class="fn">MAX</span>(first_name) <span class="kw">AS</span> last_alpha,
+    <span class="fn">MIN</span>(first_name) <span class="kw">AS</span> first_alpha
+<span class="kw">FROM</span> employees;</div>
+            </div>
+        </div>
+
+        <!-- SECTION 6: Combining Functions -->
+        <div class="section" id="combine">
+            <div class="section__header">
+                <div class="section__icon section__icon--blue">🔗</div>
+                <h2 class="section__title">دمج كل الدوال في Query واحد</h2>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>تقرير شامل</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="kw">SELECT</span>
+    <span class="fn">COUNT</span>(*)              <span class="kw">AS</span> total_employees,
+    <span class="fn">COUNT</span>(salary)          <span class="kw">AS</span> with_salary,
+    <span class="fn">SUM</span>(salary)            <span class="kw">AS</span> total_salaries,
+    <span class="fn">ROUND</span>(<span class="fn">AVG</span>(salary))     <span class="kw">AS</span> avg_salary,
+    <span class="fn">MAX</span>(salary)            <span class="kw">AS</span> max_salary,
+    <span class="fn">MIN</span>(salary)            <span class="kw">AS</span> min_salary,
+    <span class="fn">MAX</span>(salary) - <span class="fn">MIN</span>(salary) <span class="kw">AS</span> salary_range
+<span class="kw">FROM</span> employees;</div>
+            </div>
+            <div class="table-visual">
+                <div class="table-visual__header table-visual__header--blue">📊 النتيجة</div>
+                <table>
+                    <thead><tr><th>total</th><th>with_salary</th><th>total_sal</th><th>avg_sal</th><th>max_sal</th><th>min_sal</th><th>range</th></tr></thead>
+                    <tbody><tr class="row-highlight"><td>10</td><td>9</td><td>79,000</td><td>8,778</td><td>15,000</td><td>4,500</td><td>10,500</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SECTION 7: NULL Effect -->
+        <div class="section" id="null-effect">
+            <div class="section__header">
+                <div class="section__icon section__icon--red">⚡</div>
+                <h2 class="section__title">تأثير NULL على الدوال</h2>
+            </div>
+            <div class="table-visual">
+                <div class="table-visual__header table-visual__header--orange">📊 ملخص تعامل كل دالة مع NULL</div>
+                <table>
+                    <thead><tr><th>الدالة</th><th>السلوك مع NULL</th><th>مثال</th></tr></thead>
+                    <tbody>
+                        <tr><td>COUNT(*)</td><td>بيعد NULL</td><td>10 (عد ريم)</td></tr>
+                        <tr><td>COUNT(salary)</td><td>بيتجاهل NULL</td><td>9 (ماعدش ريم)</td></tr>
+                        <tr><td>SUM(salary)</td><td>بيتجاهل NULL</td><td>79,000</td></tr>
+                        <tr><td>AVG(salary)</td><td>بيتجاهل NULL في البسط والمقام</td><td>79000÷9 = 8778</td></tr>
+                        <tr><td>MAX(salary)</td><td>بيتجاهل NULL</td><td>15,000</td></tr>
+                        <tr><td>MIN(salary)</td><td>بيتجاهل NULL</td><td>4,500</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="quote-box quote-box--orange">💡 لو عايز تتعامل مع NULL كقيمة، استخدم NVL(column, default_value) جوه الدالة.</div>
+        </div>
+
+        <!-- SECTION 8: GROUP BY Intro -->
+        <div class="section" id="groupby-intro">
+            <div class="section__header">
+                <div class="section__icon section__icon--purple">📦</div>
+                <h2 class="section__title">GROUP BY - تجميع البيانات</h2>
+            </div>
+            <div class="content-card">
+                <p>من غير GROUP BY، الدوال التجميعية بتشتغل على <strong>كل الجدول</strong>. بس لو عايز تعرف المتوسط <strong>لكل قسم لوحده</strong>؟ هنا بنستخدم GROUP BY!</p>
+                <p>زي ما في Excel بتعمل <strong>Pivot Table</strong> - بتقسم البيانات لمجموعات وتحسب لكل مجموعة.</p>
+            </div>
+            <div class="syntax-box">
+                <div class="syntax-box__title">📐 الصيغة</div>
+                <div class="code-block" style="margin:0;">
+                    <div class="code-block__body"><span class="kw">SELECT</span> grouping_column, <span class="fn">AGG_FUNCTION</span>(column)
+<span class="kw">FROM</span> table
+[<span class="kw">WHERE</span> condition]
+<span class="kw">GROUP BY</span> grouping_column
+[<span class="kw">ORDER BY</span> ...];</div>
+                </div>
+            </div>
+            <div class="info-box info-box--danger">
+                <span class="info-box__icon">🚨</span>
+                <span class="info-box__text">قاعدة مهمة جداً: أي عمود في SELECT لازم يكون إما (1) جوه دالة تجميعية أو (2) موجود في GROUP BY. غير كده هيطلع Error!</span>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>مثال الخطأ الشائع</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="cm">-- ❌ ده غلط! first_name مش في GROUP BY ومش في دالة</span>
+<span class="kw">SELECT</span> dept_id, first_name, <span class="fn">AVG</span>(salary)
+<span class="kw">FROM</span> employees
+<span class="kw">GROUP BY</span> dept_id;
+<span class="cm">-- ORA-00979: not a GROUP BY expression</span>
+
+<span class="cm">-- ✅ الصح:</span>
+<span class="kw">SELECT</span> dept_id, <span class="fn">AVG</span>(salary)
+<span class="kw">FROM</span> employees
+<span class="kw">GROUP BY</span> dept_id;</div>
+            </div>
+        </div>
+
+        <!-- SECTION 9: GROUP BY Examples -->
+        <div class="section" id="groupby-examples">
+            <div class="section__header">
+                <div class="section__icon section__icon--green">📊</div>
+                <h2 class="section__title">أمثلة GROUP BY</h2>
+            </div>
+            <div class="sub-title">عدد الموظفين في كل قسم</div>
+            <div class="code-block">
+                <div class="code-block__header"><span>COUNT مع GROUP BY</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="kw">SELECT</span>
+    dept_id,
+    <span class="fn">COUNT</span>(*) <span class="kw">AS</span> emp_count
+<span class="kw">FROM</span> employees
+<span class="kw">GROUP BY</span> dept_id
+<span class="kw">ORDER BY</span> emp_count <span class="kw">DESC</span>;</div>
+            </div>
+            <div class="table-visual">
+                <div class="table-visual__header table-visual__header--green">📊 النتيجة</div>
+                <table>
+                    <thead><tr><th>dept_id</th><th>emp_count</th></tr></thead>
+                    <tbody>
+                        <tr><td>10</td><td>4</td></tr>
+                        <tr><td>20</td><td>3</td></tr>
+                        <tr><td>30</td><td>2</td></tr>
+                        <tr><td>NULL</td><td>1</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="sub-title">تقرير كامل لكل قسم</div>
+            <div class="code-block">
+                <div class="code-block__header"><span>كل الدوال مع GROUP BY</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="kw">SELECT</span>
+    dept_id,
+    <span class="fn">COUNT</span>(*)              <span class="kw">AS</span> emp_count,
+    <span class="fn">SUM</span>(salary)            <span class="kw">AS</span> total_salary,
+    <span class="fn">ROUND</span>(<span class="fn">AVG</span>(salary))     <span class="kw">AS</span> avg_salary,
+    <span class="fn">MAX</span>(salary)            <span class="kw">AS</span> max_salary,
+    <span class="fn">MIN</span>(salary)            <span class="kw">AS</span> min_salary
+<span class="kw">FROM</span> employees
+<span class="kw">GROUP BY</span> dept_id
+<span class="kw">ORDER BY</span> dept_id;</div>
+            </div>
+            <div class="table-visual">
+                <div class="table-visual__header table-visual__header--purple">📊 النتيجة - تقرير شامل</div>
+                <table>
+                    <thead><tr><th>dept_id</th><th>emp_count</th><th>total</th><th>avg</th><th>max</th><th>min</th></tr></thead>
+                    <tbody>
+                        <tr><td>10</td><td>4</td><td>24,500</td><td>6,125</td><td>8,000</td><td>4,500</td></tr>
+                        <tr><td>20</td><td>3</td><td>36,500</td><td>12,167</td><td>15,000</td><td>9,500</td></tr>
+                        <tr><td>30</td><td>2</td><td>7,000</td><td>7,000</td><td>7,000</td><td>7,000</td></tr>
+                        <tr><td>NULL</td><td>1</td><td>11,000</td><td>11,000</td><td>11,000</td><td>11,000</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="sub-title">GROUP BY مع WHERE</div>
+            <div class="code-block">
+                <div class="code-block__header"><span>فلترة قبل التجميع</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="cm">-- إحصائيات بس للموظفين اللي مرتبهم فوق 5000</span>
+<span class="kw">SELECT</span>
+    dept_id,
+    <span class="fn">COUNT</span>(*) <span class="kw">AS</span> emp_count,
+    <span class="fn">ROUND</span>(<span class="fn">AVG</span>(salary)) <span class="kw">AS</span> avg_salary
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> salary > <span class="num">5000</span>  <span class="cm">-- الفلترة بتحصل الأول</span>
+<span class="kw">GROUP BY</span> dept_id     <span class="cm">-- بعدين التجميع</span>
+<span class="kw">ORDER BY</span> avg_salary <span class="kw">DESC</span>;</div>
+            </div>
+        </div>
+
+        <!-- SECTION 10: Multi-column GROUP BY -->
+        <div class="section" id="groupby-multi">
+            <div class="section__header">
+                <div class="section__icon section__icon--orange">📊</div>
+                <h2 class="section__title">تجميع بأكتر من عمود</h2>
+            </div>
+            <div class="content-card">
+                <p>ممكن تجمّع بأكتر من عمود. مثلاً: عدد الموظفين في كل قسم وسنة تعيين.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>GROUP BY عمودين</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="cm">-- عدد الموظفين حسب القسم وسنة التعيين</span>
+<span class="kw">SELECT</span>
+    dept_id,
+    <span class="fn">EXTRACT</span>(<span class="kw">YEAR FROM</span> hire_date) <span class="kw">AS</span> hire_year,
+    <span class="fn">COUNT</span>(*) <span class="kw">AS</span> emp_count
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> dept_id <span class="kw">IS NOT NULL</span>
+<span class="kw">GROUP BY</span> dept_id, <span class="fn">EXTRACT</span>(<span class="kw">YEAR FROM</span> hire_date)
+<span class="kw">ORDER BY</span> dept_id, hire_year;</div>
+            </div>
+            <div class="info-box info-box--tip">
+                <span class="info-box__icon">💡</span>
+                <span class="info-box__text">EXTRACT(YEAR FROM date) بيطلع السنة من التاريخ. ممكن كمان MONTH أو DAY.</span>
+            </div>
+        </div>
+
+        <!-- SECTION 11: HAVING -->
+        <div class="section" id="having-intro">
+            <div class="section__header">
+                <div class="section__icon section__icon--red">🎯</div>
+                <h2 class="section__title">HAVING - فلترة المجموعات</h2>
+            </div>
+            <div class="content-card">
+                <p>WHERE بيفلتر <strong>الصفوف</strong> قبل التجميع. بس لو عايز تفلتر <strong>نتيجة التجميع</strong>؟ مثلاً "الأقسام اللي فيها أكتر من 2 موظف" - مش هتقدر بـ WHERE!</p>
+                <p><code class="inline">HAVING</code> بيفلتر <strong>المجموعات بعد التجميع</strong>.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>الأقسام اللي فيها أكتر من 2 موظف</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="kw">SELECT</span>
+    dept_id,
+    <span class="fn">COUNT</span>(*) <span class="kw">AS</span> emp_count
+<span class="kw">FROM</span> employees
+<span class="kw">GROUP BY</span> dept_id
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(*) > <span class="num">2</span>;</div>
+            </div>
+            <div class="table-visual">
+                <div class="table-visual__header table-visual__header--green">📊 النتيجة</div>
+                <table>
+                    <thead><tr><th>dept_id</th><th>emp_count</th></tr></thead>
+                    <tbody>
+                        <tr><td>10</td><td>4</td></tr>
+                        <tr><td>20</td><td>3</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>HAVING مع دوال مختلفة</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="cm">-- الأقسام اللي متوسط مرتبها فوق 8000</span>
+<span class="kw">SELECT</span>
+    dept_id,
+    <span class="fn">ROUND</span>(<span class="fn">AVG</span>(salary)) <span class="kw">AS</span> avg_salary
+<span class="kw">FROM</span> employees
+<span class="kw">GROUP BY</span> dept_id
+<span class="kw">HAVING</span> <span class="fn">AVG</span>(salary) > <span class="num">8000</span>;
+
+<span class="cm">-- الأقسام اللي إجمالي مرتباتها فوق 20000</span>
+<span class="kw">SELECT</span>
+    dept_id,
+    <span class="fn">SUM</span>(salary) <span class="kw">AS</span> total_salary
+<span class="kw">FROM</span> employees
+<span class="kw">GROUP BY</span> dept_id
+<span class="kw">HAVING</span> <span class="fn">SUM</span>(salary) > <span class="num">20000</span>;</div>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>WHERE + GROUP BY + HAVING معاً</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="cm">-- الأقسام اللي فيها أكتر من موظف واحد</span>
+<span class="cm">-- بس نحسب بس الموظفين اللي اتعينوا بعد 2022</span>
+<span class="cm">-- واللي متوسط مرتبهم فوق 6000</span>
+<span class="kw">SELECT</span>
+    dept_id,
+    <span class="fn">COUNT</span>(*) <span class="kw">AS</span> emp_count,
+    <span class="fn">ROUND</span>(<span class="fn">AVG</span>(salary)) <span class="kw">AS</span> avg_salary
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> hire_date >= <span class="kw">DATE</span> <span class="str">'2022-01-01'</span>  <span class="cm">-- 1. فلتر الصفوف</span>
+<span class="kw">GROUP BY</span> dept_id                      <span class="cm">-- 2. جمّع</span>
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(*) > <span class="num">1</span>                  <span class="cm">-- 3. فلتر المجموعات</span>
+   <span class="kw">AND</span> <span class="fn">AVG</span>(salary) > <span class="num">6000</span>
+<span class="kw">ORDER BY</span> avg_salary <span class="kw">DESC</span>;            <span class="cm">-- 4. رتّب</span></div>
+            </div>
+        </div>
+
+        <!-- SECTION 12: WHERE vs HAVING -->
+        <div class="section" id="where-vs-having">
+            <div class="section__header">
+                <div class="section__icon section__icon--orange">⚔️</div>
+                <h2 class="section__title">WHERE vs HAVING - إيه الفرق؟</h2>
+            </div>
+            <div class="compare-grid">
+                <div class="compare-card" style="border-color:var(--accent4);">
+                    <div class="compare-card__title" style="color:var(--accent4);">📋 WHERE</div>
+                    <p>بيفلتر <strong>الصفوف</strong></p>
+                    <p>بيشتغل <strong>قبل</strong> GROUP BY</p>
+                    <p><strong>مينفعش</strong> يستخدم دوال تجميعية</p>
+                    <p>مثال: WHERE salary > 5000</p>
+                </div>
+                <div class="compare-card" style="border-color:var(--accent5);">
+                    <div class="compare-card__title" style="color:var(--accent5);">🎯 HAVING</div>
+                    <p>بيفلتر <strong>المجموعات</strong></p>
+                    <p>بيشتغل <strong>بعد</strong> GROUP BY</p>
+                    <p><strong>لازم</strong> يستخدم دوال تجميعية</p>
+                    <p>مثال: HAVING AVG(salary) > 5000</p>
+                </div>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>مثال يوضح الفرق</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="cm">-- ❌ غلط: WHERE مش بيشتغل مع دوال تجميعية</span>
+<span class="kw">SELECT</span> dept_id, <span class="fn">AVG</span>(salary)
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> <span class="fn">AVG</span>(salary) > <span class="num">8000</span>   <span class="cm">-- ERROR!</span>
+<span class="kw">GROUP BY</span> dept_id;
+
+<span class="cm">-- ✅ صح: HAVING بيشتغل مع دوال تجميعية</span>
+<span class="kw">SELECT</span> dept_id, <span class="fn">ROUND</span>(<span class="fn">AVG</span>(salary)) <span class="kw">AS</span> avg_sal
+<span class="kw">FROM</span> employees
+<span class="kw">GROUP BY</span> dept_id
+<span class="kw">HAVING</span> <span class="fn">AVG</span>(salary) > <span class="num">8000</span>;  <span class="cm">-- OK!</span></div>
+            </div>
+        </div>
+
+        <!-- SECTION 13: Execution Order -->
+        <div class="section" id="exec-order">
+            <div class="section__header">
+                <div class="section__icon section__icon--purple">🔄</div>
+                <h2 class="section__title">ترتيب تنفيذ الـ Query</h2>
+            </div>
+            <div class="content-card">
+                <p>Oracle مش بينفذ الـ SQL بالترتيب اللي انت كاتبه! الترتيب الحقيقي مختلف:</p>
+            </div>
+            <div class="flow-box">
+                <div class="flow-step" style="background:rgba(77,140,255,0.15);color:var(--accent4);">1. FROM</div>
+                <span class="flow-arrow">←</span>
+                <div class="flow-step" style="background:rgba(255,77,77,0.15);color:var(--accent);">2. WHERE</div>
+                <span class="flow-arrow">←</span>
+                <div class="flow-step" style="background:rgba(168,85,247,0.15);color:var(--accent5);">3. GROUP BY</div>
+                <span class="flow-arrow">←</span>
+                <div class="flow-step" style="background:rgba(255,140,0,0.15);color:var(--accent2);">4. HAVING</div>
+                <span class="flow-arrow">←</span>
+                <div class="flow-step" style="background:rgba(0,212,126,0.15);color:var(--accent3);">5. SELECT</div>
+                <span class="flow-arrow">←</span>
+                <div class="flow-step" style="background:rgba(255,255,255,0.08);color:var(--text);">6. ORDER BY</div>
+            </div>
+            <div class="content-card">
+                <div class="content-card__title">📖 يعني إيه ده؟</div>
+                <ul>
+                    <li><strong>FROM:</strong> حدد الجدول الأول</li>
+                    <li><strong>WHERE:</strong> فلتر الصفوف (عشان كده مينفعش تستخدم Alias هنا)</li>
+                    <li><strong>GROUP BY:</strong> قسّم الصفوف لمجموعات</li>
+                    <li><strong>HAVING:</strong> فلتر المجموعات</li>
+                    <li><strong>SELECT:</strong> اختار الأعمدة والدوال</li>
+                    <li><strong>ORDER BY:</strong> رتّب النتيجة النهائية</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SECTION 14: Exercises -->
+        <div class="section" id="exercises">
+            <div class="section__header">
+                <div class="section__icon section__icon--green">💪</div>
+                <h2 class="section__title">تمارين عملية</h2>
+            </div>
+
+            <div class="exercise-card">
+                <div class="exercise-card__head" onclick="toggleExercise(1)">
+                    <span class="exercise-card__title"><span class="badge badge--green">سهل</span> 1: COUNT الأساسي</span>
+                    <span class="exercise-card__arrow" id="arrow-1">◀</span>
+                </div>
+                <div class="exercise-card__body" id="ex-1">
+                    <p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض عدد الموظفين الكلي وعدد الموظفين اللي عندهم مرتب.</p>
+                    <button class="solution-btn" onclick="toggleSolution(1)">إظهار الحل</button>
+                    <div class="solution-content" id="sol-1">
+                        <div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span>
+    <span class="fn">COUNT</span>(*) <span class="kw">AS</span> total,
+    <span class="fn">COUNT</span>(salary) <span class="kw">AS</span> with_salary
+<span class="kw">FROM</span> employees;</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="exercise-card">
+                <div class="exercise-card__head" onclick="toggleExercise(2)">
+                    <span class="exercise-card__title"><span class="badge badge--green">سهل</span> 2: SUM و AVG</span>
+                    <span class="exercise-card__arrow" id="arrow-2">◀</span>
+                </div>
+                <div class="exercise-card__body" id="ex-2">
+                    <p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض إجمالي ومتوسط المرتبات لقسم المبيعات (dept_id = 10).</p>
+                    <button class="solution-btn" onclick="toggleSolution(2)">إظهار الحل</button>
+                    <div class="solution-content" id="sol-2">
+                        <div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span>
+    <span class="fn">SUM</span>(salary) <span class="kw">AS</span> total_salary,
+    <span class="fn">ROUND</span>(<span class="fn">AVG</span>(salary)) <span class="kw">AS</span> avg_salary
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> dept_id = <span class="num">10</span>;</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="exercise-card">
+                <div class="exercise-card__head" onclick="toggleExercise(3)">
+                    <span class="exercise-card__title"><span class="badge badge--green">سهل</span> 3: MAX و MIN</span>
+                    <span class="exercise-card__arrow" id="arrow-3">◀</span>
+                </div>
+                <div class="exercise-card__body" id="ex-3">
+                    <p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض أعلى مرتب، أقل مرتب، والفرق بينهم.</p>
+                    <button class="solution-btn" onclick="toggleSolution(3)">إظهار الحل</button>
+                    <div class="solution-content" id="sol-3">
+                        <div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span>
+    <span class="fn">MAX</span>(salary) <span class="kw">AS</span> highest,
+    <span class="fn">MIN</span>(salary) <span class="kw">AS</span> lowest,
+    <span class="fn">MAX</span>(salary) - <span class="fn">MIN</span>(salary) <span class="kw">AS</span> diff
+<span class="kw">FROM</span> employees;</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="exercise-card">
+                <div class="exercise-card__head" onclick="toggleExercise(4)">
+                    <span class="exercise-card__title"><span class="badge badge--orange">متوسط</span> 4: GROUP BY بسيط</span>
+                    <span class="exercise-card__arrow" id="arrow-4">◀</span>
+                </div>
+                <div class="exercise-card__body" id="ex-4">
+                    <p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض لكل قسم: عدد الموظفين ومتوسط المرتب. رتب حسب المتوسط تنازلياً.</p>
+                    <button class="solution-btn" onclick="toggleSolution(4)">إظهار الحل</button>
+                    <div class="solution-content" id="sol-4">
+                        <div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span>
+    dept_id,
+    <span class="fn">COUNT</span>(*) <span class="kw">AS</span> emp_count,
+    <span class="fn">ROUND</span>(<span class="fn">AVG</span>(salary)) <span class="kw">AS</span> avg_salary
+<span class="kw">FROM</span> employees
+<span class="kw">GROUP BY</span> dept_id
+<span class="kw">ORDER BY</span> avg_salary <span class="kw">DESC</span>;</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="exercise-card">
+                <div class="exercise-card__head" onclick="toggleExercise(5)">
+                    <span class="exercise-card__title"><span class="badge badge--orange">متوسط</span> 5: GROUP BY مع WHERE</span>
+                    <span class="exercise-card__arrow" id="arrow-5">◀</span>
+                </div>
+                <div class="exercise-card__body" id="ex-5">
+                    <p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض إجمالي المرتبات لكل قسم، بس احسب الموظفين اللي مرتبهم فوق 5000 بس.</p>
+                    <button class="solution-btn" onclick="toggleSolution(5)">إظهار الحل</button>
+                    <div class="solution-content" id="sol-5">
+                        <div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span>
+    dept_id,
+    <span class="fn">SUM</span>(salary) <span class="kw">AS</span> total_salary
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> salary > <span class="num">5000</span>
+<span class="kw">GROUP BY</span> dept_id
+<span class="kw">ORDER BY</span> total_salary <span class="kw">DESC</span>;</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="exercise-card">
+                <div class="exercise-card__head" onclick="toggleExercise(6)">
+                    <span class="exercise-card__title"><span class="badge badge--orange">متوسط</span> 6: HAVING</span>
+                    <span class="exercise-card__arrow" id="arrow-6">◀</span>
+                </div>
+                <div class="exercise-card__body" id="ex-6">
+                    <p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض الأقسام اللي فيها أكتر من موظفين اتنين.</p>
+                    <button class="solution-btn" onclick="toggleSolution(6)">إظهار الحل</button>
+                    <div class="solution-content" id="sol-6">
+                        <div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span>
+    dept_id,
+    <span class="fn">COUNT</span>(*) <span class="kw">AS</span> emp_count
+<span class="kw">FROM</span> employees
+<span class="kw">GROUP BY</span> dept_id
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(*) > <span class="num">2</span>;</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="exercise-card">
+                <div class="exercise-card__head" onclick="toggleExercise(7)">
+                    <span class="exercise-card__title"><span class="badge badge--red">صعب</span> 7: WHERE + HAVING</span>
+                    <span class="exercise-card__arrow" id="arrow-7">◀</span>
+                </div>
+                <div class="exercise-card__body" id="ex-7">
+                    <p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض الأقسام اللي متوسط مرتبها فوق 7000، بس احسب بس الموظفين اللي اتعينوا في 2023 أو بعدها.</p>
+                    <button class="solution-btn" onclick="toggleSolution(7)">إظهار الحل</button>
+                    <div class="solution-content" id="sol-7">
+                        <div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span>
+    dept_id,
+    <span class="fn">COUNT</span>(*) <span class="kw">AS</span> emp_count,
+    <span class="fn">ROUND</span>(<span class="fn">AVG</span>(salary)) <span class="kw">AS</span> avg_salary
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> hire_date >= <span class="kw">DATE</span> <span class="str">'2023-01-01'</span>
+<span class="kw">GROUP BY</span> dept_id
+<span class="kw">HAVING</span> <span class="fn">AVG</span>(salary) > <span class="num">7000</span>
+<span class="kw">ORDER BY</span> avg_salary <span class="kw">DESC</span>;</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="exercise-card">
+                <div class="exercise-card__head" onclick="toggleExercise(8)">
+                    <span class="exercise-card__title"><span class="badge badge--red">صعب</span> 8: NVL مع AVG</span>
+                    <span class="exercise-card__arrow" id="arrow-8">◀</span>
+                </div>
+                <div class="exercise-card__body" id="ex-8">
+                    <p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض متوسط المرتبات مرتين: مرة بتجاهل NULL ومرة باحتساب NULL كـ 0.</p>
+                    <button class="solution-btn" onclick="toggleSolution(8)">إظهار الحل</button>
+                    <div class="solution-content" id="sol-8">
+                        <div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span>
+    <span class="fn">ROUND</span>(<span class="fn">AVG</span>(salary)) <span class="kw">AS</span> avg_ignore_null,
+    <span class="fn">ROUND</span>(<span class="fn">AVG</span>(<span class="fn">NVL</span>(salary, <span class="num">0</span>))) <span class="kw">AS</span> avg_null_as_zero
+<span class="kw">FROM</span> employees;</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="exercise-card">
+                <div class="exercise-card__head" onclick="toggleExercise(9)">
+                    <span class="exercise-card__title"><span class="badge badge--red">صعب</span> 9: تقرير شامل</span>
+                    <span class="exercise-card__arrow" id="arrow-9">◀</span>
+                </div>
+                <div class="exercise-card__body" id="ex-9">
+                    <p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض لكل قسم: عدد الموظفين، إجمالي المرتبات، المتوسط، أعلى مرتب، أقل مرتب. بس الأقسام اللي إجمالي مرتباتها فوق 10000. رتب تنازلياً.</p>
+                    <button class="solution-btn" onclick="toggleSolution(9)">إظهار الحل</button>
+                    <div class="solution-content" id="sol-9">
+                        <div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span>
+    dept_id,
+    <span class="fn">COUNT</span>(*) <span class="kw">AS</span> emp_count,
+    <span class="fn">SUM</span>(salary) <span class="kw">AS</span> total_sal,
+    <span class="fn">ROUND</span>(<span class="fn">AVG</span>(salary)) <span class="kw">AS</span> avg_sal,
+    <span class="fn">MAX</span>(salary) <span class="kw">AS</span> max_sal,
+    <span class="fn">MIN</span>(salary) <span class="kw">AS</span> min_sal
+<span class="kw">FROM</span> employees
+<span class="kw">GROUP BY</span> dept_id
+<span class="kw">HAVING</span> <span class="fn">SUM</span>(salary) > <span class="num">10000</span>
+<span class="kw">ORDER BY</span> total_sal <span class="kw">DESC</span>;</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="exercise-card">
+                <div class="exercise-card__head" onclick="toggleExercise(10)">
+                    <span class="exercise-card__title"><span class="badge badge--purple">تحدي</span> 10: التحدي النهائي</span>
+                    <span class="exercise-card__arrow" id="arrow-10">◀</span>
+                </div>
+                <div class="exercise-card__body" id="ex-10">
+                    <p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اكتب Query واحد يعرض: عدد كل الموظفين، عدد اللي عندهم مرتب، عدد الأقسام المختلفة، إجمالي المرتبات، المتوسط (مع NULL كـ 0)، أعلى مرتب، أقل مرتب، الفرق بين أعلى وأقل.</p>
+                    <button class="solution-btn" onclick="toggleSolution(10)">إظهار الحل</button>
+                    <div class="solution-content" id="sol-10">
+                        <div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span>
+    <span class="fn">COUNT</span>(*)                       <span class="kw">AS</span> total_emp,
+    <span class="fn">COUNT</span>(salary)                   <span class="kw">AS</span> with_salary,
+    <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> dept_id)          <span class="kw">AS</span> dept_count,
+    <span class="fn">SUM</span>(salary)                     <span class="kw">AS</span> total_sal,
+    <span class="fn">ROUND</span>(<span class="fn">AVG</span>(<span class="fn">NVL</span>(salary,<span class="num">0</span>)))      <span class="kw">AS</span> avg_sal,
+    <span class="fn">MAX</span>(salary)                     <span class="kw">AS</span> max_sal,
+    <span class="fn">MIN</span>(salary)                     <span class="kw">AS</span> min_sal,
+    <span class="fn">MAX</span>(salary) - <span class="fn">MIN</span>(salary)      <span class="kw">AS</span> sal_range
+<span class="kw">FROM</span> employees;</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 15: Summary -->
+        <div class="section" id="summary">
+            <div class="section__header">
+                <div class="section__icon section__icon--purple">🏆</div>
+                <h2 class="section__title">ملخص الدرس</h2>
+            </div>
+            <div class="summary-box">
+                <div class="summary-box__title">✅ اللي اتعلمناه</div>
+                <ul class="summary-list">
+                    <li><span class="check">✓</span> <strong>COUNT</strong> - عد الصفوف (3 أشكال)</li>
+                    <li><span class="check">✓</span> <strong>SUM</strong> - مجموع الأرقام</li>
+                    <li><span class="check">✓</span> <strong>AVG</strong> - المتوسط + ROUND</li>
+                    <li><span class="check">✓</span> <strong>MAX/MIN</strong> - أعلى وأقل قيمة</li>
+                    <li><span class="check">✓</span> <strong>NVL</strong> - التعامل مع NULL</li>
+                    <li><span class="check">✓</span> <strong>GROUP BY</strong> - تجميع البيانات</li>
+                    <li><span class="check">✓</span> <strong>HAVING</strong> - فلترة المجموعات</li>
+                    <li><span class="check">✓</span> <strong>ترتيب التنفيذ</strong> الحقيقي</li>
+                </ul>
+            </div>
+            <div class="quote-box quote-box--green">🎉 ممتاز! دلوقتي تقدر تعمل تقارير وإحصائيات من أي بيانات. الخطوة الجاية: JOINs - ربط الجداول ببعض!</div>
+        </div>
+    </main>
+
+    <script>
+        function toggleExercise(n){const b=document.getElementById('ex-'+n);const a=document.getElementById('arrow-'+n);b.classList.toggle('exercise-card__body--open');a.classList.toggle('exercise-card__arrow--open');}
+        function toggleSolution(n){document.getElementById('sol-'+n).classList.toggle('solution-content--open');}
+        const sections=document.querySelectorAll('.section');const navLinks=document.querySelectorAll('.sidebar__nav a');
+        window.addEventListener('scroll',()=>{let c='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-100)c=s.getAttribute('id');});navLinks.forEach(a=>{a.classList.remove('active');if(a.getAttribute('href')==='#'+c)a.classList.add('active');});});
+    </script>
+</body>
+</html>

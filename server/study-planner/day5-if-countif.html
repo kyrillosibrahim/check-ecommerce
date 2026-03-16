@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IF, IFS, COUNTIF, SUMIF, AVERAGEIF - اليوم الخامس</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root{--bg:#06060f;--bg-card:#0d0d1f;--bg-code:#0a0a1a;--border:#1a1a3e;--text:#e2e2f0;--text-dim:#8888aa;--accent:#4d8cff;--accent2:#00d47e;--accent3:#ff8c00;--accent4:#a855f7;--accent5:#ff4d4d;--glow:0 0 30px rgba(77,140,255,0.15)}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);line-height:1.8;min-height:100vh}
+        .sidebar{position:fixed;top:0;right:0;width:300px;height:100vh;background:var(--bg-card);border-left:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:100;transition:transform .3s}
+        .sidebar-header{padding:0 24px 20px;border-bottom:1px solid var(--border);margin-bottom:16px}
+        .sidebar-header h3{font-size:1rem;color:var(--accent);margin-bottom:4px}
+        .sidebar-header p{font-size:.8rem;color:var(--text-dim)}
+        .sidebar-nav a{display:flex;align-items:center;gap:10px;padding:10px 24px;color:var(--text-dim);text-decoration:none;font-size:.85rem;transition:all .2s;border-right:3px solid transparent}
+        .sidebar-nav a:hover,.sidebar-nav a.active{color:var(--text);background:rgba(77,140,255,.05);border-right-color:var(--accent)}
+        .sidebar-nav .num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--border);font-size:.7rem;font-weight:700;color:var(--accent);flex-shrink:0}
+        .sidebar-toggle{display:none;position:fixed;top:20px;right:20px;z-index:200;background:var(--accent);border:none;color:#fff;width:44px;height:44px;border-radius:12px;font-size:1.3rem;cursor:pointer}
+        .main{margin-right:300px}
+        .hero{padding:80px 60px 60px;background:linear-gradient(135deg,rgba(77,140,255,.08),rgba(168,85,247,.06));border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+        .hero::before{content:'';position:absolute;top:-100px;left:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(77,140,255,.06),transparent 70%);pointer-events:none}
+        .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(77,140,255,.1);border:1px solid rgba(77,140,255,.2);padding:6px 16px;border-radius:100px;font-size:.85rem;color:var(--accent);margin-bottom:20px}
+        .hero h1{font-size:2.5rem;font-weight:900;margin-bottom:16px;background:linear-gradient(135deg,var(--accent),var(--accent4));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .hero p{font-size:1.1rem;color:var(--text-dim);max-width:600px}
+        .section{padding:60px;border-bottom:1px solid var(--border)}
+        .section-label{display:inline-flex;align-items:center;gap:8px;font-size:.8rem;color:var(--accent);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;font-weight:700}
+        .section h2{font-size:1.8rem;font-weight:800;margin-bottom:24px}
+        .section h3{font-size:1.3rem;font-weight:700;margin:24px 0 16px;color:var(--accent)}
+        .section p,.section li{font-size:1rem;color:var(--text-dim);margin-bottom:12px}
+        .section ul,.section ol{padding-right:24px;margin-bottom:16px}
+        .content-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;margin:20px 0;box-shadow:var(--glow)}
+        .content-card h4{font-size:1.1rem;color:var(--accent2);margin-bottom:16px}
+        .code-block{background:var(--bg-code);border:1px solid var(--border);border-radius:12px;margin:16px 0;overflow:hidden}
+        .code-header{display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--border)}
+        .code-header span{font-size:.8rem;color:var(--text-dim)}
+        .code-header .copy-btn{background:rgba(77,140,255,.1);border:1px solid rgba(77,140,255,.2);color:var(--accent);padding:4px 12px;border-radius:6px;font-size:.75rem;cursor:pointer;font-family:'Cairo',sans-serif;transition:all .2s}
+        .code-header .copy-btn:hover{background:rgba(77,140,255,.2)}
+        .code-block pre{padding:20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.9rem;line-height:1.7;direction:ltr;text-align:left}
+        .kw{color:#ff7b72;font-weight:700}.str{color:#a5d6ff}.cm{color:#6a737d;font-style:italic}.fn{color:#d2a8ff}.tp{color:#ff8c00}.op{color:#ff4d4d}.tbl{color:#00d47e}
+        .info-box{background:rgba(77,140,255,.05);border:1px solid rgba(77,140,255,.15);border-radius:12px;padding:20px 24px;margin:16px 0}
+        .info-box.warning{background:rgba(255,140,0,.05);border-color:rgba(255,140,0,.15)}
+        .info-box.success{background:rgba(0,212,126,.05);border-color:rgba(0,212,126,.15)}
+        .info-box.danger{background:rgba(255,77,77,.05);border-color:rgba(255,77,77,.15)}
+        .info-box strong{color:var(--accent)}
+        .info-box.warning strong{color:var(--accent3)}
+        .info-box.success strong{color:var(--accent2)}
+        .info-box.danger strong{color:var(--accent5)}
+        .quote-box{border-right:4px solid var(--accent);background:rgba(77,140,255,.05);padding:20px 24px;border-radius:0 12px 12px 0;margin:16px 0;font-style:italic}
+        .analogy-box{background:linear-gradient(135deg,rgba(77,140,255,.08),rgba(168,85,247,.08));border:1px solid rgba(77,140,255,.2);border-radius:16px;padding:28px;margin:24px 0}
+        .analogy-box h4{color:var(--accent);font-size:1.1rem;margin-bottom:12px}
+        .analogy-box .emoji{font-size:2rem;margin-bottom:12px;display:block}
+        .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin:20px 0}
+        .feature-item{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;text-align:center;transition:all .3s}
+        .feature-item:hover{border-color:var(--accent);transform:translateY(-4px);box-shadow:0 8px 30px rgba(77,140,255,.1)}
+        .feature-item .icon{font-size:2.5rem;margin-bottom:16px}
+        .feature-item h4{color:var(--accent);margin-bottom:8px;font-size:1.1rem}
+        .feature-item p{font-size:.85rem;color:var(--text-dim)}
+        .table-visual{background:var(--bg-code);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:16px 0}
+        .table-visual table{width:100%;border-collapse:collapse;direction:ltr;text-align:center}
+        .table-visual th{background:rgba(77,140,255,.1);padding:10px 16px;border:1px solid var(--border);font-size:.85rem;color:var(--accent)}
+        .table-visual td{padding:10px 16px;border:1px solid var(--border);font-size:.9rem;font-family:'JetBrains Mono',monospace}
+        .table-visual .highlight-cell{background:rgba(77,140,255,.1);color:var(--accent);font-weight:700}
+        .table-visual .highlight-green{background:rgba(0,212,126,.1);color:var(--accent2);font-weight:700}
+        .table-visual .highlight-orange{background:rgba(255,140,0,.1);color:var(--accent3);font-weight:700}
+        .table-visual .highlight-red{background:rgba(255,77,77,.1);color:var(--accent5);font-weight:700}
+        .table-visual .highlight-purple{background:rgba(168,85,247,.1);color:var(--accent4);font-weight:700}
+        .vs-container{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0}
+        .vs-side{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:24px}
+        .vs-side h4{margin-bottom:16px;font-size:1.1rem}
+        .vs-side.good{border-color:rgba(0,212,126,.3)}.vs-side.good h4{color:var(--accent2)}
+        .vs-side.bad{border-color:rgba(255,77,77,.3)}.vs-side.bad h4{color:var(--accent5)}
+        .vs-side.blue{border-color:rgba(77,140,255,.3)}.vs-side.blue h4{color:var(--accent)}
+        .vs-side.purple{border-color:rgba(168,85,247,.3)}.vs-side.purple h4{color:var(--accent4)}
+        .exercise-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;margin:20px 0;overflow:hidden}
+        .exercise-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;cursor:pointer;transition:background .2s}
+        .exercise-header:hover{background:rgba(77,140,255,.03)}
+        .exercise-header h4{color:var(--text);font-size:1rem}
+        .exercise-badge{padding:4px 12px;border-radius:100px;font-size:.75rem;font-weight:700}
+        .exercise-badge.easy{background:rgba(0,212,126,.1);color:var(--accent2)}
+        .exercise-badge.medium{background:rgba(255,140,0,.1);color:var(--accent3)}
+        .exercise-badge.hard{background:rgba(255,77,77,.1);color:var(--accent5)}
+        .exercise-badge.challenge{background:rgba(168,85,247,.1);color:var(--accent4)}
+        .exercise-body{display:none;padding:0 24px 24px;border-top:1px solid var(--border)}
+        .exercise-body.show{display:block}
+        .exercise-body p{padding-top:16px}
+        .hint-btn,.solution-toggle{background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);color:var(--accent4);padding:8px 20px;border-radius:8px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.85rem;margin-top:12px;margin-left:8px;transition:all .2s}
+        .hint-btn:hover,.solution-toggle:hover{background:rgba(168,85,247,.2)}
+        .hint-content,.solution-content{display:none;margin-top:12px}
+        .hint-content.show,.solution-content.show{display:block}
+        .summary-box{background:linear-gradient(135deg,rgba(77,140,255,.06),rgba(168,85,247,.06));border:1px solid rgba(77,140,255,.15);border-radius:16px;padding:32px;margin:24px 0}
+        .summary-box h3{color:var(--accent);margin-bottom:16px}
+        .summary-box ul{list-style:none;padding:0}
+        .summary-box li{padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);color:var(--text-dim)}
+        .back-btn{position:fixed;bottom:30px;left:30px;background:var(--accent);color:#fff;border:none;width:50px;height:50px;border-radius:50%;font-size:1.3rem;cursor:pointer;z-index:200;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 4px 20px rgba(77,140,255,.3);transition:transform .2s}
+        .back-btn:hover{transform:scale(1.1)}
+        @media(max-width:768px){.sidebar{transform:translateX(100%)}.sidebar.open{transform:translateX(0)}.sidebar-toggle{display:flex;align-items:center;justify-content:center}.main{margin-right:0}.hero{padding:60px 24px 40px}.hero h1{font-size:1.8rem}.section{padding:40px 24px}.vs-container{grid-template-columns:1fr}.features-grid{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+
+<button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">&#9776;</button>
+
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <h3>دوال الشرط والإحصاء</h3>
+        <p>اليوم الخامس - Excel</p>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="#intro"><span class="num">1</span> مقدمة</a>
+        <a href="#if-basic"><span class="num">2</span> دالة IF الأساس</a>
+        <a href="#nested-if"><span class="num">3</span> IF متداخلة</a>
+        <a href="#ifs"><span class="num">4</span> دالة IFS</a>
+        <a href="#if-vs-ifs"><span class="num">5</span> IF vs IFS</a>
+        <a href="#countif"><span class="num">6</span> دالة COUNTIF</a>
+        <a href="#countifs"><span class="num">7</span> دالة COUNTIFS</a>
+        <a href="#sumif"><span class="num">8</span> دالة SUMIF</a>
+        <a href="#sumifs"><span class="num">9</span> دالة SUMIFS</a>
+        <a href="#averageif"><span class="num">10</span> دالة AVERAGEIF</a>
+        <a href="#averageifs"><span class="num">11</span> دالة AVERAGEIFS</a>
+        <a href="#comparison"><span class="num">12</span> مقارنة الدوال</a>
+        <a href="#combining"><span class="num">13</span> دمج الدوال</a>
+        <a href="#mistakes"><span class="num">14</span> أخطاء شائعة</a>
+        <a href="#exercises"><span class="num">15</span> تمارين</a>
+    </nav>
+</aside>
+
+<main class="main">
+
+    <section class="hero">
+        <div class="hero-badge">&#128202; اليوم الخامس</div>
+        <h1>دوال الشرط والإحصاء في Excel</h1>
+        <p>IF, IFS, COUNTIF, SUMIF, AVERAGEIF - أدوات التحليل الأساسية</p>
+    </section>
+
+    <!-- Section 1: Introduction -->
+    <section class="section" id="intro">
+        <span class="section-label">&#128218; مقدمة</span>
+        <h2>مقدمة - دوال الشرط والإحصاء</h2>
+
+        <p>في عالم Excel، الدوال الشرطية والإحصائية هي من أقوى الأدوات اللي بتحول البيانات الخام لمعلومات مفيدة. تخيل إنك عندك بيانات آلاف الموظفين وعايز تعرف: كم واحد في قسم معين؟ إيه مجموع رواتبهم؟ مين ناجح ومين راسب؟ الدوال دي هي اللي بتجاوبك!</p>
+
+        <div class="features-grid">
+            <div class="feature-item">
+                <div class="icon">&#129300;</div>
+                <h4>IF / IFS</h4>
+                <p>اتخاذ قرارات بناء على شروط - لو الشرط متحقق اعمل كذا، ولو لأ اعمل كذا</p>
+            </div>
+            <div class="feature-item">
+                <div class="icon">&#128290;</div>
+                <h4>COUNTIF / COUNTIFS</h4>
+                <p>عد الخلايا اللي بتحقق شرط معين أو أكتر من شرط</p>
+            </div>
+            <div class="feature-item">
+                <div class="icon">&#128176;</div>
+                <h4>SUMIF / SUMIFS</h4>
+                <p>جمع القيم اللي بتحقق شرط معين - زي مجموع رواتب قسم محدد</p>
+            </div>
+            <div class="feature-item">
+                <div class="icon">&#128200;</div>
+                <h4>AVERAGEIF / AVERAGEIFS</h4>
+                <p>حساب المتوسط للقيم اللي بتحقق شرط - زي متوسط درجات الناجحين</p>
+            </div>
+        </div>
+
+        <div class="analogy-box">
+            <span class="emoji">&#128161;</span>
+            <h4>تشبيه بسيط</h4>
+            <p>تخيل إنك مدير مدرسة وعندك كشف بأسماء كل الطلاب ودرجاتهم. دالة IF هي زي ما تقول "لو الدرجة أكبر من 50 = ناجح، غير كده = راسب". ودالة COUNTIF هي زي ما تعد "كم طالب ناجح؟". ودالة SUMIF هي "إيه مجموع درجات الناجحين؟". ودالة AVERAGEIF هي "إيه متوسط درجات الناجحين؟".</p>
+        </div>
+
+        <div class="info-box">
+            <strong>&#128204; ملاحظة:</strong> كل الأمثلة في الدرس ده هنستخدم فيها بيانات موظفين وطلاب عشان الشرح يكون عملي ومفهوم. حاول تطبق كل مثال في Excel عندك!
+        </div>
+    </section>
+
+    <!-- Section 2: IF Basic -->
+    <section class="section" id="if-basic">
+        <span class="section-label">&#9989; الأساسيات</span>
+        <h2>دالة IF - الأساس</h2>
+
+        <p>دالة IF هي أشهر دالة شرطية في Excel. بتاخد شرط وبتنفذ حاجة لو الشرط صح، وحاجة تانية لو الشرط غلط.</p>
+
+        <div class="content-card">
+            <h4>&#128221; الصيغة الأساسية</h4>
+            <div class="code-block">
+                <div class="code-header"><span>Excel Formula</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <pre><span class="kw">=IF</span>(<span class="fn">logical_test</span>, <span class="str">value_if_true</span>, <span class="str">value_if_false</span>)</pre>
+            </div>
+            <ul>
+                <li><strong style="color:var(--accent)">logical_test</strong> - الشرط اللي عايز تختبره (مثلا A1&gt;50)</li>
+                <li><strong style="color:var(--accent2)">value_if_true</strong> - النتيجة لو الشرط صحيح</li>
+                <li><strong style="color:var(--accent5)">value_if_false</strong> - النتيجة لو الشرط غلط</li>
+            </ul>
+        </div>
+
+        <h3>مثال 1: ناجح أو راسب</h3>
+        <p>عندنا درجات طلاب وعايزين نحدد مين ناجح (50 فأعلى) ومين راسب:</p>
+
+        <div class="table-visual">
+            <table>
+                <tr><th></th><th>A</th><th>B</th><th>C</th></tr>
+                <tr><td><strong>1</strong></td><td>الاسم</td><td>الدرجة</td><td>النتيجة</td></tr>
+                <tr><td><strong>2</strong></td><td>أحمد</td><td>85</td><td class="highlight-green">ناجح</td></tr>
+                <tr><td><strong>3</strong></td><td>سارة</td><td>42</td><td class="highlight-red">راسب</td></tr>
+                <tr><td><strong>4</strong></td><td>محمد</td><td>90</td><td class="highlight-green">ناجح</td></tr>
+                <tr><td><strong>5</strong></td><td>فاطمة</td><td>38</td><td class="highlight-red">راسب</td></tr>
+                <tr><td><strong>6</strong></td><td>عمر</td><td>67</td><td class="highlight-green">ناجح</td></tr>
+            </table>
+        </div>
+
+        <div class="code-block">
+            <div class="code-header"><span>الصيغة في C2</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">=IF</span>(<span class="fn">B2</span><span class="op">&gt;=</span><span class="num">50</span>, <span class="str">"ناجح"</span>, <span class="str">"راسب"</span>)</pre>
+        </div>
+
+        <h3>مثال 2: حساب المكافأة</h3>
+        <p>لو الموظف حقق المبيعات المطلوبة (أكتر من 10000)، ياخد مكافأة 500، غير كده ياخد 0:</p>
+
+        <div class="table-visual">
+            <table>
+                <tr><th></th><th>A</th><th>B</th><th>C</th></tr>
+                <tr><td><strong>1</strong></td><td>الموظف</td><td>المبيعات</td><td>المكافأة</td></tr>
+                <tr><td><strong>2</strong></td><td>خالد</td><td>15000</td><td class="highlight-green">500</td></tr>
+                <tr><td><strong>3</strong></td><td>نور</td><td>8000</td><td class="highlight-red">0</td></tr>
+                <tr><td><strong>4</strong></td><td>ريم</td><td>12500</td><td class="highlight-green">500</td></tr>
+            </table>
+        </div>
+
+        <div class="code-block">
+            <div class="code-header"><span>الصيغة في C2</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">=IF</span>(<span class="fn">B2</span><span class="op">&gt;</span><span class="num">10000</span>, <span class="num">500</span>, <span class="num">0</span>)</pre>
+        </div>
+
+        <div class="info-box success">
+            <strong>&#128161; نصيحة:</strong> تقدر تستخدم IF مع نصوص وأرقام. لو القيمة نص، لازم تحطها بين علامتي تنصيص "". لو رقم، اكتبه مباشرة.
+        </div>
+    </section>
+
+    <!-- Section 3: Nested IF -->
+    <section class="section" id="nested-if">
+        <span class="section-label">&#128257; متقدم</span>
+        <h2>IF متداخلة (Nested IF)</h2>
+
+        <p>أحيانا شرط واحد مش كفاية. مثلا عايز تصنف الدرجات ل 5 مستويات. هنا بنستخدم IF جوه IF - ودي اسمها IF متداخلة.</p>
+
+        <h3>مثال: تصنيف الدرجات</h3>
+
+        <div class="content-card">
+            <h4>&#127941; جدول التقديرات</h4>
+            <div class="table-visual">
+                <table>
+                    <tr><th>الدرجة</th><th>التقدير</th></tr>
+                    <tr><td>90 فأعلى</td><td class="highlight-green">ممتاز</td></tr>
+                    <tr><td>80 - 89</td><td class="highlight-cell">جيد جدا</td></tr>
+                    <tr><td>70 - 79</td><td class="highlight-orange">جيد</td></tr>
+                    <tr><td>50 - 69</td><td class="highlight-purple">مقبول</td></tr>
+                    <tr><td>أقل من 50</td><td class="highlight-red">راسب</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="table-visual">
+            <table>
+                <tr><th></th><th>A</th><th>B</th><th>C</th></tr>
+                <tr><td><strong>1</strong></td><td>الاسم</td><td>الدرجة</td><td>التقدير</td></tr>
+                <tr><td><strong>2</strong></td><td>أحمد</td><td>95</td><td class="highlight-green">ممتاز</td></tr>
+                <tr><td><strong>3</strong></td><td>سارة</td><td>83</td><td class="highlight-cell">جيد جدا</td></tr>
+                <tr><td><strong>4</strong></td><td>محمد</td><td>72</td><td class="highlight-orange">جيد</td></tr>
+                <tr><td><strong>5</strong></td><td>فاطمة</td><td>55</td><td class="highlight-purple">مقبول</td></tr>
+                <tr><td><strong>6</strong></td><td>عمر</td><td>40</td><td class="highlight-red">راسب</td></tr>
+            </table>
+        </div>
+
+        <div class="code-block">
+            <div class="code-header"><span>الصيغة في C2</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">=IF</span>(<span class="fn">B2</span><span class="op">&gt;=</span><span class="num">90</span>, <span class="str">"ممتاز"</span>,
+    <span class="kw">IF</span>(<span class="fn">B2</span><span class="op">&gt;=</span><span class="num">80</span>, <span class="str">"جيد جدا"</span>,
+        <span class="kw">IF</span>(<span class="fn">B2</span><span class="op">&gt;=</span><span class="num">70</span>, <span class="str">"جيد"</span>,
+            <span class="kw">IF</span>(<span class="fn">B2</span><span class="op">&gt;=</span><span class="num">50</span>, <span class="str">"مقبول"</span>, <span class="str">"راسب"</span>))))</pre>
+        </div>
+
+        <div class="analogy-box">
+            <span class="emoji">&#128270;</span>
+            <h4>إزاي Excel بيفكر؟</h4>
+            <p>لو الدرجة 72: أولا يسأل "هل 72 &gt;= 90؟" لأ. "هل 72 &gt;= 80؟" لأ. "هل 72 &gt;= 70؟" أيوه! يبقى النتيجة "جيد" ويقف هنا. Excel بيمشي بالترتيب ولما يلاقي أول شرط صحيح بيرجع النتيجة بتاعته.</p>
+        </div>
+
+        <div class="info-box warning">
+            <strong>&#9888; تحذير:</strong> IF المتداخلة بتكون صعبة في القراءة لو كتير. Excel بيسمح بحد أقصى 64 IF متداخلة، لكن عمليا لو عندك أكتر من 3-4 مستويات، استخدم IFS أو SWITCH بدلها.
+        </div>
+    </section>
+
+    <!-- Section 4: IFS -->
+    <section class="section" id="ifs">
+        <span class="section-label">&#128171; البديل الأسهل</span>
+        <h2>دالة IFS - البديل الأسهل</h2>
+
+        <p>دالة IFS ظهرت في Excel 2019 / Office 365 كبديل أنظف وأسهل لل IF المتداخلة. بدل ما تكتب IF جوه IF، بتكتب كل الشروط والنتائج في دالة واحدة.</p>
+
+        <div class="content-card">
+            <h4>&#128221; الصيغة</h4>
+            <div class="code-block">
+                <div class="code-header"><span>Excel Formula</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <pre><span class="kw">=IFS</span>(<span class="fn">condition1</span>, <span class="str">value1</span>, <span class="fn">condition2</span>, <span class="str">value2</span>, <span class="fn">condition3</span>, <span class="str">value3</span>, ...)</pre>
+            </div>
+            <ul>
+                <li>كل شرط متبوع بالنتيجة بتاعته</li>
+                <li>Excel بيختبر الشروط بالترتيب ويرجع أول نتيجة شرطها صحيح</li>
+                <li>لازم على الأقل شرط واحد يكون صحيح، غير كده هيطلع خطأ <code style="color:var(--accent5)">#N/A</code></li>
+            </ul>
+        </div>
+
+        <h3>نفس مثال التقديرات ب IFS</h3>
+
+        <div class="code-block">
+            <div class="code-header"><span>الصيغة في C2</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">=IFS</span>(
+    <span class="fn">B2</span><span class="op">&gt;=</span><span class="num">90</span>, <span class="str">"ممتاز"</span>,
+    <span class="fn">B2</span><span class="op">&gt;=</span><span class="num">80</span>, <span class="str">"جيد جدا"</span>,
+    <span class="fn">B2</span><span class="op">&gt;=</span><span class="num">70</span>, <span class="str">"جيد"</span>,
+    <span class="fn">B2</span><span class="op">&gt;=</span><span class="num">50</span>, <span class="str">"مقبول"</span>,
+    <span class="kw">TRUE</span>,    <span class="str">"راسب"</span>
+)</pre>
+        </div>
+
+        <div class="info-box success">
+            <strong>&#128161; نصيحة مهمة:</strong> لاحظ استخدام <code style="color:var(--accent2)">TRUE</code> كآخر شرط - ده بيعمل زي "غير كده" (else) في IF. لأن TRUE دايما صحيح، فلو مفيش شرط قبله اتحقق، هيرجع النتيجة دي.
+        </div>
+    </section>
+
+    <!-- Section 5: IF vs IFS -->
+    <section class="section" id="if-vs-ifs">
+        <span class="section-label">&#9878; مقارنة</span>
+        <h2>IF vs IFS - إيه الفرق؟</h2>
+
+        <div class="vs-container">
+            <div class="vs-side blue">
+                <h4>IF المتداخلة</h4>
+                <div class="code-block">
+                    <div class="code-header"><span>Nested IF</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                    <pre><span class="kw">=IF</span>(<span class="fn">B2</span><span class="op">&gt;=</span><span class="num">90</span>,<span class="str">"ممتاز"</span>,
+  <span class="kw">IF</span>(<span class="fn">B2</span><span class="op">&gt;=</span><span class="num">80</span>,<span class="str">"جيد جدا"</span>,
+    <span class="kw">IF</span>(<span class="fn">B2</span><span class="op">&gt;=</span><span class="num">70</span>,<span class="str">"جيد"</span>,
+      <span class="kw">IF</span>(<span class="fn">B2</span><span class="op">&gt;=</span><span class="num">50</span>,
+        <span class="str">"مقبول"</span>,
+        <span class="str">"راسب"</span>))))</pre>
+                </div>
+                <ul style="color:var(--text-dim);font-size:.9rem;padding-right:20px;margin-top:12px">
+                    <li>متاحة في كل إصدارات Excel</li>
+                    <li>عندها else تلقائي (المعامل الثالث)</li>
+                    <li>صعبة القراءة مع كتير شروط</li>
+                    <li>أقواس كتير ممكن تتلخبط</li>
+                </ul>
+            </div>
+            <div class="vs-side good">
+                <h4>IFS الأسهل</h4>
+                <div class="code-block">
+                    <div class="code-header"><span>IFS</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                    <pre><span class="kw">=IFS</span>(
+  <span class="fn">B2</span><span class="op">&gt;=</span><span class="num">90</span>, <span class="str">"ممتاز"</span>,
+  <span class="fn">B2</span><span class="op">&gt;=</span><span class="num">80</span>, <span class="str">"جيد جدا"</span>,
+  <span class="fn">B2</span><span class="op">&gt;=</span><span class="num">70</span>, <span class="str">"جيد"</span>,
+  <span class="fn">B2</span><span class="op">&gt;=</span><span class="num">50</span>, <span class="str">"مقبول"</span>,
+  <span class="kw">TRUE</span>,   <span class="str">"راسب"</span>)</pre>
+                </div>
+                <ul style="color:var(--text-dim);font-size:.9rem;padding-right:20px;margin-top:12px">
+                    <li>Excel 2019+ / Office 365 فقط</li>
+                    <li>لازم تحط TRUE ك else</li>
+                    <li>أسهل في القراءة والفهم</li>
+                    <li>قوس واحد فقط</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="quote-box">
+            القاعدة العامة: لو عندك شرطين فقط، استخدم IF عادي. لو عندك 3 شروط أو أكتر، استخدم IFS (لو الإصدار بيدعمها).
+        </div>
+    </section>
+
+    <!-- Section 6: COUNTIF -->
+    <section class="section" id="countif">
+        <span class="section-label">&#128290; العد الشرطي</span>
+        <h2>دالة COUNTIF - العد بشرط</h2>
+
+        <p>دالة COUNTIF بتعد عدد الخلايا اللي بتحقق شرط معين. مثلا: كم موظف في قسم المبيعات؟ كم طالب درجته أكبر من 80؟</p>
+
+        <div class="content-card">
+            <h4>&#128221; الصيغة</h4>
+            <div class="code-block">
+                <div class="code-header"><span>Excel Formula</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <pre><span class="kw">=COUNTIF</span>(<span class="fn">range</span>, <span class="str">criteria</span>)</pre>
+            </div>
+            <ul>
+                <li><strong style="color:var(--accent)">range</strong> - نطاق الخلايا اللي عايز تبحث فيها</li>
+                <li><strong style="color:var(--accent2)">criteria</strong> - الشرط اللي عايز تعد بناء عليه</li>
+            </ul>
+        </div>
+
+        <h3>البيانات اللي هنشتغل عليها</h3>
+        <div class="table-visual">
+            <table>
+                <tr><th></th><th>A</th><th>B</th><th>C</th></tr>
+                <tr><td><strong>1</strong></td><td>الموظف</td><td>القسم</td><td>الراتب</td></tr>
+                <tr><td><strong>2</strong></td><td>أحمد</td><td>المبيعات</td><td>8000</td></tr>
+                <tr><td><strong>3</strong></td><td>سارة</td><td>التقنية</td><td>12000</td></tr>
+                <tr><td><strong>4</strong></td><td>محمد</td><td>المبيعات</td><td>6500</td></tr>
+                <tr><td><strong>5</strong></td><td>فاطمة</td><td>التقنية</td><td>15000</td></tr>
+                <tr><td><strong>6</strong></td><td>عمر</td><td>الموارد البشرية</td><td>7000</td></tr>
+                <tr><td><strong>7</strong></td><td>نور</td><td>التقنية</td><td>9500</td></tr>
+                <tr><td><strong>8</strong></td><td>يوسف</td><td>المبيعات</td><td>5500</td></tr>
+                <tr><td><strong>9</strong></td><td>منى</td><td>الموارد البشرية</td><td>11000</td></tr>
+            </table>
+        </div>
+
+        <h3>أمثلة COUNTIF</h3>
+
+        <div class="content-card">
+            <h4>مثال 1: عدد موظفين قسم معين</h4>
+            <div class="code-block">
+                <div class="code-header"><span>عدد موظفين المبيعات</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <pre><span class="kw">=COUNTIF</span>(<span class="fn">B2:B9</span>, <span class="str">"المبيعات"</span>)   <span class="cm">// النتيجة: 3</span></pre>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h4>مثال 2: عدد الرواتب الأكبر من 10000</h4>
+            <div class="code-block">
+                <div class="code-header"><span>رواتب أكبر من 10000</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <pre><span class="kw">=COUNTIF</span>(<span class="fn">C2:C9</span>, <span class="str">"&gt;10000"</span>)    <span class="cm">// النتيجة: 3</span></pre>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h4>مثال 3: أنواع الشروط في COUNTIF</h4>
+            <div class="table-visual">
+                <table>
+                    <tr><th>الصيغة</th><th>المعنى</th><th>النتيجة</th></tr>
+                    <tr><td><code style="color:var(--accent)">=COUNTIF(C2:C9,"&gt;10000")</code></td><td>أكبر من 10000</td><td class="highlight-cell">3</td></tr>
+                    <tr><td><code style="color:var(--accent)">=COUNTIF(C2:C9,"&lt;7000")</code></td><td>أقل من 7000</td><td class="highlight-cell">2</td></tr>
+                    <tr><td><code style="color:var(--accent)">=COUNTIF(C2:C9,"&gt;=8000")</code></td><td>أكبر من أو يساوي 8000</td><td class="highlight-cell">5</td></tr>
+                    <tr><td><code style="color:var(--accent)">=COUNTIF(C2:C9,"&lt;&gt;8000")</code></td><td>لا يساوي 8000</td><td class="highlight-cell">7</td></tr>
+                    <tr><td><code style="color:var(--accent)">=COUNTIF(B2:B9,"الت*")</code></td><td>يبدأ ب "الت"</td><td class="highlight-cell">3</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <strong>&#128204; ملاحظة:</strong> لما الشرط يكون مقارنة (أكبر من، أقل من)، لازم تحطه بين علامتي تنصيص ككل: <code style="color:var(--accent)">"&gt;10000"</code>. تقدر تستخدم <code style="color:var(--accent)">*</code> ك wildcard للبحث عن نمط معين.
+        </div>
+    </section>
+
+    <!-- Section 7: COUNTIFS -->
+    <section class="section" id="countifs">
+        <span class="section-label">&#128290; متعدد الشروط</span>
+        <h2>دالة COUNTIFS - العد بأكتر من شرط</h2>
+
+        <p>COUNTIFS زي COUNTIF بس بتاخد أكتر من شرط في نفس الوقت. كل الشروط لازم تتحقق مع بعض (AND).</p>
+
+        <div class="content-card">
+            <h4>&#128221; الصيغة</h4>
+            <div class="code-block">
+                <div class="code-header"><span>Excel Formula</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <pre><span class="kw">=COUNTIFS</span>(<span class="fn">range1</span>, <span class="str">criteria1</span>, <span class="fn">range2</span>, <span class="str">criteria2</span>, ...)</pre>
+            </div>
+        </div>
+
+        <h3>مثال 1: موظفين المبيعات اللي راتبهم أكبر من 6000</h3>
+        <div class="code-block">
+            <div class="code-header"><span>COUNTIFS مع شرطين</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">=COUNTIFS</span>(<span class="fn">B2:B9</span>, <span class="str">"المبيعات"</span>, <span class="fn">C2:C9</span>, <span class="str">"&gt;6000"</span>)   <span class="cm">// النتيجة: 2</span>
+<span class="cm">// أحمد (8000) ومحمد (6500) - يوسف (5500) ما اتحسبش لأن راتبه أقل من 6000</span></pre>
+        </div>
+
+        <h3>مثال 2: موظفين التقنية اللي راتبهم بين 9000 و 15000</h3>
+        <div class="code-block">
+            <div class="code-header"><span>COUNTIFS مع ثلاث شروط</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">=COUNTIFS</span>(<span class="fn">B2:B9</span>, <span class="str">"التقنية"</span>, <span class="fn">C2:C9</span>, <span class="str">"&gt;=9000"</span>, <span class="fn">C2:C9</span>, <span class="str">"&lt;=15000"</span>)   <span class="cm">// النتيجة: 3</span></pre>
+        </div>
+
+        <div class="info-box success">
+            <strong>&#128161; لاحظ:</strong> كل نطاقات COUNTIFS لازم تكون بنفس الحجم. يعني لو النطاق الأول B2:B9 (8 خلايا)، النطاق الثاني لازم يكون 8 خلايا برضو.
+        </div>
+    </section>
+
+    <!-- Section 8: SUMIF -->
+    <section class="section" id="sumif">
+        <span class="section-label">&#128176; الجمع الشرطي</span>
+        <h2>دالة SUMIF - الجمع بشرط</h2>
+
+        <p>SUMIF بتجمع القيم في نطاق معين بناء على شرط. يعني بدل ما تجمع كل الرواتب، تقدر تجمع رواتب قسم معين فقط!</p>
+
+        <div class="content-card">
+            <h4>&#128221; الصيغة</h4>
+            <div class="code-block">
+                <div class="code-header"><span>Excel Formula</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <pre><span class="kw">=SUMIF</span>(<span class="fn">range</span>, <span class="str">criteria</span>, <span class="fn">[sum_range]</span>)</pre>
+            </div>
+            <ul>
+                <li><strong style="color:var(--accent)">range</strong> - النطاق اللي بتبحث فيه عن الشرط</li>
+                <li><strong style="color:var(--accent2)">criteria</strong> - الشرط</li>
+                <li><strong style="color:var(--accent3)">sum_range</strong> - النطاق اللي عايز تجمع منه (اختياري - لو مكتبتوش هيجمع من range)</li>
+            </ul>
+        </div>
+
+        <h3>مثال 1: مجموع رواتب قسم المبيعات</h3>
+        <div class="code-block">
+            <div class="code-header"><span>SUMIF</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">=SUMIF</span>(<span class="fn">B2:B9</span>, <span class="str">"المبيعات"</span>, <span class="fn">C2:C9</span>)   <span class="cm">// النتيجة: 20000</span>
+<span class="cm">// أحمد (8000) + محمد (6500) + يوسف (5500) = 20000</span></pre>
+        </div>
+
+        <div class="table-visual">
+            <table>
+                <tr><th>الصيغة</th><th>الشرح</th><th>النتيجة</th></tr>
+                <tr><td><code style="color:var(--accent)">=SUMIF(B2:B9,"المبيعات",C2:C9)</code></td><td>مجموع رواتب المبيعات</td><td class="highlight-cell">20,000</td></tr>
+                <tr><td><code style="color:var(--accent)">=SUMIF(B2:B9,"التقنية",C2:C9)</code></td><td>مجموع رواتب التقنية</td><td class="highlight-cell">36,500</td></tr>
+                <tr><td><code style="color:var(--accent)">=SUMIF(C2:C9,"&gt;10000")</code></td><td>مجموع الرواتب الأكبر من 10000</td><td class="highlight-cell">38,000</td></tr>
+            </table>
+        </div>
+
+        <div class="analogy-box">
+            <span class="emoji">&#127919;</span>
+            <h4>الفرق بين range و sum_range</h4>
+            <p>تخيل إنك في سوبرماركت. ال range هو "رف الفواكه" (المكان اللي بتدور فيه). ال criteria هو "تفاح" (اللي بتدور عليه). وال sum_range هو "السعر" (اللي عايز تجمعه). يعني: دور في رف الفواكه عن التفاح واجمعلي أسعاره!</p>
+        </div>
+    </section>
+
+    <!-- Section 9: SUMIFS -->
+    <section class="section" id="sumifs">
+        <span class="section-label">&#128176; متعدد الشروط</span>
+        <h2>دالة SUMIFS - الجمع بأكتر من شرط</h2>
+
+        <p>SUMIFS بتجمع القيم بناء على أكتر من شرط في نفس الوقت.</p>
+
+        <div class="content-card">
+            <h4>&#128221; الصيغة</h4>
+            <div class="code-block">
+                <div class="code-header"><span>Excel Formula</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <pre><span class="kw">=SUMIFS</span>(<span class="fn">sum_range</span>, <span class="fn">range1</span>, <span class="str">criteria1</span>, <span class="fn">range2</span>, <span class="str">criteria2</span>, ...)</pre>
+            </div>
+        </div>
+
+        <div class="info-box danger">
+            <strong>&#9888; انتبه!</strong> ترتيب المعاملات في SUMIFS مختلف عن SUMIF! في SUMIFS ال sum_range بيجي أول حاجة. لكن في SUMIF بيجي آخر حاجة. ده من أكتر الأخطاء الشائعة!
+        </div>
+
+        <h3>مثال 1: مجموع رواتب موظفين المبيعات اللي راتبهم أكبر من 6000</h3>
+        <div class="code-block">
+            <div class="code-header"><span>SUMIFS</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">=SUMIFS</span>(<span class="fn">C2:C9</span>, <span class="fn">B2:B9</span>, <span class="str">"المبيعات"</span>, <span class="fn">C2:C9</span>, <span class="str">"&gt;6000"</span>)   <span class="cm">// النتيجة: 14500</span>
+<span class="cm">// أحمد (8000) + محمد (6500) = 14500</span></pre>
+        </div>
+
+        <h3>مثال 2: مجموع رواتب التقنية بين 9000 و 13000</h3>
+        <div class="code-block">
+            <div class="code-header"><span>SUMIFS مع 3 شروط</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">=SUMIFS</span>(<span class="fn">C2:C9</span>, <span class="fn">B2:B9</span>, <span class="str">"التقنية"</span>, <span class="fn">C2:C9</span>, <span class="str">"&gt;=9000"</span>, <span class="fn">C2:C9</span>, <span class="str">"&lt;=13000"</span>)
+<span class="cm">// سارة (12000) + نور (9500) = 21500</span></pre>
+        </div>
+
+        <div class="content-card">
+            <h4>&#127775; فرق ترتيب المعاملات</h4>
+            <div class="table-visual">
+                <table>
+                    <tr><th>الدالة</th><th>الترتيب</th></tr>
+                    <tr><td class="highlight-orange">SUMIF</td><td>=SUMIF( <strong style="color:var(--accent)">range</strong>, criteria, <strong style="color:var(--accent3)">sum_range</strong> )</td></tr>
+                    <tr><td class="highlight-cell">SUMIFS</td><td>=SUMIFS( <strong style="color:var(--accent3)">sum_range</strong>, <strong style="color:var(--accent)">range1</strong>, criteria1, ... )</td></tr>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 10: AVERAGEIF -->
+    <section class="section" id="averageif">
+        <span class="section-label">&#128200; المتوسط الشرطي</span>
+        <h2>دالة AVERAGEIF - المتوسط بشرط</h2>
+
+        <p>AVERAGEIF بتحسب المتوسط الحسابي للقيم اللي بتحقق شرط معين.</p>
+
+        <div class="content-card">
+            <h4>&#128221; الصيغة</h4>
+            <div class="code-block">
+                <div class="code-header"><span>Excel Formula</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <pre><span class="kw">=AVERAGEIF</span>(<span class="fn">range</span>, <span class="str">criteria</span>, <span class="fn">[average_range]</span>)</pre>
+            </div>
+            <ul>
+                <li><strong style="color:var(--accent)">range</strong> - النطاق اللي بتبحث فيه عن الشرط</li>
+                <li><strong style="color:var(--accent2)">criteria</strong> - الشرط</li>
+                <li><strong style="color:var(--accent3)">average_range</strong> - النطاق اللي عايز تحسب متوسطه (اختياري)</li>
+            </ul>
+        </div>
+
+        <h3>مثال 1: متوسط رواتب قسم التقنية</h3>
+        <div class="code-block">
+            <div class="code-header"><span>AVERAGEIF</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">=AVERAGEIF</span>(<span class="fn">B2:B9</span>, <span class="str">"التقنية"</span>, <span class="fn">C2:C9</span>)   <span class="cm">// النتيجة: 12166.67</span>
+<span class="cm">// (12000 + 15000 + 9500) / 3 = 12166.67</span></pre>
+        </div>
+
+        <h3>مثال 2: متوسط الرواتب الأكبر من 8000</h3>
+        <div class="code-block">
+            <div class="code-header"><span>AVERAGEIF مع مقارنة</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">=AVERAGEIF</span>(<span class="fn">C2:C9</span>, <span class="str">"&gt;8000"</span>)   <span class="cm">// النتيجة: 11875</span>
+<span class="cm">// (12000 + 15000 + 9500 + 11000) / 4 = 11875</span></pre>
+        </div>
+
+        <div class="table-visual">
+            <table>
+                <tr><th>الصيغة</th><th>الشرح</th><th>النتيجة</th></tr>
+                <tr><td><code style="color:var(--accent)">=AVERAGEIF(B2:B9,"المبيعات",C2:C9)</code></td><td>متوسط رواتب المبيعات</td><td class="highlight-cell">6,667</td></tr>
+                <tr><td><code style="color:var(--accent)">=AVERAGEIF(B2:B9,"التقنية",C2:C9)</code></td><td>متوسط رواتب التقنية</td><td class="highlight-cell">12,167</td></tr>
+                <tr><td><code style="color:var(--accent)">=AVERAGEIF(C2:C9,"&gt;=7000")</code></td><td>متوسط الرواتب &gt;= 7000</td><td class="highlight-cell">10,417</td></tr>
+            </table>
+        </div>
+    </section>
+
+    <!-- Section 11: AVERAGEIFS -->
+    <section class="section" id="averageifs">
+        <span class="section-label">&#128200; متعدد الشروط</span>
+        <h2>دالة AVERAGEIFS - المتوسط بأكتر من شرط</h2>
+
+        <p>زي SUMIFS، بس بدل ما تجمع بتحسب المتوسط. وزي SUMIFS، ال average_range بيجي في الأول.</p>
+
+        <div class="content-card">
+            <h4>&#128221; الصيغة</h4>
+            <div class="code-block">
+                <div class="code-header"><span>Excel Formula</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <pre><span class="kw">=AVERAGEIFS</span>(<span class="fn">average_range</span>, <span class="fn">range1</span>, <span class="str">criteria1</span>, <span class="fn">range2</span>, <span class="str">criteria2</span>, ...)</pre>
+            </div>
+        </div>
+
+        <h3>مثال 1: متوسط رواتب التقنية اللي أكبر من 10000</h3>
+        <div class="code-block">
+            <div class="code-header"><span>AVERAGEIFS</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">=AVERAGEIFS</span>(<span class="fn">C2:C9</span>, <span class="fn">B2:B9</span>, <span class="str">"التقنية"</span>, <span class="fn">C2:C9</span>, <span class="str">"&gt;10000"</span>)   <span class="cm">// النتيجة: 13500</span>
+<span class="cm">// (12000 + 15000) / 2 = 13500</span></pre>
+        </div>
+
+        <h3>مثال 2: متوسط رواتب المبيعات اللي بين 5000 و 9000</h3>
+        <div class="code-block">
+            <div class="code-header"><span>AVERAGEIFS مع 3 شروط</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">=AVERAGEIFS</span>(<span class="fn">C2:C9</span>, <span class="fn">B2:B9</span>, <span class="str">"المبيعات"</span>, <span class="fn">C2:C9</span>, <span class="str">"&gt;=5000"</span>, <span class="fn">C2:C9</span>, <span class="str">"&lt;=9000"</span>)
+<span class="cm">// (8000 + 6500 + 5500) / 3 = 6667</span></pre>
+        </div>
+
+        <div class="info-box">
+            <strong>&#128204; ملاحظة:</strong> ترتيب المعاملات في AVERAGEIFS نفس SUMIFS: ال average_range بيجي أول حاجة، بعدين أزواج (range, criteria). والنطاقات كلها لازم تكون بنفس الحجم.
+        </div>
+    </section>
+
+    <!-- Section 12: Comparison -->
+    <section class="section" id="comparison">
+        <span class="section-label">&#128202; مقارنة شاملة</span>
+        <h2>الفرق بين COUNTIF و SUMIF و AVERAGEIF</h2>
+
+        <div class="table-visual">
+            <table>
+                <tr><th>الدالة</th><th>الوظيفة</th><th>الصيغة</th><th>مثال النتيجة</th></tr>
+                <tr>
+                    <td class="highlight-cell">COUNTIF</td>
+                    <td>بتعد كم خلية بتحقق الشرط</td>
+                    <td><code style="color:var(--accent)">=COUNTIF(range, criteria)</code></td>
+                    <td>3 موظفين</td>
+                </tr>
+                <tr>
+                    <td class="highlight-green">SUMIF</td>
+                    <td>بتجمع القيم اللي بتحقق الشرط</td>
+                    <td><code style="color:var(--accent2)">=SUMIF(range, criteria, sum_range)</code></td>
+                    <td>20,000</td>
+                </tr>
+                <tr>
+                    <td class="highlight-orange">AVERAGEIF</td>
+                    <td>بتحسب متوسط القيم اللي بتحقق الشرط</td>
+                    <td><code style="color:var(--accent3)">=AVERAGEIF(range, criteria, avg_range)</code></td>
+                    <td>6,667</td>
+                </tr>
+            </table>
+        </div>
+
+        <h3>الفرق بين النسخة المفردة والمتعددة</h3>
+        <div class="table-visual">
+            <table>
+                <tr><th>الخاصية</th><th>COUNTIF / SUMIF / AVERAGEIF</th><th>COUNTIFS / SUMIFS / AVERAGEIFS</th></tr>
+                <tr>
+                    <td>عدد الشروط</td>
+                    <td>شرط واحد فقط</td>
+                    <td class="highlight-green">أكتر من شرط</td>
+                </tr>
+                <tr>
+                    <td>العلاقة بين الشروط</td>
+                    <td>-</td>
+                    <td>AND (كل الشروط لازم تتحقق)</td>
+                </tr>
+                <tr>
+                    <td>ترتيب sum/avg_range</td>
+                    <td class="highlight-orange">آخر معامل (SUMIF) / آخر (AVERAGEIF)</td>
+                    <td class="highlight-cell">أول معامل (SUMIFS و AVERAGEIFS)</td>
+                </tr>
+                <tr>
+                    <td>التوافق</td>
+                    <td>كل إصدارات Excel</td>
+                    <td>Excel 2007+</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="content-card">
+            <h4>&#127775; مثال شامل على نفس البيانات - قسم المبيعات</h4>
+            <div class="code-block">
+                <div class="code-header"><span>مقارنة الدوال الثلاثة</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <pre><span class="cm">// كم موظف في المبيعات؟</span>
+<span class="kw">=COUNTIF</span>(<span class="fn">B2:B9</span>, <span class="str">"المبيعات"</span>)              <span class="cm">// 3</span>
+
+<span class="cm">// إيه مجموع رواتب المبيعات؟</span>
+<span class="kw">=SUMIF</span>(<span class="fn">B2:B9</span>, <span class="str">"المبيعات"</span>, <span class="fn">C2:C9</span>)       <span class="cm">// 20,000</span>
+
+<span class="cm">// إيه متوسط رواتب المبيعات؟</span>
+<span class="kw">=AVERAGEIF</span>(<span class="fn">B2:B9</span>, <span class="str">"المبيعات"</span>, <span class="fn">C2:C9</span>)   <span class="cm">// 6,667</span></pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 13: Combining Functions -->
+    <section class="section" id="combining">
+        <span class="section-label">&#128279; دمج</span>
+        <h2>دمج الدوال مع بعض</h2>
+
+        <p>القوة الحقيقية بتظهر لما تدمج الدوال دي مع بعض. خلينا نشوف أمثلة عملية:</p>
+
+        <h3>مثال 1: IF + COUNTIF - هل القيمة مكررة؟</h3>
+        <div class="content-card">
+            <h4>&#128269; كشف التكرار</h4>
+            <div class="code-block">
+                <div class="code-header"><span>كشف التكرار</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <pre><span class="kw">=IF</span>(<span class="kw">COUNTIF</span>(<span class="fn">A:A</span>, <span class="fn">A2</span>)<span class="op">&gt;</span><span class="num">1</span>, <span class="str">"مكرر"</span>, <span class="str">"فريد"</span>)</pre>
+            </div>
+            <p>الصيغة دي بتعد كم مرة القيمة في A2 موجودة في العمود A. لو أكتر من مرة يبقى "مكرر".</p>
+        </div>
+
+        <h3>مثال 2: IF + SUMIF - مكافأة حسب أداء القسم</h3>
+        <div class="content-card">
+            <h4>&#127942; مكافأة شرطية</h4>
+            <div class="code-block">
+                <div class="code-header"><span>مكافأة شرطية</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <pre><span class="cm">// لو مجموع مبيعات القسم أكبر من 50000، الموظف ياخد 1000 مكافأة</span>
+<span class="kw">=IF</span>(<span class="kw">SUMIF</span>(<span class="fn">B2:B9</span>, <span class="fn">B2</span>, <span class="fn">C2:C9</span>)<span class="op">&gt;</span><span class="num">50000</span>, <span class="num">1000</span>, <span class="num">500</span>)</pre>
+            </div>
+        </div>
+
+        <h3>مثال 3: IF + AVERAGEIF - فوق المتوسط ولا تحته؟</h3>
+        <div class="content-card">
+            <h4>&#128200; مقارنة بمتوسط القسم</h4>
+            <div class="code-block">
+                <div class="code-header"><span>مقارنة بمتوسط القسم</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <pre><span class="cm">// هل راتب الموظف فوق متوسط قسمه؟</span>
+<span class="kw">=IF</span>(<span class="fn">C2</span><span class="op">&gt;</span><span class="kw">AVERAGEIF</span>(<span class="fn">B2:B9</span>, <span class="fn">B2</span>, <span class="fn">C2:C9</span>), <span class="str">"فوق المتوسط"</span>, <span class="str">"تحت المتوسط"</span>)</pre>
+            </div>
+        </div>
+
+        <h3>مثال 4: COUNTIF + SUMIF لتقرير سريع</h3>
+        <div class="content-card">
+            <h4>&#128203; تقرير نصي مدمج</h4>
+            <div class="code-block">
+                <div class="code-header"><span>تقرير قسم</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <pre><span class="cm">// تقرير نصي عن قسم المبيعات في خلية واحدة</span>
+<span class="op">=</span><span class="str">"قسم المبيعات: "</span> <span class="op">&amp;</span> <span class="kw">COUNTIF</span>(<span class="fn">B2:B9</span>,<span class="str">"المبيعات"</span>) <span class="op">&amp;</span> <span class="str">" موظف، إجمالي: "</span> <span class="op">&amp;</span> <span class="kw">SUMIF</span>(<span class="fn">B2:B9</span>,<span class="str">"المبيعات"</span>,<span class="fn">C2:C9</span>)</pre>
+            </div>
+            <p>النتيجة: "قسم المبيعات: 3 موظف، إجمالي: 20000"</p>
+        </div>
+
+        <h3>مثال 5: IFS + COUNTIF - تصنيف حجم القسم</h3>
+        <div class="content-card">
+            <h4>&#127970; تصنيف الأقسام حسب الحجم</h4>
+            <div class="code-block">
+                <div class="code-header"><span>تصنيف حجم القسم</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <pre><span class="cm">// لو القسم فيه أكتر من 5 موظفين = كبير، 3-5 = متوسط، أقل = صغير</span>
+<span class="kw">=IFS</span>(
+    <span class="kw">COUNTIF</span>(<span class="fn">B:B</span>,<span class="fn">B2</span>)<span class="op">&gt;</span><span class="num">5</span>, <span class="str">"قسم كبير"</span>,
+    <span class="kw">COUNTIF</span>(<span class="fn">B:B</span>,<span class="fn">B2</span>)<span class="op">&gt;=</span><span class="num">3</span>, <span class="str">"قسم متوسط"</span>,
+    <span class="kw">TRUE</span>, <span class="str">"قسم صغير"</span>
+)</pre>
+            </div>
+        </div>
+
+        <div class="info-box success">
+            <strong>&#128161; نصيحة:</strong> دمج الدوال هو اللي بيفرق بين مستخدم Excel عادي ومحترف. حاول دايما تفكر: "هل أقدر أدمج دالتين عشان أوصل للنتيجة اللي عايزها في خلية واحدة؟"
+        </div>
+    </section>
+
+    <!-- Section 14: Common Mistakes -->
+    <section class="section" id="mistakes">
+        <span class="section-label">&#9888; أخطاء شائعة</span>
+        <h2>أخطاء شائعة وإزاي تتجنبها</h2>
+
+        <div class="content-card">
+            <h4 style="color:var(--accent5)">خطأ 1: نسيان علامات التنصيص في الشرط</h4>
+            <div class="vs-container">
+                <div class="vs-side bad">
+                    <h4>غلط</h4>
+                    <div class="code-block">
+                        <div class="code-header"><span>خطأ</span></div>
+                        <pre><span class="kw">=COUNTIF</span>(<span class="fn">C2:C9</span>, <span class="op">&gt;</span><span class="num">10000</span>)</pre>
+                    </div>
+                    <p style="color:var(--accent5);font-size:.9rem">هيطلع خطأ لأن المقارنة لازم تكون نص</p>
+                </div>
+                <div class="vs-side good">
+                    <h4>صح</h4>
+                    <div class="code-block">
+                        <div class="code-header"><span>صحيح</span></div>
+                        <pre><span class="kw">=COUNTIF</span>(<span class="fn">C2:C9</span>, <span class="str">"&gt;10000"</span>)</pre>
+                    </div>
+                    <p style="color:var(--accent2);font-size:.9rem">المقارنة محاطة بعلامات تنصيص</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h4 style="color:var(--accent5)">خطأ 2: ترتيب المعاملات في SUMIFS غلط</h4>
+            <div class="vs-container">
+                <div class="vs-side bad">
+                    <h4>غلط</h4>
+                    <div class="code-block">
+                        <div class="code-header"><span>خطأ</span></div>
+                        <pre><span class="cm">// حطيت sum_range في الآخر زي SUMIF</span>
+<span class="kw">=SUMIFS</span>(<span class="fn">B2:B9</span>, <span class="str">"المبيعات"</span>, <span class="fn">C2:C9</span>)</pre>
+                    </div>
+                </div>
+                <div class="vs-side good">
+                    <h4>صح</h4>
+                    <div class="code-block">
+                        <div class="code-header"><span>صحيح</span></div>
+                        <pre><span class="cm">// sum_range في الأول</span>
+<span class="kw">=SUMIFS</span>(<span class="fn">C2:C9</span>, <span class="fn">B2:B9</span>, <span class="str">"المبيعات"</span>)</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h4 style="color:var(--accent5)">خطأ 3: نسيان TRUE في IFS</h4>
+            <div class="vs-container">
+                <div class="vs-side bad">
+                    <h4>غلط</h4>
+                    <div class="code-block">
+                        <div class="code-header"><span>خطأ</span></div>
+                        <pre><span class="kw">=IFS</span>(<span class="fn">B2</span><span class="op">&gt;=</span><span class="num">90</span>,<span class="str">"ممتاز"</span>,
+     <span class="fn">B2</span><span class="op">&gt;=</span><span class="num">50</span>,<span class="str">"ناجح"</span>)
+<span class="cm">// لو B2=30 هيطلع #N/A!</span></pre>
+                    </div>
+                </div>
+                <div class="vs-side good">
+                    <h4>صح</h4>
+                    <div class="code-block">
+                        <div class="code-header"><span>صحيح</span></div>
+                        <pre><span class="kw">=IFS</span>(<span class="fn">B2</span><span class="op">&gt;=</span><span class="num">90</span>,<span class="str">"ممتاز"</span>,
+     <span class="fn">B2</span><span class="op">&gt;=</span><span class="num">50</span>,<span class="str">"ناجح"</span>,
+     <span class="kw">TRUE</span>,<span class="str">"راسب"</span>)</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h4 style="color:var(--accent5)">خطأ 4: ترتيب الشروط غلط في IF المتداخلة</h4>
+            <div class="vs-container">
+                <div class="vs-side bad">
+                    <h4>غلط</h4>
+                    <div class="code-block">
+                        <div class="code-header"><span>خطأ</span></div>
+                        <pre><span class="cm">// الشرط الأول بيمسك كل حاجة!</span>
+<span class="kw">=IF</span>(<span class="fn">B2</span><span class="op">&gt;=</span><span class="num">50</span>,<span class="str">"ناجح"</span>,
+  <span class="kw">IF</span>(<span class="fn">B2</span><span class="op">&gt;=</span><span class="num">90</span>,<span class="str">"ممتاز"</span>,
+    <span class="str">"راسب"</span>))</pre>
+                    </div>
+                    <p style="color:var(--accent5);font-size:.9rem">95 هيطلع "ناجح" مش "ممتاز"!</p>
+                </div>
+                <div class="vs-side good">
+                    <h4>صح</h4>
+                    <div class="code-block">
+                        <div class="code-header"><span>صحيح</span></div>
+                        <pre><span class="cm">// ابدأ بالشرط الأكبر</span>
+<span class="kw">=IF</span>(<span class="fn">B2</span><span class="op">&gt;=</span><span class="num">90</span>,<span class="str">"ممتاز"</span>,
+  <span class="kw">IF</span>(<span class="fn">B2</span><span class="op">&gt;=</span><span class="num">50</span>,<span class="str">"ناجح"</span>,
+    <span class="str">"راسب"</span>))</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h4 style="color:var(--accent5)">خطأ 5: أحجام النطاقات مختلفة في COUNTIFS/SUMIFS</h4>
+            <div class="vs-container">
+                <div class="vs-side bad">
+                    <h4>غلط</h4>
+                    <div class="code-block">
+                        <div class="code-header"><span>خطأ</span></div>
+                        <pre><span class="kw">=COUNTIFS</span>(<span class="fn">B2:B9</span>,<span class="str">"المبيعات"</span>,
+          <span class="fn">C2:C10</span>,<span class="str">"&gt;5000"</span>)
+<span class="cm">// B=8 خلايا و C=9 خلايا!</span></pre>
+                    </div>
+                </div>
+                <div class="vs-side good">
+                    <h4>صح</h4>
+                    <div class="code-block">
+                        <div class="code-header"><span>صحيح</span></div>
+                        <pre><span class="kw">=COUNTIFS</span>(<span class="fn">B2:B9</span>,<span class="str">"المبيعات"</span>,
+          <span class="fn">C2:C9</span>,<span class="str">"&gt;5000"</span>)
+<span class="cm">// كلهم 8 خلايا</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 15: Exercises -->
+    <section class="section" id="exercises">
+        <span class="section-label">&#128170; تمارين</span>
+        <h2>تمارين عملية</h2>
+
+        <p>استخدم البيانات التالية لحل التمارين:</p>
+
+        <div class="table-visual">
+            <table>
+                <tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr>
+                <tr><td><strong>1</strong></td><td>الموظف</td><td>القسم</td><td>الراتب</td><td>سنوات الخبرة</td></tr>
+                <tr><td><strong>2</strong></td><td>أحمد</td><td>المبيعات</td><td>8000</td><td>5</td></tr>
+                <tr><td><strong>3</strong></td><td>سارة</td><td>التقنية</td><td>12000</td><td>8</td></tr>
+                <tr><td><strong>4</strong></td><td>محمد</td><td>المبيعات</td><td>6500</td><td>3</td></tr>
+                <tr><td><strong>5</strong></td><td>فاطمة</td><td>التقنية</td><td>15000</td><td>10</td></tr>
+                <tr><td><strong>6</strong></td><td>عمر</td><td>الموارد البشرية</td><td>7000</td><td>4</td></tr>
+                <tr><td><strong>7</strong></td><td>نور</td><td>التقنية</td><td>9500</td><td>6</td></tr>
+                <tr><td><strong>8</strong></td><td>يوسف</td><td>المبيعات</td><td>5500</td><td>2</td></tr>
+                <tr><td><strong>9</strong></td><td>منى</td><td>الموارد البشرية</td><td>11000</td><td>7</td></tr>
+                <tr><td><strong>10</strong></td><td>خالد</td><td>المبيعات</td><td>9000</td><td>6</td></tr>
+                <tr><td><strong>11</strong></td><td>ريم</td><td>التقنية</td><td>13500</td><td>9</td></tr>
+            </table>
+        </div>
+
+        <!-- Exercise 1 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 1: تصنيف الراتب بسيط</h4>
+                <span class="exercise-badge easy">سهل</span>
+            </div>
+            <div class="exercise-body">
+                <p>اكتب صيغة IF في العمود E تصنف كل موظف حسب راتبه: لو أكبر من 10000 = "راتب عالي"، غير كده = "راتب عادي".</p>
+                <button class="hint-btn" onclick="toggleHint(this)">&#128161; تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> استخدم IF بسيطة مع مقارنة الراتب في العمود C بالقيمة 10000.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">&#128275; الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>الصيغة في E2</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">=IF</span>(<span class="fn">C2</span><span class="op">&gt;</span><span class="num">10000</span>, <span class="str">"راتب عالي"</span>, <span class="str">"راتب عادي"</span>)</pre>
+                    </div>
+                    <div class="table-visual">
+                        <table>
+                            <tr><th>الموظف</th><th>الراتب</th><th>التصنيف</th></tr>
+                            <tr><td>أحمد</td><td>8000</td><td>راتب عادي</td></tr>
+                            <tr><td>سارة</td><td>12000</td><td class="highlight-green">راتب عالي</td></tr>
+                            <tr><td>فاطمة</td><td>15000</td><td class="highlight-green">راتب عالي</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 2 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 2: تقدير سنوات الخبرة</h4>
+                <span class="exercise-badge easy">سهل</span>
+            </div>
+            <div class="exercise-body">
+                <p>اكتب صيغة IFS تصنف الموظفين حسب سنوات الخبرة: 8+ = "خبير"، 5-7 = "متوسط"، أقل من 5 = "مبتدئ".</p>
+                <button class="hint-btn" onclick="toggleHint(this)">&#128161; تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> استخدم IFS مع 3 شروط. ابدأ بالأكبر (&gt;=8)، ثم (&gt;=5)، ثم TRUE للباقي.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">&#128275; الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>الصيغة في E2</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">=IFS</span>(<span class="fn">D2</span><span class="op">&gt;=</span><span class="num">8</span>, <span class="str">"خبير"</span>, <span class="fn">D2</span><span class="op">&gt;=</span><span class="num">5</span>, <span class="str">"متوسط"</span>, <span class="kw">TRUE</span>, <span class="str">"مبتدئ"</span>)</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 3 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 3: عدد موظفين كل قسم</h4>
+                <span class="exercise-badge easy">سهل</span>
+            </div>
+            <div class="exercise-body">
+                <p>استخدم COUNTIF لحساب عدد موظفين كل قسم من الأقسام الثلاثة (المبيعات، التقنية، الموارد البشرية).</p>
+                <button class="hint-btn" onclick="toggleHint(this)">&#128161; تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> اكتب 3 صيغ COUNTIF منفصلة، كل واحدة بشرط مختلف لاسم القسم. النطاق هو B2:B11.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">&#128275; الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>COUNTIF لكل قسم</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">=COUNTIF</span>(<span class="fn">B2:B11</span>, <span class="str">"المبيعات"</span>)          <span class="cm">// النتيجة: 4</span>
+<span class="kw">=COUNTIF</span>(<span class="fn">B2:B11</span>, <span class="str">"التقنية"</span>)           <span class="cm">// النتيجة: 4</span>
+<span class="kw">=COUNTIF</span>(<span class="fn">B2:B11</span>, <span class="str">"الموارد البشرية"</span>)   <span class="cm">// النتيجة: 2</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 4 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 4: مجموع رواتب كل قسم</h4>
+                <span class="exercise-badge medium">متوسط</span>
+            </div>
+            <div class="exercise-body">
+                <p>استخدم SUMIF لحساب مجموع رواتب كل قسم. أي قسم إجمالي رواتبه الأعلى؟</p>
+                <button class="hint-btn" onclick="toggleHint(this)">&#128161; تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> SUMIF: ابحث في عمود القسم (B)، الشرط اسم القسم، واجمع من عمود الراتب (C).
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">&#128275; الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>SUMIF لكل قسم</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">=SUMIF</span>(<span class="fn">B2:B11</span>, <span class="str">"المبيعات"</span>, <span class="fn">C2:C11</span>)          <span class="cm">// النتيجة: 29,000</span>
+<span class="kw">=SUMIF</span>(<span class="fn">B2:B11</span>, <span class="str">"التقنية"</span>, <span class="fn">C2:C11</span>)           <span class="cm">// النتيجة: 50,000</span>
+<span class="kw">=SUMIF</span>(<span class="fn">B2:B11</span>, <span class="str">"الموارد البشرية"</span>, <span class="fn">C2:C11</span>)   <span class="cm">// النتيجة: 18,000</span>
+
+<span class="cm">// قسم التقنية هو الأعلى بإجمالي 50,000</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 5 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 5: موظفين بشروط متعددة</h4>
+                <span class="exercise-badge medium">متوسط</span>
+            </div>
+            <div class="exercise-body">
+                <p>كم موظف في قسم المبيعات وراتبه أكبر من 7000؟ وإيه مجموع رواتبهم؟</p>
+                <button class="hint-btn" onclick="toggleHint(this)">&#128161; تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> استخدم COUNTIFS للعدد و SUMIFS للمجموع. كل واحدة بشرطين: القسم = "المبيعات" والراتب &gt; 7000.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">&#128275; الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>COUNTIFS + SUMIFS</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="cm">// العدد</span>
+<span class="kw">=COUNTIFS</span>(<span class="fn">B2:B11</span>, <span class="str">"المبيعات"</span>, <span class="fn">C2:C11</span>, <span class="str">"&gt;7000"</span>)   <span class="cm">// النتيجة: 2 (أحمد وخالد)</span>
+
+<span class="cm">// المجموع</span>
+<span class="kw">=SUMIFS</span>(<span class="fn">C2:C11</span>, <span class="fn">B2:B11</span>, <span class="str">"المبيعات"</span>, <span class="fn">C2:C11</span>, <span class="str">"&gt;7000"</span>)   <span class="cm">// النتيجة: 17,000</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 6 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 6: متوسط رواتب الخبراء</h4>
+                <span class="exercise-badge medium">متوسط</span>
+            </div>
+            <div class="exercise-body">
+                <p>احسب متوسط رواتب الموظفين اللي سنوات خبرتهم 6 سنوات أو أكتر. ثم احسب متوسط رواتب التقنية فقط اللي خبرتهم 6+.</p>
+                <button class="hint-btn" onclick="toggleHint(this)">&#128161; تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> للسؤال الأول استخدم AVERAGEIF. للسؤال الثاني استخدم AVERAGEIFS مع شرطين: القسم والخبرة.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">&#128275; الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>AVERAGEIF و AVERAGEIFS</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="cm">// متوسط رواتب كل اللي خبرتهم 6+</span>
+<span class="kw">=AVERAGEIF</span>(<span class="fn">D2:D11</span>, <span class="str">"&gt;=6"</span>, <span class="fn">C2:C11</span>)   <span class="cm">// النتيجة: 11,667</span>
+
+<span class="cm">// متوسط رواتب التقنية فقط اللي خبرتهم 6+</span>
+<span class="kw">=AVERAGEIFS</span>(<span class="fn">C2:C11</span>, <span class="fn">B2:B11</span>, <span class="str">"التقنية"</span>, <span class="fn">D2:D11</span>, <span class="str">"&gt;=6"</span>)   <span class="cm">// النتيجة: 12,500</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 7 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 7: تقرير شامل بدمج الدوال</h4>
+                <span class="exercise-badge hard">صعب</span>
+            </div>
+            <div class="exercise-body">
+                <p>اكتب صيغة في خلية واحدة تعرض: "قسم التقنية: [عدد] موظف، إجمالي [مبلغ]، متوسط [مبلغ]" باستخدام دمج COUNTIF + SUMIF + AVERAGEIF مع النصوص.</p>
+                <button class="hint-btn" onclick="toggleHint(this)">&#128161; تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> استخدم عامل الدمج &amp; لربط النصوص مع نتائج الدوال. واستخدم ROUND لتقريب المتوسط.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">&#128275; الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>تقرير مدمج</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="op">=</span><span class="str">"قسم التقنية: "</span> <span class="op">&amp;</span> <span class="kw">COUNTIF</span>(<span class="fn">B2:B11</span>,<span class="str">"التقنية"</span>) <span class="op">&amp;</span> <span class="str">" موظف، إجمالي "</span> <span class="op">&amp;</span> <span class="kw">SUMIF</span>(<span class="fn">B2:B11</span>,<span class="str">"التقنية"</span>,<span class="fn">C2:C11</span>) <span class="op">&amp;</span> <span class="str">"، متوسط "</span> <span class="op">&amp;</span> <span class="kw">ROUND</span>(<span class="kw">AVERAGEIF</span>(<span class="fn">B2:B11</span>,<span class="str">"التقنية"</span>,<span class="fn">C2:C11</span>),<span class="num">0</span>)
+
+<span class="cm">// النتيجة: قسم التقنية: 4 موظف، إجمالي 50000، متوسط 12500</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 8 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 8: حساب مكافأة متقدم</h4>
+                <span class="exercise-badge challenge">تحدي</span>
+            </div>
+            <div class="exercise-body">
+                <p>اكتب صيغة تحسب المكافأة لكل موظف بالشروط التالية:</p>
+                <ul style="padding-right:24px">
+                    <li>لو راتبه أكبر من متوسط قسمه <strong>و</strong> خبرته أكثر من 5 سنوات: مكافأة = راتبه * 15%</li>
+                    <li>لو راتبه أكبر من متوسط قسمه فقط: مكافأة = راتبه * 10%</li>
+                    <li>لو خبرته أكثر من 5 سنوات فقط: مكافأة = راتبه * 7%</li>
+                    <li>غير كده: مكافأة = راتبه * 3%</li>
+                </ul>
+                <button class="hint-btn" onclick="toggleHint(this)">&#128161; تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> استخدم IFS مع AND لدمج الشروط. استخدم AVERAGEIF(B$2:B$11,B2,C$2:C$11) لحساب متوسط القسم. لاحظ استخدام $ لتثبيت النطاقات عند السحب.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">&#128275; الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>صيغة المكافأة المتقدمة في E2</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">=IFS</span>(
+    <span class="kw">AND</span>(<span class="fn">C2</span><span class="op">&gt;</span><span class="kw">AVERAGEIF</span>(<span class="fn">B$2:B$11</span>,<span class="fn">B2</span>,<span class="fn">C$2:C$11</span>), <span class="fn">D2</span><span class="op">&gt;</span><span class="num">5</span>), <span class="fn">C2</span><span class="op">*</span><span class="num">0.15</span>,
+    <span class="fn">C2</span><span class="op">&gt;</span><span class="kw">AVERAGEIF</span>(<span class="fn">B$2:B$11</span>,<span class="fn">B2</span>,<span class="fn">C$2:C$11</span>), <span class="fn">C2</span><span class="op">*</span><span class="num">0.10</span>,
+    <span class="fn">D2</span><span class="op">&gt;</span><span class="num">5</span>, <span class="fn">C2</span><span class="op">*</span><span class="num">0.07</span>,
+    <span class="kw">TRUE</span>, <span class="fn">C2</span><span class="op">*</span><span class="num">0.03</span>
+)</pre>
+                    </div>
+                    <div class="table-visual">
+                        <table>
+                            <tr><th>الموظف</th><th>القسم</th><th>الراتب</th><th>الخبرة</th><th>المكافأة</th></tr>
+                            <tr><td>أحمد</td><td>المبيعات</td><td>8000</td><td>5</td><td class="highlight-orange">800 (10%)</td></tr>
+                            <tr><td>سارة</td><td>التقنية</td><td>12000</td><td>8</td><td class="highlight-orange">1200 (10%)</td></tr>
+                            <tr><td>فاطمة</td><td>التقنية</td><td>15000</td><td>10</td><td class="highlight-green">2250 (15%)</td></tr>
+                            <tr><td>يوسف</td><td>المبيعات</td><td>5500</td><td>2</td><td class="highlight-red">165 (3%)</td></tr>
+                            <tr><td>خالد</td><td>المبيعات</td><td>9000</td><td>6</td><td class="highlight-green">1350 (15%)</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Summary Section -->
+    <section class="section">
+        <div class="summary-box">
+            <h3>&#128218; ملخص اليوم الخامس</h3>
+            <ul>
+                <li><strong style="color:var(--accent)">IF:</strong> =IF(شرط, نتيجة_لو_صح, نتيجة_لو_غلط) - الدالة الشرطية الأساسية</li>
+                <li><strong style="color:var(--accent)">IF متداخلة:</strong> IF جوه IF للتعامل مع شروط متعددة - ابدأ دايما بالشرط الأكبر</li>
+                <li><strong style="color:var(--accent4)">IFS:</strong> =IFS(شرط1, نتيجة1, شرط2, نتيجة2, ...) - بديل أنظف لل IF المتداخلة (Excel 2019+)</li>
+                <li><strong style="color:var(--accent2)">COUNTIF:</strong> =COUNTIF(نطاق, شرط) - عد الخلايا بشرط واحد</li>
+                <li><strong style="color:var(--accent2)">COUNTIFS:</strong> =COUNTIFS(نطاق1, شرط1, نطاق2, شرط2) - عد بأكتر من شرط (AND)</li>
+                <li><strong style="color:var(--accent3)">SUMIF:</strong> =SUMIF(نطاق_البحث, شرط, نطاق_الجمع) - جمع بشرط واحد</li>
+                <li><strong style="color:var(--accent3)">SUMIFS:</strong> =SUMIFS(نطاق_الجمع, نطاق1, شرط1, ...) - انتبه: نطاق الجمع أولا!</li>
+                <li><strong style="color:var(--accent5)">AVERAGEIF:</strong> =AVERAGEIF(نطاق, شرط, نطاق_المتوسط) - متوسط بشرط</li>
+                <li><strong style="color:var(--accent5)">AVERAGEIFS:</strong> =AVERAGEIFS(نطاق_المتوسط, نطاق1, شرط1, ...) - متوسط بأكتر من شرط</li>
+                <li><strong style="color:var(--accent)">دمج الدوال:</strong> IF+COUNTIF, IF+SUMIF, IF+AVERAGEIF = قوة حقيقية في التحليل!</li>
+            </ul>
+        </div>
+
+        <div class="quote-box">
+            "الدوال الشرطية هي عقل Excel - بدونها البيانات مجرد أرقام، وبيها البيانات بتتحول لقرارات ومعلومات قيمة. اتمرن كتير وجرب تدمج الدوال مع بعض!"
+        </div>
+    </section>
+
+</main>
+
+<a href="index.html" class="back-btn" title="العودة للخطة">&#8617;</a>
+
+<script>
+function toggleExercise(header) {
+    var body = header.nextElementSibling;
+    body.classList.toggle('show');
+}
+
+function toggleHint(btn) {
+    var hint = btn.nextElementSibling;
+    hint.classList.toggle('show');
+    if (hint.classList.contains('show')) {
+        btn.textContent = '\uD83D\uDE48 إخفاء التلميح';
+    } else {
+        btn.textContent = '\uD83D\uDCA1 تلميح';
+    }
+}
+
+function toggleSolution(btn) {
+    var sol = btn.nextElementSibling;
+    sol.classList.toggle('show');
+    if (sol.classList.contains('show')) {
+        btn.textContent = '\uD83D\uDD12 إخفاء الحل';
+    } else {
+        btn.textContent = '\uD83D\uDD13 الحل';
+    }
+}
+
+function copyCode(btn) {
+    var code = btn.closest('.code-block').querySelector('pre').textContent;
+    navigator.clipboard.writeText(code).then(function() {
+        btn.textContent = '\u062A\u0645 \u0627\u0644\u0646\u0633\u062E \u2713';
+        setTimeout(function() { btn.textContent = '\u0646\u0633\u062E'; }, 2000);
+    });
+}
+
+var sections = document.querySelectorAll('.section[id]');
+var navLinks = document.querySelectorAll('.sidebar-nav a');
+window.addEventListener('scroll', function() {
+    var current = '';
+    sections.forEach(function(section) {
+        if (pageYOffset >= section.offsetTop - 100) {
+            current = section.getAttribute('id');
+        }
+    });
+    navLinks.forEach(function(link) {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) {
+            link.classList.add('active');
+        }
+    });
+});
+</script>
+</body>
+</html>

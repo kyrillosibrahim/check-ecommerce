@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subqueries, IN, EXISTS, BETWEEN, LIKE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        :root{--bg:#06060f;--bg-card:#0d0d1f;--bg-code:#0a0a1a;--accent:#ff4d4d;--accent-glow:rgba(255,77,77,0.15);--accent2:#ff8c00;--accent3:#00d47e;--accent4:#4d8cff;--accent5:#a855f7;--text:#e8e8f0;--text-sec:#8888aa;--text-muted:#555577;--border:#1a1a35;--border-light:#252550;}
+        body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);line-height:1.8;overflow-x:hidden;}
+        body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 15%,rgba(255,77,77,0.07) 0%,transparent 50%),radial-gradient(ellipse at 80% 85%,rgba(77,140,255,0.06) 0%,transparent 50%);pointer-events:none;z-index:0;}
+        .sidebar{position:fixed;top:0;right:0;width:280px;height:100vh;background:var(--bg-card);border-left:1px solid var(--border);padding:30px 20px;overflow-y:auto;z-index:100;transition:transform .3s;}
+        .sidebar__title{font-size:.8rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:20px;font-weight:700;}
+        .sidebar__nav a{display:flex;align-items:center;gap:10px;padding:10px 14px;color:var(--text-sec);text-decoration:none;font-size:.82rem;font-weight:600;border-radius:10px;margin-bottom:4px;transition:all .2s;}
+        .sidebar__nav a:hover,.sidebar__nav a.active{background:rgba(255,77,77,0.12);color:var(--accent);}
+        .sidebar__nav a .nav-num{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;background:var(--border);color:var(--text-muted);flex-shrink:0;}
+        .sidebar__nav a:hover .nav-num,.sidebar__nav a.active .nav-num{background:var(--accent);color:#fff;}
+        .sidebar__back{display:flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-weight:700;font-size:.9rem;margin-bottom:25px;padding:10px 14px;border-radius:10px;transition:background .2s;}
+        .sidebar__back:hover{background:rgba(255,77,77,0.12);}
+        .sidebar__divider{height:1px;background:var(--border);margin:12px 0;}
+        .menu-toggle{display:none;position:fixed;top:20px;right:20px;z-index:200;width:48px;height:48px;border-radius:12px;background:var(--bg-card);border:1px solid var(--border);color:var(--text);font-size:1.3rem;cursor:pointer;align-items:center;justify-content:center;}
+        @media(max-width:900px){.sidebar{transform:translateX(100%);width:270px;}.sidebar--open{transform:translateX(0);}.menu-toggle{display:flex;}.main{margin-right:0!important;}}
+        .main{margin-right:280px;padding:40px 50px 80px;max-width:900px;position:relative;z-index:1;}
+        @media(max-width:1100px){.main{padding:30px 25px 60px;}}
+        .hero{margin-bottom:50px;padding-bottom:40px;border-bottom:1px solid var(--border);}
+        .hero__badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,77,77,0.15);color:var(--accent);padding:6px 16px;border-radius:8px;font-size:.8rem;font-weight:700;margin-bottom:16px;}
+        .hero__title{font-size:2.2rem;font-weight:900;line-height:1.3;margin-bottom:12px;background:linear-gradient(135deg,#fff,#ccc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+        .hero__desc{color:var(--text-sec);font-size:1.05rem;font-weight:600;max-width:600px;}
+        .hero__meta{display:flex;gap:24px;margin-top:20px;flex-wrap:wrap;}
+        .hero__meta-item{display:flex;align-items:center;gap:8px;color:var(--text-muted);font-size:.85rem;font-weight:600;}
+        .section{margin-bottom:55px;scroll-margin-top:30px;}
+        .section__header{display:flex;align-items:center;gap:14px;margin-bottom:24px;}
+        .section__icon{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+        .section__icon--red{background:rgba(255,77,77,0.15);}.section__icon--orange{background:rgba(255,140,0,0.15);}.section__icon--green{background:rgba(0,212,126,0.15);}.section__icon--blue{background:rgba(77,140,255,0.15);}.section__icon--purple{background:rgba(168,85,247,0.15);}
+        .section__title{font-size:1.5rem;font-weight:800;}
+        .content-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:20px;}
+        .content-card__title{font-size:1.1rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+        .content-card p,.content-card li{color:var(--text-sec);font-size:.95rem;font-weight:600;margin-bottom:8px;}
+        .content-card ul{list-style:none;padding:0;}.content-card ul li::before{content:"◈ ";color:var(--accent);}
+        .quote-box{background:var(--accent-glow);border-right:4px solid var(--accent);padding:18px 22px;border-radius:0 12px 12px 0;margin:20px 0;font-weight:700;font-size:1rem;color:var(--text);}
+        .quote-box--blue{background:rgba(77,140,255,0.1);border-right-color:var(--accent4);}
+        .quote-box--green{background:rgba(0,212,126,0.1);border-right-color:var(--accent3);}
+        .quote-box--orange{background:rgba(255,140,0,0.1);border-right-color:var(--accent2);}
+        .quote-box--purple{background:rgba(168,85,247,0.1);border-right-color:var(--accent5);}
+        .code-block{background:var(--bg-code);border:1px solid var(--border);border-radius:12px;margin:16px 0;overflow:hidden;}
+        .code-block__header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;background:var(--border);font-size:.78rem;font-weight:700;color:var(--text-muted);}
+        .code-block__dots{display:flex;gap:6px;}
+        .code-block__dot{width:10px;height:10px;border-radius:50%;}.code-block__dot--red{background:#ff5f57;}.code-block__dot--yellow{background:#febc2e;}.code-block__dot--green{background:#28c840;}
+        .code-block__body{padding:18px 22px;font-family:'JetBrains Mono',monospace;font-size:.83rem;line-height:1.9;overflow-x:auto;direction:ltr;text-align:left;color:#c8c8e0;}
+        .kw{color:#ff79c6;font-weight:700;}.str{color:#f1fa8c;}.cm{color:#555577;font-style:italic;}.num{color:#bd93f9;}.fn{color:#50fa7b;}.tp{color:#8be9fd;}.ac{color:#ff4d4d;}.or{color:#ff8c00;}
+        code.inline{background:var(--bg-code);padding:2px 8px;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--accent2);direction:ltr;display:inline-block;}
+        .info-box{border-radius:12px;padding:18px 22px;margin:16px 0;display:flex;align-items:flex-start;gap:12px;}
+        .info-box--warn{background:rgba(255,140,0,0.1);border:1px solid rgba(255,140,0,0.25);}
+        .info-box--success{background:rgba(0,212,126,0.1);border:1px solid rgba(0,212,126,0.25);}
+        .info-box--tip{background:rgba(77,140,255,0.1);border:1px solid rgba(77,140,255,0.25);}
+        .info-box--danger{background:rgba(255,77,77,0.1);border:1px solid rgba(255,77,77,0.25);}
+        .info-box__icon{font-size:1.3rem;flex-shrink:0;}
+        .info-box__text{font-size:.9rem;font-weight:600;}
+        .info-box--warn .info-box__text{color:var(--accent2);}.info-box--success .info-box__text{color:var(--accent3);}.info-box--tip .info-box__text{color:var(--accent4);}.info-box--danger .info-box__text{color:var(--accent);}
+        .syntax-box{background:linear-gradient(135deg,rgba(255,77,77,0.08),rgba(168,85,247,0.08));border:1px solid rgba(255,77,77,0.2);border-radius:14px;padding:24px;margin:20px 0;}
+        .syntax-box__title{font-weight:800;font-size:1rem;color:var(--accent);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+        .table-visual{background:var(--bg-code);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin:16px 0;}
+        .table-visual__header{padding:12px 18px;font-weight:700;font-size:.9rem;display:flex;align-items:center;gap:8px;}
+        .table-visual__header--blue{background:rgba(77,140,255,0.12);color:var(--accent4);}
+        .table-visual__header--green{background:rgba(0,212,126,0.12);color:var(--accent3);}
+        .table-visual__header--orange{background:rgba(255,140,0,0.12);color:var(--accent2);}
+        .table-visual__header--purple{background:rgba(168,85,247,0.12);color:var(--accent5);}
+        .table-visual__header--red{background:rgba(255,77,77,0.12);color:var(--accent);}
+        .table-visual table{width:100%;border-collapse:collapse;}
+        .table-visual th{background:var(--border);padding:10px 16px;text-align:right;font-size:.8rem;font-weight:700;color:var(--accent4);font-family:'JetBrains Mono',monospace;}
+        .table-visual td{padding:10px 16px;border-bottom:1px solid var(--border);font-size:.85rem;color:var(--text-sec);font-weight:600;}
+        .table-visual .row-highlight td{background:rgba(0,212,126,0.08);color:var(--accent3);}
+        .sub-title{font-size:1.15rem;font-weight:800;margin:30px 0 16px;color:var(--text);}
+        .badge{display:inline-block;padding:3px 10px;border-radius:6px;font-size:.75rem;font-weight:700;}
+        .badge--red{background:rgba(255,77,77,0.15);color:var(--accent);}.badge--green{background:rgba(0,212,126,0.15);color:var(--accent3);}.badge--blue{background:rgba(77,140,255,0.15);color:var(--accent4);}.badge--orange{background:rgba(255,140,0,0.15);color:var(--accent2);}.badge--purple{background:rgba(168,85,247,0.15);color:var(--accent5);}
+        .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0;}
+        @media(max-width:600px){.compare-grid{grid-template-columns:1fr;}}
+        .compare-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:22px;}
+        .compare-card__title{font-weight:800;font-size:1rem;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+        .compare-card p{color:var(--text-sec);font-size:.9rem;font-weight:600;margin-bottom:6px;}
+        .wildcard-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin:16px 0;}
+        .wildcard-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center;transition:all .2s;}
+        .wildcard-card:hover{border-color:var(--border-light);transform:translateY(-2px);}
+        .wildcard-card__symbol{font-family:'JetBrains Mono',monospace;font-size:1.6rem;font-weight:800;margin-bottom:8px;}
+        .wildcard-card__desc{color:var(--text-sec);font-size:.82rem;font-weight:600;}
+        .wildcard-card__example{color:var(--text-muted);font-size:.75rem;font-weight:600;margin-top:6px;font-family:'JetBrains Mono',monospace;}
+        .exercise-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;margin-bottom:20px;overflow:hidden;}
+        .exercise-card__head{padding:20px 24px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:background .2s;}
+        .exercise-card__head:hover{background:rgba(255,255,255,0.02);}
+        .exercise-card__title{font-weight:700;font-size:1rem;display:flex;align-items:center;gap:10px;}
+        .exercise-card__arrow{transition:transform .3s;font-size:1.2rem;color:var(--text-muted);}
+        .exercise-card__arrow--open{transform:rotate(90deg);}
+        .exercise-card__body{padding:0 24px 24px;display:none;}
+        .exercise-card__body--open{display:block;}
+        .solution-btn{background:linear-gradient(135deg,var(--accent),#cc3333);color:#fff;border:none;padding:10px 22px;border-radius:10px;font-family:'Cairo',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;margin-top:14px;transition:opacity .2s;}
+        .solution-btn:hover{opacity:.85;}
+        .solution-content{display:none;margin-top:14px;}
+        .solution-content--open{display:block;}
+        .summary-box{background:linear-gradient(135deg,rgba(255,77,77,0.08),rgba(77,140,255,0.08));border:1px solid var(--border-light);border-radius:18px;padding:30px;margin:30px 0;}
+        .summary-box__title{font-size:1.2rem;font-weight:800;margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+        .summary-list{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+        @media(max-width:600px){.summary-list{grid-template-columns:1fr;}}
+        .summary-list li{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,0.03);border-radius:10px;font-size:.88rem;font-weight:600;color:var(--text-sec);}
+        .summary-list li .check{color:var(--accent3);font-weight:900;}
+        .summary-list li strong{color:var(--text);}
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('sidebar--open')">☰</button>
+    <aside class="sidebar">
+        <a href="index.html" class="sidebar__back">→ العودة للخطة</a>
+        <div class="sidebar__title">Subqueries & Operators</div>
+        <nav class="sidebar__nav">
+            <a href="#data"><span class="nav-num">0</span> البيانات التجريبية</a>
+            <div class="sidebar__divider"></div>
+            <a href="#between"><span class="nav-num">1</span> BETWEEN</a>
+            <a href="#in"><span class="nav-num">2</span> IN</a>
+            <a href="#like"><span class="nav-num">3</span> LIKE - البحث بالنمط</a>
+            <a href="#like-advanced"><span class="nav-num">4</span> LIKE - أمثلة متقدمة</a>
+            <div class="sidebar__divider"></div>
+            <a href="#subquery-intro"><span class="nav-num">5</span> ما هي Subquery؟</a>
+            <a href="#subquery-where"><span class="nav-num">6</span> Subquery في WHERE</a>
+            <a href="#subquery-in"><span class="nav-num">7</span> Subquery مع IN</a>
+            <a href="#subquery-from"><span class="nav-num">8</span> Subquery في FROM</a>
+            <a href="#subquery-select"><span class="nav-num">9</span> Subquery في SELECT</a>
+            <div class="sidebar__divider"></div>
+            <a href="#exists"><span class="nav-num">10</span> EXISTS و NOT EXISTS</a>
+            <a href="#in-vs-exists"><span class="nav-num">11</span> IN vs EXISTS</a>
+            <a href="#correlated"><span class="nav-num">12</span> Correlated Subquery</a>
+            <div class="sidebar__divider"></div>
+            <a href="#exercises"><span class="nav-num">13</span> تمارين عملية</a>
+            <a href="#summary"><span class="nav-num">14</span> الملخص</a>
+        </nav>
+    </aside>
+
+    <main class="main">
+        <div class="hero">
+            <div class="hero__badge">🔍 اليوم الثالث</div>
+            <h1 class="hero__title">Subqueries, IN, EXISTS, BETWEEN, LIKE</h1>
+            <p class="hero__desc">اتعلم إزاي تكتب Query جوه Query، وتبحث بأنماط، وتفلتر بنطاقات - أدوات قوية جداً!</p>
+            <div class="hero__meta">
+                <span class="hero__meta-item">⏱️ 90 دقيقة</span>
+                <span class="hero__meta-item">📊 14 موضوع</span>
+                <span class="hero__meta-item">💪 10 تمارين</span>
+            </div>
+        </div>
+
+        <!-- Data -->
+        <div class="section" id="data">
+            <div class="section__header">
+                <div class="section__icon section__icon--blue">📋</div>
+                <h2 class="section__title">البيانات التجريبية</h2>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>لو معملتش الجداول قبل كده</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="kw">CREATE TABLE</span> departments (
+    dept_id <span class="tp">NUMBER</span>(<span class="num">4</span>) <span class="kw">PRIMARY KEY</span>, dept_name <span class="tp">VARCHAR2</span>(<span class="num">50</span>), location <span class="tp">VARCHAR2</span>(<span class="num">50</span>)
+);
+<span class="kw">CREATE TABLE</span> employees (
+    emp_id <span class="tp">NUMBER</span>(<span class="num">6</span>) <span class="kw">PRIMARY KEY</span>, first_name <span class="tp">VARCHAR2</span>(<span class="num">30</span>), last_name <span class="tp">VARCHAR2</span>(<span class="num">30</span>),
+    email <span class="tp">VARCHAR2</span>(<span class="num">60</span>), salary <span class="tp">NUMBER</span>(<span class="num">10</span>,<span class="num">2</span>), hire_date <span class="tp">DATE</span>,
+    dept_id <span class="tp">NUMBER</span>(<span class="num">4</span>) <span class="kw">REFERENCES</span> departments(dept_id), manager_id <span class="tp">NUMBER</span>(<span class="num">6</span>)
+);
+
+<span class="kw">INSERT INTO</span> departments <span class="kw">VALUES</span>(<span class="num">10</span>,<span class="str">'المبيعات'</span>,<span class="str">'القاهرة'</span>);
+<span class="kw">INSERT INTO</span> departments <span class="kw">VALUES</span>(<span class="num">20</span>,<span class="str">'التقنية'</span>,<span class="str">'الإسكندرية'</span>);
+<span class="kw">INSERT INTO</span> departments <span class="kw">VALUES</span>(<span class="num">30</span>,<span class="str">'الموارد البشرية'</span>,<span class="str">'القاهرة'</span>);
+<span class="kw">INSERT INTO</span> departments <span class="kw">VALUES</span>(<span class="num">40</span>,<span class="str">'التسويق'</span>,<span class="str">'المنصورة'</span>);
+
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">101</span>,<span class="str">'أحمد'</span>,<span class="str">'محمد'</span>,<span class="str">'ahmed@star.com'</span>,<span class="num">15000</span>,<span class="kw">DATE</span> <span class="str">'2020-01-10'</span>,<span class="num">10</span>,<span class="kw">NULL</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">102</span>,<span class="str">'سارة'</span>,<span class="str">'علي'</span>,<span class="str">'sara@star.com'</span>,<span class="num">18000</span>,<span class="kw">DATE</span> <span class="str">'2020-03-15'</span>,<span class="num">20</span>,<span class="num">101</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">103</span>,<span class="str">'محمد'</span>,<span class="str">'حسن'</span>,<span class="str">'moh.hassan@star.com'</span>,<span class="num">9000</span>,<span class="kw">DATE</span> <span class="str">'2022-06-01'</span>,<span class="num">10</span>,<span class="num">101</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">104</span>,<span class="str">'فاطمة'</span>,<span class="str">'أحمد'</span>,<span class="str">'fatma@star.com'</span>,<span class="num">22000</span>,<span class="kw">DATE</span> <span class="str">'2019-11-20'</span>,<span class="num">20</span>,<span class="num">101</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">105</span>,<span class="str">'عمر'</span>,<span class="str">'خالد'</span>,<span class="str">'omar_k@star.com'</span>,<span class="num">7500</span>,<span class="kw">DATE</span> <span class="str">'2023-01-05'</span>,<span class="num">30</span>,<span class="num">102</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">106</span>,<span class="str">'نور'</span>,<span class="str">'سعيد'</span>,<span class="str">'nour@star.com'</span>,<span class="num">13000</span>,<span class="kw">DATE</span> <span class="str">'2021-08-15'</span>,<span class="num">20</span>,<span class="num">104</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">107</span>,<span class="str">'يوسف'</span>,<span class="str">'إبراهيم'</span>,<span class="str">'yousef_ib@star.com'</span>,<span class="num">6000</span>,<span class="kw">DATE</span> <span class="str">'2024-02-01'</span>,<span class="num">10</span>,<span class="num">103</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">108</span>,<span class="str">'منى'</span>,<span class="str">'عبدالله'</span>,<span class="str">'mona_abd@star.com'</span>,<span class="num">16000</span>,<span class="kw">DATE</span> <span class="str">'2021-04-20'</span>,<span class="kw">NULL</span>,<span class="num">101</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">109</span>,<span class="str">'خالد'</span>,<span class="str">'محمود'</span>,<span class="str">'khaled@star.com'</span>,<span class="num">5500</span>,<span class="kw">DATE</span> <span class="str">'2024-06-10'</span>,<span class="num">40</span>,<span class="num">103</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">110</span>,<span class="str">'ريم'</span>,<span class="str">'حسين'</span>,<span class="str">'reem_h@star.com'</span>,<span class="num">6500</span>,<span class="kw">DATE</span> <span class="str">'2024-09-01'</span>,<span class="num">30</span>,<span class="num">105</span>);
+<span class="kw">COMMIT</span>;</div>
+            </div>
+        </div>
+
+        <!-- BETWEEN -->
+        <div class="section" id="between">
+            <div class="section__header">
+                <div class="section__icon section__icon--orange">📏</div>
+                <h2 class="section__title">BETWEEN - البحث في نطاق</h2>
+            </div>
+            <div class="content-card">
+                <p><code class="inline">BETWEEN</code> بيفلتر القيم اللي <strong>بين قيمتين</strong> (شاملة الحدين). بديل مختصر لـ <code class="inline">>= AND <=</code></p>
+            </div>
+            <div class="syntax-box">
+                <div class="syntax-box__title">📐 الصيغة</div>
+                <div class="code-block" style="margin:0;"><div class="code-block__body"><span class="kw">WHERE</span> column <span class="kw">BETWEEN</span> low_value <span class="kw">AND</span> high_value;
+<span class="cm">-- يساوي:</span>
+<span class="kw">WHERE</span> column >= low_value <span class="kw">AND</span> column &lt;= high_value;</div></div>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>أمثلة BETWEEN</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="cm">-- المرتبات بين 8000 و 16000</span>
+<span class="kw">SELECT</span> first_name, salary
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> salary <span class="kw">BETWEEN</span> <span class="num">8000</span> <span class="kw">AND</span> <span class="num">16000</span>;
+
+<span class="cm">-- الموظفين اللي اتعينوا في 2022</span>
+<span class="kw">SELECT</span> first_name, hire_date
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> hire_date <span class="kw">BETWEEN</span> <span class="kw">DATE</span> <span class="str">'2022-01-01'</span> <span class="kw">AND</span> <span class="kw">DATE</span> <span class="str">'2022-12-31'</span>;
+
+<span class="cm">-- NOT BETWEEN - خارج النطاق</span>
+<span class="kw">SELECT</span> first_name, salary
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> salary <span class="kw">NOT BETWEEN</span> <span class="num">8000</span> <span class="kw">AND</span> <span class="num">16000</span>;</div>
+            </div>
+            <div class="info-box info-box--warn">
+                <span class="info-box__icon">⚠️</span>
+                <span class="info-box__text">BETWEEN شامل الحدين! يعني BETWEEN 8000 AND 16000 بيشمل 8000 و 16000 نفسهم.</span>
+            </div>
+        </div>
+
+        <!-- IN -->
+        <div class="section" id="in">
+            <div class="section__header">
+                <div class="section__icon section__icon--blue">📋</div>
+                <h2 class="section__title">IN - البحث في قائمة</h2>
+            </div>
+            <div class="content-card">
+                <p><code class="inline">IN</code> بيفلتر القيم اللي موجودة في <strong>قائمة محددة</strong>. بديل مختصر لعدة OR.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>IN بدل OR OR OR</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="cm">-- ❌ طريقة طويلة بـ OR</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> dept_id = <span class="num">10</span> <span class="kw">OR</span> dept_id = <span class="num">20</span> <span class="kw">OR</span> dept_id = <span class="num">30</span>;
+
+<span class="cm">-- ✅ طريقة مختصرة بـ IN</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> dept_id <span class="kw">IN</span> (<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>);
+
+<span class="cm">-- بيشتغل مع النصوص كمان</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> departments
+<span class="kw">WHERE</span> location <span class="kw">IN</span> (<span class="str">'القاهرة'</span>, <span class="str">'الإسكندرية'</span>);
+
+<span class="cm">-- NOT IN - اللي مش في القائمة</span>
+<span class="kw">SELECT</span> first_name, dept_id
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> dept_id <span class="kw">NOT IN</span> (<span class="num">10</span>, <span class="num">20</span>);</div>
+            </div>
+            <div class="info-box info-box--danger">
+                <span class="info-box__icon">🚨</span>
+                <span class="info-box__text">تحذير: NOT IN مع NULL بيدي نتيجة غلط! لو القائمة فيها NULL مش هيرجع أي حاجة. استخدم NOT EXISTS بدلها.</span>
+            </div>
+        </div>
+
+        <!-- LIKE -->
+        <div class="section" id="like">
+            <div class="section__header">
+                <div class="section__icon section__icon--green">🔍</div>
+                <h2 class="section__title">LIKE - البحث بالنمط</h2>
+            </div>
+            <div class="content-card">
+                <p><code class="inline">LIKE</code> بيبحث عن <strong>نمط</strong> في النصوص. بيستخدم رمزين خاصين (Wildcards):</p>
+            </div>
+            <div class="wildcard-grid">
+                <div class="wildcard-card">
+                    <div class="wildcard-card__symbol" style="color:var(--accent);">%</div>
+                    <div class="wildcard-card__desc">أي عدد من الحروف (صفر أو أكتر)</div>
+                    <div class="wildcard-card__example">'%أحمد%' → أي حاجة فيها أحمد</div>
+                </div>
+                <div class="wildcard-card">
+                    <div class="wildcard-card__symbol" style="color:var(--accent4);">_</div>
+                    <div class="wildcard-card__desc">حرف واحد بالظبط</div>
+                    <div class="wildcard-card__example">'_مر' → عمر، ثمر (3 حروف)</div>
+                </div>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>أمثلة LIKE الأساسية</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="cm">-- الأسماء اللي بتبدأ بـ "م"</span>
+<span class="kw">SELECT</span> first_name <span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> first_name <span class="kw">LIKE</span> <span class="str">'م%'</span>;
+<span class="cm">-- النتيجة: محمد، منى</span>
+
+<span class="cm">-- الأسماء اللي بتنتهي بـ "ة"</span>
+<span class="kw">SELECT</span> first_name <span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> first_name <span class="kw">LIKE</span> <span class="str">'%ة'</span>;
+<span class="cm">-- النتيجة: فاطمة، سارة (لو بتنتهي بتاء مربوطة)</span>
+
+<span class="cm">-- الإيميلات اللي فيها نقطة قبل @</span>
+<span class="kw">SELECT</span> first_name, email <span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> email <span class="kw">LIKE</span> <span class="str">'%.%@%'</span>;
+<span class="cm">-- النتيجة: moh.hassan@star.com</span>
+
+<span class="cm">-- الأسماء اللي 3 حروف بالظبط</span>
+<span class="kw">SELECT</span> first_name <span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> first_name <span class="kw">LIKE</span> <span class="str">'___'</span>;
+<span class="cm">-- 3 underscores = 3 حروف</span></div>
+            </div>
+        </div>
+
+        <!-- LIKE Advanced -->
+        <div class="section" id="like-advanced">
+            <div class="section__header">
+                <div class="section__icon section__icon--green">🔍</div>
+                <h2 class="section__title">LIKE - أمثلة متقدمة</h2>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>أنماط متقدمة</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="cm">-- الإيميلات اللي فيها underscore (_) حرفياً</span>
+<span class="cm">-- لازم نستخدم ESCAPE</span>
+<span class="kw">SELECT</span> email <span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> email <span class="kw">LIKE</span> <span class="str">'%\_%'</span> <span class="kw">ESCAPE</span> <span class="str">'\'</span>;
+<span class="cm">-- النتيجة: omar_k@, yousef_ib@, mona_abd@, reem_h@</span>
+
+<span class="cm">-- NOT LIKE - اللي مش بيبدأ بـ "م"</span>
+<span class="kw">SELECT</span> first_name <span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> first_name <span class="kw">NOT LIKE</span> <span class="str">'م%'</span>;
+
+<span class="cm">-- دمج LIKE مع AND</span>
+<span class="kw">SELECT</span> first_name, email, salary
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> email <span class="kw">LIKE</span> <span class="str">'%@star.com'</span>
+  <span class="kw">AND</span> salary <span class="kw">BETWEEN</span> <span class="num">10000</span> <span class="kw">AND</span> <span class="num">20000</span>;</div>
+            </div>
+            <div class="table-visual">
+                <div class="table-visual__header table-visual__header--green">📊 ملخص أنماط LIKE الشائعة</div>
+                <table>
+                    <thead><tr><th>النمط</th><th>المعنى</th><th>مثال</th></tr></thead>
+                    <tbody>
+                        <tr><td>'أ%'</td><td>بيبدأ بـ "أ"</td><td>أحمد</td></tr>
+                        <tr><td>'%د'</td><td>بينتهي بـ "د"</td><td>أحمد، محمد</td></tr>
+                        <tr><td>'%حم%'</td><td>فيه "حم" في أي مكان</td><td>أحمد، محمد، محمود</td></tr>
+                        <tr><td>'___'</td><td>3 حروف بالظبط</td><td>نور، عمر، ريم</td></tr>
+                        <tr><td>'_ا%'</td><td>تاني حرف "ا"</td><td>سارة، فاطمة، خالد</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Subquery Intro -->
+        <div class="section" id="subquery-intro">
+            <div class="section__header">
+                <div class="section__icon section__icon--red">🔄</div>
+                <h2 class="section__title">ما هي الـ Subquery؟</h2>
+            </div>
+            <div class="content-card">
+                <p>الـ Subquery (أو Inner Query) هي <strong>Query جوه Query تانية</strong>. الـ Query الداخلية بتتنفذ الأول ونتيجتها بتُستخدم في الـ Query الخارجية.</p>
+                <p>زي ما بتحل معادلة رياضية: بتحل اللي جوه الأقواس الأول.</p>
+            </div>
+            <div class="quote-box quote-box--blue">🎯 مثال: "عايز الموظفين اللي مرتبهم أعلى من المتوسط" - لازم تحسب المتوسط الأول (Subquery) وبعدين تقارن بيه!</div>
+            <div class="content-card">
+                <div class="content-card__title">📍 أماكن استخدام Subquery</div>
+                <ul>
+                    <li>في <strong>WHERE</strong> - الأكثر شيوعاً</li>
+                    <li>في <strong>FROM</strong> - كأنها جدول مؤقت (Inline View)</li>
+                    <li>في <strong>SELECT</strong> - كأنها عمود محسوب</li>
+                    <li>في <strong>HAVING</strong> - فلترة المجموعات</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Subquery in WHERE -->
+        <div class="section" id="subquery-where">
+            <div class="section__header">
+                <div class="section__icon section__icon--red">🎯</div>
+                <h2 class="section__title">Subquery في WHERE</h2>
+            </div>
+            <div class="sub-title">الموظفين اللي مرتبهم أعلى من المتوسط</div>
+            <div class="code-block">
+                <div class="code-block__header"><span>Single-row Subquery</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="cm">-- الموظفين اللي مرتبهم فوق المتوسط</span>
+<span class="kw">SELECT</span> first_name, salary
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> salary > (<span class="kw">SELECT</span> <span class="fn">AVG</span>(salary) <span class="kw">FROM</span> employees);
+<span class="cm">-- الـ Subquery بترجع قيمة واحدة (المتوسط)</span>
+
+<span class="cm">-- الموظف اللي عنده أعلى مرتب</span>
+<span class="kw">SELECT</span> first_name, salary
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> salary = (<span class="kw">SELECT</span> <span class="fn">MAX</span>(salary) <span class="kw">FROM</span> employees);
+<span class="cm">-- النتيجة: فاطمة - 22000</span>
+
+<span class="cm">-- الموظفين في نفس قسم سارة</span>
+<span class="kw">SELECT</span> first_name, dept_id
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> dept_id = (
+    <span class="kw">SELECT</span> dept_id <span class="kw">FROM</span> employees
+    <span class="kw">WHERE</span> first_name = <span class="str">'سارة'</span>
+);</div>
+            </div>
+            <div class="info-box info-box--tip">
+                <span class="info-box__icon">💡</span>
+                <span class="info-box__text">Single-row Subquery بترجع قيمة واحدة بس. بنستخدم معاها =, >, <, >=, <=, !=</span>
+            </div>
+        </div>
+
+        <!-- Subquery with IN -->
+        <div class="section" id="subquery-in">
+            <div class="section__header">
+                <div class="section__icon section__icon--blue">📋</div>
+                <h2 class="section__title">Subquery مع IN</h2>
+            </div>
+            <div class="content-card">
+                <p>لما الـ Subquery بترجع <strong>أكتر من قيمة</strong>، مش هنقدر نستخدم = ! لازم نستخدم <code class="inline">IN</code>.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>Multi-row Subquery مع IN</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="cm">-- الموظفين في الأقسام اللي في القاهرة</span>
+<span class="kw">SELECT</span> first_name, salary, dept_id
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> dept_id <span class="kw">IN</span> (
+    <span class="kw">SELECT</span> dept_id <span class="kw">FROM</span> departments
+    <span class="kw">WHERE</span> location = <span class="str">'القاهرة'</span>
+);
+<span class="cm">-- الـ Subquery بترجع (10, 30) = أقسام القاهرة</span>
+
+<span class="cm">-- الأقسام اللي فيها موظفين مرتبهم فوق 15000</span>
+<span class="kw">SELECT</span> dept_name
+<span class="kw">FROM</span> departments
+<span class="kw">WHERE</span> dept_id <span class="kw">IN</span> (
+    <span class="kw">SELECT</span> dept_id <span class="kw">FROM</span> employees
+    <span class="kw">WHERE</span> salary > <span class="num">15000</span>
+);
+
+<span class="cm">-- الأقسام اللي مفيش فيها أي موظف</span>
+<span class="kw">SELECT</span> dept_name
+<span class="kw">FROM</span> departments
+<span class="kw">WHERE</span> dept_id <span class="kw">NOT IN</span> (
+    <span class="kw">SELECT</span> dept_id <span class="kw">FROM</span> employees
+    <span class="kw">WHERE</span> dept_id <span class="kw">IS NOT NULL</span>  <span class="cm">-- مهم! عشان NOT IN مع NULL</span>
+);</div>
+            </div>
+        </div>
+
+        <!-- Subquery in FROM -->
+        <div class="section" id="subquery-from">
+            <div class="section__header">
+                <div class="section__icon section__icon--purple">📊</div>
+                <h2 class="section__title">Subquery في FROM (Inline View)</h2>
+            </div>
+            <div class="content-card">
+                <p>ممكن تحط Subquery في FROM كأنها <strong>جدول مؤقت</strong>. لازم تديها Alias.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>Inline View</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="cm">-- إحصائيات الأقسام + فلترة على المتوسط</span>
+<span class="kw">SELECT</span> dept_stats.dept_id, dept_stats.emp_count, dept_stats.avg_sal
+<span class="kw">FROM</span> (
+    <span class="kw">SELECT</span>
+        dept_id,
+        <span class="fn">COUNT</span>(*) <span class="kw">AS</span> emp_count,
+        <span class="fn">ROUND</span>(<span class="fn">AVG</span>(salary)) <span class="kw">AS</span> avg_sal
+    <span class="kw">FROM</span> employees
+    <span class="kw">WHERE</span> dept_id <span class="kw">IS NOT NULL</span>
+    <span class="kw">GROUP BY</span> dept_id
+) dept_stats  <span class="cm">-- Alias إجباري!</span>
+<span class="kw">WHERE</span> dept_stats.avg_sal > <span class="num">10000</span>;</div>
+            </div>
+            <div class="info-box info-box--tip">
+                <span class="info-box__icon">💡</span>
+                <span class="info-box__text">Inline View مفيدة لما عايز تفلتر على نتيجة GROUP BY بشكل أكتر من HAVING.</span>
+            </div>
+        </div>
+
+        <!-- Subquery in SELECT -->
+        <div class="section" id="subquery-select">
+            <div class="section__header">
+                <div class="section__icon section__icon--orange">📊</div>
+                <h2 class="section__title">Subquery في SELECT (Scalar)</h2>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>عمود محسوب بـ Subquery</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="cm">-- كل موظف ومعاه متوسط مرتب الشركة والفرق</span>
+<span class="kw">SELECT</span>
+    first_name,
+    salary,
+    (<span class="kw">SELECT</span> <span class="fn">ROUND</span>(<span class="fn">AVG</span>(salary)) <span class="kw">FROM</span> employees) <span class="kw">AS</span> company_avg,
+    salary - (<span class="kw">SELECT</span> <span class="fn">ROUND</span>(<span class="fn">AVG</span>(salary)) <span class="kw">FROM</span> employees) <span class="kw">AS</span> diff_from_avg
+<span class="kw">FROM</span> employees
+<span class="kw">ORDER BY</span> diff_from_avg <span class="kw">DESC</span>;</div>
+            </div>
+            <div class="table-visual">
+                <div class="table-visual__header table-visual__header--orange">📊 النتيجة</div>
+                <table>
+                    <thead><tr><th>first_name</th><th>salary</th><th>company_avg</th><th>diff</th></tr></thead>
+                    <tbody>
+                        <tr class="row-highlight"><td>فاطمة</td><td>22,000</td><td>11,850</td><td>+10,150</td></tr>
+                        <tr><td>سارة</td><td>18,000</td><td>11,850</td><td>+6,150</td></tr>
+                        <tr><td>منى</td><td>16,000</td><td>11,850</td><td>+4,150</td></tr>
+                        <tr><td>أحمد</td><td>15,000</td><td>11,850</td><td>+3,150</td></tr>
+                        <tr><td>نور</td><td>13,000</td><td>11,850</td><td>+1,150</td></tr>
+                        <tr><td>محمد</td><td>9,000</td><td>11,850</td><td>-2,850</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- EXISTS -->
+        <div class="section" id="exists">
+            <div class="section__header">
+                <div class="section__icon section__icon--purple">✅</div>
+                <h2 class="section__title">EXISTS و NOT EXISTS</h2>
+            </div>
+            <div class="content-card">
+                <p><code class="inline">EXISTS</code> بيرجع TRUE لو الـ Subquery رجعت <strong>أي صف</strong> (حتى لو واحد). مش مهم إيه القيم - المهم هل فيه نتيجة ولا لأ.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>EXISTS - الأقسام اللي فيها موظفين</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="cm">-- الأقسام اللي فيها موظف واحد على الأقل</span>
+<span class="kw">SELECT</span> d.dept_name
+<span class="kw">FROM</span> departments d
+<span class="kw">WHERE EXISTS</span> (
+    <span class="kw">SELECT</span> <span class="num">1</span> <span class="kw">FROM</span> employees e
+    <span class="kw">WHERE</span> e.dept_id = d.dept_id
+);</div>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>NOT EXISTS - الأقسام الفاضية</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="cm">-- الأقسام اللي مفيهاش أي موظف</span>
+<span class="kw">SELECT</span> d.dept_name
+<span class="kw">FROM</span> departments d
+<span class="kw">WHERE NOT EXISTS</span> (
+    <span class="kw">SELECT</span> <span class="num">1</span> <span class="kw">FROM</span> employees e
+    <span class="kw">WHERE</span> e.dept_id = d.dept_id
+);
+<span class="cm">-- النتيجة: التسويق (لو مفيش موظفين فيه)</span>
+
+<span class="cm">-- الموظفين اللي مش مديرين (محدش بيتبع لهم)</span>
+<span class="kw">SELECT</span> e.first_name
+<span class="kw">FROM</span> employees e
+<span class="kw">WHERE NOT EXISTS</span> (
+    <span class="kw">SELECT</span> <span class="num">1</span> <span class="kw">FROM</span> employees sub
+    <span class="kw">WHERE</span> sub.manager_id = e.emp_id
+);</div>
+            </div>
+            <div class="info-box info-box--tip">
+                <span class="info-box__icon">💡</span>
+                <span class="info-box__text">SELECT 1 جوه EXISTS - مش مهم نكتب أي عمود لأن EXISTS بيشيك بس هل فيه صفوف ولا لأ.</span>
+            </div>
+        </div>
+
+        <!-- IN vs EXISTS -->
+        <div class="section" id="in-vs-exists">
+            <div class="section__header">
+                <div class="section__icon section__icon--orange">⚔️</div>
+                <h2 class="section__title">IN vs EXISTS - إيه الفرق؟</h2>
+            </div>
+            <div class="compare-grid">
+                <div class="compare-card" style="border-color:var(--accent4);">
+                    <div class="compare-card__title" style="color:var(--accent4);">📋 IN</div>
+                    <p>بيقارن <strong>قيمة بقائمة</strong></p>
+                    <p>أسرع لما الـ Subquery <strong>صغيرة</strong></p>
+                    <p>مشكلة مع <strong>NOT IN + NULL</strong></p>
+                    <p>أبسط وأسهل في القراءة</p>
+                </div>
+                <div class="compare-card" style="border-color:var(--accent5);">
+                    <div class="compare-card__title" style="color:var(--accent5);">✅ EXISTS</div>
+                    <p>بيشيك <strong>هل فيه نتيجة</strong></p>
+                    <p>أسرع لما الجدول الخارجي <strong>صغير</strong></p>
+                    <p><strong>بيتعامل صح</strong> مع NULL</p>
+                    <p>أقوى مع Correlated Subqueries</p>
+                </div>
+            </div>
+            <div class="quote-box quote-box--blue">🎯 قاعدة عملية: استخدم IN لو القائمة قصيرة وواضحة. استخدم EXISTS لو بتربط بالجدول الخارجي أو عندك NULLs.</div>
+        </div>
+
+        <!-- Correlated Subquery -->
+        <div class="section" id="correlated">
+            <div class="section__header">
+                <div class="section__icon section__icon--red">🔄</div>
+                <h2 class="section__title">Correlated Subquery - المرتبطة</h2>
+            </div>
+            <div class="content-card">
+                <p>Subquery عادية بتتنفذ <strong>مرة واحدة</strong>. بس Correlated Subquery بتتنفذ <strong>مرة لكل صف</strong> في الـ Query الخارجية لأنها بتعتمد على قيم من الصف الحالي.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>الموظفين اللي مرتبهم أعلى من متوسط قسمهم</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="kw">SELECT</span> e.first_name, e.salary, e.dept_id
+<span class="kw">FROM</span> employees e
+<span class="kw">WHERE</span> e.salary > (
+    <span class="kw">SELECT</span> <span class="fn">AVG</span>(e2.salary)
+    <span class="kw">FROM</span> employees e2
+    <span class="kw">WHERE</span> e2.dept_id = e.dept_id  <span class="cm">-- مرتبطة بالصف الخارجي!</span>
+)
+<span class="kw">ORDER BY</span> e.dept_id;</div>
+            </div>
+            <div class="info-box info-box--warn">
+                <span class="info-box__icon">⚠️</span>
+                <span class="info-box__text">Correlated Subquery ممكن تكون بطيئة لأنها بتتنفذ لكل صف. لو الأداء مهم، حوّلها لـ JOIN.</span>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>نفس النتيجة بـ JOIN (أسرع)</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="kw">SELECT</span> e.first_name, e.salary, e.dept_id
+<span class="kw">FROM</span> employees e
+<span class="kw">INNER JOIN</span> (
+    <span class="kw">SELECT</span> dept_id, <span class="fn">AVG</span>(salary) <span class="kw">AS</span> avg_sal
+    <span class="kw">FROM</span> employees
+    <span class="kw">GROUP BY</span> dept_id
+) dept_avg <span class="kw">ON</span> e.dept_id = dept_avg.dept_id
+<span class="kw">WHERE</span> e.salary > dept_avg.avg_sal;</div>
+            </div>
+        </div>
+
+        <!-- Exercises -->
+        <div class="section" id="exercises">
+            <div class="section__header">
+                <div class="section__icon section__icon--green">💪</div>
+                <h2 class="section__title">تمارين عملية</h2>
+            </div>
+
+            <div class="exercise-card"><div class="exercise-card__head" onclick="toggleExercise(1)"><span class="exercise-card__title"><span class="badge badge--green">سهل</span> 1: BETWEEN + LIKE</span><span class="exercise-card__arrow" id="arrow-1">◀</span></div><div class="exercise-card__body" id="ex-1"><p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض الموظفين اللي مرتبهم بين 7000 و 15000 واسمهم بيبدأ بـ "أ" أو "م".</p><button class="solution-btn" onclick="toggleSolution(1)">إظهار الحل</button><div class="solution-content" id="sol-1"><div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span> first_name, salary
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> salary <span class="kw">BETWEEN</span> <span class="num">7000</span> <span class="kw">AND</span> <span class="num">15000</span>
+  <span class="kw">AND</span> (first_name <span class="kw">LIKE</span> <span class="str">'أ%'</span> <span class="kw">OR</span> first_name <span class="kw">LIKE</span> <span class="str">'م%'</span>);</div></div></div></div></div>
+
+            <div class="exercise-card"><div class="exercise-card__head" onclick="toggleExercise(2)"><span class="exercise-card__title"><span class="badge badge--green">سهل</span> 2: IN</span><span class="exercise-card__arrow" id="arrow-2">◀</span></div><div class="exercise-card__body" id="ex-2"><p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض الموظفين اللي في قسم المبيعات (10) أو التقنية (20) أو الموارد البشرية (30).</p><button class="solution-btn" onclick="toggleSolution(2)">إظهار الحل</button><div class="solution-content" id="sol-2"><div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span> first_name, salary, dept_id
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> dept_id <span class="kw">IN</span> (<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>)
+<span class="kw">ORDER BY</span> dept_id;</div></div></div></div></div>
+
+            <div class="exercise-card"><div class="exercise-card__head" onclick="toggleExercise(3)"><span class="exercise-card__title"><span class="badge badge--green">سهل</span> 3: LIKE</span><span class="exercise-card__arrow" id="arrow-3">◀</span></div><div class="exercise-card__body" id="ex-3"><p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض الموظفين اللي الإيميل بتاعهم فيه underscore (_).</p><button class="solution-btn" onclick="toggleSolution(3)">إظهار الحل</button><div class="solution-content" id="sol-3"><div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span> first_name, email
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> email <span class="kw">LIKE</span> <span class="str">'%\_%'</span> <span class="kw">ESCAPE</span> <span class="str">'\'</span>;</div></div></div></div></div>
+
+            <div class="exercise-card"><div class="exercise-card__head" onclick="toggleExercise(4)"><span class="exercise-card__title"><span class="badge badge--orange">متوسط</span> 4: Subquery - فوق المتوسط</span><span class="exercise-card__arrow" id="arrow-4">◀</span></div><div class="exercise-card__body" id="ex-4"><p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض الموظفين اللي مرتبهم أعلى من متوسط الشركة. اعرض اسمهم ومرتبهم والمتوسط والفرق.</p><button class="solution-btn" onclick="toggleSolution(4)">إظهار الحل</button><div class="solution-content" id="sol-4"><div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span>
+    first_name,
+    salary,
+    (<span class="kw">SELECT</span> <span class="fn">ROUND</span>(<span class="fn">AVG</span>(salary)) <span class="kw">FROM</span> employees) <span class="kw">AS</span> avg_sal,
+    salary - (<span class="kw">SELECT</span> <span class="fn">ROUND</span>(<span class="fn">AVG</span>(salary)) <span class="kw">FROM</span> employees) <span class="kw">AS</span> diff
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> salary > (<span class="kw">SELECT</span> <span class="fn">AVG</span>(salary) <span class="kw">FROM</span> employees)
+<span class="kw">ORDER BY</span> salary <span class="kw">DESC</span>;</div></div></div></div></div>
+
+            <div class="exercise-card"><div class="exercise-card__head" onclick="toggleExercise(5)"><span class="exercise-card__title"><span class="badge badge--orange">متوسط</span> 5: Subquery مع IN</span><span class="exercise-card__arrow" id="arrow-5">◀</span></div><div class="exercise-card__body" id="ex-5"><p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض الموظفين اللي شغالين في أقسام الإسكندرية (بدون ما تكتب رقم القسم مباشرة).</p><button class="solution-btn" onclick="toggleSolution(5)">إظهار الحل</button><div class="solution-content" id="sol-5"><div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span> first_name, salary
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> dept_id <span class="kw">IN</span> (
+    <span class="kw">SELECT</span> dept_id <span class="kw">FROM</span> departments
+    <span class="kw">WHERE</span> location = <span class="str">'الإسكندرية'</span>
+);</div></div></div></div></div>
+
+            <div class="exercise-card"><div class="exercise-card__head" onclick="toggleExercise(6)"><span class="exercise-card__title"><span class="badge badge--orange">متوسط</span> 6: NOT EXISTS</span><span class="exercise-card__arrow" id="arrow-6">◀</span></div><div class="exercise-card__body" id="ex-6"><p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض الأقسام اللي مفيهاش أي موظف باستخدام NOT EXISTS.</p><button class="solution-btn" onclick="toggleSolution(6)">إظهار الحل</button><div class="solution-content" id="sol-6"><div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span> d.dept_name, d.location
+<span class="kw">FROM</span> departments d
+<span class="kw">WHERE NOT EXISTS</span> (
+    <span class="kw">SELECT</span> <span class="num">1</span> <span class="kw">FROM</span> employees e
+    <span class="kw">WHERE</span> e.dept_id = d.dept_id
+);</div></div></div></div></div>
+
+            <div class="exercise-card"><div class="exercise-card__head" onclick="toggleExercise(7)"><span class="exercise-card__title"><span class="badge badge--red">صعب</span> 7: Correlated Subquery</span><span class="exercise-card__arrow" id="arrow-7">◀</span></div><div class="exercise-card__body" id="ex-7"><p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض الموظفين اللي مرتبهم أعلى من متوسط قسمهم. اعرض الاسم والمرتب ومتوسط القسم.</p><button class="solution-btn" onclick="toggleSolution(7)">إظهار الحل</button><div class="solution-content" id="sol-7"><div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span>
+    e.first_name,
+    e.salary,
+    e.dept_id,
+    (<span class="kw">SELECT</span> <span class="fn">ROUND</span>(<span class="fn">AVG</span>(e2.salary))
+     <span class="kw">FROM</span> employees e2
+     <span class="kw">WHERE</span> e2.dept_id = e.dept_id) <span class="kw">AS</span> dept_avg
+<span class="kw">FROM</span> employees e
+<span class="kw">WHERE</span> e.salary > (
+    <span class="kw">SELECT</span> <span class="fn">AVG</span>(e3.salary)
+    <span class="kw">FROM</span> employees e3
+    <span class="kw">WHERE</span> e3.dept_id = e.dept_id
+)
+<span class="kw">ORDER BY</span> e.dept_id;</div></div></div></div></div>
+
+            <div class="exercise-card"><div class="exercise-card__head" onclick="toggleExercise(8)"><span class="exercise-card__title"><span class="badge badge--red">صعب</span> 8: Subquery في FROM</span><span class="exercise-card__arrow" id="arrow-8">◀</span></div><div class="exercise-card__body" id="ex-8"><p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض الأقسام اللي عدد موظفينها أكبر من 2 ومتوسط مرتبها فوق 8000. استخدم Inline View.</p><button class="solution-btn" onclick="toggleSolution(8)">إظهار الحل</button><div class="solution-content" id="sol-8"><div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span> ds.dept_id, ds.emp_count, ds.avg_sal
+<span class="kw">FROM</span> (
+    <span class="kw">SELECT</span> dept_id,
+        <span class="fn">COUNT</span>(*) <span class="kw">AS</span> emp_count,
+        <span class="fn">ROUND</span>(<span class="fn">AVG</span>(salary)) <span class="kw">AS</span> avg_sal
+    <span class="kw">FROM</span> employees
+    <span class="kw">WHERE</span> dept_id <span class="kw">IS NOT NULL</span>
+    <span class="kw">GROUP BY</span> dept_id
+) ds
+<span class="kw">WHERE</span> ds.emp_count > <span class="num">2</span>
+  <span class="kw">AND</span> ds.avg_sal > <span class="num">8000</span>;</div></div></div></div></div>
+
+            <div class="exercise-card"><div class="exercise-card__head" onclick="toggleExercise(9)"><span class="exercise-card__title"><span class="badge badge--red">صعب</span> 9: كل حاجة مع بعض</span><span class="exercise-card__arrow" id="arrow-9">◀</span></div><div class="exercise-card__body" id="ex-9"><p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض الموظفين اللي (1) مرتبهم بين 8000 و 20000 و (2) في أقسام القاهرة و (3) اسمهم مش بيبدأ بـ "ي". استخدم BETWEEN + IN مع Subquery + NOT LIKE.</p><button class="solution-btn" onclick="toggleSolution(9)">إظهار الحل</button><div class="solution-content" id="sol-9"><div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span> first_name, salary, dept_id
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> salary <span class="kw">BETWEEN</span> <span class="num">8000</span> <span class="kw">AND</span> <span class="num">20000</span>
+  <span class="kw">AND</span> dept_id <span class="kw">IN</span> (
+      <span class="kw">SELECT</span> dept_id <span class="kw">FROM</span> departments
+      <span class="kw">WHERE</span> location = <span class="str">'القاهرة'</span>
+  )
+  <span class="kw">AND</span> first_name <span class="kw">NOT LIKE</span> <span class="str">'ي%'</span>
+<span class="kw">ORDER BY</span> salary <span class="kw">DESC</span>;</div></div></div></div></div>
+
+            <div class="exercise-card"><div class="exercise-card__head" onclick="toggleExercise(10)"><span class="exercise-card__title"><span class="badge badge--purple">تحدي</span> 10: التحدي النهائي</span><span class="exercise-card__arrow" id="arrow-10">◀</span></div><div class="exercise-card__body" id="ex-10"><p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض لكل قسم: اسمه، عدد موظفينه، عدد الموظفين اللي مرتبهم فوق متوسط الشركة، أعلى مرتب فيه. بس الأقسام اللي فيها موظف واحد على الأقل فوق المتوسط. رتب حسب عدد الموظفين فوق المتوسط تنازلياً.</p><button class="solution-btn" onclick="toggleSolution(10)">إظهار الحل</button><div class="solution-content" id="sol-10"><div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span>
+    d.dept_name,
+    <span class="fn">COUNT</span>(e.emp_id) <span class="kw">AS</span> total_emp,
+    <span class="fn">COUNT</span>(<span class="kw">CASE WHEN</span> e.salary > (
+        <span class="kw">SELECT</span> <span class="fn">AVG</span>(salary) <span class="kw">FROM</span> employees
+    ) <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">END</span>) <span class="kw">AS</span> above_avg_count,
+    <span class="fn">MAX</span>(e.salary) <span class="kw">AS</span> max_salary
+<span class="kw">FROM</span> departments d
+<span class="kw">INNER JOIN</span> employees e <span class="kw">ON</span> d.dept_id = e.dept_id
+<span class="kw">GROUP BY</span> d.dept_name
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(<span class="kw">CASE WHEN</span> e.salary > (
+    <span class="kw">SELECT</span> <span class="fn">AVG</span>(salary) <span class="kw">FROM</span> employees
+) <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">END</span>) >= <span class="num">1</span>
+<span class="kw">ORDER BY</span> above_avg_count <span class="kw">DESC</span>;</div></div></div></div></div>
+        </div>
+
+        <!-- Summary -->
+        <div class="section" id="summary">
+            <div class="section__header">
+                <div class="section__icon section__icon--purple">🏆</div>
+                <h2 class="section__title">ملخص الدرس</h2>
+            </div>
+            <div class="summary-box">
+                <div class="summary-box__title">✅ اللي اتعلمناه</div>
+                <ul class="summary-list">
+                    <li><span class="check">✓</span> <strong>BETWEEN</strong> - نطاق شامل الحدين</li>
+                    <li><span class="check">✓</span> <strong>IN</strong> - بحث في قائمة</li>
+                    <li><span class="check">✓</span> <strong>LIKE</strong> - بحث بأنماط (% و _)</li>
+                    <li><span class="check">✓</span> <strong>ESCAPE</strong> - البحث عن % و _</li>
+                    <li><span class="check">✓</span> <strong>Subquery WHERE</strong> - قيمة واحدة</li>
+                    <li><span class="check">✓</span> <strong>Subquery IN</strong> - قائمة قيم</li>
+                    <li><span class="check">✓</span> <strong>Inline View</strong> - جدول مؤقت</li>
+                    <li><span class="check">✓</span> <strong>Scalar Subquery</strong> - عمود محسوب</li>
+                    <li><span class="check">✓</span> <strong>EXISTS</strong> - هل فيه نتيجة</li>
+                    <li><span class="check">✓</span> <strong>Correlated</strong> - مرتبطة بالصف</li>
+                </ul>
+            </div>
+            <div class="quote-box quote-box--green">🎉 ممتاز! دلوقتي بتعرف تكتب Queries معقدة ومتداخلة. ده مستوى متقدم فعلاً!</div>
+        </div>
+    </main>
+
+    <script>
+        function toggleExercise(n){const b=document.getElementById('ex-'+n);const a=document.getElementById('arrow-'+n);b.classList.toggle('exercise-card__body--open');a.classList.toggle('exercise-card__arrow--open');}
+        function toggleSolution(n){document.getElementById('sol-'+n).classList.toggle('solution-content--open');}
+        const sections=document.querySelectorAll('.section');const navLinks=document.querySelectorAll('.sidebar__nav a');
+        window.addEventListener('scroll',()=>{let c='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-100)c=s.getAttribute('id');});navLinks.forEach(a=>{a.classList.remove('active');if(a.getAttribute('href')==='#'+c)a.classList.add('active');});});
+    </script>
+</body>
+</html>

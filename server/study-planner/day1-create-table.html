@@ -1,0 +1,1755 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CREATE TABLE & Data Types & INSERT INTO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #06060f;
+            --bg-card: #0d0d1f;
+            --bg-card-alt: #111128;
+            --bg-code: #0a0a1a;
+            --accent: #ff4d4d;
+            --accent-glow: rgba(255, 77, 77, 0.15);
+            --accent2: #ff8c00;
+            --accent3: #00d47e;
+            --accent4: #4d8cff;
+            --accent5: #a855f7;
+            --text: #e8e8f0;
+            --text-sec: #8888aa;
+            --text-muted: #555577;
+            --border: #1a1a35;
+            --border-light: #252550;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 15% 10%, rgba(255,140,0,0.07) 0%, transparent 50%),
+                radial-gradient(ellipse at 85% 90%, rgba(0,212,126,0.06) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--bg-card);
+            border-left: 1px solid var(--border);
+            padding: 30px 20px;
+            overflow-y: auto;
+            z-index: 100;
+            transition: transform 0.3s;
+        }
+
+        .sidebar__title {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .sidebar__nav a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            color: var(--text-sec);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 10px;
+            margin-bottom: 4px;
+            transition: all 0.2s;
+        }
+
+        .sidebar__nav a:hover,
+        .sidebar__nav a.active {
+            background: var(--accent-glow);
+            color: var(--accent);
+        }
+
+        .sidebar__nav a .nav-num {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 800;
+            background: var(--border);
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .sidebar__nav a:hover .nav-num,
+        .sidebar__nav a.active .nav-num {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .sidebar__back {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            transition: background 0.2s;
+        }
+
+        .sidebar__back:hover { background: var(--accent-glow); }
+
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 200;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-size: 1.3rem;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar { transform: translateX(100%); width: 270px; }
+            .sidebar--open { transform: translateX(0); }
+            .menu-toggle { display: flex; }
+            .main { margin-right: 0 !important; }
+        }
+
+        /* ===== MAIN ===== */
+        .main {
+            margin-right: 280px;
+            padding: 40px 50px 80px;
+            max-width: 900px;
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (max-width: 1100px) {
+            .main { padding: 30px 25px 60px; }
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            margin-bottom: 50px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hero__badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,140,0,0.15);
+            color: var(--accent2);
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .hero__title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            line-height: 1.3;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #fff, #ccc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero__desc {
+            color: var(--text-sec);
+            font-size: 1.05rem;
+            font-weight: 600;
+            max-width: 600px;
+        }
+
+        .hero__meta {
+            display: flex;
+            gap: 24px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .hero__meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* ===== SECTIONS ===== */
+        .section {
+            margin-bottom: 55px;
+            scroll-margin-top: 30px;
+        }
+
+        .section__header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .section__icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .section__icon--red { background: rgba(255,77,77,0.15); }
+        .section__icon--orange { background: rgba(255,140,0,0.15); }
+        .section__icon--green { background: rgba(0,212,126,0.15); }
+        .section__icon--blue { background: rgba(77,140,255,0.15); }
+        .section__icon--purple { background: rgba(168,85,247,0.15); }
+
+        .section__title {
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        /* ===== CONTENT CARD ===== */
+        .content-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+
+        .content-card__title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .content-card p, .content-card li {
+            color: var(--text-sec);
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        /* ===== QUOTE BOX ===== */
+        .quote-box {
+            background: var(--accent-glow);
+            border-right: 4px solid var(--accent);
+            padding: 18px 22px;
+            border-radius: 0 12px 12px 0;
+            margin: 20px 0;
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--text);
+        }
+        .quote-box--blue { background: rgba(77,140,255,0.1); border-right-color: var(--accent4); }
+        .quote-box--green { background: rgba(0,212,126,0.1); border-right-color: var(--accent3); }
+        .quote-box--orange { background: rgba(255,140,0,0.1); border-right-color: var(--accent2); }
+
+        /* ===== CODE BLOCK ===== */
+        .code-block {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin: 16px 0;
+            overflow: hidden;
+        }
+
+        .code-block__header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 18px;
+            background: var(--border);
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .code-block__dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .code-block__dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .code-block__dot--red { background: #ff5f57; }
+        .code-block__dot--yellow { background: #febc2e; }
+        .code-block__dot--green { background: #28c840; }
+
+        .code-block__body {
+            padding: 18px 22px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.83rem;
+            line-height: 1.9;
+            overflow-x: auto;
+            direction: ltr;
+            text-align: left;
+            color: #c8c8e0;
+        }
+
+        .kw { color: #ff79c6; font-weight: 700; }
+        .str { color: #f1fa8c; }
+        .cm { color: #555577; font-style: italic; }
+        .num { color: #bd93f9; }
+        .fn { color: #50fa7b; }
+        .tp { color: #8be9fd; }
+        .ac { color: #ff4d4d; }
+        .or { color: #ff8c00; }
+
+        /* ===== TABLE ===== */
+        .styled-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 0.88rem;
+        }
+
+        .styled-table thead { background: var(--border); }
+
+        .styled-table th {
+            padding: 14px 18px;
+            text-align: right;
+            font-weight: 700;
+            color: var(--text);
+            font-size: 0.83rem;
+        }
+
+        .styled-table td {
+            padding: 12px 18px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-sec);
+            font-weight: 600;
+        }
+
+        .styled-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .badge--red { background: rgba(255,77,77,0.15); color: var(--accent); }
+        .badge--green { background: rgba(0,212,126,0.15); color: var(--accent3); }
+        .badge--blue { background: rgba(77,140,255,0.15); color: var(--accent4); }
+        .badge--orange { background: rgba(255,140,0,0.15); color: var(--accent2); }
+        .badge--purple { background: rgba(168,85,247,0.15); color: var(--accent5); }
+
+        /* ===== SYNTAX BOX ===== */
+        .syntax-box {
+            background: linear-gradient(135deg, rgba(255,140,0,0.08), rgba(255,77,77,0.08));
+            border: 1px solid rgba(255,140,0,0.2);
+            border-radius: 14px;
+            padding: 24px;
+            margin: 20px 0;
+        }
+
+        .syntax-box__title {
+            font-weight: 800;
+            font-size: 1rem;
+            color: var(--accent2);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ===== WARNING / SUCCESS / TIP ===== */
+        .info-box {
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin: 16px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .info-box--warn {
+            background: rgba(255,140,0,0.1);
+            border: 1px solid rgba(255,140,0,0.25);
+        }
+        .info-box--success {
+            background: rgba(0,212,126,0.1);
+            border: 1px solid rgba(0,212,126,0.25);
+        }
+        .info-box--tip {
+            background: rgba(77,140,255,0.1);
+            border: 1px solid rgba(77,140,255,0.25);
+        }
+        .info-box__icon { font-size: 1.3rem; flex-shrink: 0; }
+        .info-box__text { font-size: 0.9rem; font-weight: 600; }
+        .info-box--warn .info-box__text { color: var(--accent2); }
+        .info-box--success .info-box__text { color: var(--accent3); }
+        .info-box--tip .info-box__text { color: var(--accent4); }
+
+        /* ===== TYPE CARDS GRID ===== */
+        .type-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        .type-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            transition: all 0.2s;
+        }
+
+        .type-card:hover {
+            border-color: var(--border-light);
+            transform: translateY(-2px);
+        }
+
+        .type-card__icon { font-size: 1.8rem; margin-bottom: 10px; }
+
+        .type-card__name {
+            font-weight: 800;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .type-card__desc {
+            color: var(--text-sec);
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .type-card__example {
+            background: var(--bg-code);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            color: var(--accent2);
+            direction: ltr;
+            text-align: left;
+        }
+
+        /* ===== CONSTRAINT CARDS ===== */
+        .constraint-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 600px) {
+            .constraint-grid { grid-template-columns: 1fr; }
+            .type-grid { grid-template-columns: 1fr; }
+        }
+
+        .constraint-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            border-top: 3px solid var(--accent);
+        }
+
+        .constraint-card__name {
+            font-weight: 800;
+            font-size: 0.95rem;
+            margin-bottom: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent);
+        }
+
+        .constraint-card__desc {
+            color: var(--text-sec);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .constraint-card__code {
+            background: var(--bg-code);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            color: #c8c8e0;
+            direction: ltr;
+            text-align: left;
+        }
+
+        /* ===== PRACTICE SECTION ===== */
+        .practice-card {
+            background: linear-gradient(135deg, rgba(0,212,126,0.06), rgba(77,140,255,0.06));
+            border: 1px solid var(--accent3);
+            border-radius: 16px;
+            padding: 28px;
+            margin: 20px 0;
+        }
+
+        .practice-card__title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--accent3);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .practice-card__task {
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-sec);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .practice-card__task-num {
+            background: var(--accent3);
+            color: #fff;
+            width: 24px;
+            height: 24px;
+            min-width: 24px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 800;
+        }
+
+        /* ===== SUMMARY ===== */
+        .summary-box {
+            background: linear-gradient(135deg, rgba(255,77,77,0.08), rgba(77,140,255,0.08));
+            border: 1px solid var(--border-light);
+            border-radius: 18px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .summary-box__title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .summary-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .summary-list { grid-template-columns: 1fr; }
+        }
+
+        .summary-list li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-sec);
+        }
+
+        .summary-list li .check {
+            color: var(--accent3);
+            font-weight: 900;
+        }
+
+        .summary-list li strong { color: var(--text); }
+
+        /* ===== TABLE DIAGRAM ===== */
+        .table-visual {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            margin: 16px 0;
+        }
+
+        .table-visual__header {
+            padding: 12px 18px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .table-visual__header--orange {
+            background: rgba(255,140,0,0.12);
+            color: var(--accent2);
+        }
+
+        .table-visual__header--green {
+            background: rgba(0,212,126,0.12);
+            color: var(--accent3);
+        }
+
+        .table-visual__header--blue {
+            background: rgba(77,140,255,0.12);
+            color: var(--accent4);
+        }
+
+        .table-visual table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table-visual th {
+            background: var(--border);
+            padding: 10px 16px;
+            text-align: right;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--accent4);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .table-visual td {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
+            color: var(--text-sec);
+            font-weight: 600;
+        }
+
+        .table-visual__footer {
+            padding: 10px 18px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-style: italic;
+        }
+
+        /* scrollbar & smooth */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        html { scroll-behavior: smooth; }
+
+        /* Sub-section titles */
+        .sub-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            margin: 30px 0 16px;
+            color: var(--text);
+        }
+
+        code.inline {
+            background: var(--bg-code);
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            color: var(--accent2);
+            direction: ltr;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+<button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('sidebar--open')">☰</button>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+    <a href="index.html" class="sidebar__back">→ العودة للخطة</a>
+    <div class="sidebar__title">محتويات الدرس</div>
+    <nav class="sidebar__nav" id="sidebarNav">
+        <a href="#create-table"><span class="nav-num">1</span> إيه هو CREATE TABLE</a>
+        <a href="#syntax"><span class="nav-num">2</span> الصيغة الأساسية</a>
+        <a href="#data-types"><span class="nav-num">3</span> أنواع البيانات</a>
+        <a href="#number-deep"><span class="nav-num">4</span> NUMBER بالتفصيل</a>
+        <a href="#varchar-deep"><span class="nav-num">5</span> VARCHAR2 بالتفصيل</a>
+        <a href="#date-deep"><span class="nav-num">6</span> DATE بالتفصيل</a>
+        <a href="#other-types"><span class="nav-num">7</span> أنواع بيانات تانية</a>
+        <a href="#constraints"><span class="nav-num">8</span> القيود Constraints</a>
+        <a href="#full-example"><span class="nav-num">9</span> مثال كامل عملي</a>
+        <a href="#insert-into"><span class="nav-num">10</span> INSERT INTO</a>
+        <a href="#insert-multi"><span class="nav-num">11</span> إدخال بيانات متعددة</a>
+        <a href="#insert-tips"><span class="nav-num">12</span> أخطاء شائعة</a>
+        <a href="#practice"><span class="nav-num">13</span> تمارين عملية</a>
+        <a href="#summary"><span class="nav-num">14</span> الملخص</a>
+    </nav>
+</aside>
+
+<!-- Main -->
+<div class="main">
+
+    <!-- Hero -->
+    <div class="hero">
+        <div class="hero__badge">📅 اليوم الأول • 7:30 - 9:00 مساءً</div>
+        <h1 class="hero__title">CREATE TABLE & Data Types & INSERT INTO</h1>
+        <p class="hero__desc">هنتعلم إزاي نعمل جداول في Oracle، أنواع البيانات المختلفة، وإزاي ندخّل بيانات فيها</p>
+        <div class="hero__meta">
+            <div class="hero__meta-item"><span>⏱</span> المدة: 90 دقيقة</div>
+            <div class="hero__meta-item"><span>📊</span> المستوى: مبتدئ</div>
+            <div class="hero__meta-item"><span>💻</span> 80% عملي</div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECTION 1: What is CREATE TABLE -->
+    <!-- ============================================ -->
+    <div class="section" id="create-table">
+        <div class="section__header">
+            <div class="section__icon section__icon--orange">📋</div>
+            <h2 class="section__title">إيه هو CREATE TABLE؟</h2>
+        </div>
+
+        <div class="content-card">
+            <p>تخيل إنك رايح مكتبة وعايز تعمل <strong>دفتر جديد</strong> لتسجيل بيانات الموظفين.</p>
+            <p>أول حاجة هتعملها إنك تحدد <strong>العناوين</strong> اللي في أول الدفتر:</p>
+            <p>📝 الاسم &nbsp;|&nbsp; 📝 المرتب &nbsp;|&nbsp; 📝 تاريخ التعيين &nbsp;|&nbsp; 📝 القسم</p>
+            <p style="margin-top: 12px;">أمر <code class="inline">CREATE TABLE</code> بيعمل <strong>نفس الحاجة بالظبط</strong> - بيعمل جدول جديد في قاعدة البيانات وبيحدد الأعمدة والأنواع بتاعتها.</p>
+        </div>
+
+        <div class="quote-box quote-box--orange">
+            CREATE TABLE = إنشاء جدول جديد في قاعدة البيانات مع تحديد أسماء الأعمدة ونوع البيانات في كل عمود
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECTION 2: Syntax -->
+    <!-- ============================================ -->
+    <div class="section" id="syntax">
+        <div class="section__header">
+            <div class="section__icon section__icon--red">⌨️</div>
+            <h2 class="section__title">الصيغة الأساسية (Syntax)</h2>
+        </div>
+
+        <div class="syntax-box">
+            <div class="syntax-box__title">📐 القالب العام لـ CREATE TABLE</div>
+            <div class="code-block" style="margin: 0;">
+                <div class="code-block__header">
+                    <span>SQL Syntax</span>
+                    <div class="code-block__dots">
+                        <span class="code-block__dot code-block__dot--red"></span>
+                        <span class="code-block__dot code-block__dot--yellow"></span>
+                        <span class="code-block__dot code-block__dot--green"></span>
+                    </div>
+                </div>
+                <div class="code-block__body"><span class="kw">CREATE TABLE</span> <span class="fn">table_name</span> (
+    <span class="tp">column1</span>    <span class="or">datatype</span>    <span class="cm">[constraint]</span>,
+    <span class="tp">column2</span>    <span class="or">datatype</span>    <span class="cm">[constraint]</span>,
+    <span class="tp">column3</span>    <span class="or">datatype</span>    <span class="cm">[constraint]</span>,
+    ...
+);</div>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <div class="content-card__title">🔍 شرح كل جزء</div>
+            <table class="styled-table">
+                <thead>
+                    <tr><th>الجزء</th><th>الشرح</th><th>مثال</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code class="inline">CREATE TABLE</code></td>
+                        <td>الأمر نفسه - بيقول لـ Oracle: "اعمل جدول"</td>
+                        <td>ثابت - بتكتبه كل مرة</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">table_name</code></td>
+                        <td>اسم الجدول - انت اللي بتختاره</td>
+                        <td><code class="inline">employees</code></td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">column</code></td>
+                        <td>اسم العمود</td>
+                        <td><code class="inline">first_name</code></td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">datatype</code></td>
+                        <td>نوع البيانات - إيه نوع المعلومات في العمود ده</td>
+                        <td><code class="inline">VARCHAR2(50)</code></td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">constraint</code></td>
+                        <td>قيود (اختياري) - شروط على البيانات</td>
+                        <td><code class="inline">NOT NULL</code></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3 class="sub-title">مثال بسيط - أول جدول</h3>
+        <div class="code-block">
+            <div class="code-block__header">
+                <span>SQL - أول جدول</span>
+                <div class="code-block__dots">
+                    <span class="code-block__dot code-block__dot--red"></span>
+                    <span class="code-block__dot code-block__dot--yellow"></span>
+                    <span class="code-block__dot code-block__dot--green"></span>
+                </div>
+            </div>
+            <div class="code-block__body"><span class="kw">CREATE TABLE</span> <span class="fn">employees</span> (
+    <span class="tp">emp_id</span>       <span class="or">NUMBER</span>,
+    <span class="tp">first_name</span>   <span class="or">VARCHAR2</span>(<span class="num">50</span>),
+    <span class="tp">salary</span>       <span class="or">NUMBER</span>,
+    <span class="tp">hire_date</span>    <span class="or">DATE</span>
+);
+
+<span class="cm">-- كده أنت عملت جدول اسمه employees</span>
+<span class="cm">-- فيه 4 أعمدة: رقم الموظف، الاسم، المرتب، تاريخ التعيين</span></div>
+        </div>
+
+        <div class="info-box info-box--tip">
+            <div class="info-box__icon">💡</div>
+            <div class="info-box__text">
+                <strong>قواعد تسمية الجداول في Oracle:</strong><br>
+                • لازم يبدأ بحرف (مش رقم)<br>
+                • ممكن يحتوي على حروف وأرقام و _ (underscore)<br>
+                • مينفعش يكون اسم محجوز زي SELECT أو TABLE<br>
+                • الحد الأقصى 128 حرف<br>
+                • Oracle مش حساسة لحالة الحروف (employees = EMPLOYEES)
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECTION 3: Data Types Overview -->
+    <!-- ============================================ -->
+    <div class="section" id="data-types">
+        <div class="section__header">
+            <div class="section__icon section__icon--blue">📦</div>
+            <h2 class="section__title">أنواع البيانات (Data Types)</h2>
+        </div>
+
+        <div class="content-card">
+            <p>كل عمود في الجدول لازم يكون له <strong>نوع بيانات</strong> - ده بيحدد إيه نوع المعلومات اللي ممكن تتخزن فيه.</p>
+            <p>زي ما في Excel بتحدد إن الخلية دي "رقم" أو "نص" أو "تاريخ".</p>
+        </div>
+
+        <div class="type-grid">
+            <div class="type-card" style="border-color: var(--accent);">
+                <div class="type-card__icon">🔢</div>
+                <div class="type-card__name" style="color: var(--accent);">NUMBER</div>
+                <div class="type-card__desc">للأرقام - صحيحة أو عشرية</div>
+                <div class="type-card__example">salary NUMBER(8,2)</div>
+            </div>
+            <div class="type-card" style="border-color: var(--accent4);">
+                <div class="type-card__icon">📝</div>
+                <div class="type-card__name" style="color: var(--accent4);">VARCHAR2</div>
+                <div class="type-card__desc">للنصوص - بطول متغير</div>
+                <div class="type-card__example">name VARCHAR2(100)</div>
+            </div>
+            <div class="type-card" style="border-color: var(--accent3);">
+                <div class="type-card__icon">📅</div>
+                <div class="type-card__name" style="color: var(--accent3);">DATE</div>
+                <div class="type-card__desc">للتاريخ والوقت</div>
+                <div class="type-card__example">hire_date DATE</div>
+            </div>
+            <div class="type-card" style="border-color: var(--accent5);">
+                <div class="type-card__icon">📄</div>
+                <div class="type-card__name" style="color: var(--accent5);">CHAR</div>
+                <div class="type-card__desc">للنصوص - بطول ثابت</div>
+                <div class="type-card__example">gender CHAR(1)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECTION 4: NUMBER Deep Dive -->
+    <!-- ============================================ -->
+    <div class="section" id="number-deep">
+        <div class="section__header">
+            <div class="section__icon section__icon--red">🔢</div>
+            <h2 class="section__title">NUMBER - بالتفصيل</h2>
+        </div>
+
+        <div class="quote-box">
+            NUMBER هو نوع البيانات الرئيسي للأرقام في Oracle - بيخزن أرقام صحيحة وعشرية
+        </div>
+
+        <div class="content-card">
+            <div class="content-card__title">📐 أشكال الكتابة</div>
+            <table class="styled-table">
+                <thead>
+                    <tr><th>الشكل</th><th>المعنى</th><th>مثال على القيمة</th><th>استخدام</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code class="inline">NUMBER</code></td>
+                        <td>رقم بأي حجم (حتى 38 رقم)</td>
+                        <td>123456789</td>
+                        <td>لما مش عارف الحجم بالظبط</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">NUMBER(5)</code></td>
+                        <td>رقم صحيح - أقصى 5 أرقام</td>
+                        <td>99999</td>
+                        <td>رقم موظف، رقم قسم</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">NUMBER(8,2)</code></td>
+                        <td>8 أرقام إجمالي، منهم 2 عشري</td>
+                        <td>123456.78</td>
+                        <td>مرتبات، أسعار، فلوس</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">NUMBER(3)</code></td>
+                        <td>رقم صحيح - أقصى 3 أرقام</td>
+                        <td>999</td>
+                        <td>عمر، نسبة مئوية</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">NUMBER(10,4)</code></td>
+                        <td>10 أرقام إجمالي، 4 عشري</td>
+                        <td>123456.7890</td>
+                        <td>قياسات دقيقة</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="info-box info-box--warn">
+            <div class="info-box__icon">⚠️</div>
+            <div class="info-box__text">
+                <strong>فهم NUMBER(8,2):</strong><br>
+                الـ 8 = إجمالي عدد الأرقام (قبل وبعد العلامة العشرية)<br>
+                الـ 2 = كم رقم بعد العلامة العشرية<br>
+                يعني أقصى رقم: <strong>999999.99</strong> (6 أرقام قبل + 2 بعد = 8)
+            </div>
+        </div>
+
+        <div class="code-block">
+            <div class="code-block__header">
+                <span>SQL - أمثلة NUMBER</span>
+                <div class="code-block__dots">
+                    <span class="code-block__dot code-block__dot--red"></span>
+                    <span class="code-block__dot code-block__dot--yellow"></span>
+                    <span class="code-block__dot code-block__dot--green"></span>
+                </div>
+            </div>
+            <div class="code-block__body"><span class="cm">-- أمثلة عملية لاستخدام NUMBER</span>
+
+<span class="tp">emp_id</span>        <span class="or">NUMBER</span>(<span class="num">6</span>)      <span class="cm">-- رقم موظف: 100001</span>
+<span class="tp">salary</span>        <span class="or">NUMBER</span>(<span class="num">8,2</span>)    <span class="cm">-- مرتب: 15000.50</span>
+<span class="tp">age</span>           <span class="or">NUMBER</span>(<span class="num">3</span>)      <span class="cm">-- عمر: 25</span>
+<span class="tp">gpa</span>           <span class="or">NUMBER</span>(<span class="num">3,2</span>)    <span class="cm">-- تقدير: 3.75</span>
+<span class="tp">phone</span>         <span class="or">NUMBER</span>(<span class="num">11</span>)     <span class="cm">-- رقم تليفون: 01012345678</span>
+<span class="tp">price</span>         <span class="or">NUMBER</span>(<span class="num">10,2</span>)   <span class="cm">-- سعر: 1500000.00</span></div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECTION 5: VARCHAR2 Deep Dive -->
+    <!-- ============================================ -->
+    <div class="section" id="varchar-deep">
+        <div class="section__header">
+            <div class="section__icon section__icon--blue">📝</div>
+            <h2 class="section__title">VARCHAR2 - بالتفصيل</h2>
+        </div>
+
+        <div class="quote-box quote-box--blue">
+            VARCHAR2 هو نوع البيانات الأساسي للنصوص في Oracle - بيخزن نص بطول متغير (Variable Length)
+        </div>
+
+        <div class="content-card">
+            <div class="content-card__title">📐 أشكال الكتابة</div>
+            <table class="styled-table">
+                <thead>
+                    <tr><th>الشكل</th><th>المعنى</th><th>مثال</th><th>استخدام</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code class="inline">VARCHAR2(50)</code></td>
+                        <td>نص أقصى طوله 50 حرف</td>
+                        <td>'أحمد محمود'</td>
+                        <td>أسماء</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">VARCHAR2(100)</code></td>
+                        <td>نص أقصى طوله 100 حرف</td>
+                        <td>'ahmed@email.com'</td>
+                        <td>إيميلات</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">VARCHAR2(255)</code></td>
+                        <td>نص أقصى طوله 255 حرف</td>
+                        <td>'شارع التحرير، القاهرة'</td>
+                        <td>عناوين</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">VARCHAR2(4000)</code></td>
+                        <td>نص طويل - أقصى حد!</td>
+                        <td>نص طويل جداً...</td>
+                        <td>ملاحظات، وصف</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="content-card">
+            <div class="content-card__title">🤔 الفرق بين VARCHAR2 و CHAR</div>
+            <table class="styled-table">
+                <thead>
+                    <tr><th>الموضوع</th><th>VARCHAR2(10)</th><th>CHAR(10)</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>لو خزّنت 'أحمد' (4 حروف)</td>
+                        <td style="color: var(--accent3);">بيحجز 4 حروف بس ✅</td>
+                        <td style="color: var(--accent);">بيحجز 10 حروف (ويملى الباقي فراغات) ❌</td>
+                    </tr>
+                    <tr>
+                        <td>المساحة</td>
+                        <td style="color: var(--accent3);">بيوفر مساحة ✅</td>
+                        <td style="color: var(--accent);">بيضيع مساحة ❌</td>
+                    </tr>
+                    <tr>
+                        <td>امتى تستخدمه</td>
+                        <td>أغلب الأوقات (الاختيار الافتراضي)</td>
+                        <td>بيانات ثابتة الطول (كود بلد: 'EG')</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="info-box info-box--success">
+            <div class="info-box__icon">✅</div>
+            <div class="info-box__text">
+                <strong>القاعدة الذهبية:</strong> استخدم <code class="inline">VARCHAR2</code> دايماً إلا لو البيانات طولها ثابت (زي كود البلد أو الجنس M/F).
+            </div>
+        </div>
+
+        <div class="code-block">
+            <div class="code-block__header">
+                <span>SQL - أمثلة VARCHAR2</span>
+                <div class="code-block__dots">
+                    <span class="code-block__dot code-block__dot--red"></span>
+                    <span class="code-block__dot code-block__dot--yellow"></span>
+                    <span class="code-block__dot code-block__dot--green"></span>
+                </div>
+            </div>
+            <div class="code-block__body"><span class="cm">-- أمثلة عملية</span>
+
+<span class="tp">first_name</span>    <span class="or">VARCHAR2</span>(<span class="num">50</span>)    <span class="cm">-- اسم أول</span>
+<span class="tp">last_name</span>     <span class="or">VARCHAR2</span>(<span class="num">50</span>)    <span class="cm">-- اسم أخير</span>
+<span class="tp">email</span>         <span class="or">VARCHAR2</span>(<span class="num">100</span>)   <span class="cm">-- إيميل</span>
+<span class="tp">phone</span>         <span class="or">VARCHAR2</span>(<span class="num">20</span>)    <span class="cm">-- تليفون (نص مش رقم! عشان الـ 0 في الأول)</span>
+<span class="tp">address</span>       <span class="or">VARCHAR2</span>(<span class="num">255</span>)   <span class="cm">-- عنوان</span>
+<span class="tp">notes</span>         <span class="or">VARCHAR2</span>(<span class="num">4000</span>)  <span class="cm">-- ملاحظات</span>
+<span class="tp">gender</span>        <span class="or">CHAR</span>(<span class="num">1</span>)          <span class="cm">-- جنس: 'M' أو 'F' (ثابت حرف واحد)</span>
+<span class="tp">country_code</span>  <span class="or">CHAR</span>(<span class="num">2</span>)          <span class="cm">-- كود بلد: 'EG' (ثابت حرفين)</span></div>
+        </div>
+
+        <div class="info-box info-box--tip">
+            <div class="info-box__icon">💡</div>
+            <div class="info-box__text">
+                <strong>ليه رقم التليفون VARCHAR2 مش NUMBER؟</strong><br>
+                لأن رقم التليفون بيبدأ بـ 0 (مثلاً 01012345678). لو حطيته NUMBER الصفر في الأول هيتشال! كمان مش هنعمل عليه عمليات حسابية.
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECTION 6: DATE Deep Dive -->
+    <!-- ============================================ -->
+    <div class="section" id="date-deep">
+        <div class="section__header">
+            <div class="section__icon section__icon--green">📅</div>
+            <h2 class="section__title">DATE - بالتفصيل</h2>
+        </div>
+
+        <div class="quote-box quote-box--green">
+            DATE بيخزن التاريخ والوقت مع بعض: السنة، الشهر، اليوم، الساعة، الدقيقة، الثانية
+        </div>
+
+        <div class="content-card">
+            <div class="content-card__title">📐 صيغة DATE في Oracle</div>
+            <table class="styled-table">
+                <thead>
+                    <tr><th>المعلومة</th><th>التفاصيل</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>يخزن إيه</td><td>تاريخ + وقت (سنة، شهر، يوم، ساعة، دقيقة، ثانية)</td></tr>
+                    <tr><td>الصيغة الافتراضية</td><td><code class="inline">DD-MON-YY</code> مثال: <code class="inline">'15-JAN-24'</code></td></tr>
+                    <tr><td>النطاق</td><td>من 1 يناير 4712 قبل الميلاد إلى 31 ديسمبر 9999</td></tr>
+                    <tr><td>الحجم</td><td>7 bytes ثابت</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="code-block">
+            <div class="code-block__header">
+                <span>SQL - التعامل مع DATE</span>
+                <div class="code-block__dots">
+                    <span class="code-block__dot code-block__dot--red"></span>
+                    <span class="code-block__dot code-block__dot--yellow"></span>
+                    <span class="code-block__dot code-block__dot--green"></span>
+                </div>
+            </div>
+            <div class="code-block__body"><span class="cm">-- إدخال تاريخ بالصيغة الافتراضية</span>
+<span class="tp">hire_date</span>  <span class="or">DATE</span>   →   <span class="str">'15-JAN-24'</span>
+
+<span class="cm">-- إدخال تاريخ بصيغة محددة باستخدام TO_DATE</span>
+<span class="fn">TO_DATE</span>(<span class="str">'2024-01-15'</span>, <span class="str">'YYYY-MM-DD'</span>)
+<span class="fn">TO_DATE</span>(<span class="str">'15/01/2024'</span>, <span class="str">'DD/MM/YYYY'</span>)
+<span class="fn">TO_DATE</span>(<span class="str">'January 15, 2024'</span>, <span class="str">'Month DD, YYYY'</span>)
+
+<span class="cm">-- التاريخ والوقت الحالي</span>
+<span class="fn">SYSDATE</span>   <span class="cm">-- بيرجع التاريخ والوقت دلوقتي</span>
+
+<span class="cm">-- عمليات على التواريخ</span>
+<span class="fn">SYSDATE</span> + <span class="num">7</span>         <span class="cm">-- بعد 7 أيام من دلوقتي</span>
+<span class="fn">SYSDATE</span> - <span class="num">30</span>        <span class="cm">-- قبل 30 يوم</span>
+<span class="tp">end_date</span> - <span class="tp">start_date</span>  <span class="cm">-- الفرق بالأيام بين تاريخين</span></div>
+        </div>
+
+        <div class="content-card">
+            <div class="content-card__title">📆 رموز الصيغة (Format)</div>
+            <table class="styled-table">
+                <thead>
+                    <tr><th>الرمز</th><th>المعنى</th><th>مثال</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code class="inline">YYYY</code></td><td>السنة (4 أرقام)</td><td>2024</td></tr>
+                    <tr><td><code class="inline">YY</code></td><td>السنة (آخر رقمين)</td><td>24</td></tr>
+                    <tr><td><code class="inline">MM</code></td><td>الشهر (رقم)</td><td>01</td></tr>
+                    <tr><td><code class="inline">MON</code></td><td>الشهر (اختصار)</td><td>JAN</td></tr>
+                    <tr><td><code class="inline">DD</code></td><td>اليوم</td><td>15</td></tr>
+                    <tr><td><code class="inline">HH24</code></td><td>الساعة (24 ساعة)</td><td>14</td></tr>
+                    <tr><td><code class="inline">MI</code></td><td>الدقائق</td><td>30</td></tr>
+                    <tr><td><code class="inline">SS</code></td><td>الثواني</td><td>45</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECTION 7: Other Data Types -->
+    <!-- ============================================ -->
+    <div class="section" id="other-types">
+        <div class="section__header">
+            <div class="section__icon section__icon--purple">📚</div>
+            <h2 class="section__title">أنواع بيانات تانية مهمة</h2>
+        </div>
+
+        <div class="content-card">
+            <table class="styled-table">
+                <thead>
+                    <tr><th>النوع</th><th>الشرح</th><th>مثال</th><th>امتى تستخدمه</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="badge badge--orange">CLOB</span></td>
+                        <td>نص طويل جداً (حتى 4 GB!)</td>
+                        <td>مقالة كاملة</td>
+                        <td>لما VARCHAR2(4000) ميكفيش</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge badge--blue">BLOB</span></td>
+                        <td>بيانات ثنائية (صور، ملفات)</td>
+                        <td>صورة، PDF</td>
+                        <td>تخزين ملفات في الـ DB</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge badge--green">TIMESTAMP</span></td>
+                        <td>تاريخ + وقت بدقة أعلى</td>
+                        <td>كسور الثانية</td>
+                        <td>لما محتاج دقة عالية</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge badge--purple">FLOAT</span></td>
+                        <td>رقم عشري (floating point)</td>
+                        <td>3.14159</td>
+                        <td>حسابات علمية</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge badge--red">BOOLEAN</span></td>
+                        <td>صح أو غلط (Oracle 23c+)</td>
+                        <td>TRUE/FALSE</td>
+                        <td>حالات منطقية</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="info-box info-box--tip">
+            <div class="info-box__icon">💡</div>
+            <div class="info-box__text">
+                <strong>في 90% من الشغل هتستخدم 3 أنواع بس:</strong> NUMBER + VARCHAR2 + DATE. الباقي للحالات الخاصة.
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECTION 8: Constraints -->
+    <!-- ============================================ -->
+    <div class="section" id="constraints">
+        <div class="section__header">
+            <div class="section__icon section__icon--red">🔒</div>
+            <h2 class="section__title">القيود (Constraints)</h2>
+        </div>
+
+        <div class="content-card">
+            <p>القيود هي <strong>شروط وقوانين</strong> بتحطها على الأعمدة عشان تضمن إن البيانات صحيحة ومتكررش ومفيش حاجة ناقصة.</p>
+            <p>زي ما في الفورم بتاع أي موقع بيقولك "الإيميل مطلوب" أو "الاسم لازم يكون فريد".</p>
+        </div>
+
+        <div class="constraint-grid">
+            <div class="constraint-card" style="border-top-color: var(--accent);">
+                <div class="constraint-card__name">PRIMARY KEY</div>
+                <div class="constraint-card__desc">المفتاح الأساسي - رقم فريد لكل صف (زي الرقم القومي). مينفعش يتكرر ومينفعش يكون فاضي.</div>
+                <div class="constraint-card__code">emp_id NUMBER <span style="color:#ff79c6">PRIMARY KEY</span></div>
+            </div>
+            <div class="constraint-card" style="border-top-color: var(--accent2);">
+                <div class="constraint-card__name" style="color: var(--accent2);">NOT NULL</div>
+                <div class="constraint-card__desc">العمود ده مينفعش يكون فاضي - لازم تحط قيمة فيه.</div>
+                <div class="constraint-card__code">first_name VARCHAR2(50) <span style="color:#ff8c00">NOT NULL</span></div>
+            </div>
+            <div class="constraint-card" style="border-top-color: var(--accent3);">
+                <div class="constraint-card__name" style="color: var(--accent3);">UNIQUE</div>
+                <div class="constraint-card__desc">القيمة لازم تكون فريدة - مينفعش صفين يكون عندهم نفس القيمة.</div>
+                <div class="constraint-card__code">email VARCHAR2(100) <span style="color:#50fa7b">UNIQUE</span></div>
+            </div>
+            <div class="constraint-card" style="border-top-color: var(--accent4);">
+                <div class="constraint-card__name" style="color: var(--accent4);">DEFAULT</div>
+                <div class="constraint-card__desc">قيمة افتراضية - لو مدخلتش قيمة هيحط القيمة دي تلقائياً.</div>
+                <div class="constraint-card__code">status VARCHAR2(10) <span style="color:#4d8cff">DEFAULT</span> 'active'</div>
+            </div>
+            <div class="constraint-card" style="border-top-color: var(--accent5);">
+                <div class="constraint-card__name" style="color: var(--accent5);">CHECK</div>
+                <div class="constraint-card__desc">شرط معين - القيمة لازم تحقق شرط محدد.</div>
+                <div class="constraint-card__code">age NUMBER <span style="color:#a855f7">CHECK</span> (age >= 18)</div>
+            </div>
+            <div class="constraint-card" style="border-top-color: #e879f9;">
+                <div class="constraint-card__name" style="color: #e879f9;">FOREIGN KEY</div>
+                <div class="constraint-card__desc">مفتاح أجنبي - بيربط العمود ده بجدول تاني (العلاقات).</div>
+                <div class="constraint-card__code">dept_id <span style="color:#e879f9">REFERENCES</span> departments(dept_id)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECTION 9: Full Example -->
+    <!-- ============================================ -->
+    <div class="section" id="full-example">
+        <div class="section__header">
+            <div class="section__icon section__icon--green">🎯</div>
+            <h2 class="section__title">مثال كامل عملي</h2>
+        </div>
+
+        <div class="content-card">
+            <p>هنعمل نظام بسيط فيه جدولين: <strong>الأقسام</strong> و<strong>الموظفين</strong></p>
+        </div>
+
+        <h3 class="sub-title">1. جدول الأقسام (departments)</h3>
+        <div class="code-block">
+            <div class="code-block__header">
+                <span>SQL - إنشاء جدول الأقسام</span>
+                <div class="code-block__dots">
+                    <span class="code-block__dot code-block__dot--red"></span>
+                    <span class="code-block__dot code-block__dot--yellow"></span>
+                    <span class="code-block__dot code-block__dot--green"></span>
+                </div>
+            </div>
+            <div class="code-block__body"><span class="kw">CREATE TABLE</span> <span class="fn">departments</span> (
+    <span class="tp">dept_id</span>      <span class="or">NUMBER</span>(<span class="num">4</span>)       <span class="kw">PRIMARY KEY</span>,
+    <span class="tp">dept_name</span>    <span class="or">VARCHAR2</span>(<span class="num">50</span>)   <span class="kw">NOT NULL</span> <span class="kw">UNIQUE</span>,
+    <span class="tp">location</span>     <span class="or">VARCHAR2</span>(<span class="num">100</span>),
+    <span class="tp">created_at</span>   <span class="or">DATE</span>           <span class="kw">DEFAULT</span> <span class="fn">SYSDATE</span>
+);
+
+<span class="cm">-- dept_id: رقم القسم (فريد، أساسي)</span>
+<span class="cm">-- dept_name: اسم القسم (مطلوب، فريد)</span>
+<span class="cm">-- location: المكان (اختياري)</span>
+<span class="cm">-- created_at: تاريخ الإنشاء (تلقائياً تاريخ اليوم)</span></div>
+        </div>
+
+        <h3 class="sub-title">2. جدول الموظفين (employees)</h3>
+        <div class="code-block">
+            <div class="code-block__header">
+                <span>SQL - إنشاء جدول الموظفين</span>
+                <div class="code-block__dots">
+                    <span class="code-block__dot code-block__dot--red"></span>
+                    <span class="code-block__dot code-block__dot--yellow"></span>
+                    <span class="code-block__dot code-block__dot--green"></span>
+                </div>
+            </div>
+            <div class="code-block__body"><span class="kw">CREATE TABLE</span> <span class="fn">employees</span> (
+    <span class="tp">emp_id</span>       <span class="or">NUMBER</span>(<span class="num">6</span>)       <span class="kw">PRIMARY KEY</span>,
+    <span class="tp">first_name</span>   <span class="or">VARCHAR2</span>(<span class="num">50</span>)   <span class="kw">NOT NULL</span>,
+    <span class="tp">last_name</span>    <span class="or">VARCHAR2</span>(<span class="num">50</span>)   <span class="kw">NOT NULL</span>,
+    <span class="tp">email</span>        <span class="or">VARCHAR2</span>(<span class="num">100</span>)  <span class="kw">UNIQUE</span>,
+    <span class="tp">phone</span>        <span class="or">VARCHAR2</span>(<span class="num">20</span>),
+    <span class="tp">salary</span>       <span class="or">NUMBER</span>(<span class="num">8,2</span>)    <span class="kw">CHECK</span> (<span class="tp">salary</span> > <span class="num">0</span>),
+    <span class="tp">hire_date</span>    <span class="or">DATE</span>           <span class="kw">DEFAULT</span> <span class="fn">SYSDATE</span>,
+    <span class="tp">dept_id</span>      <span class="or">NUMBER</span>(<span class="num">4</span>)       <span class="kw">REFERENCES</span> <span class="fn">departments</span>(<span class="tp">dept_id</span>)
+);
+
+<span class="cm">-- emp_id: رقم الموظف (فريد، أساسي)</span>
+<span class="cm">-- first_name, last_name: الاسم (مطلوب)</span>
+<span class="cm">-- email: إيميل (فريد - مينفعش اتنين بنفس الإيميل)</span>
+<span class="cm">-- phone: تليفون (اختياري)</span>
+<span class="cm">-- salary: المرتب (لازم يكون أكبر من 0)</span>
+<span class="cm">-- hire_date: تاريخ التعيين (تلقائياً اليوم)</span>
+<span class="cm">-- dept_id: رقم القسم (مرتبط بجدول departments)</span></div>
+        </div>
+
+        <div class="table-visual">
+            <div class="table-visual__header table-visual__header--green">📋 النتيجة: جدول الموظفين (فاضي - مستني بيانات)</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>EMP_ID 🔑</th>
+                        <th>FIRST_NAME</th>
+                        <th>LAST_NAME</th>
+                        <th>EMAIL</th>
+                        <th>PHONE</th>
+                        <th>SALARY</th>
+                        <th>HIRE_DATE</th>
+                        <th>DEPT_ID 🔗</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="8" style="text-align: center; color: var(--text-muted); font-style: italic;">الجدول فاضي... هندخّل بيانات دلوقتي بـ INSERT INTO! 👇</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECTION 10: INSERT INTO -->
+    <!-- ============================================ -->
+    <div class="section" id="insert-into">
+        <div class="section__header">
+            <div class="section__icon section__icon--orange">➕</div>
+            <h2 class="section__title">INSERT INTO - إدخال البيانات</h2>
+        </div>
+
+        <div class="quote-box quote-box--orange">
+            INSERT INTO = إضافة صف جديد (سجل جديد) في الجدول - زي ما بتملى صف جديد في Excel
+        </div>
+
+        <div class="syntax-box">
+            <div class="syntax-box__title">📐 الصيغة الأساسية</div>
+            <div class="code-block" style="margin: 0;">
+                <div class="code-block__header">
+                    <span>SQL Syntax</span>
+                    <div class="code-block__dots">
+                        <span class="code-block__dot code-block__dot--red"></span>
+                        <span class="code-block__dot code-block__dot--yellow"></span>
+                        <span class="code-block__dot code-block__dot--green"></span>
+                    </div>
+                </div>
+                <div class="code-block__body"><span class="cm">-- الطريقة 1: تحديد الأعمدة (الأفضل ✅)</span>
+<span class="kw">INSERT INTO</span> <span class="fn">table_name</span> (<span class="tp">column1</span>, <span class="tp">column2</span>, <span class="tp">column3</span>)
+<span class="kw">VALUES</span> (<span class="str">value1</span>, <span class="str">value2</span>, <span class="str">value3</span>);
+
+<span class="cm">-- الطريقة 2: بدون تحديد الأعمدة (لازم تحط كل القيم بالترتيب)</span>
+<span class="kw">INSERT INTO</span> <span class="fn">table_name</span>
+<span class="kw">VALUES</span> (<span class="str">value1</span>, <span class="str">value2</span>, <span class="str">value3</span>, ...);</div>
+            </div>
+        </div>
+
+        <h3 class="sub-title">مثال عملي - إدخال بيانات</h3>
+        <div class="code-block">
+            <div class="code-block__header">
+                <span>SQL - إدخال أقسام</span>
+                <div class="code-block__dots">
+                    <span class="code-block__dot code-block__dot--red"></span>
+                    <span class="code-block__dot code-block__dot--yellow"></span>
+                    <span class="code-block__dot code-block__dot--green"></span>
+                </div>
+            </div>
+            <div class="code-block__body"><span class="cm">-- أولاً: ندخّل الأقسام (لازم الأقسام الأول عشان الموظفين مرتبطين بيها)</span>
+
+<span class="kw">INSERT INTO</span> <span class="fn">departments</span> (<span class="tp">dept_id</span>, <span class="tp">dept_name</span>, <span class="tp">location</span>)
+<span class="kw">VALUES</span> (<span class="num">10</span>, <span class="str">'المبيعات'</span>, <span class="str">'القاهرة'</span>);
+
+<span class="kw">INSERT INTO</span> <span class="fn">departments</span> (<span class="tp">dept_id</span>, <span class="tp">dept_name</span>, <span class="tp">location</span>)
+<span class="kw">VALUES</span> (<span class="num">20</span>, <span class="str">'التسويق'</span>, <span class="str">'الإسكندرية'</span>);
+
+<span class="kw">INSERT INTO</span> <span class="fn">departments</span> (<span class="tp">dept_id</span>, <span class="tp">dept_name</span>, <span class="tp">location</span>)
+<span class="kw">VALUES</span> (<span class="num">30</span>, <span class="str">'الـ IT'</span>, <span class="str">'القاهرة'</span>);
+
+<span class="cm">-- لاحظ: created_at مكتبناهاش - هتتحط تلقائياً (DEFAULT SYSDATE)</span></div>
+        </div>
+
+        <div class="code-block">
+            <div class="code-block__header">
+                <span>SQL - إدخال موظفين</span>
+                <div class="code-block__dots">
+                    <span class="code-block__dot code-block__dot--red"></span>
+                    <span class="code-block__dot code-block__dot--yellow"></span>
+                    <span class="code-block__dot code-block__dot--green"></span>
+                </div>
+            </div>
+            <div class="code-block__body"><span class="cm">-- ثانياً: ندخّل الموظفين</span>
+
+<span class="kw">INSERT INTO</span> <span class="fn">employees</span> (<span class="tp">emp_id</span>, <span class="tp">first_name</span>, <span class="tp">last_name</span>, <span class="tp">email</span>, <span class="tp">phone</span>, <span class="tp">salary</span>, <span class="tp">hire_date</span>, <span class="tp">dept_id</span>)
+<span class="kw">VALUES</span> (<span class="num">1001</span>, <span class="str">'أحمد'</span>, <span class="str">'محمود'</span>, <span class="str">'ahmed@email.com'</span>, <span class="str">'01012345678'</span>, <span class="num">8000</span>, <span class="fn">TO_DATE</span>(<span class="str">'2024-01-15'</span>, <span class="str">'YYYY-MM-DD'</span>), <span class="num">10</span>);
+
+<span class="kw">INSERT INTO</span> <span class="fn">employees</span> (<span class="tp">emp_id</span>, <span class="tp">first_name</span>, <span class="tp">last_name</span>, <span class="tp">email</span>, <span class="tp">phone</span>, <span class="tp">salary</span>, <span class="tp">hire_date</span>, <span class="tp">dept_id</span>)
+<span class="kw">VALUES</span> (<span class="num">1002</span>, <span class="str">'سارة'</span>, <span class="str">'علي'</span>, <span class="str">'sara@email.com'</span>, <span class="str">'01198765432'</span>, <span class="num">9500.50</span>, <span class="fn">TO_DATE</span>(<span class="str">'2023-05-20'</span>, <span class="str">'YYYY-MM-DD'</span>), <span class="num">20</span>);
+
+<span class="kw">INSERT INTO</span> <span class="fn">employees</span> (<span class="tp">emp_id</span>, <span class="tp">first_name</span>, <span class="tp">last_name</span>, <span class="tp">email</span>, <span class="tp">phone</span>, <span class="tp">salary</span>, <span class="tp">dept_id</span>)
+<span class="kw">VALUES</span> (<span class="num">1003</span>, <span class="str">'محمد'</span>, <span class="str">'سعيد'</span>, <span class="str">'mohamed@email.com'</span>, <span class="str">'01555555555'</span>, <span class="num">7000</span>, <span class="num">10</span>);
+<span class="cm">-- ^ لاحظ: hire_date مكتبناهاش - هتتحط تلقائياً تاريخ اليوم</span>
+
+<span class="kw">INSERT INTO</span> <span class="fn">employees</span> (<span class="tp">emp_id</span>, <span class="tp">first_name</span>, <span class="tp">last_name</span>, <span class="tp">email</span>, <span class="tp">salary</span>, <span class="tp">dept_id</span>)
+<span class="kw">VALUES</span> (<span class="num">1004</span>, <span class="str">'نورا'</span>, <span class="str">'حسن'</span>, <span class="str">'noura@email.com'</span>, <span class="num">11000</span>, <span class="num">30</span>);
+<span class="cm">-- ^ لاحظ: phone و hire_date مكتبناهمش - هيبقوا فاضيين (NULL)</span>
+
+<span class="cm">-- ⚠️ مهم: بعد ما تخلص إدخال البيانات، اكتب:</span>
+<span class="kw">COMMIT</span>;
+<span class="cm">-- ده بيحفظ البيانات نهائياً في الـ Database</span></div>
+        </div>
+
+        <div class="table-visual">
+            <div class="table-visual__header table-visual__header--green">📋 النتيجة: جدول الموظفين بعد الإدخال</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>EMP_ID</th>
+                        <th>FIRST_NAME</th>
+                        <th>LAST_NAME</th>
+                        <th>EMAIL</th>
+                        <th>SALARY</th>
+                        <th>DEPT_ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>1001</td><td>أحمد</td><td>محمود</td><td>ahmed@email.com</td><td>8,000</td><td>10</td></tr>
+                    <tr><td>1002</td><td>سارة</td><td>علي</td><td>sara@email.com</td><td>9,500.50</td><td>20</td></tr>
+                    <tr><td>1003</td><td>محمد</td><td>سعيد</td><td>mohamed@email.com</td><td>7,000</td><td>10</td></tr>
+                    <tr><td>1004</td><td>نورا</td><td>حسن</td><td>noura@email.com</td><td>11,000</td><td>30</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="info-box info-box--warn">
+            <div class="info-box__icon">⚠️</div>
+            <div class="info-box__text">
+                <strong>متنساش COMMIT!</strong><br>
+                في Oracle، البيانات مش بتتحفظ نهائياً غير لما تكتب <code class="inline">COMMIT</code>. لو قفلت البرنامج من غير COMMIT البيانات هتضيع! (أو اكتب <code class="inline">ROLLBACK</code> لو عايز تتراجع).
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECTION 11: Multiple Inserts -->
+    <!-- ============================================ -->
+    <div class="section" id="insert-multi">
+        <div class="section__header">
+            <div class="section__icon section__icon--blue">📦</div>
+            <h2 class="section__title">طرق إدخال بيانات متعددة</h2>
+        </div>
+
+        <h3 class="sub-title">الطريقة 1: INSERT ALL (أكتر من صف مرة واحدة)</h3>
+        <div class="code-block">
+            <div class="code-block__header">
+                <span>SQL - INSERT ALL</span>
+                <div class="code-block__dots">
+                    <span class="code-block__dot code-block__dot--red"></span>
+                    <span class="code-block__dot code-block__dot--yellow"></span>
+                    <span class="code-block__dot code-block__dot--green"></span>
+                </div>
+            </div>
+            <div class="code-block__body"><span class="kw">INSERT ALL</span>
+    <span class="kw">INTO</span> <span class="fn">departments</span> (<span class="tp">dept_id</span>, <span class="tp">dept_name</span>, <span class="tp">location</span>) <span class="kw">VALUES</span> (<span class="num">40</span>, <span class="str">'الموارد البشرية'</span>, <span class="str">'القاهرة'</span>)
+    <span class="kw">INTO</span> <span class="fn">departments</span> (<span class="tp">dept_id</span>, <span class="tp">dept_name</span>, <span class="tp">location</span>) <span class="kw">VALUES</span> (<span class="num">50</span>, <span class="str">'المحاسبة'</span>, <span class="str">'الجيزة'</span>)
+    <span class="kw">INTO</span> <span class="fn">departments</span> (<span class="tp">dept_id</span>, <span class="tp">dept_name</span>, <span class="tp">location</span>) <span class="kw">VALUES</span> (<span class="num">60</span>, <span class="str">'خدمة العملاء'</span>, <span class="str">'المنصورة'</span>)
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="fn">DUAL</span>;
+
+<span class="kw">COMMIT</span>;</div>
+        </div>
+
+        <h3 class="sub-title">الطريقة 2: INSERT مع NULL</h3>
+        <div class="code-block">
+            <div class="code-block__header">
+                <span>SQL - إدخال مع قيم فارغة</span>
+                <div class="code-block__dots">
+                    <span class="code-block__dot code-block__dot--red"></span>
+                    <span class="code-block__dot code-block__dot--yellow"></span>
+                    <span class="code-block__dot code-block__dot--green"></span>
+                </div>
+            </div>
+            <div class="code-block__body"><span class="cm">-- لو عايز تحط قيمة فارغة صراحةً</span>
+<span class="kw">INSERT INTO</span> <span class="fn">employees</span> (<span class="tp">emp_id</span>, <span class="tp">first_name</span>, <span class="tp">last_name</span>, <span class="tp">email</span>, <span class="tp">phone</span>, <span class="tp">salary</span>, <span class="tp">dept_id</span>)
+<span class="kw">VALUES</span> (<span class="num">1005</span>, <span class="str">'خالد'</span>, <span class="str">'عمر'</span>, <span class="str">'khaled@email.com'</span>, <span class="kw">NULL</span>, <span class="num">6500</span>, <span class="num">20</span>);
+<span class="cm">--                                                       ^^^^</span>
+<span class="cm">--                                              phone = فاضي (NULL)</span></div>
+        </div>
+
+        <h3 class="sub-title">الطريقة 3: INSERT مع SYSDATE</h3>
+        <div class="code-block">
+            <div class="code-block__header">
+                <span>SQL - إدخال مع تاريخ اليوم</span>
+                <div class="code-block__dots">
+                    <span class="code-block__dot code-block__dot--red"></span>
+                    <span class="code-block__dot code-block__dot--yellow"></span>
+                    <span class="code-block__dot code-block__dot--green"></span>
+                </div>
+            </div>
+            <div class="code-block__body"><span class="cm">-- تاريخ التعيين = النهاردة</span>
+<span class="kw">INSERT INTO</span> <span class="fn">employees</span> (<span class="tp">emp_id</span>, <span class="tp">first_name</span>, <span class="tp">last_name</span>, <span class="tp">email</span>, <span class="tp">salary</span>, <span class="tp">hire_date</span>, <span class="tp">dept_id</span>)
+<span class="kw">VALUES</span> (<span class="num">1006</span>, <span class="str">'ياسمين'</span>, <span class="str">'فوزي'</span>, <span class="str">'yasmin@email.com'</span>, <span class="num">8500</span>, <span class="fn">SYSDATE</span>, <span class="num">30</span>);</div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECTION 12: Common Mistakes -->
+    <!-- ============================================ -->
+    <div class="section" id="insert-tips">
+        <div class="section__header">
+            <div class="section__icon section__icon--red">🚫</div>
+            <h2 class="section__title">أخطاء شائعة وإزاي تتجنبها</h2>
+        </div>
+
+        <div class="content-card" style="border-color: var(--accent);">
+            <div class="content-card__title" style="color: var(--accent);">❌ الخطأ 1: تكرار PRIMARY KEY</div>
+            <div class="code-block" style="margin: 8px 0;">
+                <div class="code-block__body"><span class="kw">INSERT INTO</span> <span class="fn">employees</span> (<span class="tp">emp_id</span>, <span class="tp">first_name</span>, <span class="tp">last_name</span>, <span class="tp">salary</span>)
+<span class="kw">VALUES</span> (<span class="ac">1001</span>, <span class="str">'علي'</span>, <span class="str">'حسن'</span>, <span class="num">5000</span>);
+<span class="cm">-- ❌ ERROR: 1001 موجود قبل كده!</span>
+<span class="cm">-- ORA-00001: unique constraint violated</span></div>
+            </div>
+            <p style="color: var(--accent3);">✅ الحل: استخدم رقم emp_id مختلف (1007 مثلاً)</p>
+        </div>
+
+        <div class="content-card" style="border-color: var(--accent);">
+            <div class="content-card__title" style="color: var(--accent);">❌ الخطأ 2: نسيان قيمة NOT NULL</div>
+            <div class="code-block" style="margin: 8px 0;">
+                <div class="code-block__body"><span class="kw">INSERT INTO</span> <span class="fn">employees</span> (<span class="tp">emp_id</span>, <span class="tp">email</span>, <span class="tp">salary</span>)
+<span class="kw">VALUES</span> (<span class="num">1007</span>, <span class="str">'ali@email.com'</span>, <span class="num">5000</span>);
+<span class="cm">-- ❌ ERROR: first_name و last_name مطلوبين (NOT NULL)!</span>
+<span class="cm">-- ORA-01400: cannot insert NULL</span></div>
+            </div>
+            <p style="color: var(--accent3);">✅ الحل: حط قيمة لكل عمود NOT NULL</p>
+        </div>
+
+        <div class="content-card" style="border-color: var(--accent);">
+            <div class="content-card__title" style="color: var(--accent);">❌ الخطأ 3: FOREIGN KEY مش موجود</div>
+            <div class="code-block" style="margin: 8px 0;">
+                <div class="code-block__body"><span class="kw">INSERT INTO</span> <span class="fn">employees</span> (<span class="tp">emp_id</span>, <span class="tp">first_name</span>, <span class="tp">last_name</span>, <span class="tp">salary</span>, <span class="tp">dept_id</span>)
+<span class="kw">VALUES</span> (<span class="num">1007</span>, <span class="str">'علي'</span>, <span class="str">'حسن'</span>, <span class="num">5000</span>, <span class="ac">99</span>);
+<span class="cm">-- ❌ ERROR: dept_id = 99 مش موجود في جدول departments!</span>
+<span class="cm">-- ORA-02291: integrity constraint violated - parent key not found</span></div>
+            </div>
+            <p style="color: var(--accent3);">✅ الحل: استخدم dept_id موجود (10, 20, 30) أو ضيف القسم الأول</p>
+        </div>
+
+        <div class="content-card" style="border-color: var(--accent);">
+            <div class="content-card__title" style="color: var(--accent);">❌ الخطأ 4: نوع البيانات غلط</div>
+            <div class="code-block" style="margin: 8px 0;">
+                <div class="code-block__body"><span class="kw">INSERT INTO</span> <span class="fn">employees</span> (<span class="tp">emp_id</span>, <span class="tp">first_name</span>, <span class="tp">last_name</span>, <span class="tp">salary</span>)
+<span class="kw">VALUES</span> (<span class="num">1007</span>, <span class="str">'علي'</span>, <span class="str">'حسن'</span>, <span class="ac">'كويس'</span>);
+<span class="cm">-- ❌ ERROR: salary عمود NUMBER ومينفعش تحط فيه نص!</span>
+<span class="cm">-- ORA-01722: invalid number</span></div>
+            </div>
+            <p style="color: var(--accent3);">✅ الحل: حط رقم في الأعمدة الرقمية</p>
+        </div>
+
+        <div class="content-card" style="border-color: var(--accent);">
+            <div class="content-card__title" style="color: var(--accent);">❌ الخطأ 5: نسيان الـ Quotes للنصوص</div>
+            <div class="code-block" style="margin: 8px 0;">
+                <div class="code-block__body"><span class="kw">INSERT INTO</span> <span class="fn">employees</span> (<span class="tp">emp_id</span>, <span class="tp">first_name</span>, <span class="tp">last_name</span>, <span class="tp">salary</span>)
+<span class="kw">VALUES</span> (<span class="num">1007</span>, <span class="ac">علي</span>, <span class="ac">حسن</span>, <span class="num">5000</span>);
+<span class="cm">-- ❌ ERROR: النصوص لازم تكون بين ' ' (single quotes)</span></div>
+            </div>
+            <p style="color: var(--accent3);">✅ الحل: <code class="inline">'علي'</code> مش علي - دايماً حط النص بين علامتي اقتباس مفردة</p>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECTION 13: Practice -->
+    <!-- ============================================ -->
+    <div class="section" id="practice">
+        <div class="section__header">
+            <div class="section__icon section__icon--green">🏋️</div>
+            <h2 class="section__title">تمارين عملية - طبّق بنفسك!</h2>
+        </div>
+
+        <div class="practice-card">
+            <div class="practice-card__title">🎯 التمرين 1: جدول المنتجات</div>
+            <div class="practice-card__task">
+                <div class="practice-card__task-num">1</div>
+                اعمل جدول <code class="inline">products</code> فيه: product_id (رقم، أساسي)، product_name (نص 100، مطلوب)، price (رقم 10,2، أكبر من 0)، category (نص 50)، stock (رقم، افتراضي 0)
+            </div>
+            <div class="practice-card__task">
+                <div class="practice-card__task-num">2</div>
+                ادخّل 5 منتجات مختلفة في الجدول
+            </div>
+        </div>
+
+        <div class="practice-card">
+            <div class="practice-card__title">🎯 التمرين 2: جدول الطلاب</div>
+            <div class="practice-card__task">
+                <div class="practice-card__task-num">1</div>
+                اعمل جدول <code class="inline">students</code> فيه: student_id, name, email (فريد), gpa (بين 0 و 4), enrollment_date
+            </div>
+            <div class="practice-card__task">
+                <div class="practice-card__task-num">2</div>
+                ادخّل 3 طلاب وجرّب تدخّل واحد بإيميل مكرر وشوف الخطأ
+            </div>
+        </div>
+
+        <h3 class="sub-title">الحل - التمرين 1</h3>
+        <div class="code-block">
+            <div class="code-block__header">
+                <span>SQL - حل التمرين 1</span>
+                <div class="code-block__dots">
+                    <span class="code-block__dot code-block__dot--red"></span>
+                    <span class="code-block__dot code-block__dot--yellow"></span>
+                    <span class="code-block__dot code-block__dot--green"></span>
+                </div>
+            </div>
+            <div class="code-block__body"><span class="kw">CREATE TABLE</span> <span class="fn">products</span> (
+    <span class="tp">product_id</span>     <span class="or">NUMBER</span>(<span class="num">6</span>)       <span class="kw">PRIMARY KEY</span>,
+    <span class="tp">product_name</span>   <span class="or">VARCHAR2</span>(<span class="num">100</span>)  <span class="kw">NOT NULL</span>,
+    <span class="tp">price</span>          <span class="or">NUMBER</span>(<span class="num">10,2</span>)   <span class="kw">CHECK</span> (<span class="tp">price</span> > <span class="num">0</span>),
+    <span class="tp">category</span>       <span class="or">VARCHAR2</span>(<span class="num">50</span>),
+    <span class="tp">stock</span>          <span class="or">NUMBER</span>          <span class="kw">DEFAULT</span> <span class="num">0</span>
+);
+
+<span class="kw">INSERT INTO</span> <span class="fn">products</span> (<span class="tp">product_id</span>, <span class="tp">product_name</span>, <span class="tp">price</span>, <span class="tp">category</span>, <span class="tp">stock</span>)
+<span class="kw">VALUES</span> (<span class="num">1</span>, <span class="str">'لابتوب Dell'</span>, <span class="num">15000.00</span>, <span class="str">'إلكترونيات'</span>, <span class="num">25</span>);
+
+<span class="kw">INSERT INTO</span> <span class="fn">products</span> (<span class="tp">product_id</span>, <span class="tp">product_name</span>, <span class="tp">price</span>, <span class="tp">category</span>, <span class="tp">stock</span>)
+<span class="kw">VALUES</span> (<span class="num">2</span>, <span class="str">'ماوس Logitech'</span>, <span class="num">350.50</span>, <span class="str">'إلكترونيات'</span>, <span class="num">100</span>);
+
+<span class="kw">INSERT INTO</span> <span class="fn">products</span> (<span class="tp">product_id</span>, <span class="tp">product_name</span>, <span class="tp">price</span>, <span class="tp">category</span>, <span class="tp">stock</span>)
+<span class="kw">VALUES</span> (<span class="num">3</span>, <span class="str">'كرسي مكتب'</span>, <span class="num">2500.00</span>, <span class="str">'أثاث'</span>, <span class="num">15</span>);
+
+<span class="kw">INSERT INTO</span> <span class="fn">products</span> (<span class="tp">product_id</span>, <span class="tp">product_name</span>, <span class="tp">price</span>, <span class="tp">category</span>)
+<span class="kw">VALUES</span> (<span class="num">4</span>, <span class="str">'سماعة Samsung'</span>, <span class="num">1200.00</span>, <span class="str">'إلكترونيات'</span>);
+<span class="cm">-- stock هيبقى 0 تلقائياً (DEFAULT)</span>
+
+<span class="kw">INSERT INTO</span> <span class="fn">products</span> (<span class="tp">product_id</span>, <span class="tp">product_name</span>, <span class="tp">price</span>, <span class="tp">category</span>, <span class="tp">stock</span>)
+<span class="kw">VALUES</span> (<span class="num">5</span>, <span class="str">'كتاب SQL'</span>, <span class="num">180.00</span>, <span class="str">'كتب'</span>, <span class="num">50</span>);
+
+<span class="kw">COMMIT</span>;
+
+<span class="cm">-- شوف البيانات:</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="fn">products</span>;</div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECTION 14: Summary -->
+    <!-- ============================================ -->
+    <div class="section" id="summary">
+        <div class="summary-box">
+            <div class="summary-box__title">📌 ملخص الدرس</div>
+            <ul class="summary-list">
+                <li><span class="check">✓</span> <strong>CREATE TABLE</strong> = إنشاء جدول جديد</li>
+                <li><span class="check">✓</span> <strong>NUMBER(p,s)</strong> = أرقام (p أرقام، s عشري)</li>
+                <li><span class="check">✓</span> <strong>VARCHAR2(n)</strong> = نص متغير الطول</li>
+                <li><span class="check">✓</span> <strong>DATE</strong> = تاريخ ووقت</li>
+                <li><span class="check">✓</span> <strong>CHAR(n)</strong> = نص ثابت الطول</li>
+                <li><span class="check">✓</span> <strong>PRIMARY KEY</strong> = معرف فريد لكل صف</li>
+                <li><span class="check">✓</span> <strong>NOT NULL</strong> = لازم قيمة</li>
+                <li><span class="check">✓</span> <strong>UNIQUE</strong> = مينفعش يتكرر</li>
+                <li><span class="check">✓</span> <strong>CHECK</strong> = شرط على القيمة</li>
+                <li><span class="check">✓</span> <strong>DEFAULT</strong> = قيمة افتراضية</li>
+                <li><span class="check">✓</span> <strong>FOREIGN KEY</strong> = ربط بجدول تاني</li>
+                <li><span class="check">✓</span> <strong>INSERT INTO</strong> = إضافة بيانات</li>
+                <li><span class="check">✓</span> <strong>COMMIT</strong> = حفظ نهائي</li>
+                <li><span class="check">✓</span> <strong>TO_DATE</strong> = تحويل نص لتاريخ</li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+<script>
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.sidebar__nav a');
+
+function updateActiveNav() {
+    let current = '';
+    sections.forEach(section => {
+        if (window.scrollY >= section.offsetTop - 100) {
+            current = section.getAttribute('id');
+        }
+    });
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) {
+            link.classList.add('active');
+        }
+    });
+}
+
+window.addEventListener('scroll', updateActiveNav);
+updateActiveNav();
+
+navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+        document.querySelector('.sidebar').classList.remove('sidebar--open');
+    });
+});
+</script>
+
+</body>
+</html>

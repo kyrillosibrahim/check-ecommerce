@@ -1,0 +1,1838 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Views و Indexes - اليوم الثالث</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #06060f;
+            --bg-card: #0d0d1f;
+            --bg-code: #0a0a1a;
+            --border: #1a1a3e;
+            --text: #e2e2f0;
+            --text-dim: #8888aa;
+            --accent: #ff4d4d;
+            --accent2: #ff8c00;
+            --accent3: #00d47e;
+            --accent4: #4d8cff;
+            --accent5: #a855f7;
+            --glow: 0 0 30px rgba(77, 140, 255, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 100vh;
+            background: var(--bg-card);
+            border-left: 1px solid var(--border);
+            padding: 24px 0;
+            overflow-y: auto;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 0 24px 20px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+
+        .sidebar-header h3 {
+            font-size: 1rem;
+            color: var(--accent4);
+            margin-bottom: 4px;
+        }
+
+        .sidebar-header p {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 24px;
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            border-right: 3px solid transparent;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            color: var(--text);
+            background: rgba(77, 140, 255, 0.05);
+            border-right-color: var(--accent4);
+        }
+
+        .sidebar-nav .num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--border);
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--accent4);
+            flex-shrink: 0;
+        }
+
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 200;
+            background: var(--accent4);
+            border: none;
+            color: #fff;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            font-size: 1.3rem;
+            cursor: pointer;
+        }
+
+        /* Main Content */
+        .main {
+            margin-right: 300px;
+            padding: 0;
+        }
+
+        /* Hero */
+        .hero {
+            padding: 80px 60px 60px;
+            background: linear-gradient(135deg, rgba(77, 140, 255, 0.08) 0%, rgba(168, 85, 247, 0.06) 100%);
+            border-bottom: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            left: -100px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(77, 140, 255, 0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(77, 140, 255, 0.1);
+            border: 1px solid rgba(77, 140, 255, 0.2);
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            color: var(--accent4);
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--accent4), var(--accent5));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-dim);
+            max-width: 600px;
+        }
+
+        /* Sections */
+        .section {
+            padding: 60px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: var(--accent5);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .section h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 24px;
+            color: var(--text);
+        }
+
+        .section h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 24px 0 16px;
+            color: var(--accent4);
+        }
+
+        .section p, .section li {
+            font-size: 1rem;
+            color: var(--text-dim);
+            margin-bottom: 12px;
+        }
+
+        .section ul, .section ol {
+            padding-right: 24px;
+            margin-bottom: 16px;
+        }
+
+        /* Content Card */
+        .content-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            margin: 20px 0;
+            box-shadow: var(--glow);
+        }
+
+        .content-card h4 {
+            font-size: 1.1rem;
+            color: var(--accent3);
+            margin-bottom: 16px;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin: 16px 0;
+            overflow: hidden;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .code-header span {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .code-header .copy-btn {
+            background: rgba(77, 140, 255, 0.1);
+            border: 1px solid rgba(77, 140, 255, 0.2);
+            color: var(--accent4);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .code-header .copy-btn:hover {
+            background: rgba(77, 140, 255, 0.2);
+        }
+
+        .code-block pre {
+            padding: 20px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            direction: ltr;
+            text-align: left;
+        }
+
+        /* Syntax Highlighting */
+        .kw { color: #ff7b72; font-weight: 700; }
+        .str { color: #a5d6ff; }
+        .cm { color: #6a737d; font-style: italic; }
+        .num { color: #79c0ff; }
+        .fn { color: #d2a8ff; }
+        .tp { color: #ff8c00; }
+        .op { color: #ff4d4d; }
+        .tbl { color: #00d47e; }
+
+        /* Visual Table */
+        .table-visual {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 0.9rem;
+        }
+
+        .table-visual th {
+            background: rgba(77, 140, 255, 0.1);
+            color: var(--accent4);
+            padding: 12px 16px;
+            text-align: right;
+            font-weight: 700;
+            border-bottom: 2px solid var(--accent4);
+        }
+
+        .table-visual td {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-dim);
+        }
+
+        .table-visual tr:hover td {
+            background: rgba(77, 140, 255, 0.03);
+        }
+
+        /* Info & Quote Boxes */
+        .info-box {
+            background: rgba(77, 140, 255, 0.05);
+            border: 1px solid rgba(77, 140, 255, 0.15);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin: 16px 0;
+        }
+
+        .info-box.warning {
+            background: rgba(255, 140, 0, 0.05);
+            border-color: rgba(255, 140, 0, 0.15);
+        }
+
+        .info-box.success {
+            background: rgba(0, 212, 126, 0.05);
+            border-color: rgba(0, 212, 126, 0.15);
+        }
+
+        .info-box.danger {
+            background: rgba(255, 77, 77, 0.05);
+            border-color: rgba(255, 77, 77, 0.15);
+        }
+
+        .info-box strong {
+            color: var(--accent4);
+        }
+
+        .info-box.warning strong { color: var(--accent2); }
+        .info-box.success strong { color: var(--accent3); }
+        .info-box.danger strong { color: var(--accent); }
+
+        .quote-box {
+            border-right: 4px solid var(--accent5);
+            background: rgba(168, 85, 247, 0.05);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin: 16px 0;
+            font-style: italic;
+        }
+
+        /* Feature Cards Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--accent4);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(77, 140, 255, 0.1);
+        }
+
+        .feature-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+        }
+
+        .feature-card h4 {
+            color: var(--accent4);
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .feature-card p {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        /* Comparison */
+        .vs-container {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 20px;
+            align-items: center;
+            margin: 24px 0;
+        }
+
+        .vs-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+        }
+
+        .vs-card h4 {
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+        }
+
+        .vs-card.left h4 { color: var(--accent4); }
+        .vs-card.right h4 { color: var(--accent3); }
+
+        .vs-badge {
+            background: var(--accent5);
+            color: #fff;
+            padding: 10px 16px;
+            border-radius: 50%;
+            font-weight: 900;
+            font-size: 1.1rem;
+        }
+
+        /* Flow Diagram */
+        .flow-diagram {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            align-items: center;
+            margin: 24px 0;
+            direction: ltr;
+        }
+
+        .flow-step {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 14px 20px;
+            border-radius: 12px;
+            text-align: center;
+            min-width: 140px;
+        }
+
+        .flow-step .label {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .flow-step .value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent4);
+            font-weight: 700;
+        }
+
+        .flow-arrow {
+            color: var(--accent2);
+            font-size: 1.5rem;
+        }
+
+        /* Analogy Box */
+        .analogy-box {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.08), rgba(77, 140, 255, 0.08));
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 16px;
+            padding: 28px;
+            margin: 24px 0;
+        }
+
+        .analogy-box h4 {
+            color: var(--accent5);
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+        }
+
+        .analogy-box .emoji {
+            font-size: 2rem;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        /* Exercise Card */
+        .exercise-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .exercise-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .exercise-header:hover {
+            background: rgba(77, 140, 255, 0.03);
+        }
+
+        .exercise-header h4 {
+            color: var(--text);
+            font-size: 1rem;
+        }
+
+        .exercise-badge {
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .exercise-badge.easy {
+            background: rgba(0, 212, 126, 0.1);
+            color: var(--accent3);
+        }
+
+        .exercise-badge.medium {
+            background: rgba(255, 140, 0, 0.1);
+            color: var(--accent2);
+        }
+
+        .exercise-badge.hard {
+            background: rgba(255, 77, 77, 0.1);
+            color: var(--accent);
+        }
+
+        .exercise-body {
+            display: none;
+            padding: 0 24px 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .exercise-body.show { display: block; }
+
+        .exercise-body p {
+            padding-top: 16px;
+        }
+
+        .hint-btn, .solution-toggle {
+            background: rgba(168, 85, 247, 0.1);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            color: var(--accent5);
+            padding: 8px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.85rem;
+            margin-top: 12px;
+            margin-left: 8px;
+            transition: all 0.2s;
+        }
+
+        .hint-btn:hover, .solution-toggle:hover {
+            background: rgba(168, 85, 247, 0.2);
+        }
+
+        .hint-content, .solution-content {
+            display: none;
+            margin-top: 12px;
+        }
+
+        .hint-content.show, .solution-content.show { display: block; }
+
+        /* Summary Box */
+        .summary-box {
+            background: linear-gradient(135deg, rgba(77, 140, 255, 0.06), rgba(0, 212, 126, 0.06));
+            border: 1px solid rgba(77, 140, 255, 0.15);
+            border-radius: 16px;
+            padding: 32px;
+            margin: 24px 0;
+        }
+
+        .summary-box h3 {
+            color: var(--accent4);
+            margin-bottom: 16px;
+        }
+
+        .summary-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .summary-box li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-dim);
+        }
+
+        .summary-box li::before {
+            content: '✅ ';
+        }
+
+        /* Back Button */
+        .back-btn {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background: var(--accent4);
+            color: #fff;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.3rem;
+            cursor: pointer;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-shadow: 0 4px 20px rgba(77, 140, 255, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .back-btn:hover { transform: scale(1.1); }
+
+        /* Index Types Visual */
+        .index-types-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .index-type-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .index-type-card:hover {
+            border-color: var(--accent3);
+            box-shadow: 0 4px 20px rgba(0, 212, 126, 0.08);
+        }
+
+        .index-type-card .icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .index-type-card h4 {
+            color: var(--accent3);
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+
+        .index-type-card p {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        /* Performance visual */
+        .perf-bar-container {
+            margin: 16px 0;
+        }
+
+        .perf-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .perf-bar-label {
+            min-width: 120px;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            text-align: left;
+        }
+
+        .perf-bar-track {
+            flex: 1;
+            height: 24px;
+            background: var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .perf-bar-fill {
+            height: 100%;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 10px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #fff;
+            transition: width 1s ease;
+        }
+
+        .perf-bar-fill.slow {
+            background: linear-gradient(90deg, var(--accent), #ff6b6b);
+        }
+
+        .perf-bar-fill.fast {
+            background: linear-gradient(90deg, var(--accent3), #4dff8c);
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .sidebar { transform: translateX(100%); }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-toggle { display: flex; align-items: center; justify-content: center; }
+            .main { margin-right: 0; }
+            .hero { padding: 60px 24px 40px; }
+            .hero h1 { font-size: 1.8rem; }
+            .section { padding: 40px 24px; }
+            .vs-container { grid-template-columns: 1fr; }
+            .vs-badge { justify-self: center; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar Toggle -->
+<button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <h3>Views و Indexes</h3>
+        <p>اليوم الثالث - الحصة الثانية</p>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="#intro"><span class="num">1</span> ليه محتاج Views و Indexes؟</a>
+        <a href="#view-concept"><span class="num">2</span> إيه هي الـ View؟</a>
+        <a href="#create-view"><span class="num">3</span> إنشاء أول View</a>
+        <a href="#view-with-joins"><span class="num">4</span> View مع JOINs</a>
+        <a href="#view-modify"><span class="num">5</span> تعديل وحذف View</a>
+        <a href="#view-with-check"><span class="num">6</span> WITH CHECK OPTION</a>
+        <a href="#view-readonly"><span class="num">7</span> READ ONLY View</a>
+        <a href="#view-benefits"><span class="num">8</span> فوائد الـ Views</a>
+        <a href="#index-concept"><span class="num">9</span> إيه هو الـ Index؟</a>
+        <a href="#create-index"><span class="num">10</span> إنشاء Index</a>
+        <a href="#index-types"><span class="num">11</span> أنواع الـ Indexes</a>
+        <a href="#composite-index"><span class="num">12</span> Composite Index</a>
+        <a href="#index-when"><span class="num">13</span> امتى تستخدم Index؟</a>
+        <a href="#index-avoid"><span class="num">14</span> امتى تتجنب Index؟</a>
+        <a href="#manage-index"><span class="num">15</span> إدارة الـ Indexes</a>
+        <a href="#view-vs-index"><span class="num">16</span> Views vs Indexes</a>
+        <a href="#exercises"><span class="num">17</span> تمارين عملية</a>
+    </nav>
+</aside>
+
+<!-- Main Content -->
+<main class="main">
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-badge">📦 اليوم الثالث - الحصة الثانية</div>
+        <h1>Views و Indexes</h1>
+        <p>هتتعلم إزاي تنظم الـ Queries بتاعتك في Views وتسرّع أداء الداتابيز بالـ Indexes - من أهم المواضيع في الشغل الحقيقي!</p>
+    </section>
+
+    <!-- Section 1: Why Views & Indexes -->
+    <section class="section" id="intro">
+        <span class="section-label">المقدمة</span>
+        <h2>ليه محتاج Views و Indexes؟</h2>
+
+        <p>تخيل إنك بتكتب نفس الـ Query المعقدة كل يوم 10 مرات... أو إن query بسيطة بتاخد 30 ثانية على جدول فيه مليون صف. هنا بالظبط بتيجي أهمية Views و Indexes!</p>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="icon">👁️</span>
+                <h4>Views</h4>
+                <p>بتحفظ الـ Queries المعقدة وتخليها سهلة الاستخدام - زي الـ shortcut!</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">⚡</span>
+                <h4>Indexes</h4>
+                <p>بتسرّع البحث في البيانات بشكل رهيب - الفرق ممكن يكون من 30 ثانية لـ milliseconds!</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">🔒</span>
+                <h4>Security</h4>
+                <p>Views بتساعدك تتحكم في البيانات اللي كل مستخدم يقدر يشوفها</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 2: View Concept -->
+    <section class="section" id="view-concept">
+        <span class="section-label">الجزء الأول - VIEWS</span>
+        <h2>إيه هي الـ View؟</h2>
+
+        <div class="analogy-box">
+            <span class="emoji">🪟</span>
+            <h4>تشبيه بسيط: الـ View = شباك!</h4>
+            <p>تخيل إن عندك مخزن كبير فيه بضاعة كتير (الـ Table). الـ View هي شباك بتبص منه على جزء معين من المخزن. البضاعة هي هي، بس أنت بتشوف جزء محدد منها بالطريقة اللي أنت عايزها.</p>
+        </div>
+
+        <div class="content-card">
+            <h4>تعريف تقني:</h4>
+            <p>الـ View هي <strong style="color:var(--accent4)">جدول افتراضي (Virtual Table)</strong> مبنية على SELECT query. مش بتخزن بيانات فعلية، لكن بتخزن الـ Query نفسها وبتنفذها كل ما حد يستدعيها.</p>
+
+            <div class="info-box">
+                <strong>💡 نقطة مهمة:</strong> الـ View مش بتنسخ البيانات! لو البيانات الأصلية اتغيرت في الجدول، الـ View هتعرضها متحدثة تلقائياً.
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: Create View -->
+    <section class="section" id="create-view">
+        <span class="section-label">إنشاء</span>
+        <h2>إنشاء أول View</h2>
+
+        <h3>الصيغة الأساسية</h3>
+        <div class="code-block">
+            <div class="code-header">
+                <span>SQL - CREATE VIEW Syntax</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">CREATE VIEW</span> view_name <span class="kw">AS</span>
+<span class="kw">SELECT</span> column1, column2, ...
+<span class="kw">FROM</span> table_name
+<span class="kw">WHERE</span> condition;</pre>
+        </div>
+
+        <h3>مثال عملي: View للموظفين النشطين</h3>
+        <p>عندنا جدول employees فيه كل الموظفين. عايزين View بتعرض بس الموظفين اللي شغالين:</p>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span>SQL - أول View</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="cm">-- إنشاء View للموظفين النشطين</span>
+<span class="kw">CREATE VIEW</span> <span class="tbl">active_employees</span> <span class="kw">AS</span>
+<span class="kw">SELECT</span> employee_id, first_name, last_name, salary, department_id
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> status = <span class="str">'ACTIVE'</span>;
+
+<span class="cm">-- دلوقتي تقدر تستخدمها زي أي جدول عادي!</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">active_employees</span>;
+
+<span class="cm">-- تقدر تعمل WHERE عليها كمان</span>
+<span class="kw">SELECT</span> first_name, salary
+<span class="kw">FROM</span> <span class="tbl">active_employees</span>
+<span class="kw">WHERE</span> salary <span class="op">></span> <span class="num">5000</span>;</pre>
+        </div>
+
+        <h3>View مع حساب (Computed Column)</h3>
+        <div class="code-block">
+            <div class="code-header">
+                <span>SQL - View مع عمود محسوب</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">CREATE VIEW</span> <span class="tbl">employee_summary</span> <span class="kw">AS</span>
+<span class="kw">SELECT</span>
+    employee_id,
+    first_name <span class="op">||</span> <span class="str">' '</span> <span class="op">||</span> last_name <span class="kw">AS</span> full_name,
+    salary,
+    salary <span class="op">*</span> <span class="num">12</span> <span class="kw">AS</span> annual_salary,
+    hire_date,
+    <span class="fn">ROUND</span>(<span class="fn">MONTHS_BETWEEN</span>(<span class="fn">SYSDATE</span>, hire_date) <span class="op">/</span> <span class="num">12</span>) <span class="kw">AS</span> years_worked
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> status = <span class="str">'ACTIVE'</span>;</pre>
+        </div>
+
+        <div class="info-box success">
+            <strong>✅ كده بدل ما تكتب الحسابات دي كل مرة:</strong> بس اكتب <code style="color:var(--accent3)">SELECT * FROM employee_summary</code> وخلاص!
+        </div>
+    </section>
+
+    <!-- Section 4: View with JOINs -->
+    <section class="section" id="view-with-joins">
+        <span class="section-label">متقدم</span>
+        <h2>View مع JOINs</h2>
+
+        <p>هنا بتبان القوة الحقيقية للـ Views! لما عندك Query فيها JOINs معقدة، بتحولها لـ View وبتستخدمها بسهولة:</p>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span>SQL - View مع JOIN</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="cm">-- View بتجمع بيانات الموظف مع القسم والمدير</span>
+<span class="kw">CREATE VIEW</span> <span class="tbl">employee_details</span> <span class="kw">AS</span>
+<span class="kw">SELECT</span>
+    e.employee_id,
+    e.first_name <span class="op">||</span> <span class="str">' '</span> <span class="op">||</span> e.last_name <span class="kw">AS</span> employee_name,
+    e.salary,
+    d.department_name,
+    m.first_name <span class="op">||</span> <span class="str">' '</span> <span class="op">||</span> m.last_name <span class="kw">AS</span> manager_name
+<span class="kw">FROM</span> employees e
+<span class="kw">JOIN</span> departments d <span class="kw">ON</span> e.department_id = d.department_id
+<span class="kw">LEFT JOIN</span> employees m <span class="kw">ON</span> e.manager_id = m.employee_id;
+
+<span class="cm">-- دلوقتي استخدمها ببساطة!</span>
+<span class="kw">SELECT</span> employee_name, department_name, manager_name
+<span class="kw">FROM</span> <span class="tbl">employee_details</span>
+<span class="kw">WHERE</span> department_name = <span class="str">'IT'</span>;</pre>
+        </div>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span>SQL - View مع GROUP BY</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="cm">-- View لإحصائيات كل قسم</span>
+<span class="kw">CREATE VIEW</span> <span class="tbl">department_stats</span> <span class="kw">AS</span>
+<span class="kw">SELECT</span>
+    d.department_name,
+    <span class="fn">COUNT</span>(e.employee_id) <span class="kw">AS</span> total_employees,
+    <span class="fn">ROUND</span>(<span class="fn">AVG</span>(e.salary)) <span class="kw">AS</span> avg_salary,
+    <span class="fn">MAX</span>(e.salary) <span class="kw">AS</span> max_salary,
+    <span class="fn">MIN</span>(e.salary) <span class="kw">AS</span> min_salary,
+    <span class="fn">SUM</span>(e.salary) <span class="kw">AS</span> total_salaries
+<span class="kw">FROM</span> departments d
+<span class="kw">LEFT JOIN</span> employees e <span class="kw">ON</span> d.department_id = e.department_id
+<span class="kw">GROUP BY</span> d.department_name;
+
+<span class="cm">-- عايز تعرف أكتر قسم رواتب؟</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">department_stats</span>
+<span class="kw">ORDER BY</span> total_salaries <span class="kw">DESC</span>;</pre>
+        </div>
+    </section>
+
+    <!-- Section 5: Modify/Drop View -->
+    <section class="section" id="view-modify">
+        <span class="section-label">تعديل</span>
+        <h2>تعديل وحذف View</h2>
+
+        <h3>CREATE OR REPLACE VIEW</h3>
+        <p>لو عايز تعدل View موجودة، استخدم <code style="color:var(--accent2)">CREATE OR REPLACE</code>:</p>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span>SQL - تعديل View</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="cm">-- تعديل View موجودة (لو مش موجودة هيعملها جديدة)</span>
+<span class="kw">CREATE OR REPLACE VIEW</span> <span class="tbl">active_employees</span> <span class="kw">AS</span>
+<span class="kw">SELECT</span> employee_id, first_name, last_name, salary, department_id, hire_date
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> status = <span class="str">'ACTIVE'</span>
+  <span class="kw">AND</span> hire_date <span class="op">>=</span> <span class="fn">ADD_MONTHS</span>(<span class="fn">SYSDATE</span>, <span class="num">-12</span>); <span class="cm">-- الموظفين الجدد بس</span></pre>
+        </div>
+
+        <h3>حذف View</h3>
+        <div class="code-block">
+            <div class="code-header">
+                <span>SQL - DROP VIEW</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="cm">-- حذف View</span>
+<span class="kw">DROP VIEW</span> active_employees;
+
+<span class="cm">-- الأمان: لو مش موجودة مش هيطلع error</span>
+<span class="cm">-- (في بعض versions مش بتدعمها)</span></pre>
+        </div>
+
+        <div class="info-box warning">
+            <strong>⚠️ حذف View مش بيأثر على البيانات!</strong> الـ View بس واجهة. لما تحذفها، البيانات في الجداول الأصلية بتفضل زي ما هي.
+        </div>
+    </section>
+
+    <!-- Section 6: WITH CHECK OPTION -->
+    <section class="section" id="view-with-check">
+        <span class="section-label">أمان</span>
+        <h2>WITH CHECK OPTION</h2>
+
+        <p>لو الـ View بتاعتك updatable (تقدر تعمل INSERT/UPDATE من خلالها)، ممكن حد يدخل بيانات ما تظهرش في الـ View! الحل هو <code style="color:var(--accent)">WITH CHECK OPTION</code>:</p>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span>SQL - WITH CHECK OPTION</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="cm">-- View للموظفين اللي مرتبهم أكتر من 3000</span>
+<span class="kw">CREATE VIEW</span> <span class="tbl">high_salary_emp</span> <span class="kw">AS</span>
+<span class="kw">SELECT</span> employee_id, first_name, salary
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> salary <span class="op">></span> <span class="num">3000</span>
+<span class="kw">WITH CHECK OPTION</span>;
+
+<span class="cm">-- ده هينجح ✅</span>
+<span class="kw">UPDATE</span> <span class="tbl">high_salary_emp</span>
+<span class="kw">SET</span> salary = <span class="num">5000</span>
+<span class="kw">WHERE</span> employee_id = <span class="num">101</span>;
+
+<span class="cm">-- ده هيفشل ❌ (لأن 2000 &lt; 3000 فمش هيظهر في الـ View)</span>
+<span class="kw">UPDATE</span> <span class="tbl">high_salary_emp</span>
+<span class="kw">SET</span> salary = <span class="num">2000</span>
+<span class="kw">WHERE</span> employee_id = <span class="num">101</span>;
+<span class="cm">-- ORA-01402: view WITH CHECK OPTION where-clause violation</span></pre>
+        </div>
+
+        <div class="info-box">
+            <strong>💡 الخلاصة:</strong> WITH CHECK OPTION بتمنع أي INSERT أو UPDATE يخلي الصف يختفي من الـ View.
+        </div>
+    </section>
+
+    <!-- Section 7: READ ONLY -->
+    <section class="section" id="view-readonly">
+        <span class="section-label">حماية</span>
+        <h2>READ ONLY View</h2>
+
+        <p>لو عايز الـ View تكون للقراءة بس ومحدش يقدر يعمل فيها INSERT أو UPDATE أو DELETE:</p>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span>SQL - READ ONLY View</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">CREATE VIEW</span> <span class="tbl">salary_report</span> <span class="kw">AS</span>
+<span class="kw">SELECT</span>
+    d.department_name,
+    <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> emp_count,
+    <span class="fn">SUM</span>(e.salary) <span class="kw">AS</span> total_salary
+<span class="kw">FROM</span> departments d
+<span class="kw">JOIN</span> employees e <span class="kw">ON</span> d.department_id = e.department_id
+<span class="kw">GROUP BY</span> d.department_name
+<span class="kw">WITH READ ONLY</span>;
+
+<span class="cm">-- أي محاولة تعديل هتفشل ❌</span>
+<span class="cm">-- ORA-42399: cannot perform a DML operation on a read-only view</span></pre>
+        </div>
+    </section>
+
+    <!-- Section 8: View Benefits -->
+    <section class="section" id="view-benefits">
+        <span class="section-label">فوائد</span>
+        <h2>فوائد الـ Views</h2>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="icon">♻️</span>
+                <h4>إعادة الاستخدام</h4>
+                <p>اكتب الـ Query مرة واحدة واستخدمها في أماكن كتير</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">🧹</span>
+                <h4>التبسيط</h4>
+                <p>Query معقدة بـ 3 JOINs بتتحول لـ SELECT بسيط من View</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">🔐</span>
+                <h4>الأمان</h4>
+                <p>اعرض للمستخدم أعمدة معينة بس وأخفي المعلومات الحساسة</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">🛡️</span>
+                <h4>Abstraction</h4>
+                <p>لو غيرت تصميم الجدول، عدّل الـ View وكل الكود هيشتغل</p>
+            </div>
+        </div>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span>SQL - مثال على الأمان</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="cm">-- الـ HR يشوف كل حاجة</span>
+<span class="kw">CREATE VIEW</span> <span class="tbl">hr_employee_view</span> <span class="kw">AS</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> employees;
+
+<span class="cm">-- المدير يشوف موظفينه بس (بدون المرتبات!)</span>
+<span class="kw">CREATE VIEW</span> <span class="tbl">manager_team_view</span> <span class="kw">AS</span>
+<span class="kw">SELECT</span> employee_id, first_name, last_name, email, phone, department_id
+<span class="kw">FROM</span> employees;
+<span class="cm">-- ملاحظة: salary مش موجود! 🔒</span></pre>
+        </div>
+    </section>
+
+    <!-- Section 9: Index Concept -->
+    <section class="section" id="index-concept">
+        <span class="section-label">الجزء الثاني - INDEXES</span>
+        <h2>إيه هو الـ Index؟</h2>
+
+        <div class="analogy-box">
+            <span class="emoji">📖</span>
+            <h4>تشبيه: فهرس الكتاب!</h4>
+            <p>تخيل كتاب فيه 1000 صفحة وعايز تلاقي كلمة "Oracle". من غير فهرس، لازم تقلب كل الصفحات واحدة واحدة (Full Table Scan). لكن لو في فهرس في آخر الكتاب، بتروح على الحرف O وتلاقي رقم الصفحة على طول!</p>
+        </div>
+
+        <div class="content-card">
+            <h4>تعريف تقني:</h4>
+            <p>الـ Index هو <strong style="color:var(--accent3)">data structure</strong> (عادةً B-Tree) بيخزن قيم عمود معين مرتبة، مع pointer لمكان الصف الفعلي في الجدول. بيخلي البحث أسرع بكتير!</p>
+        </div>
+
+        <h3>الفرق بوضوح:</h3>
+
+        <div class="perf-bar-container">
+            <div class="perf-bar-row">
+                <span class="perf-bar-label">بدون Index</span>
+                <div class="perf-bar-track">
+                    <div class="perf-bar-fill slow" style="width: 95%;">Full Table Scan - 30 sec</div>
+                </div>
+            </div>
+            <div class="perf-bar-row">
+                <span class="perf-bar-label">مع Index</span>
+                <div class="perf-bar-track">
+                    <div class="perf-bar-fill fast" style="width: 8%;">0.01s</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-box success">
+            <strong>✅ نقطة مهمة:</strong> Oracle بيعمل Index تلقائياً على الـ PRIMARY KEY وعلى أي عمود عليه UNIQUE constraint. يعني الـ employee_id عليه Index من الأول!
+        </div>
+    </section>
+
+    <!-- Section 10: Create Index -->
+    <section class="section" id="create-index">
+        <span class="section-label">إنشاء</span>
+        <h2>إنشاء Index</h2>
+
+        <h3>الصيغة الأساسية</h3>
+        <div class="code-block">
+            <div class="code-header">
+                <span>SQL - CREATE INDEX Syntax</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">CREATE INDEX</span> index_name
+<span class="kw">ON</span> table_name (column_name);</pre>
+        </div>
+
+        <h3>أمثلة عملية</h3>
+        <div class="code-block">
+            <div class="code-header">
+                <span>SQL - إنشاء Indexes</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="cm">-- Index على اسم الموظف (لو بتبحث بالاسم كتير)</span>
+<span class="kw">CREATE INDEX</span> idx_emp_lastname
+<span class="kw">ON</span> employees (last_name);
+
+<span class="cm">-- دلوقتي البحث بالاسم هيكون سريع جداً!</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> last_name = <span class="str">'Ahmed'</span>; <span class="cm">-- ⚡ Index Scan بدل Full Table Scan</span>
+
+<span class="cm">-- Index على الـ department_id (لتسريع الـ JOINs)</span>
+<span class="kw">CREATE INDEX</span> idx_emp_dept
+<span class="kw">ON</span> employees (department_id);
+
+<span class="cm">-- Index على الـ email (لو بتبحث بالإيميل)</span>
+<span class="kw">CREATE INDEX</span> idx_emp_email
+<span class="kw">ON</span> employees (email);</pre>
+        </div>
+
+        <div class="quote-box">
+            <strong>💡 تسمية الـ Indexes:</strong> العادة إنك تبدأ الاسم بـ idx_ بعدين اسم الجدول بعدين اسم العمود. مثلاً: idx_employees_lastname أو المختصر idx_emp_lastname
+        </div>
+    </section>
+
+    <!-- Section 11: Index Types -->
+    <section class="section" id="index-types">
+        <span class="section-label">أنواع</span>
+        <h2>أنواع الـ Indexes</h2>
+
+        <div class="index-types-grid">
+            <div class="index-type-card">
+                <span class="icon">🌳</span>
+                <h4>B-Tree Index</h4>
+                <p>الـ Default والأكثر استخداماً. ممتاز للقيم الفريدة والمتنوعة مثل الأسماء والأرقام</p>
+            </div>
+            <div class="index-type-card">
+                <span class="icon">🗺️</span>
+                <h4>Bitmap Index</h4>
+                <p>للأعمدة اللي فيها قيم قليلة ومتكررة مثل الجنس (M/F) أو الحالة (Active/Inactive)</p>
+            </div>
+            <div class="index-type-card">
+                <span class="icon">🔑</span>
+                <h4>Unique Index</h4>
+                <p>بيضمن إن كل قيمة تكون فريدة. Oracle بيعمله تلقائي على PRIMARY KEY</p>
+            </div>
+            <div class="index-type-card">
+                <span class="icon">🔗</span>
+                <h4>Composite Index</h4>
+                <p>Index على أكتر من عمود. مفيد لما بتبحث بأكتر من شرط مع بعض</p>
+            </div>
+        </div>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span>SQL - أنواع Indexes</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="cm">-- B-Tree Index (الـ Default)</span>
+<span class="kw">CREATE INDEX</span> idx_emp_salary
+<span class="kw">ON</span> employees (salary);
+
+<span class="cm">-- Unique Index (ما ينفعش يتكرر)</span>
+<span class="kw">CREATE UNIQUE INDEX</span> idx_emp_email_unique
+<span class="kw">ON</span> employees (email);
+
+<span class="cm">-- Bitmap Index (للقيم المتكررة)</span>
+<span class="kw">CREATE BITMAP INDEX</span> idx_emp_status
+<span class="kw">ON</span> employees (status);
+
+<span class="cm">-- Function-Based Index (للبحث case-insensitive)</span>
+<span class="kw">CREATE INDEX</span> idx_emp_upper_name
+<span class="kw">ON</span> employees (<span class="fn">UPPER</span>(last_name));</pre>
+        </div>
+
+        <div class="info-box warning">
+            <strong>⚠️ ملاحظة عن Function-Based Index:</strong> لما تعمل Index على <code>UPPER(last_name)</code>، الـ Index هيشتغل بس لما تستخدم <code>WHERE UPPER(last_name) = 'AHMED'</code> في الـ Query. لازم الـ function تكون نفسها!
+        </div>
+    </section>
+
+    <!-- Section 12: Composite Index -->
+    <section class="section" id="composite-index">
+        <span class="section-label">متقدم</span>
+        <h2>Composite Index (Index على أكتر من عمود)</h2>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span>SQL - Composite Index</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="cm">-- Index على department_id و salary مع بعض</span>
+<span class="kw">CREATE INDEX</span> idx_emp_dept_salary
+<span class="kw">ON</span> employees (department_id, salary);
+
+<span class="cm">-- ده هيسرّع الـ queries دي:</span>
+
+<span class="cm">-- ✅ هيستخدم الـ Index (العمود الأول موجود)</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> department_id = <span class="num">10</span>;
+
+<span class="cm">-- ✅ هيستخدم الـ Index (العمودين موجودين)</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> department_id = <span class="num">10</span> <span class="kw">AND</span> salary <span class="op">></span> <span class="num">5000</span>;
+
+<span class="cm">-- ❌ مش هيستخدم الـ Index! (العمود الأول مش موجود)</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> salary <span class="op">></span> <span class="num">5000</span>;</pre>
+        </div>
+
+        <div class="info-box">
+            <strong>💡 قاعدة مهمة (Leading Column Rule):</strong> في الـ Composite Index، الترتيب مهم! الـ Index بيشتغل بس لما العمود الأول (أو الأول + التاني...) موجود في الـ WHERE. فكّر فيها زي دليل التليفون: لازم تعرف الحرف الأول عشان تلاقي الاسم!
+        </div>
+    </section>
+
+    <!-- Section 13: When to Use Index -->
+    <section class="section" id="index-when">
+        <span class="section-label">أفضل ممارسات</span>
+        <h2>امتى تستخدم Index؟</h2>
+
+        <div class="content-card">
+            <h4>✅ استخدم Index في الحالات دي:</h4>
+            <table class="table-visual">
+                <thead>
+                    <tr>
+                        <th>الحالة</th>
+                        <th>السبب</th>
+                        <th>مثال</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>أعمدة الـ WHERE الشائعة</td>
+                        <td>بتبحث فيها كتير</td>
+                        <td><code style="color:var(--accent4)">WHERE email = ...</code></td>
+                    </tr>
+                    <tr>
+                        <td>أعمدة الـ JOIN</td>
+                        <td>بتسرّع ربط الجداول</td>
+                        <td><code style="color:var(--accent4)">ON e.dept_id = d.id</code></td>
+                    </tr>
+                    <tr>
+                        <td>أعمدة الـ ORDER BY</td>
+                        <td>بتسرّع الترتيب</td>
+                        <td><code style="color:var(--accent4)">ORDER BY hire_date</code></td>
+                    </tr>
+                    <tr>
+                        <td>الجداول الكبيرة</td>
+                        <td>الفرق يكون واضح</td>
+                        <td>أكتر من 10,000 صف</td>
+                    </tr>
+                    <tr>
+                        <td>القيم الفريدة أو شبه فريدة</td>
+                        <td>B-Tree ممتاز هنا</td>
+                        <td>email, phone, SSN</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Section 14: When to Avoid Index -->
+    <section class="section" id="index-avoid">
+        <span class="section-label">تحذيرات</span>
+        <h2>امتى تتجنب Index؟</h2>
+
+        <div class="content-card">
+            <h4>❌ متعملش Index في الحالات دي:</h4>
+            <table class="table-visual">
+                <thead>
+                    <tr>
+                        <th>الحالة</th>
+                        <th>السبب</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>جداول صغيرة (أقل من 1000 صف)</td>
+                        <td>Full Table Scan ممكن يكون أسرع!</td>
+                    </tr>
+                    <tr>
+                        <td>أعمدة بيتعمل عليها INSERT/UPDATE كتير</td>
+                        <td>كل عملية كتابة لازم تحدّث الـ Index كمان</td>
+                    </tr>
+                    <tr>
+                        <td>أعمدة فيها NULL كتير</td>
+                        <td>B-Tree مش بيخزن NULL</td>
+                    </tr>
+                    <tr>
+                        <td>أعمدة قيمها قليلة ومتكررة</td>
+                        <td>مثلاً عمود gender فيه بس M/F (استخدم Bitmap بدل B-Tree)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="info-box danger">
+            <strong>🚨 تحذير مهم:</strong> الـ Index بيحتل مساحة تخزين وبيبطّئ عمليات الكتابة (INSERT, UPDATE, DELETE). كل ما تكتب صف جديد، Oracle لازم يحدّث كل الـ Indexes اللي على الجدول. فمتكترش من الـ Indexes من غير سبب!
+        </div>
+
+        <div class="analogy-box">
+            <span class="emoji">⚖️</span>
+            <h4>Trade-off: سرعة القراءة مقابل سرعة الكتابة</h4>
+            <p>كل Index بيسرّع القراءة (SELECT) لكن بيبطّئ الكتابة (INSERT/UPDATE/DELETE). لازم توازن! القاعدة: لو الجدول بيُقرأ أكتر ما بيُكتب عليه → استخدم Indexes. لو الكتابة أكتر → قلّل الـ Indexes.</p>
+        </div>
+    </section>
+
+    <!-- Section 15: Manage Indexes -->
+    <section class="section" id="manage-index">
+        <span class="section-label">إدارة</span>
+        <h2>إدارة الـ Indexes</h2>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span>SQL - إدارة Indexes</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="cm">-- حذف Index</span>
+<span class="kw">DROP INDEX</span> idx_emp_lastname;
+
+<span class="cm">-- عرض كل الـ Indexes على جدول معين</span>
+<span class="kw">SELECT</span> index_name, column_name, index_type
+<span class="kw">FROM</span> user_ind_columns
+<span class="kw">JOIN</span> user_indexes <span class="kw">USING</span> (index_name)
+<span class="kw">WHERE</span> table_name = <span class="str">'EMPLOYEES'</span>;
+
+<span class="cm">-- إعادة بناء Index (لو أداؤه بقى بطيء بعد تعديلات كتير)</span>
+<span class="kw">ALTER INDEX</span> idx_emp_salary <span class="kw">REBUILD</span>;
+
+<span class="cm">-- تعطيل Index مؤقتاً (مثلاً قبل bulk insert)</span>
+<span class="kw">ALTER INDEX</span> idx_emp_salary <span class="kw">UNUSABLE</span>;
+
+<span class="cm">-- إعادة تفعيل Index</span>
+<span class="kw">ALTER INDEX</span> idx_emp_salary <span class="kw">REBUILD</span>;</pre>
+        </div>
+
+        <div class="content-card">
+            <h4>💡 نصيحة: Bulk Insert</h4>
+            <p>لو هتدخل بيانات كتير مرة واحدة (مثلاً ألف صف)، الأفضل:</p>
+            <ol>
+                <li>عطّل الـ Indexes (<code style="color:var(--accent2)">ALTER INDEX ... UNUSABLE</code>)</li>
+                <li>أدخل كل البيانات</li>
+                <li>أعد بناء الـ Indexes (<code style="color:var(--accent3)">ALTER INDEX ... REBUILD</code>)</li>
+            </ol>
+            <p>كده بدل ما Oracle يحدّث الـ Index مع كل INSERT، بيبنيه مرة واحدة في الآخر!</p>
+        </div>
+    </section>
+
+    <!-- Section 16: Views vs Indexes -->
+    <section class="section" id="view-vs-index">
+        <span class="section-label">مقارنة</span>
+        <h2>Views vs Indexes - الفرق الواضح</h2>
+
+        <div class="vs-container">
+            <div class="vs-card left">
+                <h4>👁️ Views</h4>
+                <ul>
+                    <li>جدول افتراضي (Virtual)</li>
+                    <li><strong>مش بتخزن</strong> بيانات</li>
+                    <li>بتبسّط الـ Queries</li>
+                    <li>بتحسن الأمان</li>
+                    <li>مش بتأثر على الأداء مباشرة</li>
+                    <li>بتتكلم مع المطورين</li>
+                </ul>
+            </div>
+            <span class="vs-badge">VS</span>
+            <div class="vs-card right">
+                <h4>⚡ Indexes</h4>
+                <ul>
+                    <li>Data Structure حقيقي</li>
+                    <li><strong>بتخزن</strong> بيانات مرتبة</li>
+                    <li>بتسرّع البحث</li>
+                    <li>بتبطّئ الكتابة</li>
+                    <li>بتأثر على الأداء بشكل كبير</li>
+                    <li>بتتكلم مع الـ Engine</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h4>جدول مقارنة:</h4>
+            <table class="table-visual">
+                <thead>
+                    <tr>
+                        <th>الخاصية</th>
+                        <th>View</th>
+                        <th>Index</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>الهدف</td>
+                        <td>تبسيط + أمان</td>
+                        <td>سرعة البحث</td>
+                    </tr>
+                    <tr>
+                        <td>تخزين بيانات</td>
+                        <td>❌ لا</td>
+                        <td>✅ نعم</td>
+                    </tr>
+                    <tr>
+                        <td>إنشاء</td>
+                        <td><code>CREATE VIEW</code></td>
+                        <td><code>CREATE INDEX</code></td>
+                    </tr>
+                    <tr>
+                        <td>بتشوفها في الـ Query؟</td>
+                        <td>✅ نعم (في FROM)</td>
+                        <td>❌ لا (تلقائي)</td>
+                    </tr>
+                    <tr>
+                        <td>التأثير على SELECT</td>
+                        <td>لا تأثير مباشر</td>
+                        <td>تسريع كبير</td>
+                    </tr>
+                    <tr>
+                        <td>التأثير على INSERT/UPDATE</td>
+                        <td>لا تأثير</td>
+                        <td>بطء بسيط</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="quote-box">
+            <strong>القاعدة الذهبية:</strong> الـ View بتبسّط حياة المبرمج، والـ Index بيسرّع حياة المستخدم. هم مش بدائل لبعض - استخدمهم مع بعض!
+        </div>
+    </section>
+
+    <!-- Section 17: Exercises -->
+    <section class="section" id="exercises">
+        <span class="section-label">تمارين</span>
+        <h2>تمارين عملية</h2>
+
+        <p>جرّب تحل التمارين دي عشان تتأكد إنك فاهم Views و Indexes كويس!</p>
+
+        <!-- Exercise 1 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 1: إنشاء View بسيطة</h4>
+                <span class="exercise-badge easy">سهل</span>
+            </div>
+            <div class="exercise-body">
+                <p>أنشئ View اسمها <code style="color:var(--accent4)">it_employees</code> بتعرض اسم الموظف (first_name, last_name) ومرتبه من جدول employees للموظفين اللي في قسم IT (department_id = 20).</p>
+                <button class="hint-btn" onclick="toggleHint(this)">💡 تلميح</button>
+                <div class="hint-content">
+                    <p>استخدم CREATE VIEW ... AS SELECT ... FROM ... WHERE ...</p>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">CREATE VIEW</span> <span class="tbl">it_employees</span> <span class="kw">AS</span>
+<span class="kw">SELECT</span> first_name, last_name, salary
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> department_id = <span class="num">20</span>;</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 2 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 2: View مع حساب</h4>
+                <span class="exercise-badge easy">سهل</span>
+            </div>
+            <div class="exercise-body">
+                <p>أنشئ View اسمها <code style="color:var(--accent4)">employee_annual</code> بتعرض employee_id, first_name, salary, والمرتب السنوي (salary * 12) باسم annual_salary.</p>
+                <button class="hint-btn" onclick="toggleHint(this)">💡 تلميح</button>
+                <div class="hint-content">
+                    <p>استخدم <code>salary * 12 AS annual_salary</code> في الـ SELECT.</p>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">CREATE VIEW</span> <span class="tbl">employee_annual</span> <span class="kw">AS</span>
+<span class="kw">SELECT</span>
+    employee_id,
+    first_name,
+    salary,
+    salary <span class="op">*</span> <span class="num">12</span> <span class="kw">AS</span> annual_salary
+<span class="kw">FROM</span> employees;</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 3 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 3: View مع JOIN</h4>
+                <span class="exercise-badge medium">متوسط</span>
+            </div>
+            <div class="exercise-body">
+                <p>أنشئ View اسمها <code style="color:var(--accent4)">emp_dept_view</code> بتعرض اسم الموظف الكامل (first_name || ' ' || last_name باسم full_name)، اسم القسم (department_name)، والمرتب.</p>
+                <button class="hint-btn" onclick="toggleHint(this)">💡 تلميح</button>
+                <div class="hint-content">
+                    <p>هتحتاج JOIN بين employees و departments على department_id.</p>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">CREATE VIEW</span> <span class="tbl">emp_dept_view</span> <span class="kw">AS</span>
+<span class="kw">SELECT</span>
+    e.first_name <span class="op">||</span> <span class="str">' '</span> <span class="op">||</span> e.last_name <span class="kw">AS</span> full_name,
+    d.department_name,
+    e.salary
+<span class="kw">FROM</span> employees e
+<span class="kw">JOIN</span> departments d <span class="kw">ON</span> e.department_id = d.department_id;</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 4 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 4: View مع GROUP BY</h4>
+                <span class="exercise-badge medium">متوسط</span>
+            </div>
+            <div class="exercise-body">
+                <p>أنشئ View اسمها <code style="color:var(--accent4)">dept_summary</code> بتعرض department_name, عدد الموظفين (emp_count), متوسط المرتب (avg_salary مقرّب لأقرب عدد صحيح).</p>
+                <button class="hint-btn" onclick="toggleHint(this)">💡 تلميح</button>
+                <div class="hint-content">
+                    <p>استخدم JOIN + GROUP BY + COUNT + ROUND(AVG(...))</p>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">CREATE VIEW</span> <span class="tbl">dept_summary</span> <span class="kw">AS</span>
+<span class="kw">SELECT</span>
+    d.department_name,
+    <span class="fn">COUNT</span>(e.employee_id) <span class="kw">AS</span> emp_count,
+    <span class="fn">ROUND</span>(<span class="fn">AVG</span>(e.salary)) <span class="kw">AS</span> avg_salary
+<span class="kw">FROM</span> departments d
+<span class="kw">LEFT JOIN</span> employees e <span class="kw">ON</span> d.department_id = e.department_id
+<span class="kw">GROUP BY</span> d.department_name;</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 5 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 5: View مع WITH CHECK OPTION</h4>
+                <span class="exercise-badge medium">متوسط</span>
+            </div>
+            <div class="exercise-body">
+                <p>أنشئ View اسمها <code style="color:var(--accent4)">senior_employees</code> للموظفين اللي مرتبهم أكتر من 8000، مع WITH CHECK OPTION. بعدين جرّب تعمل UPDATE لموظف وتخلي مرتبه 5000 - إيه اللي هيحصل؟</p>
+                <button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">CREATE VIEW</span> <span class="tbl">senior_employees</span> <span class="kw">AS</span>
+<span class="kw">SELECT</span> employee_id, first_name, salary
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> salary <span class="op">></span> <span class="num">8000</span>
+<span class="kw">WITH CHECK OPTION</span>;
+
+<span class="cm">-- ده هيفشل بـ ORA-01402!</span>
+<span class="cm">-- لأن 5000 &lt; 8000 فالصف هيختفي من الـ View</span>
+<span class="kw">UPDATE</span> <span class="tbl">senior_employees</span>
+<span class="kw">SET</span> salary = <span class="num">5000</span>
+<span class="kw">WHERE</span> employee_id = <span class="num">100</span>;</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 6 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 6: إنشاء Index بسيط</h4>
+                <span class="exercise-badge easy">سهل</span>
+            </div>
+            <div class="exercise-body">
+                <p>أنشئ Index على عمود <code style="color:var(--accent4)">phone</code> في جدول employees. بعدين اكتب Query بتبحث بالتليفون وهتستفيد من الـ Index.</p>
+                <button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">CREATE INDEX</span> idx_emp_phone
+<span class="kw">ON</span> employees (phone);
+
+<span class="cm">-- Query هتستفيد من الـ Index</span>
+<span class="kw">SELECT</span> first_name, last_name, email
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> phone = <span class="str">'01012345678'</span>;</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 7 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 7: Composite Index</h4>
+                <span class="exercise-badge medium">متوسط</span>
+            </div>
+            <div class="exercise-body">
+                <p>أنشئ Composite Index على (department_id, hire_date) في جدول employees. بعدين اكتب 3 queries: واحدة تستخدم الـ Index، واحدة تستخدم جزء منه، وواحدة مش هتستخدمه.</p>
+                <button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">CREATE INDEX</span> idx_emp_dept_hire
+<span class="kw">ON</span> employees (department_id, hire_date);
+
+<span class="cm">-- ✅ هيستخدم الـ Index كامل</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> department_id = <span class="num">10</span>
+  <span class="kw">AND</span> hire_date <span class="op">></span> <span class="fn">DATE</span> <span class="str">'2024-01-01'</span>;
+
+<span class="cm">-- ✅ هيستخدم جزء من الـ Index (العمود الأول)</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> department_id = <span class="num">10</span>;
+
+<span class="cm">-- ❌ مش هيستخدم الـ Index (العمود الأول مش في الشرط)</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> hire_date <span class="op">></span> <span class="fn">DATE</span> <span class="str">'2024-01-01'</span>;</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 8 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 8: Function-Based Index</h4>
+                <span class="exercise-badge hard">صعب</span>
+            </div>
+            <div class="exercise-body">
+                <p>المستخدمين بيبحثوا عن الموظفين بالإيميل من غير ما يهتموا بحروف كبيرة أو صغيرة. أنشئ Index مناسب واكتب Query تستفيد منه.</p>
+                <button class="hint-btn" onclick="toggleHint(this)">💡 تلميح</button>
+                <div class="hint-content">
+                    <p>استخدم UPPER() أو LOWER() في الـ Index وفي الـ Query.</p>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="cm">-- Function-Based Index</span>
+<span class="kw">CREATE INDEX</span> idx_emp_email_lower
+<span class="kw">ON</span> employees (<span class="fn">LOWER</span>(email));
+
+<span class="cm">-- Query تستفيد من الـ Index</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> <span class="fn">LOWER</span>(email) = <span class="str">'ahmed@company.com'</span>;
+
+<span class="cm">-- ❌ دي مش هتستخدم الـ Index!</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> email = <span class="str">'ahmed@company.com'</span>;</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 9 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 9: تحليل - هل Index مناسب؟</h4>
+                <span class="exercise-badge hard">صعب</span>
+            </div>
+            <div class="exercise-body">
+                <p>عندك جدول <code style="color:var(--accent4)">log_entries</code> فيه 5 مليون صف. بيتضاف عليه 50,000 صف جديد كل يوم. بيتقرأ أسبوعياً بس لعمل تقارير. هل تعمل Indexes كتير عليه؟ وليه؟</p>
+                <button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button>
+                <div class="solution-content">
+                    <div class="info-box">
+                        <strong>الإجابة: لا! قلّل الـ Indexes!</strong>
+                        <p style="margin-top:8px;">السبب: الجدول ده heavy write (50,000 INSERT يومياً) و light read (أسبوعياً بس). كتر الـ Indexes هيبطّئ الـ INSERT بشكل كبير. الأفضل:</p>
+                        <ul style="margin-top:8px;">
+                            <li>Index واحد أو اتنين بس على الأعمدة اللي بتفلتر بيها في التقارير</li>
+                            <li>ممكن تعطل الـ Index قبل الـ bulk insert اليومي وتعيد بناءه بعدها</li>
+                            <li>أو تستخدم Partitioning بدل Indexes كتير</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 10 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 10: سيناريو متكامل</h4>
+                <span class="exercise-badge hard">صعب</span>
+            </div>
+            <div class="exercise-body">
+                <p>أنت DBA جديد في شركة. طلبوا منك:</p>
+                <ol>
+                    <li>أنشئ View اسمها <code style="color:var(--accent4)">sales_report</code> بتجمع بيانات من employees و departments و projects (عدد الموظفين لكل قسم، عدد المشاريع، إجمالي المرتبات)</li>
+                    <li>أنشئ الـ Indexes المناسبة عشان الـ View تشتغل بسرعة</li>
+                    <li>خلي الـ View تكون READ ONLY</li>
+                </ol>
+                <button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="cm">-- 1. الـ Indexes الأول (عشان الـ JOINs تكون سريعة)</span>
+<span class="kw">CREATE INDEX</span> idx_emp_dept_id <span class="kw">ON</span> employees (department_id);
+<span class="kw">CREATE INDEX</span> idx_proj_dept_id <span class="kw">ON</span> projects (department_id);
+
+<span class="cm">-- 2. الـ View</span>
+<span class="kw">CREATE VIEW</span> <span class="tbl">sales_report</span> <span class="kw">AS</span>
+<span class="kw">SELECT</span>
+    d.department_name,
+    <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> e.employee_id) <span class="kw">AS</span> emp_count,
+    <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> p.project_id) <span class="kw">AS</span> project_count,
+    <span class="fn">SUM</span>(e.salary) <span class="kw">AS</span> total_salaries
+<span class="kw">FROM</span> departments d
+<span class="kw">LEFT JOIN</span> employees e <span class="kw">ON</span> d.department_id = e.department_id
+<span class="kw">LEFT JOIN</span> projects p <span class="kw">ON</span> d.department_id = p.department_id
+<span class="kw">GROUP BY</span> d.department_name
+<span class="kw">WITH READ ONLY</span>;
+
+<span class="cm">-- استخدامها</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">sales_report</span>
+<span class="kw">ORDER BY</span> total_salaries <span class="kw">DESC</span>;</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="summary-box">
+            <h3>ملخص اللي اتعلمناه النهاردة</h3>
+            <ul>
+                <li>View = جدول افتراضي مبني على SELECT query</li>
+                <li>CREATE VIEW / CREATE OR REPLACE VIEW / DROP VIEW</li>
+                <li>View مع JOINs و GROUP BY بتبسّط الـ Queries المعقدة</li>
+                <li>WITH CHECK OPTION بتحمي من تعديلات تخفي الصف من الـ View</li>
+                <li>WITH READ ONLY بتمنع أي تعديل من خلال الـ View</li>
+                <li>Index = data structure بيسرّع البحث (B-Tree, Bitmap, Unique, Composite)</li>
+                <li>CREATE INDEX / DROP INDEX / ALTER INDEX REBUILD</li>
+                <li>Composite Index والـ Leading Column Rule</li>
+                <li>Function-Based Index للبحث بـ functions</li>
+                <li>Trade-off: سرعة القراءة مقابل سرعة الكتابة</li>
+                <li>Views بتتكلم مع المبرمجين، Indexes بتتكلم مع الـ Engine</li>
+            </ul>
+        </div>
+    </section>
+
+</main>
+
+<!-- Back Button -->
+<a href="index.html" class="back-btn" title="العودة للخطة">↩</a>
+
+<script>
+// Toggle exercise body
+function toggleExercise(header) {
+    const body = header.nextElementSibling;
+    body.classList.toggle('show');
+}
+
+// Toggle hint
+function toggleHint(btn) {
+    const hint = btn.nextElementSibling;
+    hint.classList.toggle('show');
+    btn.textContent = hint.classList.contains('show') ? '🙈 إخفاء التلميح' : '💡 تلميح';
+}
+
+// Toggle solution
+function toggleSolution(btn) {
+    const solution = btn.nextElementSibling;
+    solution.classList.toggle('show');
+    btn.textContent = solution.classList.contains('show') ? '🔒 إخفاء الحل' : '🔓 الحل';
+}
+
+// Copy code
+function copyCode(btn) {
+    const code = btn.closest('.code-block').querySelector('pre').textContent;
+    navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = 'تم النسخ ✓';
+        setTimeout(() => btn.textContent = 'نسخ', 2000);
+    });
+}
+
+// Active sidebar link on scroll
+const sections = document.querySelectorAll('.section[id]');
+const navLinks = document.querySelectorAll('.sidebar-nav a');
+
+window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop - 100;
+        if (pageYOffset >= sectionTop) {
+            current = section.getAttribute('id');
+        }
+    });
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) {
+            link.classList.add('active');
+        }
+    });
+});
+</script>
+</body>
+</html>

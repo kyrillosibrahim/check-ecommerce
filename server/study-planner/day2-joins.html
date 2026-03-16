@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JOINs بأنواعها - أهم موضوع في SQL!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        :root{--bg:#06060f;--bg-card:#0d0d1f;--bg-code:#0a0a1a;--accent:#ff4d4d;--accent-glow:rgba(255,77,77,0.15);--accent2:#ff8c00;--accent3:#00d47e;--accent4:#4d8cff;--accent5:#a855f7;--text:#e8e8f0;--text-sec:#8888aa;--text-muted:#555577;--border:#1a1a35;--border-light:#252550;}
+        body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);line-height:1.8;overflow-x:hidden;}
+        body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 15%,rgba(77,140,255,0.07) 0%,transparent 50%),radial-gradient(ellipse at 80% 85%,rgba(0,212,126,0.06) 0%,transparent 50%);pointer-events:none;z-index:0;}
+        .sidebar{position:fixed;top:0;right:0;width:280px;height:100vh;background:var(--bg-card);border-left:1px solid var(--border);padding:30px 20px;overflow-y:auto;z-index:100;transition:transform .3s;}
+        .sidebar__title{font-size:.8rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:20px;font-weight:700;}
+        .sidebar__nav a{display:flex;align-items:center;gap:10px;padding:10px 14px;color:var(--text-sec);text-decoration:none;font-size:.82rem;font-weight:600;border-radius:10px;margin-bottom:4px;transition:all .2s;}
+        .sidebar__nav a:hover,.sidebar__nav a.active{background:rgba(77,140,255,0.12);color:var(--accent4);}
+        .sidebar__nav a .nav-num{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;background:var(--border);color:var(--text-muted);flex-shrink:0;}
+        .sidebar__nav a:hover .nav-num,.sidebar__nav a.active .nav-num{background:var(--accent4);color:#fff;}
+        .sidebar__back{display:flex;align-items:center;gap:8px;color:var(--accent4);text-decoration:none;font-weight:700;font-size:.9rem;margin-bottom:25px;padding:10px 14px;border-radius:10px;transition:background .2s;}
+        .sidebar__back:hover{background:rgba(77,140,255,0.12);}
+        .sidebar__divider{height:1px;background:var(--border);margin:12px 0;}
+        .menu-toggle{display:none;position:fixed;top:20px;right:20px;z-index:200;width:48px;height:48px;border-radius:12px;background:var(--bg-card);border:1px solid var(--border);color:var(--text);font-size:1.3rem;cursor:pointer;align-items:center;justify-content:center;}
+        @media(max-width:900px){.sidebar{transform:translateX(100%);width:270px;}.sidebar--open{transform:translateX(0);}.menu-toggle{display:flex;}.main{margin-right:0!important;}}
+        .main{margin-right:280px;padding:40px 50px 80px;max-width:900px;position:relative;z-index:1;}
+        @media(max-width:1100px){.main{padding:30px 25px 60px;}}
+        .hero{margin-bottom:50px;padding-bottom:40px;border-bottom:1px solid var(--border);}
+        .hero__badge{display:inline-flex;align-items:center;gap:8px;background:rgba(77,140,255,0.15);color:var(--accent4);padding:6px 16px;border-radius:8px;font-size:.8rem;font-weight:700;margin-bottom:16px;}
+        .hero__title{font-size:2.2rem;font-weight:900;line-height:1.3;margin-bottom:12px;background:linear-gradient(135deg,#fff,#ccc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+        .hero__desc{color:var(--text-sec);font-size:1.05rem;font-weight:600;max-width:600px;}
+        .hero__meta{display:flex;gap:24px;margin-top:20px;flex-wrap:wrap;}
+        .hero__meta-item{display:flex;align-items:center;gap:8px;color:var(--text-muted);font-size:.85rem;font-weight:600;}
+        .section{margin-bottom:55px;scroll-margin-top:30px;}
+        .section__header{display:flex;align-items:center;gap:14px;margin-bottom:24px;}
+        .section__icon{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+        .section__icon--red{background:rgba(255,77,77,0.15);}.section__icon--orange{background:rgba(255,140,0,0.15);}.section__icon--green{background:rgba(0,212,126,0.15);}.section__icon--blue{background:rgba(77,140,255,0.15);}.section__icon--purple{background:rgba(168,85,247,0.15);}
+        .section__title{font-size:1.5rem;font-weight:800;}
+        .content-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:20px;}
+        .content-card__title{font-size:1.1rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+        .content-card p,.content-card li{color:var(--text-sec);font-size:.95rem;font-weight:600;margin-bottom:8px;}
+        .content-card ul{list-style:none;padding:0;}.content-card ul li::before{content:"◈ ";color:var(--accent4);}
+        .quote-box{background:var(--accent-glow);border-right:4px solid var(--accent);padding:18px 22px;border-radius:0 12px 12px 0;margin:20px 0;font-weight:700;font-size:1rem;color:var(--text);}
+        .quote-box--blue{background:rgba(77,140,255,0.1);border-right-color:var(--accent4);}
+        .quote-box--green{background:rgba(0,212,126,0.1);border-right-color:var(--accent3);}
+        .quote-box--orange{background:rgba(255,140,0,0.1);border-right-color:var(--accent2);}
+        .quote-box--purple{background:rgba(168,85,247,0.1);border-right-color:var(--accent5);}
+        .code-block{background:var(--bg-code);border:1px solid var(--border);border-radius:12px;margin:16px 0;overflow:hidden;}
+        .code-block__header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;background:var(--border);font-size:.78rem;font-weight:700;color:var(--text-muted);}
+        .code-block__dots{display:flex;gap:6px;}
+        .code-block__dot{width:10px;height:10px;border-radius:50%;}.code-block__dot--red{background:#ff5f57;}.code-block__dot--yellow{background:#febc2e;}.code-block__dot--green{background:#28c840;}
+        .code-block__body{padding:18px 22px;font-family:'JetBrains Mono',monospace;font-size:.83rem;line-height:1.9;overflow-x:auto;direction:ltr;text-align:left;color:#c8c8e0;}
+        .kw{color:#ff79c6;font-weight:700;}.str{color:#f1fa8c;}.cm{color:#555577;font-style:italic;}.num{color:#bd93f9;}.fn{color:#50fa7b;}.tp{color:#8be9fd;}.ac{color:#ff4d4d;}.or{color:#ff8c00;}
+        code.inline{background:var(--bg-code);padding:2px 8px;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--accent2);direction:ltr;display:inline-block;}
+        .info-box{border-radius:12px;padding:18px 22px;margin:16px 0;display:flex;align-items:flex-start;gap:12px;}
+        .info-box--warn{background:rgba(255,140,0,0.1);border:1px solid rgba(255,140,0,0.25);}
+        .info-box--success{background:rgba(0,212,126,0.1);border:1px solid rgba(0,212,126,0.25);}
+        .info-box--tip{background:rgba(77,140,255,0.1);border:1px solid rgba(77,140,255,0.25);}
+        .info-box--danger{background:rgba(255,77,77,0.1);border:1px solid rgba(255,77,77,0.25);}
+        .info-box__icon{font-size:1.3rem;flex-shrink:0;}
+        .info-box__text{font-size:.9rem;font-weight:600;}
+        .info-box--warn .info-box__text{color:var(--accent2);}.info-box--success .info-box__text{color:var(--accent3);}.info-box--tip .info-box__text{color:var(--accent4);}.info-box--danger .info-box__text{color:var(--accent);}
+        .syntax-box{background:linear-gradient(135deg,rgba(77,140,255,0.08),rgba(168,85,247,0.08));border:1px solid rgba(77,140,255,0.2);border-radius:14px;padding:24px;margin:20px 0;}
+        .syntax-box__title{font-weight:800;font-size:1rem;color:var(--accent4);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+        .table-visual{background:var(--bg-code);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin:16px 0;}
+        .table-visual__header{padding:12px 18px;font-weight:700;font-size:.9rem;display:flex;align-items:center;gap:8px;}
+        .table-visual__header--blue{background:rgba(77,140,255,0.12);color:var(--accent4);}
+        .table-visual__header--green{background:rgba(0,212,126,0.12);color:var(--accent3);}
+        .table-visual__header--orange{background:rgba(255,140,0,0.12);color:var(--accent2);}
+        .table-visual__header--purple{background:rgba(168,85,247,0.12);color:var(--accent5);}
+        .table-visual__header--red{background:rgba(255,77,77,0.12);color:var(--accent);}
+        .table-visual table{width:100%;border-collapse:collapse;}
+        .table-visual th{background:var(--border);padding:10px 16px;text-align:right;font-size:.8rem;font-weight:700;color:var(--accent4);font-family:'JetBrains Mono',monospace;}
+        .table-visual td{padding:10px 16px;border-bottom:1px solid var(--border);font-size:.85rem;color:var(--text-sec);font-weight:600;}
+        .table-visual .row-highlight td{background:rgba(0,212,126,0.08);color:var(--accent3);}
+        .table-visual .row-null td{background:rgba(255,140,0,0.06);color:var(--accent2);font-style:italic;}
+        .table-visual .row-dim td{opacity:.4;}
+        .sub-title{font-size:1.15rem;font-weight:800;margin:30px 0 16px;color:var(--text);}
+        .badge{display:inline-block;padding:3px 10px;border-radius:6px;font-size:.75rem;font-weight:700;}
+        .badge--red{background:rgba(255,77,77,0.15);color:var(--accent);}.badge--green{background:rgba(0,212,126,0.15);color:var(--accent3);}.badge--blue{background:rgba(77,140,255,0.15);color:var(--accent4);}.badge--orange{background:rgba(255,140,0,0.15);color:var(--accent2);}.badge--purple{background:rgba(168,85,247,0.15);color:var(--accent5);}
+
+        /* Venn Diagrams */
+        .venn-container{display:flex;justify-content:center;margin:24px 0;}
+        .venn{position:relative;width:300px;height:180px;}
+        .venn-circle{position:absolute;width:160px;height:160px;border-radius:50%;top:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem;}
+        .venn-circle--left{right:40px;border:3px solid var(--accent4);z-index:1;}
+        .venn-circle--right{left:40px;border:3px solid var(--accent2);z-index:1;}
+        .venn-label{position:absolute;bottom:-5px;font-size:.75rem;font-weight:700;color:var(--text-muted);}
+        .venn-label--left{right:75px;}
+        .venn-label--right{left:75px;}
+        .venn--inner .venn-circle--left{background:rgba(77,140,255,0.08);}
+        .venn--inner .venn-circle--right{background:rgba(255,140,0,0.08);}
+        .venn--inner .venn-overlap{position:absolute;top:10px;right:100px;width:60px;height:160px;background:rgba(0,212,126,0.2);border-radius:50%;z-index:2;display:flex;align-items:center;justify-content:center;}
+        .venn--left .venn-circle--left{background:rgba(77,140,255,0.25);}
+        .venn--left .venn-circle--right{background:rgba(255,140,0,0.08);}
+        .venn--right .venn-circle--left{background:rgba(77,140,255,0.08);}
+        .venn--right .venn-circle--right{background:rgba(255,140,0,0.25);}
+        .venn--full .venn-circle--left{background:rgba(77,140,255,0.2);}
+        .venn--full .venn-circle--right{background:rgba(255,140,0,0.2);}
+
+        .join-type-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0;}
+        @media(max-width:650px){.join-type-grid{grid-template-columns:1fr;}}
+        .join-type-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:22px;text-align:center;transition:all .2s;}
+        .join-type-card:hover{border-color:var(--border-light);transform:translateY(-2px);}
+        .join-type-card__name{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:800;margin-bottom:6px;}
+        .join-type-card__desc{color:var(--text-sec);font-size:.85rem;font-weight:600;}
+
+        .exercise-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;margin-bottom:20px;overflow:hidden;}
+        .exercise-card__head{padding:20px 24px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:background .2s;}
+        .exercise-card__head:hover{background:rgba(255,255,255,0.02);}
+        .exercise-card__title{font-weight:700;font-size:1rem;display:flex;align-items:center;gap:10px;}
+        .exercise-card__arrow{transition:transform .3s;font-size:1.2rem;color:var(--text-muted);}
+        .exercise-card__arrow--open{transform:rotate(90deg);}
+        .exercise-card__body{padding:0 24px 24px;display:none;}
+        .exercise-card__body--open{display:block;}
+        .solution-btn{background:linear-gradient(135deg,var(--accent4),#2563eb);color:#fff;border:none;padding:10px 22px;border-radius:10px;font-family:'Cairo',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;margin-top:14px;transition:opacity .2s;}
+        .solution-btn:hover{opacity:.85;}
+        .solution-content{display:none;margin-top:14px;}
+        .solution-content--open{display:block;}
+        .summary-box{background:linear-gradient(135deg,rgba(77,140,255,0.08),rgba(0,212,126,0.08));border:1px solid var(--border-light);border-radius:18px;padding:30px;margin:30px 0;}
+        .summary-box__title{font-size:1.2rem;font-weight:800;margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+        .summary-list{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+        @media(max-width:600px){.summary-list{grid-template-columns:1fr;}}
+        .summary-list li{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,0.03);border-radius:10px;font-size:.88rem;font-weight:600;color:var(--text-sec);}
+        .summary-list li .check{color:var(--accent3);font-weight:900;}
+        .summary-list li strong{color:var(--text);}
+        .compare-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.85rem;}
+        .compare-table th{background:var(--border);padding:12px 16px;text-align:right;font-weight:700;color:var(--text);}
+        .compare-table td{padding:12px 16px;border-bottom:1px solid var(--border);color:var(--text-sec);font-weight:600;}
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('sidebar--open')">☰</button>
+    <aside class="sidebar">
+        <a href="index.html" class="sidebar__back">→ العودة للخطة</a>
+        <div class="sidebar__title">JOINs - ربط الجداول</div>
+        <nav class="sidebar__nav">
+            <a href="#data"><span class="nav-num">0</span> البيانات التجريبية</a>
+            <div class="sidebar__divider"></div>
+            <a href="#why-join"><span class="nav-num">1</span> ليه محتاجين JOIN؟</a>
+            <a href="#join-types"><span class="nav-num">2</span> أنواع الـ JOINs</a>
+            <a href="#alias"><span class="nav-num">3</span> Table Aliases</a>
+            <div class="sidebar__divider"></div>
+            <a href="#inner"><span class="nav-num">4</span> INNER JOIN</a>
+            <a href="#inner-where"><span class="nav-num">5</span> INNER JOIN + WHERE</a>
+            <a href="#inner-group"><span class="nav-num">6</span> INNER JOIN + GROUP BY</a>
+            <div class="sidebar__divider"></div>
+            <a href="#left"><span class="nav-num">7</span> LEFT JOIN</a>
+            <a href="#left-find-null"><span class="nav-num">8</span> إيجاد المفقودين</a>
+            <div class="sidebar__divider"></div>
+            <a href="#right"><span class="nav-num">9</span> RIGHT JOIN</a>
+            <a href="#full"><span class="nav-num">10</span> FULL OUTER JOIN</a>
+            <div class="sidebar__divider"></div>
+            <a href="#self"><span class="nav-num">11</span> SELF JOIN</a>
+            <a href="#multi"><span class="nav-num">12</span> ربط 3 جداول</a>
+            <a href="#compare"><span class="nav-num">13</span> مقارنة كل الأنواع</a>
+            <a href="#tips"><span class="nav-num">14</span> نصائح مهمة</a>
+            <div class="sidebar__divider"></div>
+            <a href="#exercises"><span class="nav-num">15</span> تمارين عملية</a>
+            <a href="#summary"><span class="nav-num">16</span> الملخص</a>
+        </nav>
+    </aside>
+
+    <main class="main">
+        <div class="hero">
+            <div class="hero__badge">🔗 اليوم الثاني - أهم موضوع</div>
+            <h1 class="hero__title">JOINs - ربط الجداول ببعض</h1>
+            <p class="hero__desc">ده أهم موضوع في SQL! في الشغل الحقيقي 90% من الـ Queries فيها JOINs. اتعلمه كويس جداً!</p>
+            <div class="hero__meta">
+                <span class="hero__meta-item">⏱️ 75 دقيقة</span>
+                <span class="hero__meta-item">🔗 16 موضوع</span>
+                <span class="hero__meta-item">💪 12 تمرين</span>
+            </div>
+        </div>
+
+        <!-- SECTION 0: Data -->
+        <div class="section" id="data">
+            <div class="section__header">
+                <div class="section__icon section__icon--blue">📋</div>
+                <h2 class="section__title">البيانات التجريبية</h2>
+            </div>
+            <div class="content-card">
+                <p>هنشتغل على 3 جداول. لو معملتهمش قبل كده:</p>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>الجداول الـ 3</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="cm">-- جدول الأقسام (4 أقسام)</span>
+<span class="kw">CREATE TABLE</span> departments (
+    dept_id   <span class="tp">NUMBER</span>(<span class="num">4</span>) <span class="kw">PRIMARY KEY</span>,
+    dept_name <span class="tp">VARCHAR2</span>(<span class="num">50</span>) <span class="kw">NOT NULL</span>,
+    location  <span class="tp">VARCHAR2</span>(<span class="num">50</span>)
+);
+<span class="kw">INSERT INTO</span> departments <span class="kw">VALUES</span> (<span class="num">10</span>, <span class="str">'المبيعات'</span>, <span class="str">'القاهرة'</span>);
+<span class="kw">INSERT INTO</span> departments <span class="kw">VALUES</span> (<span class="num">20</span>, <span class="str">'التقنية'</span>, <span class="str">'الإسكندرية'</span>);
+<span class="kw">INSERT INTO</span> departments <span class="kw">VALUES</span> (<span class="num">30</span>, <span class="str">'الموارد البشرية'</span>, <span class="str">'القاهرة'</span>);
+<span class="kw">INSERT INTO</span> departments <span class="kw">VALUES</span> (<span class="num">40</span>, <span class="str">'التسويق'</span>, <span class="str">'المنصورة'</span>);
+
+<span class="cm">-- جدول الموظفين (8 موظفين)</span>
+<span class="kw">CREATE TABLE</span> employees (
+    emp_id     <span class="tp">NUMBER</span>(<span class="num">6</span>) <span class="kw">PRIMARY KEY</span>,
+    first_name <span class="tp">VARCHAR2</span>(<span class="num">30</span>),
+    last_name  <span class="tp">VARCHAR2</span>(<span class="num">30</span>),
+    salary     <span class="tp">NUMBER</span>(<span class="num">10</span>,<span class="num">2</span>),
+    hire_date  <span class="tp">DATE</span>,
+    dept_id    <span class="tp">NUMBER</span>(<span class="num">4</span>) <span class="kw">REFERENCES</span> departments(dept_id),
+    manager_id <span class="tp">NUMBER</span>(<span class="num">6</span>)
+);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">101</span>,<span class="str">'أحمد'</span>,<span class="str">'محمد'</span>,<span class="num">8000</span>,<span class="kw">DATE</span> <span class="str">'2023-01-15'</span>,<span class="num">10</span>,<span class="kw">NULL</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">102</span>,<span class="str">'سارة'</span>,<span class="str">'علي'</span>,<span class="num">12000</span>,<span class="kw">DATE</span> <span class="str">'2022-06-01'</span>,<span class="num">20</span>,<span class="num">101</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">103</span>,<span class="str">'محمد'</span>,<span class="str">'حسن'</span>,<span class="num">6500</span>,<span class="kw">DATE</span> <span class="str">'2023-09-20'</span>,<span class="num">10</span>,<span class="num">101</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">104</span>,<span class="str">'فاطمة'</span>,<span class="str">'أحمد'</span>,<span class="num">15000</span>,<span class="kw">DATE</span> <span class="str">'2021-03-10'</span>,<span class="num">20</span>,<span class="num">101</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">105</span>,<span class="str">'عمر'</span>,<span class="str">'خالد'</span>,<span class="num">7000</span>,<span class="kw">DATE</span> <span class="str">'2024-01-05'</span>,<span class="num">30</span>,<span class="num">102</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">106</span>,<span class="str">'نور'</span>,<span class="str">'سعيد'</span>,<span class="num">9500</span>,<span class="kw">DATE</span> <span class="str">'2022-11-15'</span>,<span class="num">20</span>,<span class="num">104</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">107</span>,<span class="str">'يوسف'</span>,<span class="str">'إبراهيم'</span>,<span class="num">5500</span>,<span class="kw">DATE</span> <span class="str">'2024-03-01'</span>,<span class="num">10</span>,<span class="num">103</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">108</span>,<span class="str">'منى'</span>,<span class="str">'عبدالله'</span>,<span class="num">11000</span>,<span class="kw">DATE</span> <span class="str">'2023-07-20'</span>,<span class="kw">NULL</span>,<span class="num">101</span>);
+
+<span class="cm">-- جدول المشاريع</span>
+<span class="kw">CREATE TABLE</span> projects (
+    project_id   <span class="tp">NUMBER</span>(<span class="num">4</span>) <span class="kw">PRIMARY KEY</span>,
+    project_name <span class="tp">VARCHAR2</span>(<span class="num">60</span>),
+    dept_id      <span class="tp">NUMBER</span>(<span class="num">4</span>) <span class="kw">REFERENCES</span> departments(dept_id),
+    budget       <span class="tp">NUMBER</span>(<span class="num">12</span>,<span class="num">2</span>)
+);
+<span class="kw">INSERT INTO</span> projects <span class="kw">VALUES</span>(<span class="num">1</span>,<span class="str">'موقع التجارة الإلكترونية'</span>,<span class="num">20</span>,<span class="num">500000</span>);
+<span class="kw">INSERT INTO</span> projects <span class="kw">VALUES</span>(<span class="num">2</span>,<span class="str">'حملة التسويق الرقمي'</span>,<span class="num">40</span>,<span class="num">200000</span>);
+<span class="kw">INSERT INTO</span> projects <span class="kw">VALUES</span>(<span class="num">3</span>,<span class="str">'نظام إدارة المبيعات'</span>,<span class="num">10</span>,<span class="num">350000</span>);
+<span class="kw">INSERT INTO</span> projects <span class="kw">VALUES</span>(<span class="num">4</span>,<span class="str">'تطبيق الموبايل'</span>,<span class="num">20</span>,<span class="num">750000</span>);
+<span class="kw">COMMIT</span>;</div>
+            </div>
+
+            <div class="info-box info-box--tip">
+                <span class="info-box__icon">💡</span>
+                <span class="info-box__text">لاحظ: منى (108) مش في أي قسم (dept_id = NULL). وقسم التسويق (40) مفيش فيه موظفين. وأضفنا manager_id عشان نتعلم SELF JOIN!</span>
+            </div>
+        </div>
+
+        <!-- SECTION 1: Why JOIN -->
+        <div class="section" id="why-join">
+            <div class="section__header">
+                <div class="section__icon section__icon--purple">❓</div>
+                <h2 class="section__title">ليه محتاجين JOIN؟</h2>
+            </div>
+            <div class="content-card">
+                <p>في الـ Relational Database، البيانات متقسمة على <strong>جداول مختلفة</strong> عشان نتجنب التكرار.</p>
+                <p>جدول الموظفين فيه <code class="inline">dept_id = 20</code> بس مفيش <strong>اسم القسم</strong>. عشان نجيب اسم القسم لازم نروح لجدول الأقسام.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>المشكلة بدون JOIN</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="cm">-- ده بيعرض dept_id = 20 بس مش بيقولنا اسم القسم!</span>
+<span class="kw">SELECT</span> first_name, salary, dept_id
+<span class="kw">FROM</span> employees;
+
+<span class="cm">-- عايزين بدل dept_id = 20 يكتب "التقنية"</span>
+<span class="cm">-- الحل: JOIN!</span></div>
+            </div>
+            <div class="quote-box quote-box--blue">🎯 الـ JOIN بيربط جدولين (أو أكتر) عن طريق عمود مشترك بينهم. في حالتنا: employees.dept_id = departments.dept_id</div>
+        </div>
+
+        <!-- SECTION 2: JOIN Types Overview -->
+        <div class="section" id="join-types">
+            <div class="section__header">
+                <div class="section__icon section__icon--blue">🗂️</div>
+                <h2 class="section__title">أنواع الـ JOINs</h2>
+            </div>
+            <div class="join-type-grid">
+                <div class="join-type-card" style="border-color:var(--accent4);">
+                    <div class="join-type-card__name" style="color:var(--accent4);">INNER JOIN</div>
+                    <div class="join-type-card__desc">بس اللي ليه match في <strong>الجدولين</strong></div>
+                </div>
+                <div class="join-type-card" style="border-color:var(--accent3);">
+                    <div class="join-type-card__name" style="color:var(--accent3);">LEFT JOIN</div>
+                    <div class="join-type-card__desc"><strong>كل</strong> الشمال + المطابق من اليمين</div>
+                </div>
+                <div class="join-type-card" style="border-color:var(--accent2);">
+                    <div class="join-type-card__name" style="color:var(--accent2);">RIGHT JOIN</div>
+                    <div class="join-type-card__desc"><strong>كل</strong> اليمين + المطابق من الشمال</div>
+                </div>
+                <div class="join-type-card" style="border-color:var(--accent5);">
+                    <div class="join-type-card__name" style="color:var(--accent5);">FULL OUTER JOIN</div>
+                    <div class="join-type-card__desc"><strong>كل حاجة</strong> من الجدولين</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: Table Aliases -->
+        <div class="section" id="alias">
+            <div class="section__header">
+                <div class="section__icon section__icon--green">🏷️</div>
+                <h2 class="section__title">Table Aliases - الاختصارات</h2>
+            </div>
+            <div class="content-card">
+                <p>لما بنربط جداول، لازم نحدد كل عمود جاي من أنهي جدول. عشان منكتبش اسم الجدول كامل كل مرة، بنستخدم <strong>Alias</strong> (اختصار).</p>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>بدون Alias vs مع Alias</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="cm">-- ❌ طويل ومتعب:</span>
+<span class="kw">SELECT</span> employees.first_name, departments.dept_name
+<span class="kw">FROM</span> employees
+<span class="kw">INNER JOIN</span> departments <span class="kw">ON</span> employees.dept_id = departments.dept_id;
+
+<span class="cm">-- ✅ مع Alias (e و d):</span>
+<span class="kw">SELECT</span> e.first_name, d.dept_name
+<span class="kw">FROM</span> employees e
+<span class="kw">INNER JOIN</span> departments d <span class="kw">ON</span> e.dept_id = d.dept_id;</div>
+            </div>
+            <div class="info-box info-box--tip">
+                <span class="info-box__icon">💡</span>
+                <span class="info-box__text">العادة: e للـ employees، d للـ departments، p للـ projects. اختار أي حرف يفكرك بالجدول.</span>
+            </div>
+        </div>
+
+        <!-- SECTION 4: INNER JOIN -->
+        <div class="section" id="inner">
+            <div class="section__header">
+                <div class="section__icon section__icon--blue">🎯</div>
+                <h2 class="section__title">INNER JOIN - التقاطع</h2>
+            </div>
+            <div class="content-card">
+                <p>بيرجع <strong>بس الصفوف اللي ليها match</strong> في الجدولين. لو صف مش ليه match - مش هيظهر خالص.</p>
+            </div>
+            <div class="syntax-box">
+                <div class="syntax-box__title">📐 الصيغة</div>
+                <div class="code-block" style="margin:0;">
+                    <div class="code-block__body"><span class="kw">SELECT</span> columns
+<span class="kw">FROM</span> table1 alias1
+<span class="kw">INNER JOIN</span> table2 alias2
+    <span class="kw">ON</span> alias1.column = alias2.column;</div>
+                </div>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>كل موظف مع اسم قسمه</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="kw">SELECT</span>
+    e.emp_id,
+    e.first_name,
+    e.last_name,
+    e.salary,
+    d.dept_name,
+    d.location
+<span class="kw">FROM</span> employees e
+<span class="kw">INNER JOIN</span> departments d
+    <span class="kw">ON</span> e.dept_id = d.dept_id
+<span class="kw">ORDER BY</span> e.emp_id;</div>
+            </div>
+            <div class="table-visual">
+                <div class="table-visual__header table-visual__header--blue">📊 النتيجة - 7 صفوف فقط!</div>
+                <table>
+                    <thead><tr><th>emp_id</th><th>first_name</th><th>salary</th><th>dept_name</th><th>location</th></tr></thead>
+                    <tbody>
+                        <tr><td>101</td><td>أحمد</td><td>8,000</td><td>المبيعات</td><td>القاهرة</td></tr>
+                        <tr><td>102</td><td>سارة</td><td>12,000</td><td>التقنية</td><td>الإسكندرية</td></tr>
+                        <tr><td>103</td><td>محمد</td><td>6,500</td><td>المبيعات</td><td>القاهرة</td></tr>
+                        <tr><td>104</td><td>فاطمة</td><td>15,000</td><td>التقنية</td><td>الإسكندرية</td></tr>
+                        <tr><td>105</td><td>عمر</td><td>7,000</td><td>الموارد البشرية</td><td>القاهرة</td></tr>
+                        <tr><td>106</td><td>نور</td><td>9,500</td><td>التقنية</td><td>الإسكندرية</td></tr>
+                        <tr><td>107</td><td>يوسف</td><td>5,500</td><td>المبيعات</td><td>القاهرة</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="info-box info-box--warn">
+                <span class="info-box__icon">📌</span>
+                <span class="info-box__text"><strong>مين اختفى؟</strong> منى (108) مش ظاهرة لأن dept_id = NULL فمفيش match! وقسم التسويق (40) مش ظاهر لأن مفيش موظف فيه.</span>
+            </div>
+        </div>
+
+        <!-- SECTION 5: INNER + WHERE -->
+        <div class="section" id="inner-where">
+            <div class="section__header">
+                <div class="section__icon section__icon--blue">🔍</div>
+                <h2 class="section__title">INNER JOIN + WHERE - فلترة</h2>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>الموظفين في القاهرة بس اللي مرتبهم فوق 7000</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="kw">SELECT</span>
+    e.first_name,
+    e.salary,
+    d.dept_name,
+    d.location
+<span class="kw">FROM</span> employees e
+<span class="kw">INNER JOIN</span> departments d <span class="kw">ON</span> e.dept_id = d.dept_id
+<span class="kw">WHERE</span> d.location = <span class="str">'القاهرة'</span>
+  <span class="kw">AND</span> e.salary > <span class="num">7000</span>
+<span class="kw">ORDER BY</span> e.salary <span class="kw">DESC</span>;</div>
+            </div>
+            <div class="table-visual">
+                <div class="table-visual__header table-visual__header--green">📊 النتيجة</div>
+                <table>
+                    <thead><tr><th>first_name</th><th>salary</th><th>dept_name</th><th>location</th></tr></thead>
+                    <tbody>
+                        <tr><td>أحمد</td><td>8,000</td><td>المبيعات</td><td>القاهرة</td></tr>
+                        <tr><td>عمر</td><td>7,000</td><td>الموارد البشرية</td><td>القاهرة</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SECTION 6: INNER + GROUP BY -->
+        <div class="section" id="inner-group">
+            <div class="section__header">
+                <div class="section__icon section__icon--purple">📊</div>
+                <h2 class="section__title">INNER JOIN + GROUP BY - تقارير</h2>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>تقرير: اسم كل قسم وعدد موظفينه ومتوسط مرتبه</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="kw">SELECT</span>
+    d.dept_name,
+    <span class="fn">COUNT</span>(e.emp_id)       <span class="kw">AS</span> emp_count,
+    <span class="fn">SUM</span>(e.salary)          <span class="kw">AS</span> total_salary,
+    <span class="fn">ROUND</span>(<span class="fn">AVG</span>(e.salary))  <span class="kw">AS</span> avg_salary,
+    <span class="fn">MAX</span>(e.salary)          <span class="kw">AS</span> max_salary
+<span class="kw">FROM</span> employees e
+<span class="kw">INNER JOIN</span> departments d <span class="kw">ON</span> e.dept_id = d.dept_id
+<span class="kw">GROUP BY</span> d.dept_name
+<span class="kw">ORDER BY</span> total_salary <span class="kw">DESC</span>;</div>
+            </div>
+            <div class="table-visual">
+                <div class="table-visual__header table-visual__header--purple">📊 النتيجة</div>
+                <table>
+                    <thead><tr><th>dept_name</th><th>emp_count</th><th>total</th><th>avg</th><th>max</th></tr></thead>
+                    <tbody>
+                        <tr><td>التقنية</td><td>3</td><td>36,500</td><td>12,167</td><td>15,000</td></tr>
+                        <tr><td>المبيعات</td><td>3</td><td>20,000</td><td>6,667</td><td>8,000</td></tr>
+                        <tr><td>الموارد البشرية</td><td>1</td><td>7,000</td><td>7,000</td><td>7,000</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="quote-box quote-box--purple">🎯 JOIN + GROUP BY هي أقوى تركيبة في SQL! بتقدر تعمل بيها أي تقرير تحتاجه.</div>
+        </div>
+
+        <!-- SECTION 7: LEFT JOIN -->
+        <div class="section" id="left">
+            <div class="section__header">
+                <div class="section__icon section__icon--green">⬅️</div>
+                <h2 class="section__title">LEFT JOIN - كل الشمال</h2>
+            </div>
+            <div class="content-card">
+                <p>بيرجع <strong>كل صفوف الجدول الأول (الشمال)</strong> + البيانات المطابقة من الجدول التاني. لو مفيش match بيحط <strong>NULL</strong>.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>كل الموظفين - حتى اللي مش في قسم</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="kw">SELECT</span>
+    e.emp_id,
+    e.first_name,
+    e.salary,
+    d.dept_name,
+    d.location
+<span class="kw">FROM</span> employees e
+<span class="kw">LEFT JOIN</span> departments d
+    <span class="kw">ON</span> e.dept_id = d.dept_id
+<span class="kw">ORDER BY</span> e.emp_id;</div>
+            </div>
+            <div class="table-visual">
+                <div class="table-visual__header table-visual__header--green">📊 النتيجة - 8 صفوف (منى ظهرت!)</div>
+                <table>
+                    <thead><tr><th>emp_id</th><th>first_name</th><th>salary</th><th>dept_name</th><th>location</th></tr></thead>
+                    <tbody>
+                        <tr><td>101</td><td>أحمد</td><td>8,000</td><td>المبيعات</td><td>القاهرة</td></tr>
+                        <tr><td>102</td><td>سارة</td><td>12,000</td><td>التقنية</td><td>الإسكندرية</td></tr>
+                        <tr><td>103</td><td>محمد</td><td>6,500</td><td>المبيعات</td><td>القاهرة</td></tr>
+                        <tr><td>104</td><td>فاطمة</td><td>15,000</td><td>التقنية</td><td>الإسكندرية</td></tr>
+                        <tr><td>105</td><td>عمر</td><td>7,000</td><td>الموارد البشرية</td><td>القاهرة</td></tr>
+                        <tr><td>106</td><td>نور</td><td>9,500</td><td>التقنية</td><td>الإسكندرية</td></tr>
+                        <tr><td>107</td><td>يوسف</td><td>5,500</td><td>المبيعات</td><td>القاهرة</td></tr>
+                        <tr class="row-null"><td>108</td><td>منى</td><td>11,000</td><td>NULL</td><td>NULL</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="info-box info-box--success">
+                <span class="info-box__icon">✅</span>
+                <span class="info-box__text">منى ظهرت! بس dept_name و location = NULL لأنها مش مرتبطة بأي قسم.</span>
+            </div>
+        </div>
+
+        <!-- SECTION 8: Find Missing -->
+        <div class="section" id="left-find-null">
+            <div class="section__header">
+                <div class="section__icon section__icon--red">🔎</div>
+                <h2 class="section__title">إيجاد البيانات المفقودة</h2>
+            </div>
+            <div class="content-card">
+                <p>من أهم استخدامات LEFT JOIN: <strong>إيجاد الصفوف اللي مالهاش match</strong>. بنعمل LEFT JOIN وبعدين WHERE ... IS NULL.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>الموظفين اللي مش في أي قسم</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="kw">SELECT</span> e.first_name, e.last_name, e.salary
+<span class="kw">FROM</span> employees e
+<span class="kw">LEFT JOIN</span> departments d <span class="kw">ON</span> e.dept_id = d.dept_id
+<span class="kw">WHERE</span> d.dept_id <span class="kw">IS NULL</span>;
+<span class="cm">-- النتيجة: منى عبدالله - 11000</span></div>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>الأقسام اللي مفيهاش موظفين</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="cm">-- لاحظ: هنا departments على الشمال!</span>
+<span class="kw">SELECT</span> d.dept_name, d.location
+<span class="kw">FROM</span> departments d
+<span class="kw">LEFT JOIN</span> employees e <span class="kw">ON</span> d.dept_id = e.dept_id
+<span class="kw">WHERE</span> e.emp_id <span class="kw">IS NULL</span>;
+<span class="cm">-- النتيجة: التسويق - المنصورة</span></div>
+            </div>
+            <div class="quote-box quote-box--green">🎯 ده Pattern مهم جداً في الشغل: LEFT JOIN + WHERE IS NULL = إيجاد المفقودين!</div>
+        </div>
+
+        <!-- SECTION 9: RIGHT JOIN -->
+        <div class="section" id="right">
+            <div class="section__header">
+                <div class="section__icon section__icon--orange">➡️</div>
+                <h2 class="section__title">RIGHT JOIN - كل اليمين</h2>
+            </div>
+            <div class="content-card">
+                <p>عكس LEFT JOIN بالظبط. بيرجع <strong>كل صفوف الجدول التاني (اليمين)</strong> + المطابق من الأول.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>كل الأقسام حتى اللي فاضية</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="kw">SELECT</span>
+    e.first_name,
+    e.salary,
+    d.dept_name,
+    d.location
+<span class="kw">FROM</span> employees e
+<span class="kw">RIGHT JOIN</span> departments d
+    <span class="kw">ON</span> e.dept_id = d.dept_id
+<span class="kw">ORDER BY</span> d.dept_id;</div>
+            </div>
+            <div class="table-visual">
+                <div class="table-visual__header table-visual__header--orange">📊 النتيجة - قسم التسويق ظهر!</div>
+                <table>
+                    <thead><tr><th>first_name</th><th>salary</th><th>dept_name</th><th>location</th></tr></thead>
+                    <tbody>
+                        <tr><td>أحمد</td><td>8,000</td><td>المبيعات</td><td>القاهرة</td></tr>
+                        <tr><td>محمد</td><td>6,500</td><td>المبيعات</td><td>القاهرة</td></tr>
+                        <tr><td>يوسف</td><td>5,500</td><td>المبيعات</td><td>القاهرة</td></tr>
+                        <tr><td>سارة</td><td>12,000</td><td>التقنية</td><td>الإسكندرية</td></tr>
+                        <tr><td>فاطمة</td><td>15,000</td><td>التقنية</td><td>الإسكندرية</td></tr>
+                        <tr><td>نور</td><td>9,500</td><td>التقنية</td><td>الإسكندرية</td></tr>
+                        <tr><td>عمر</td><td>7,000</td><td>الموارد البشرية</td><td>القاهرة</td></tr>
+                        <tr class="row-null"><td>NULL</td><td>NULL</td><td>التسويق</td><td>المنصورة</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="info-box info-box--tip">
+                <span class="info-box__icon">💡</span>
+                <span class="info-box__text">في الواقع أغلب المبرمجين بيستخدموا LEFT JOIN وبيغيروا ترتيب الجداول بدل RIGHT JOIN. النتيجة واحدة!</span>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>RIGHT JOIN = LEFT JOIN بترتيب معكوس</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="cm">-- الاتنين دول بيدوا نفس النتيجة بالظبط:</span>
+
+<span class="cm">-- RIGHT JOIN:</span>
+<span class="kw">SELECT</span> e.first_name, d.dept_name
+<span class="kw">FROM</span> employees e
+<span class="kw">RIGHT JOIN</span> departments d <span class="kw">ON</span> e.dept_id = d.dept_id;
+
+<span class="cm">-- LEFT JOIN (ترتيب معكوس):</span>
+<span class="kw">SELECT</span> e.first_name, d.dept_name
+<span class="kw">FROM</span> departments d
+<span class="kw">LEFT JOIN</span> employees e <span class="kw">ON</span> d.dept_id = e.dept_id;</div>
+            </div>
+        </div>
+
+        <!-- SECTION 10: FULL OUTER JOIN -->
+        <div class="section" id="full">
+            <div class="section__header">
+                <div class="section__icon section__icon--purple">🔄</div>
+                <h2 class="section__title">FULL OUTER JOIN - كل حاجة</h2>
+            </div>
+            <div class="content-card">
+                <p>بيرجع <strong>كل الصفوف من الجدولين</strong>. اللي ليه match بيظهر كامل، واللي مالوش match بيظهر مع NULL.</p>
+                <p>كأنك عملت LEFT JOIN + RIGHT JOIN في نفس الوقت!</p>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>كل الموظفين وكل الأقسام</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="kw">SELECT</span>
+    e.first_name,
+    e.salary,
+    d.dept_name,
+    d.location
+<span class="kw">FROM</span> employees e
+<span class="kw">FULL OUTER JOIN</span> departments d
+    <span class="kw">ON</span> e.dept_id = d.dept_id
+<span class="kw">ORDER BY</span> e.emp_id;</div>
+            </div>
+            <div class="table-visual">
+                <div class="table-visual__header table-visual__header--purple">📊 النتيجة - الكل ظاهر!</div>
+                <table>
+                    <thead><tr><th>first_name</th><th>salary</th><th>dept_name</th><th>location</th></tr></thead>
+                    <tbody>
+                        <tr><td>أحمد</td><td>8,000</td><td>المبيعات</td><td>القاهرة</td></tr>
+                        <tr><td>سارة</td><td>12,000</td><td>التقنية</td><td>الإسكندرية</td></tr>
+                        <tr><td>محمد</td><td>6,500</td><td>المبيعات</td><td>القاهرة</td></tr>
+                        <tr><td>فاطمة</td><td>15,000</td><td>التقنية</td><td>الإسكندرية</td></tr>
+                        <tr><td>عمر</td><td>7,000</td><td>الموارد البشرية</td><td>القاهرة</td></tr>
+                        <tr><td>نور</td><td>9,500</td><td>التقنية</td><td>الإسكندرية</td></tr>
+                        <tr><td>يوسف</td><td>5,500</td><td>المبيعات</td><td>القاهرة</td></tr>
+                        <tr class="row-null"><td>منى</td><td>11,000</td><td>NULL</td><td>NULL</td></tr>
+                        <tr class="row-null"><td>NULL</td><td>NULL</td><td>التسويق</td><td>المنصورة</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="info-box info-box--success">
+                <span class="info-box__icon">✅</span>
+                <span class="info-box__text">منى ظهرت (مفيش قسم) + التسويق ظهر (مفيش موظفين). الكل ظاهر!</span>
+            </div>
+        </div>
+
+        <!-- SECTION 11: SELF JOIN -->
+        <div class="section" id="self">
+            <div class="section__header">
+                <div class="section__icon section__icon--red">🪞</div>
+                <h2 class="section__title">SELF JOIN - ربط الجدول بنفسه</h2>
+            </div>
+            <div class="content-card">
+                <p>أحياناً بنحتاج نربط الجدول <strong>بنفسه</strong>! مثلاً: كل موظف عنده <code class="inline">manager_id</code> - ده emp_id للمدير بتاعه <strong>في نفس الجدول</strong>.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>كل موظف مع اسم مديره</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="kw">SELECT</span>
+    e.first_name   <span class="kw">AS</span> employee_name,
+    e.salary       <span class="kw">AS</span> employee_salary,
+    m.first_name   <span class="kw">AS</span> manager_name
+<span class="kw">FROM</span> employees e
+<span class="kw">LEFT JOIN</span> employees m    <span class="cm">-- نفس الجدول!</span>
+    <span class="kw">ON</span> e.manager_id = m.emp_id
+<span class="kw">ORDER BY</span> e.emp_id;</div>
+            </div>
+            <div class="table-visual">
+                <div class="table-visual__header table-visual__header--red">📊 النتيجة</div>
+                <table>
+                    <thead><tr><th>employee_name</th><th>employee_salary</th><th>manager_name</th></tr></thead>
+                    <tbody>
+                        <tr><td>أحمد</td><td>8,000</td><td>NULL (مفيش مدير - هو المدير العام)</td></tr>
+                        <tr><td>سارة</td><td>12,000</td><td>أحمد</td></tr>
+                        <tr><td>محمد</td><td>6,500</td><td>أحمد</td></tr>
+                        <tr><td>فاطمة</td><td>15,000</td><td>أحمد</td></tr>
+                        <tr><td>عمر</td><td>7,000</td><td>سارة</td></tr>
+                        <tr><td>نور</td><td>9,500</td><td>فاطمة</td></tr>
+                        <tr><td>يوسف</td><td>5,500</td><td>محمد</td></tr>
+                        <tr><td>منى</td><td>11,000</td><td>أحمد</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="info-box info-box--tip">
+                <span class="info-box__icon">💡</span>
+                <span class="info-box__text">استخدمنا LEFT JOIN عشان أحمد (المدير العام) manager_id = NULL يظهر برضو.</span>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>الموظفين اللي مرتبهم أكتر من مديرهم!</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="kw">SELECT</span>
+    e.first_name  <span class="kw">AS</span> employee,
+    e.salary      <span class="kw">AS</span> emp_salary,
+    m.first_name  <span class="kw">AS</span> manager,
+    m.salary      <span class="kw">AS</span> mgr_salary
+<span class="kw">FROM</span> employees e
+<span class="kw">INNER JOIN</span> employees m <span class="kw">ON</span> e.manager_id = m.emp_id
+<span class="kw">WHERE</span> e.salary > m.salary;</div>
+            </div>
+        </div>
+
+        <!-- SECTION 12: Multi-table JOIN -->
+        <div class="section" id="multi">
+            <div class="section__header">
+                <div class="section__icon section__icon--green">🔗</div>
+                <h2 class="section__title">ربط 3 جداول أو أكتر</h2>
+            </div>
+            <div class="content-card">
+                <p>ممكن تضيف JOIN تاني وتالت في نفس الـ Query. كل JOIN بيربط جدول إضافي.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-block__header"><span>الموظفين + الأقسام + المشاريع</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="kw">SELECT</span>
+    e.first_name,
+    d.dept_name,
+    p.project_name,
+    p.budget
+<span class="kw">FROM</span> employees e
+<span class="kw">INNER JOIN</span> departments d <span class="kw">ON</span> e.dept_id = d.dept_id
+<span class="kw">INNER JOIN</span> projects p    <span class="kw">ON</span> d.dept_id = p.dept_id
+<span class="kw">ORDER BY</span> d.dept_name, e.first_name;</div>
+            </div>
+            <div class="table-visual">
+                <div class="table-visual__header table-visual__header--green">📊 النتيجة</div>
+                <table>
+                    <thead><tr><th>first_name</th><th>dept_name</th><th>project_name</th><th>budget</th></tr></thead>
+                    <tbody>
+                        <tr><td>أحمد</td><td>المبيعات</td><td>نظام إدارة المبيعات</td><td>350,000</td></tr>
+                        <tr><td>محمد</td><td>المبيعات</td><td>نظام إدارة المبيعات</td><td>350,000</td></tr>
+                        <tr><td>يوسف</td><td>المبيعات</td><td>نظام إدارة المبيعات</td><td>350,000</td></tr>
+                        <tr><td>سارة</td><td>التقنية</td><td>موقع التجارة الإلكترونية</td><td>500,000</td></tr>
+                        <tr><td>سارة</td><td>التقنية</td><td>تطبيق الموبايل</td><td>750,000</td></tr>
+                        <tr><td>فاطمة</td><td>التقنية</td><td>موقع التجارة الإلكترونية</td><td>500,000</td></tr>
+                        <tr><td>فاطمة</td><td>التقنية</td><td>تطبيق الموبايل</td><td>750,000</td></tr>
+                        <tr><td>نور</td><td>التقنية</td><td>موقع التجارة الإلكترونية</td><td>500,000</td></tr>
+                        <tr><td>نور</td><td>التقنية</td><td>تطبيق الموبايل</td><td>750,000</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="info-box info-box--warn">
+                <span class="info-box__icon">📌</span>
+                <span class="info-box__text">لاحظ: سارة وفاطمة ونور ظهروا مرتين لأن قسم التقنية عنده مشروعين! ده طبيعي ومتوقع.</span>
+            </div>
+        </div>
+
+        <!-- SECTION 13: Compare All -->
+        <div class="section" id="compare">
+            <div class="section__header">
+                <div class="section__icon section__icon--orange">📊</div>
+                <h2 class="section__title">مقارنة كل الأنواع</h2>
+            </div>
+            <div class="table-visual">
+                <div class="table-visual__header table-visual__header--orange">📊 الفرق بين كل نوع JOIN</div>
+                <table>
+                    <thead><tr><th>النوع</th><th>بيرجع إيه؟</th><th>منى (بدون قسم)</th><th>التسويق (فاضي)</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong style="color:var(--accent4)">INNER JOIN</strong></td><td>المتطابقين بس</td><td>❌ مش ظاهرة</td><td>❌ مش ظاهر</td></tr>
+                        <tr><td><strong style="color:var(--accent3)">LEFT JOIN</strong></td><td>كل الشمال + match</td><td>✅ ظاهرة (مع NULL)</td><td>❌ مش ظاهر</td></tr>
+                        <tr><td><strong style="color:var(--accent2)">RIGHT JOIN</strong></td><td>كل اليمين + match</td><td>❌ مش ظاهرة</td><td>✅ ظاهر (مع NULL)</td></tr>
+                        <tr><td><strong style="color:var(--accent5)">FULL OUTER</strong></td><td>كل حاجة</td><td>✅ ظاهرة</td><td>✅ ظاهر</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SECTION 14: Tips -->
+        <div class="section" id="tips">
+            <div class="section__header">
+                <div class="section__icon section__icon--green">💡</div>
+                <h2 class="section__title">نصائح مهمة</h2>
+            </div>
+            <div class="content-card">
+                <div class="content-card__title">🎯 قواعد ذهبية للـ JOINs</div>
+                <ul>
+                    <li><strong>دايماً استخدم Aliases</strong> (e, d, p) عشان الكود يبقى نضيف ومقروء</li>
+                    <li><strong>حدد الأعمدة</strong> بالاسم - متستخدمش SELECT * مع JOINs</li>
+                    <li><strong>لو فيه عمود بنفس الاسم</strong> في الجدولين لازم تحدد الـ alias (مثلاً e.dept_id مش dept_id لوحدها)</li>
+                    <li><strong>INNER JOIN</strong> هو الافتراضي - لو كتبت JOIN بدون inner هيعتبرها INNER</li>
+                    <li><strong>LEFT JOIN</strong> هو الأكثر استخداماً في الشغل الحقيقي</li>
+                    <li><strong>الترتيب مهم:</strong> في LEFT JOIN، الجدول الشمال هو اللي كل صفوفه هتظهر</li>
+                </ul>
+            </div>
+            <div class="quote-box quote-box--blue">🏆 نصيحة أخيرة: لو مش متأكد تستخدم أنهي JOIN، ابدأ بـ INNER JOIN وشوف النتيجة. لو ناقص حاجة، جرب LEFT JOIN.</div>
+        </div>
+
+        <!-- SECTION 15: Exercises -->
+        <div class="section" id="exercises">
+            <div class="section__header">
+                <div class="section__icon section__icon--green">💪</div>
+                <h2 class="section__title">تمارين عملية</h2>
+            </div>
+
+            <div class="exercise-card"><div class="exercise-card__head" onclick="toggleExercise(1)"><span class="exercise-card__title"><span class="badge badge--green">سهل</span> 1: INNER JOIN أساسي</span><span class="exercise-card__arrow" id="arrow-1">◀</span></div><div class="exercise-card__body" id="ex-1"><p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض اسم كل موظف واسم قسمه ومكان القسم.</p><button class="solution-btn" onclick="toggleSolution(1)">إظهار الحل</button><div class="solution-content" id="sol-1"><div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span> e.first_name, e.last_name, d.dept_name, d.location
+<span class="kw">FROM</span> employees e
+<span class="kw">INNER JOIN</span> departments d <span class="kw">ON</span> e.dept_id = d.dept_id;</div></div></div></div></div>
+
+            <div class="exercise-card"><div class="exercise-card__head" onclick="toggleExercise(2)"><span class="exercise-card__title"><span class="badge badge--green">سهل</span> 2: INNER JOIN + WHERE</span><span class="exercise-card__arrow" id="arrow-2">◀</span></div><div class="exercise-card__body" id="ex-2"><p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض موظفين قسم التقنية بس مع مرتباتهم. رتب تنازلياً.</p><button class="solution-btn" onclick="toggleSolution(2)">إظهار الحل</button><div class="solution-content" id="sol-2"><div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span> e.first_name, e.salary, d.dept_name
+<span class="kw">FROM</span> employees e
+<span class="kw">INNER JOIN</span> departments d <span class="kw">ON</span> e.dept_id = d.dept_id
+<span class="kw">WHERE</span> d.dept_name = <span class="str">'التقنية'</span>
+<span class="kw">ORDER BY</span> e.salary <span class="kw">DESC</span>;</div></div></div></div></div>
+
+            <div class="exercise-card"><div class="exercise-card__head" onclick="toggleExercise(3)"><span class="exercise-card__title"><span class="badge badge--green">سهل</span> 3: LEFT JOIN</span><span class="exercise-card__arrow" id="arrow-3">◀</span></div><div class="exercise-card__body" id="ex-3"><p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض كل الموظفين مع اسم قسمهم (حتى اللي مش في قسم).</p><button class="solution-btn" onclick="toggleSolution(3)">إظهار الحل</button><div class="solution-content" id="sol-3"><div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span> e.first_name, e.salary, d.dept_name
+<span class="kw">FROM</span> employees e
+<span class="kw">LEFT JOIN</span> departments d <span class="kw">ON</span> e.dept_id = d.dept_id;</div></div></div></div></div>
+
+            <div class="exercise-card"><div class="exercise-card__head" onclick="toggleExercise(4)"><span class="exercise-card__title"><span class="badge badge--orange">متوسط</span> 4: إيجاد المفقودين</span><span class="exercise-card__arrow" id="arrow-4">◀</span></div><div class="exercise-card__body" id="ex-4"><p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض الأقسام اللي مفيهاش أي موظف.</p><button class="solution-btn" onclick="toggleSolution(4)">إظهار الحل</button><div class="solution-content" id="sol-4"><div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span> d.dept_name, d.location
+<span class="kw">FROM</span> departments d
+<span class="kw">LEFT JOIN</span> employees e <span class="kw">ON</span> d.dept_id = e.dept_id
+<span class="kw">WHERE</span> e.emp_id <span class="kw">IS NULL</span>;</div></div></div></div></div>
+
+            <div class="exercise-card"><div class="exercise-card__head" onclick="toggleExercise(5)"><span class="exercise-card__title"><span class="badge badge--orange">متوسط</span> 5: JOIN + GROUP BY</span><span class="exercise-card__arrow" id="arrow-5">◀</span></div><div class="exercise-card__body" id="ex-5"><p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض اسم كل قسم وعدد الموظفين فيه ومتوسط مرتبه (حتى الأقسام الفاضية).</p><button class="solution-btn" onclick="toggleSolution(5)">إظهار الحل</button><div class="solution-content" id="sol-5"><div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span>
+    d.dept_name,
+    <span class="fn">COUNT</span>(e.emp_id) <span class="kw">AS</span> emp_count,
+    <span class="fn">ROUND</span>(<span class="fn">AVG</span>(e.salary)) <span class="kw">AS</span> avg_salary
+<span class="kw">FROM</span> departments d
+<span class="kw">LEFT JOIN</span> employees e <span class="kw">ON</span> d.dept_id = e.dept_id
+<span class="kw">GROUP BY</span> d.dept_name
+<span class="kw">ORDER BY</span> emp_count <span class="kw">DESC</span>;</div></div></div></div></div>
+
+            <div class="exercise-card"><div class="exercise-card__head" onclick="toggleExercise(6)"><span class="exercise-card__title"><span class="badge badge--orange">متوسط</span> 6: JOIN + HAVING</span><span class="exercise-card__arrow" id="arrow-6">◀</span></div><div class="exercise-card__body" id="ex-6"><p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض الأقسام اللي فيها أكتر من 2 موظف ومتوسط مرتبهم.</p><button class="solution-btn" onclick="toggleSolution(6)">إظهار الحل</button><div class="solution-content" id="sol-6"><div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span>
+    d.dept_name,
+    <span class="fn">COUNT</span>(e.emp_id) <span class="kw">AS</span> emp_count,
+    <span class="fn">ROUND</span>(<span class="fn">AVG</span>(e.salary)) <span class="kw">AS</span> avg_salary
+<span class="kw">FROM</span> departments d
+<span class="kw">INNER JOIN</span> employees e <span class="kw">ON</span> d.dept_id = e.dept_id
+<span class="kw">GROUP BY</span> d.dept_name
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(e.emp_id) > <span class="num">2</span>;</div></div></div></div></div>
+
+            <div class="exercise-card"><div class="exercise-card__head" onclick="toggleExercise(7)"><span class="exercise-card__title"><span class="badge badge--orange">متوسط</span> 7: SELF JOIN</span><span class="exercise-card__arrow" id="arrow-7">◀</span></div><div class="exercise-card__body" id="ex-7"><p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض اسم كل موظف واسم مديره. اعرض "المدير العام" بدل NULL.</p><button class="solution-btn" onclick="toggleSolution(7)">إظهار الحل</button><div class="solution-content" id="sol-7"><div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span>
+    e.first_name <span class="kw">AS</span> employee,
+    <span class="fn">NVL</span>(m.first_name, <span class="str">'المدير العام'</span>) <span class="kw">AS</span> manager
+<span class="kw">FROM</span> employees e
+<span class="kw">LEFT JOIN</span> employees m <span class="kw">ON</span> e.manager_id = m.emp_id;</div></div></div></div></div>
+
+            <div class="exercise-card"><div class="exercise-card__head" onclick="toggleExercise(8)"><span class="exercise-card__title"><span class="badge badge--red">صعب</span> 8: 3 جداول</span><span class="exercise-card__arrow" id="arrow-8">◀</span></div><div class="exercise-card__body" id="ex-8"><p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض اسم كل مشروع واسم القسم وعدد الموظفين في القسم ده.</p><button class="solution-btn" onclick="toggleSolution(8)">إظهار الحل</button><div class="solution-content" id="sol-8"><div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span>
+    p.project_name,
+    d.dept_name,
+    <span class="fn">COUNT</span>(e.emp_id) <span class="kw">AS</span> emp_count
+<span class="kw">FROM</span> projects p
+<span class="kw">INNER JOIN</span> departments d <span class="kw">ON</span> p.dept_id = d.dept_id
+<span class="kw">LEFT JOIN</span> employees e <span class="kw">ON</span> d.dept_id = e.dept_id
+<span class="kw">GROUP BY</span> p.project_name, d.dept_name
+<span class="kw">ORDER BY</span> emp_count <span class="kw">DESC</span>;</div></div></div></div></div>
+
+            <div class="exercise-card"><div class="exercise-card__head" onclick="toggleExercise(9)"><span class="exercise-card__title"><span class="badge badge--red">صعب</span> 9: FULL OUTER</span><span class="exercise-card__arrow" id="arrow-9">◀</span></div><div class="exercise-card__body" id="ex-9"><p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض كل الموظفين وكل الأقسام. استخدم NVL عشان تعرض "بدون قسم" و"قسم فاضي" بدل NULL.</p><button class="solution-btn" onclick="toggleSolution(9)">إظهار الحل</button><div class="solution-content" id="sol-9"><div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span>
+    <span class="fn">NVL</span>(e.first_name, <span class="str">'--- قسم فاضي ---'</span>) <span class="kw">AS</span> employee,
+    <span class="fn">NVL</span>(d.dept_name, <span class="str">'بدون قسم'</span>)        <span class="kw">AS</span> department
+<span class="kw">FROM</span> employees e
+<span class="kw">FULL OUTER JOIN</span> departments d <span class="kw">ON</span> e.dept_id = d.dept_id;</div></div></div></div></div>
+
+            <div class="exercise-card"><div class="exercise-card__head" onclick="toggleExercise(10)"><span class="exercise-card__title"><span class="badge badge--red">صعب</span> 10: الموظفين أغنى من مديرهم</span><span class="exercise-card__arrow" id="arrow-10">◀</span></div><div class="exercise-card__body" id="ex-10"><p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض الموظفين اللي مرتبهم أعلى من مرتب مديرهم. اعرض اسم الموظف ومرتبه واسم المدير ومرتبه.</p><button class="solution-btn" onclick="toggleSolution(10)">إظهار الحل</button><div class="solution-content" id="sol-10"><div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span>
+    e.first_name  <span class="kw">AS</span> employee,
+    e.salary      <span class="kw">AS</span> emp_salary,
+    m.first_name  <span class="kw">AS</span> manager,
+    m.salary      <span class="kw">AS</span> mgr_salary,
+    e.salary - m.salary <span class="kw">AS</span> difference
+<span class="kw">FROM</span> employees e
+<span class="kw">INNER JOIN</span> employees m <span class="kw">ON</span> e.manager_id = m.emp_id
+<span class="kw">WHERE</span> e.salary > m.salary
+<span class="kw">ORDER BY</span> difference <span class="kw">DESC</span>;</div></div></div></div></div>
+
+            <div class="exercise-card"><div class="exercise-card__head" onclick="toggleExercise(11)"><span class="exercise-card__title"><span class="badge badge--purple">تحدي</span> 11: تقرير شامل</span><span class="exercise-card__arrow" id="arrow-11">◀</span></div><div class="exercise-card__body" id="ex-11"><p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض تقرير فيه: اسم القسم، المكان، عدد الموظفين، إجمالي المرتبات، عدد المشاريع. للأقسام اللي فيها أكتر من موظف.</p><button class="solution-btn" onclick="toggleSolution(11)">إظهار الحل</button><div class="solution-content" id="sol-11"><div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span>
+    d.dept_name,
+    d.location,
+    <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> e.emp_id) <span class="kw">AS</span> emp_count,
+    <span class="fn">SUM</span>(<span class="kw">DISTINCT</span> e.salary)  <span class="kw">AS</span> total_salary,
+    <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> p.project_id) <span class="kw">AS</span> project_count
+<span class="kw">FROM</span> departments d
+<span class="kw">INNER JOIN</span> employees e <span class="kw">ON</span> d.dept_id = e.dept_id
+<span class="kw">LEFT JOIN</span> projects p   <span class="kw">ON</span> d.dept_id = p.dept_id
+<span class="kw">GROUP BY</span> d.dept_name, d.location
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> e.emp_id) > <span class="num">1</span>
+<span class="kw">ORDER BY</span> total_salary <span class="kw">DESC</span>;</div></div></div></div></div>
+
+            <div class="exercise-card"><div class="exercise-card__head" onclick="toggleExercise(12)"><span class="exercise-card__title"><span class="badge badge--purple">تحدي</span> 12: التحدي النهائي</span><span class="exercise-card__arrow" id="arrow-12">◀</span></div><div class="exercise-card__body" id="ex-12"><p style="color:var(--text-sec);font-weight:600;margin-bottom:14px;">اعرض تقرير لكل موظف فيه: اسمه، مرتبه، اسم قسمه، مكان القسم، اسم مديره، مرتب مديره. حتى لو الموظف مش في قسم أو مالوش مدير. رتب حسب المرتب تنازلياً.</p><button class="solution-btn" onclick="toggleSolution(12)">إظهار الحل</button><div class="solution-content" id="sol-12"><div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span>
+    e.first_name                       <span class="kw">AS</span> employee,
+    e.salary                           <span class="kw">AS</span> salary,
+    <span class="fn">NVL</span>(d.dept_name, <span class="str">'بدون قسم'</span>)     <span class="kw">AS</span> department,
+    <span class="fn">NVL</span>(d.location, <span class="str">'-'</span>)               <span class="kw">AS</span> location,
+    <span class="fn">NVL</span>(m.first_name, <span class="str">'المدير العام'</span>) <span class="kw">AS</span> manager,
+    m.salary                           <span class="kw">AS</span> manager_salary
+<span class="kw">FROM</span> employees e
+<span class="kw">LEFT JOIN</span> departments d <span class="kw">ON</span> e.dept_id = d.dept_id
+<span class="kw">LEFT JOIN</span> employees m   <span class="kw">ON</span> e.manager_id = m.emp_id
+<span class="kw">ORDER BY</span> e.salary <span class="kw">DESC</span>;</div></div></div></div></div>
+        </div>
+
+        <!-- SECTION 16: Summary -->
+        <div class="section" id="summary">
+            <div class="section__header">
+                <div class="section__icon section__icon--purple">🏆</div>
+                <h2 class="section__title">ملخص الدرس</h2>
+            </div>
+            <div class="summary-box">
+                <div class="summary-box__title">✅ اللي اتعلمناه</div>
+                <ul class="summary-list">
+                    <li><span class="check">✓</span> <strong>INNER JOIN</strong> - المتطابقين بس</li>
+                    <li><span class="check">✓</span> <strong>LEFT JOIN</strong> - كل الشمال + match</li>
+                    <li><span class="check">✓</span> <strong>RIGHT JOIN</strong> - كل اليمين + match</li>
+                    <li><span class="check">✓</span> <strong>FULL OUTER</strong> - الكل</li>
+                    <li><span class="check">✓</span> <strong>SELF JOIN</strong> - الجدول بنفسه</li>
+                    <li><span class="check">✓</span> <strong>Multi-table</strong> - 3 جداول+</li>
+                    <li><span class="check">✓</span> <strong>JOIN + GROUP BY</strong> - تقارير</li>
+                    <li><span class="check">✓</span> <strong>Find NULL</strong> - إيجاد المفقودين</li>
+                </ul>
+            </div>
+            <div class="quote-box quote-box--green">🎉 مبروك! دلوقتي فاهم أهم موضوع في SQL. الـ JOINs هي أساس أي Query حقيقي في الشغل!</div>
+        </div>
+    </main>
+
+    <script>
+        function toggleExercise(n){const b=document.getElementById('ex-'+n);const a=document.getElementById('arrow-'+n);b.classList.toggle('exercise-card__body--open');a.classList.toggle('exercise-card__arrow--open');}
+        function toggleSolution(n){document.getElementById('sol-'+n).classList.toggle('solution-content--open');}
+        const sections=document.querySelectorAll('.section');const navLinks=document.querySelectorAll('.sidebar__nav a');
+        window.addEventListener('scroll',()=>{let c='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-100)c=s.getAttribute('id');});navLinks.forEach(a=>{a.classList.remove('active');if(a.getAttribute('href')==='#'+c)a.classList.add('active');});});
+    </script>
+</body>
+</html>

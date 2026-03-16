@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conditional Formatting و Data Validation و Named Ranges - اليوم الخامس</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root{--bg:#06060f;--bg-card:#0d0d1f;--bg-code:#0a0a1a;--border:#1a1a3e;--text:#e2e2f0;--text-dim:#8888aa;--accent:#ff8c00;--accent2:#ff4d4d;--accent3:#00d47e;--accent4:#4d8cff;--accent5:#a855f7;--glow:0 0 30px rgba(255,140,0,0.15)}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);line-height:1.8;min-height:100vh}
+        .sidebar{position:fixed;top:0;right:0;width:300px;height:100vh;background:var(--bg-card);border-left:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:100;transition:transform .3s}
+        .sidebar-header{padding:0 24px 20px;border-bottom:1px solid var(--border);margin-bottom:16px}
+        .sidebar-header h3{font-size:1rem;color:var(--accent);margin-bottom:4px}
+        .sidebar-header p{font-size:.8rem;color:var(--text-dim)}
+        .sidebar-nav a{display:flex;align-items:center;gap:10px;padding:10px 24px;color:var(--text-dim);text-decoration:none;font-size:.85rem;transition:all .2s;border-right:3px solid transparent}
+        .sidebar-nav a:hover,.sidebar-nav a.active{color:var(--text);background:rgba(255,140,0,.05);border-right-color:var(--accent)}
+        .sidebar-nav .num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--border);font-size:.7rem;font-weight:700;color:var(--accent);flex-shrink:0}
+        .sidebar-toggle{display:none;position:fixed;top:20px;right:20px;z-index:200;background:var(--accent);border:none;color:#fff;width:44px;height:44px;border-radius:12px;font-size:1.3rem;cursor:pointer}
+        .main{margin-right:300px}
+        .hero{padding:80px 60px 60px;background:linear-gradient(135deg,rgba(255,140,0,.08),rgba(77,140,255,.06));border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+        .hero::before{content:'';position:absolute;top:-100px;left:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(255,140,0,.06),transparent 70%);pointer-events:none}
+        .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,140,0,.1);border:1px solid rgba(255,140,0,.2);padding:6px 16px;border-radius:100px;font-size:.85rem;color:var(--accent);margin-bottom:20px}
+        .hero h1{font-size:2.5rem;font-weight:900;margin-bottom:16px;background:linear-gradient(135deg,var(--accent),var(--accent4));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .hero p{font-size:1.1rem;color:var(--text-dim);max-width:600px}
+        .section{padding:60px;border-bottom:1px solid var(--border)}
+        .section-label{display:inline-flex;align-items:center;gap:8px;font-size:.8rem;color:var(--accent);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;font-weight:700}
+        .section h2{font-size:1.8rem;font-weight:800;margin-bottom:24px}
+        .section h3{font-size:1.3rem;font-weight:700;margin:24px 0 16px;color:var(--accent4)}
+        .section p,.section li{font-size:1rem;color:var(--text-dim);margin-bottom:12px}
+        .section ul,.section ol{padding-right:24px;margin-bottom:16px}
+        .content-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;margin:20px 0;box-shadow:var(--glow)}
+        .content-card h4{font-size:1.1rem;color:var(--accent);margin-bottom:16px}
+        .code-block{background:var(--bg-code);border:1px solid var(--border);border-radius:12px;margin:16px 0;overflow:hidden}
+        .code-header{display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--border)}
+        .code-header span{font-size:.8rem;color:var(--text-dim)}
+        .code-header .copy-btn{background:rgba(77,140,255,.1);border:1px solid rgba(77,140,255,.2);color:var(--accent4);padding:4px 12px;border-radius:6px;font-size:.75rem;cursor:pointer;font-family:'Cairo',sans-serif;transition:all .2s}
+        .code-header .copy-btn:hover{background:rgba(77,140,255,.2)}
+        .code-block pre{padding:20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.9rem;line-height:1.7;direction:ltr;text-align:left}
+        .info-box{background:rgba(77,140,255,.05);border:1px solid rgba(77,140,255,.15);border-radius:12px;padding:20px 24px;margin:16px 0}
+        .info-box.warning{background:rgba(255,140,0,.05);border-color:rgba(255,140,0,.15)}
+        .info-box.success{background:rgba(0,212,126,.05);border-color:rgba(0,212,126,.15)}
+        .info-box.danger{background:rgba(255,77,77,.05);border-color:rgba(255,77,77,.15)}
+        .info-box strong{color:var(--accent4)}
+        .info-box.warning strong{color:var(--accent)}
+        .info-box.success strong{color:var(--accent3)}
+        .info-box.danger strong{color:var(--accent2)}
+        .quote-box{border-right:4px solid var(--accent);background:rgba(255,140,0,.05);padding:20px 24px;border-radius:0 12px 12px 0;margin:16px 0;font-style:italic}
+        .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin:20px 0}
+        .feature-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;text-align:center;transition:all .3s}
+        .feature-card:hover{border-color:var(--accent);transform:translateY(-4px)}
+        .feature-card .icon{font-size:2.5rem;margin-bottom:16px}
+        .feature-card h4{color:var(--accent);margin-bottom:8px;font-size:1.1rem}
+        .feature-card p{font-size:.85rem;color:var(--text-dim)}
+        .analogy-box{background:linear-gradient(135deg,rgba(255,140,0,.08),rgba(77,140,255,.08));border:1px solid rgba(255,140,0,.2);border-radius:16px;padding:28px;margin:24px 0}
+        .analogy-box h4{color:var(--accent);font-size:1.1rem;margin-bottom:12px}
+        .analogy-box .emoji{font-size:2rem;margin-bottom:12px;display:block}
+        .table-visual{width:100%;border-collapse:collapse;margin:16px 0;font-size:.9rem}
+        .table-visual th{background:rgba(255,140,0,.1);color:var(--accent);padding:12px 16px;text-align:right;font-weight:700;border-bottom:2px solid var(--accent)}
+        .table-visual td{padding:10px 16px;border-bottom:1px solid var(--border);color:var(--text-dim)}
+        .table-visual tr:hover td{background:rgba(255,140,0,.03)}
+        .vs-container{display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:start;margin:24px 0}
+        .vs-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px}
+        .vs-card h4{font-size:1.2rem;margin-bottom:16px}
+        .vs-card.left h4{color:var(--accent)}.vs-card.right h4{color:var(--accent5)}
+        .vs-badge{background:var(--accent);color:#fff;padding:10px 16px;border-radius:50%;font-weight:900;font-size:1rem;align-self:center}
+        .exercise-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;margin:20px 0;overflow:hidden}
+        .exercise-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;cursor:pointer;transition:background .2s}
+        .exercise-header:hover{background:rgba(255,140,0,.03)}
+        .exercise-header h4{color:var(--text);font-size:1rem}
+        .exercise-badge{padding:4px 12px;border-radius:100px;font-size:.75rem;font-weight:700}
+        .exercise-badge.easy{background:rgba(0,212,126,.1);color:var(--accent3)}
+        .exercise-badge.medium{background:rgba(255,140,0,.1);color:var(--accent)}
+        .exercise-badge.hard{background:rgba(255,77,77,.1);color:var(--accent2)}
+        .exercise-body{display:none;padding:0 24px 24px;border-top:1px solid var(--border)}
+        .exercise-body.show{display:block}
+        .exercise-body p{padding-top:16px}
+        .hint-btn,.solution-toggle{background:rgba(255,140,0,.1);border:1px solid rgba(255,140,0,.2);color:var(--accent);padding:8px 20px;border-radius:8px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.85rem;margin-top:12px;margin-left:8px;transition:all .2s}
+        .hint-btn:hover,.solution-toggle:hover{background:rgba(255,140,0,.2)}
+        .hint-content,.solution-content{display:none;margin-top:12px}
+        .hint-content.show,.solution-content.show{display:block}
+        .summary-box{background:linear-gradient(135deg,rgba(255,140,0,.06),rgba(77,140,255,.06));border:1px solid rgba(255,140,0,.15);border-radius:16px;padding:32px;margin:24px 0}
+        .summary-box h3{color:var(--accent);margin-bottom:16px}
+        .summary-box ul{list-style:none;padding:0}
+        .summary-box li{padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);color:var(--text-dim)}
+        .summary-box li::before{content:'✅ '}
+        .steps-list{list-style:none;padding:0;counter-reset:step}
+        .steps-list li{counter-increment:step;padding:16px 16px 16px 0;margin:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:16px}
+        .steps-list li::before{content:counter(step);display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:36px;border-radius:50%;background:rgba(255,140,0,.15);color:var(--accent);font-weight:800;font-size:.9rem;flex-shrink:0}
+        .back-btn{position:fixed;bottom:30px;left:30px;background:var(--accent);color:#fff;border:none;width:50px;height:50px;border-radius:50%;font-size:1.3rem;cursor:pointer;z-index:200;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 4px 20px rgba(255,140,0,.3);transition:transform .2s}
+        .back-btn:hover{transform:scale(1.1)}
+        .cf-preview{background:var(--bg-code);border:1px solid var(--border);border-radius:12px;padding:20px;margin:16px 0}
+        .cf-cell{display:inline-block;padding:8px 16px;margin:4px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:.9rem}
+        .cf-green{background:rgba(0,212,126,.2);color:#00d47e;border:1px solid rgba(0,212,126,.3)}
+        .cf-yellow{background:rgba(255,200,0,.2);color:#ffc800;border:1px solid rgba(255,200,0,.3)}
+        .cf-red{background:rgba(255,77,77,.2);color:#ff4d4d;border:1px solid rgba(255,77,77,.3)}
+        .cf-bar{height:24px;border-radius:4px;margin:4px 0;transition:width .3s}
+        .dropdown-mock{background:var(--bg-code);border:1px solid var(--border);border-radius:8px;padding:0;margin:16px 0;width:260px;overflow:hidden}
+        .dropdown-mock .dd-header{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;color:var(--text);font-size:.9rem}
+        .dropdown-mock .dd-header span{color:var(--text-dim);font-size:.8rem}
+        .dropdown-mock .dd-item{padding:8px 16px;color:var(--text-dim);font-size:.85rem;border-bottom:1px solid rgba(255,255,255,.03);transition:background .2s;cursor:default}
+        .dropdown-mock .dd-item:hover{background:rgba(255,140,0,.08);color:var(--accent)}
+        .dropdown-mock .dd-item.selected{background:rgba(255,140,0,.12);color:var(--accent);font-weight:600}
+        .named-range-box{background:var(--bg-code);border:2px dashed var(--accent);border-radius:12px;padding:20px;margin:16px 0;text-align:center}
+        .named-range-box .nr-label{display:inline-block;background:var(--accent);color:#fff;padding:4px 14px;border-radius:6px;font-size:.8rem;font-weight:700;margin-bottom:12px}
+        .named-range-box .nr-cells{display:flex;justify-content:center;gap:6px;flex-wrap:wrap}
+        .named-range-box .nr-cell{background:rgba(255,140,0,.1);border:1px solid rgba(255,140,0,.3);padding:6px 14px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--accent)}
+        .icon-set-demo{display:flex;gap:20px;flex-wrap:wrap;margin:12px 0;align-items:center}
+        .icon-set-demo .is-item{display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:.9rem;color:var(--text-dim)}
+        @media(max-width:900px){.sidebar{transform:translateX(100%)}.sidebar.open{transform:translateX(0)}.sidebar-toggle{display:flex;align-items:center;justify-content:center}.main{margin-right:0}.hero{padding:60px 24px 40px}.hero h1{font-size:1.8rem}.section{padding:40px 24px}.vs-container{grid-template-columns:1fr}.vs-badge{justify-self:center}.dropdown-mock{width:100%}}
+    </style>
+</head>
+<body>
+<button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+<aside class="sidebar">
+    <div class="sidebar-header"><h3>Excel Day 5</h3><p>اليوم الخامس - التنسيق والتحقق</p></div>
+    <nav class="sidebar-nav">
+        <a href="#intro"><span class="num">1</span> مقدمة</a>
+        <a href="#what-is-cf"><span class="num">2</span> إيه هو Conditional Formatting؟</a>
+        <a href="#cf-types"><span class="num">3</span> أنواع Conditional Formatting</a>
+        <a href="#cf-steps"><span class="num">4</span> خطوات التطبيق</a>
+        <a href="#cf-formulas"><span class="num">5</span> CF بالمعادلات</a>
+        <a href="#what-is-dv"><span class="num">6</span> إيه هو Data Validation؟</a>
+        <a href="#dv-types"><span class="num">7</span> أنواع Data Validation</a>
+        <a href="#dropdown-list"><span class="num">8</span> إنشاء Dropdown List</a>
+        <a href="#input-error-msg"><span class="num">9</span> رسائل الإدخال والخطأ</a>
+        <a href="#dv-formulas"><span class="num">10</span> DV بالمعادلات</a>
+        <a href="#what-is-nr"><span class="num">11</span> إيه هي Named Ranges؟</a>
+        <a href="#nr-create-use"><span class="num">12</span> إنشاء واستخدام NR</a>
+        <a href="#nr-advanced"><span class="num">13</span> NR مع VLOOKUP و DV</a>
+        <a href="#best-practices"><span class="num">14</span> نصائح عملية</a>
+        <a href="#exercises"><span class="num">15</span> تمارين</a>
+    </nav>
+</aside>
+<main class="main">
+    <section class="hero">
+        <div class="hero-badge">📊 اليوم الخامس</div>
+        <h1>التنسيق الشرطي والتحقق من البيانات</h1>
+        <p>Conditional Formatting, Data Validation, Named Ranges - أدوات Excel الاحترافية</p>
+    </section>
+
+    <section class="section" id="intro">
+        <span class="section-label">المقدمة</span>
+        <h2>ليه الـ 3 أدوات دول مهمين؟</h2>
+        <p>في عالم Excel الاحترافي، مش كفاية إنك تكتب بيانات وخلاص. لازم <strong style="color:var(--accent)">البيانات تتكلم</strong> - يعني تبان بشكل واضح، تكون محمية من الأخطاء، والمعادلات تبقى سهلة القراية والصيانة.</p>
+        <div class="features-grid">
+            <div class="feature-card"><span class="icon">🎨</span><h4>Conditional Formatting</h4><p>بيخلي الخلايا تتلون تلقائياً حسب قيمها - فتشوف الأرقام المهمة على طول بدون ما تدور عليها</p></div>
+            <div class="feature-card"><span class="icon">🛡️</span><h4>Data Validation</h4><p>بيحمي البيانات من الإدخال الغلط - المستخدم يقدر يدخل بس القيم الصح</p></div>
+            <div class="feature-card"><span class="icon">🏷️</span><h4>Named Ranges</h4><p>بدل ما تكتب A2:A100 في كل معادلة، تديها اسم واضح زي "المرتبات" وتستخدمه في كل مكان</p></div>
+        </div>
+        <div class="analogy-box">
+            <span class="emoji">💡</span>
+            <h4>تشبيه بسيط</h4>
+            <p><strong style="color:var(--accent)">Conditional Formatting</strong> زي إشارة المرور - أخضر يعني كويس، أحمر يعني فيه مشكلة. <strong style="color:var(--accent4)">Data Validation</strong> زي حارس الأمن على الباب - مش هيسيب حد يدخل غلط. <strong style="color:var(--accent5)">Named Ranges</strong> زي إنك تسمي أصحابك بأسمائهم بدل أرقام تليفوناتهم!</p>
+        </div>
+        <div class="quote-box">الـ Excel Professional مش اللي بيعرف يكتب بيانات بس - ده اللي بيعرف يعرضها صح، يحميها من الأخطاء، وينظم شغله بحيث أي حد تاني يفهمه!</div>
+    </section>
+
+    <section class="section" id="what-is-cf">
+        <span class="section-label">التنسيق الشرطي</span>
+        <h2>إيه هو Conditional Formatting؟</h2>
+        <p>الـ <strong style="color:var(--accent)">Conditional Formatting</strong> (التنسيق الشرطي) هو ميزة في Excel بتغيّر شكل الخلية (اللون، الخط، الأيقونات) <strong style="color:var(--accent)">تلقائياً</strong> بناءً على قيمة الخلية أو معادلة معينة.</p>
+        <div class="content-card">
+            <h4>ليه بنستخدمه؟</h4>
+            <ul>
+                <li><strong style="color:var(--accent3)">تحليل سريع:</strong> بدل ما تقرأ 1000 رقم، الألوان بتوريك الحاجات المهمة فوراً</li>
+                <li><strong style="color:var(--accent4)">اكتشاف الأنماط:</strong> بتشوف الاتجاهات والمشاكل بنظرة واحدة</li>
+                <li><strong style="color:var(--accent)">تقديم احترافي:</strong> التقارير بتبقى أوضح وأجمل</li>
+                <li><strong style="color:var(--accent5)">تحديث تلقائي:</strong> التنسيق بيتغير لوحده لما البيانات تتغير</li>
+            </ul>
+        </div>
+        <h3>مثال عملي: جدول درجات الطلاب</h3>
+        <p>تخيل عندك جدول فيه درجات 50 طالب. بدل ما تقرأ كل درجة وتحدد مين نجح ومين رسب:</p>
+        <div class="cf-preview">
+            <p style="color:var(--text);margin-bottom:12px;font-weight:700">درجات الطلاب (التنسيق الشرطي بيلون تلقائياً):</p>
+            <div>
+                <span class="cf-cell cf-green">95</span>
+                <span class="cf-cell cf-green">88</span>
+                <span class="cf-cell cf-yellow">72</span>
+                <span class="cf-cell cf-yellow">65</span>
+                <span class="cf-cell cf-red">45</span>
+                <span class="cf-cell cf-green">91</span>
+                <span class="cf-cell cf-red">38</span>
+                <span class="cf-cell cf-yellow">70</span>
+                <span class="cf-cell cf-green">85</span>
+                <span class="cf-cell cf-red">42</span>
+            </div>
+            <div style="margin-top:16px;display:flex;gap:20px;flex-wrap:wrap">
+                <span style="color:var(--accent3);font-size:.85rem">● أخضر = ممتاز (80+)</span>
+                <span style="color:#ffc800;font-size:.85rem">● أصفر = مقبول (60-79)</span>
+                <span style="color:var(--accent2);font-size:.85rem">● أحمر = راسب (أقل من 60)</span>
+            </div>
+        </div>
+        <div class="info-box success"><strong>الفايدة:</strong> بنظرة واحدة تقدر تعرف إن 4 طلاب ممتازين، 3 مقبولين، و3 راسبين - من غير ما تقرأ رقم رقم!</div>
+    </section>
+
+    <section class="section" id="cf-types">
+        <span class="section-label">الأنواع</span>
+        <h2>أنواع Conditional Formatting</h2>
+        <p>Excel بيقدملك 5 أنواع رئيسية من التنسيق الشرطي، كل نوع ليه استخدام مختلف:</p>
+        <div class="content-card">
+            <h4>1. Highlight Cells Rules (قواعد تمييز الخلايا)</h4>
+            <p>أبسط نوع - بتلون الخلايا اللي بتحقق شرط معين:</p>
+            <table class="table-visual">
+                <thead><tr><th>القاعدة</th><th>الشرح</th><th>مثال</th></tr></thead>
+                <tbody>
+                    <tr><td><code style="color:var(--accent)">Greater Than</code></td><td>أكبر من قيمة معينة</td><td>المبيعات أكبر من 10,000</td></tr>
+                    <tr><td><code style="color:var(--accent)">Less Than</code></td><td>أقل من قيمة معينة</td><td>المخزون أقل من 50</td></tr>
+                    <tr><td><code style="color:var(--accent)">Between</code></td><td>بين قيمتين</td><td>الدرجات بين 60 و 80</td></tr>
+                    <tr><td><code style="color:var(--accent)">Equal To</code></td><td>تساوي قيمة معينة</td><td>الحالة = "مكتمل"</td></tr>
+                    <tr><td><code style="color:var(--accent)">Text Contains</code></td><td>النص بيحتوي على كلمة</td><td>الاسم بيحتوي على "أحمد"</td></tr>
+                    <tr><td><code style="color:var(--accent)">Duplicate Values</code></td><td>القيم المكررة</td><td>الأكواد المكررة في القائمة</td></tr>
+                </tbody>
+            </table>
+            <div class="cf-preview">
+                <p style="color:var(--text);margin-bottom:8px;font-size:.85rem">مثال Greater Than 80:</p>
+                <span class="cf-cell" style="color:var(--text-dim)">55</span>
+                <span class="cf-cell cf-green">92</span>
+                <span class="cf-cell" style="color:var(--text-dim)">73</span>
+                <span class="cf-cell cf-green">88</span>
+                <span class="cf-cell" style="color:var(--text-dim)">60</span>
+                <span class="cf-cell cf-green">95</span>
+            </div>
+        </div>
+        <div class="content-card">
+            <h4>2. Top/Bottom Rules (قواعد الأعلى/الأدنى)</h4>
+            <p>بتحدد أعلى أو أقل قيم في النطاق:</p>
+            <ul>
+                <li><strong style="color:var(--accent)">Top 10 Items:</strong> أعلى 10 قيم (تقدر تغير العدد)</li>
+                <li><strong style="color:var(--accent)">Top 10%:</strong> أعلى 10% من القيم</li>
+                <li><strong style="color:var(--accent)">Bottom 10 Items:</strong> أقل 10 قيم</li>
+                <li><strong style="color:var(--accent)">Bottom 10%:</strong> أقل 10% من القيم</li>
+                <li><strong style="color:var(--accent)">Above Average:</strong> القيم فوق المتوسط</li>
+                <li><strong style="color:var(--accent)">Below Average:</strong> القيم تحت المتوسط</li>
+            </ul>
+        </div>
+        <div class="content-card">
+            <h4>3. Data Bars (أشرطة البيانات)</h4>
+            <p>بتضيف شريط ملون جوه الخلية - طوله بيعبّر عن حجم القيمة:</p>
+            <div class="cf-preview">
+                <div style="display:flex;align-items:center;gap:12px;margin:8px 0">
+                    <span style="width:60px;font-family:'JetBrains Mono',monospace;color:var(--text);font-size:.85rem">95%</span>
+                    <div class="cf-bar" style="width:95%;background:linear-gradient(90deg,rgba(0,212,126,.4),rgba(0,212,126,.15))"></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;margin:8px 0">
+                    <span style="width:60px;font-family:'JetBrains Mono',monospace;color:var(--text);font-size:.85rem">72%</span>
+                    <div class="cf-bar" style="width:72%;background:linear-gradient(90deg,rgba(255,200,0,.4),rgba(255,200,0,.15))"></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;margin:8px 0">
+                    <span style="width:60px;font-family:'JetBrains Mono',monospace;color:var(--text);font-size:.85rem">45%</span>
+                    <div class="cf-bar" style="width:45%;background:linear-gradient(90deg,rgba(255,77,77,.4),rgba(255,77,77,.15))"></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;margin:8px 0">
+                    <span style="width:60px;font-family:'JetBrains Mono',monospace;color:var(--text);font-size:.85rem">88%</span>
+                    <div class="cf-bar" style="width:88%;background:linear-gradient(90deg,rgba(77,140,255,.4),rgba(77,140,255,.15))"></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;margin:8px 0">
+                    <span style="width:60px;font-family:'JetBrains Mono',monospace;color:var(--text);font-size:.85rem">30%</span>
+                    <div class="cf-bar" style="width:30%;background:linear-gradient(90deg,rgba(255,77,77,.4),rgba(255,77,77,.15))"></div>
+                </div>
+            </div>
+        </div>
+        <div class="content-card">
+            <h4>4. Color Scales (مقاييس الألوان)</h4>
+            <p>بتعمل تدرج لوني من لون للتاني حسب القيمة:</p>
+            <div class="cf-preview">
+                <p style="color:var(--text);margin-bottom:8px;font-size:.85rem">2-Color Scale (أحمر ← أخضر):</p>
+                <span class="cf-cell cf-red">10</span>
+                <span class="cf-cell" style="background:rgba(255,120,0,.2);color:#ff7800;border:1px solid rgba(255,120,0,.3)">30</span>
+                <span class="cf-cell cf-yellow">50</span>
+                <span class="cf-cell" style="background:rgba(150,200,0,.2);color:#96c800;border:1px solid rgba(150,200,0,.3)">70</span>
+                <span class="cf-cell cf-green">90</span>
+            </div>
+            <div class="cf-preview" style="margin-top:12px">
+                <p style="color:var(--text);margin-bottom:8px;font-size:.85rem">3-Color Scale (أحمر ← أصفر ← أخضر):</p>
+                <span class="cf-cell cf-red">15</span>
+                <span class="cf-cell" style="background:rgba(255,100,50,.2);color:#ff6432;border:1px solid rgba(255,100,50,.3)">35</span>
+                <span class="cf-cell cf-yellow">50</span>
+                <span class="cf-cell" style="background:rgba(100,210,50,.2);color:#64d232;border:1px solid rgba(100,210,50,.3)">75</span>
+                <span class="cf-cell cf-green">98</span>
+            </div>
+        </div>
+        <div class="content-card">
+            <h4>5. Icon Sets (مجموعات الأيقونات)</h4>
+            <p>بتضيف أيقونات صغيرة جوه الخلايا بتعبّر عن الحالة:</p>
+            <div class="cf-preview">
+                <p style="color:var(--text);margin-bottom:12px;font-size:.85rem">أشهر أنواع الأيقونات:</p>
+                <div class="icon-set-demo">
+                    <div class="is-item"><span style="color:var(--accent3)">▲</span> ارتفاع</div>
+                    <div class="is-item"><span style="color:#ffc800">►</span> ثبات</div>
+                    <div class="is-item"><span style="color:var(--accent2)">▼</span> انخفاض</div>
+                </div>
+                <div class="icon-set-demo" style="margin-top:12px">
+                    <div class="is-item"><span style="color:var(--accent3)">●</span> ممتاز (80+)</div>
+                    <div class="is-item"><span style="color:#ffc800">●</span> جيد (60-79)</div>
+                    <div class="is-item"><span style="color:var(--accent2)">●</span> ضعيف (&lt;60)</div>
+                </div>
+                <div class="icon-set-demo" style="margin-top:12px">
+                    <div class="is-item">★★★ 95</div>
+                    <div class="is-item">★★☆ 70</div>
+                    <div class="is-item">★☆☆ 40</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="cf-steps">
+        <span class="section-label">الخطوات</span>
+        <h2>خطوات تطبيق Conditional Formatting</h2>
+        <p>الخطوات بسيطة جداً - هنطبقها خطوة بخطوة:</p>
+        <div class="content-card">
+            <h4>الطريقة الأساسية</h4>
+            <ol class="steps-list">
+                <li>حدد النطاق (Range) اللي عايز تطبق عليه التنسيق - مثلاً <code style="color:var(--accent)">B2:B50</code> (عمود المبيعات)</li>
+                <li>روح لتاب <code style="color:var(--accent)">Home</code> في الشريط العلوي</li>
+                <li>دوس على <code style="color:var(--accent)">Conditional Formatting</code> في مجموعة Styles</li>
+                <li>اختار النوع اللي عايزه من القائمة المنسدلة (مثلاً Highlight Cells Rules → Greater Than)</li>
+                <li>حدد القيمة أو الشرط (مثلاً 10000) واختار التنسيق (لون الخلفية، الخط)</li>
+                <li>دوس <code style="color:var(--accent3)">OK</code> - وخلاص! التنسيق هيتطبق فوراً</li>
+            </ol>
+        </div>
+        <div class="info-box warning"><strong>نصيحة مهمة:</strong> لازم تحدد النطاق <strong>الأول</strong> قبل ما تختار الـ Conditional Formatting. لو ما حددتش، هيتطبق على الخلية الحالية بس!</div>
+        <div class="content-card">
+            <h4>إدارة القواعد الموجودة</h4>
+            <p>لو عايز تعدل أو تمسح قاعدة موجودة:</p>
+            <ol class="steps-list">
+                <li>Home → Conditional Formatting → <code style="color:var(--accent)">Manage Rules</code></li>
+                <li>هتظهر كل القواعد المطبقة على الشيت أو النطاق المحدد</li>
+                <li>تقدر تعدل (Edit Rule)، تمسح (Delete Rule)، أو تغير الترتيب</li>
+                <li>لو عندك أكتر من قاعدة، الترتيب مهم - القاعدة اللي فوق ليها أولوية!</li>
+            </ol>
+        </div>
+        <div class="info-box"><strong>Clear Rules:</strong> لو عايز تمسح كل التنسيقات الشرطية، روح Home → Conditional Formatting → <code style="color:var(--accent4)">Clear Rules</code> → Clear Rules from Selected Cells أو Clear Rules from Entire Sheet.</div>
+    </section>
+
+    <section class="section" id="cf-formulas">
+        <span class="section-label">معادلات متقدمة</span>
+        <h2>Conditional Formatting بالمعادلات</h2>
+        <p>القوة الحقيقية للتنسيق الشرطي بتظهر لما تستخدم <strong style="color:var(--accent)">معادلات مخصصة</strong>! تقدر تعمل أي شرط تتخيله:</p>
+        <div class="content-card">
+            <h4>الطريقة</h4>
+            <ol class="steps-list">
+                <li>حدد النطاق</li>
+                <li>Home → Conditional Formatting → <code style="color:var(--accent)">New Rule</code></li>
+                <li>اختار <code style="color:var(--accent)">Use a formula to determine which cells to format</code></li>
+                <li>اكتب المعادلة في خانة "Format values where this formula is true"</li>
+                <li>اختار التنسيق ودوس OK</li>
+            </ol>
+        </div>
+        <h3>أمثلة عملية على المعادلات</h3>
+        <div class="code-block"><div class="code-header"><span>تلوين القيم الأكبر من 100</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre>=A1&gt;100</pre>
+        </div>
+        <p>المعادلة بترجع TRUE أو FALSE. لو TRUE، التنسيق بيتطبق على الخلية.</p>
+        <div class="code-block"><div class="code-header"><span>تلوين الصف كله لو المدينة = "القاهرة"</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre>=$B1="Cairo"</pre>
+        </div>
+        <div class="info-box warning"><strong>لاحظ علامة $:</strong> لما بنحط <code style="color:var(--accent)">$B1</code> (دولار قبل العمود بس)، معناها العمود ثابت B لكن الصف بيتغير. كده كل الصف هيتلون مش الخلية بس!</div>
+        <div class="code-block"><div class="code-header"><span>تلوين الصفوف بالتبادل (Zebra Stripes)</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre>=MOD(ROW(),2)=0</pre>
+        </div>
+        <p>MOD(ROW(),2) بترجع 0 للصفوف الزوجية و 1 للفردية. فبنلون الصفوف بالتبادل!</p>
+        <div class="code-block"><div class="code-header"><span>تمييز القيم المكررة</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre>=COUNTIF($A:$A,A1)&gt;1</pre>
+        </div>
+        <div class="code-block"><div class="code-header"><span>تمييز الخلايا الفاضية</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre>=ISBLANK(A1)</pre>
+        </div>
+        <div class="code-block"><div class="code-header"><span>تلوين حسب تاريخ اليوم (المواعيد المتأخرة)</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre>=A1&lt;TODAY()</pre>
+        </div>
+        <p>لو التاريخ في الخلية أقدم من النهاردة، الخلية بتتلون - مفيد لتتبع المواعيد المتأخرة!</p>
+        <div class="cf-preview">
+            <p style="color:var(--text);margin-bottom:12px;font-weight:700">مثال: تلوين الصفوف بالتبادل (Zebra Stripes):</p>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:.85rem">
+                <div style="padding:8px 16px;background:rgba(255,140,0,.08);border-radius:4px;margin:2px 0;color:var(--text)">Row 1: أحمد محمد | القاهرة | 5000</div>
+                <div style="padding:8px 16px;border-radius:4px;margin:2px 0;color:var(--text-dim)">Row 2: سارة أحمد | الإسكندرية | 6200</div>
+                <div style="padding:8px 16px;background:rgba(255,140,0,.08);border-radius:4px;margin:2px 0;color:var(--text)">Row 3: محمد علي | القاهرة | 4800</div>
+                <div style="padding:8px 16px;border-radius:4px;margin:2px 0;color:var(--text-dim)">Row 4: نور حسن | أسوان | 5500</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="what-is-dv">
+        <span class="section-label">التحقق من البيانات</span>
+        <h2>إيه هو Data Validation؟</h2>
+        <p>الـ <strong style="color:var(--accent)">Data Validation</strong> (التحقق من صحة البيانات) هو أداة في Excel بتتحكم في <strong style="color:var(--accent)">نوع البيانات</strong> اللي المستخدم يقدر يدخلها في خلية معينة.</p>
+        <div class="analogy-box">
+            <span class="emoji">🚪</span>
+            <h4>تشبيه: حارس الأمن!</h4>
+            <p>الـ Data Validation زي حارس الأمن على باب المبنى. بيتأكد إن اللي داخل معاه تصريح (البيانات صح). لو حد حاول يدخل من غير تصريح (بيانات غلط)، الحارس بيمنعه ويقوله "مش مسموح!" وبيوريه رسالة خطأ.</p>
+        </div>
+        <div class="content-card">
+            <h4>ليه بنستخدمه؟</h4>
+            <ul>
+                <li><strong style="color:var(--accent3)">منع الأخطاء:</strong> المستخدم مش هيقدر يكتب حروف في خانة الأرقام</li>
+                <li><strong style="color:var(--accent4)">توحيد البيانات:</strong> كل الناس بتختار من نفس القائمة - مفيش حد يكتب "Cairo" والتاني "cairo" والتالت "القاهرة"</li>
+                <li><strong style="color:var(--accent)">سهولة الإدخال:</strong> القوائم المنسدلة بتسهّل وتسرّع الإدخال</li>
+                <li><strong style="color:var(--accent5)">توجيه المستخدم:</strong> رسائل الإدخال بتوضح إيه المطلوب في كل خلية</li>
+            </ul>
+        </div>
+        <div class="vs-container">
+            <div class="vs-card left">
+                <h4>بدون Data Validation ❌</h4>
+                <ul style="list-style:none;padding:0">
+                    <li style="color:var(--accent2)">● العمر: "خمسة وعشرين" (نص!)</li>
+                    <li style="color:var(--accent2)">● القسم: "مبيعات" / "مبيعآت" / "Sales"</li>
+                    <li style="color:var(--accent2)">● التاريخ: "الأسبوع الجاي"</li>
+                    <li style="color:var(--accent2)">● الإيميل: "ahmed" (ناقص @)</li>
+                </ul>
+            </div>
+            <span class="vs-badge">VS</span>
+            <div class="vs-card right">
+                <h4>مع Data Validation ✅</h4>
+                <ul style="list-style:none;padding:0">
+                    <li style="color:var(--accent3)">● العمر: 25 (أرقام بس، 18-65)</li>
+                    <li style="color:var(--accent3)">● القسم: قائمة منسدلة محددة</li>
+                    <li style="color:var(--accent3)">● التاريخ: 2026-03-15 (تاريخ صح)</li>
+                    <li style="color:var(--accent3)">● الإيميل: ahmed@company.com</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="dv-types">
+        <span class="section-label">الأنواع</span>
+        <h2>أنواع Data Validation</h2>
+        <p>Excel بيوفر أنواع مختلفة من التحقق حسب نوع البيانات اللي عايزها:</p>
+        <div class="content-card">
+            <h4>كل أنواع الـ Validation</h4>
+            <table class="table-visual">
+                <thead><tr><th>النوع</th><th>الشرح</th><th>مثال عملي</th></tr></thead>
+                <tbody>
+                    <tr><td><code style="color:var(--accent)">Whole Number</code></td><td>أرقام صحيحة فقط (بين، أكبر من، أقل من)</td><td>العمر بين 18 و 65</td></tr>
+                    <tr><td><code style="color:var(--accent)">Decimal</code></td><td>أرقام عشرية (بين، أكبر من، أقل من)</td><td>النسبة المئوية بين 0 و 100</td></tr>
+                    <tr><td><code style="color:var(--accent)">List</code></td><td>قائمة منسدلة بخيارات محددة</td><td>القسم: مبيعات، تسويق، IT، مالية</td></tr>
+                    <tr><td><code style="color:var(--accent)">Date</code></td><td>تواريخ فقط (بين تاريخين)</td><td>تاريخ التعيين بعد 2020/1/1</td></tr>
+                    <tr><td><code style="color:var(--accent)">Time</code></td><td>أوقات فقط</td><td>وقت الحضور بين 7:00 و 10:00</td></tr>
+                    <tr><td><code style="color:var(--accent)">Text Length</code></td><td>تحديد طول النص المسموح</td><td>كود المنتج 5 حروف بالظبط</td></tr>
+                    <tr><td><code style="color:var(--accent)">Custom</code></td><td>معادلة مخصصة ترجع TRUE/FALSE</td><td>الإيميل لازم يحتوي على @</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="content-card">
+            <h4>خطوات إضافة Data Validation</h4>
+            <ol class="steps-list">
+                <li>حدد الخلايا اللي عايز تضيف عليها التحقق</li>
+                <li>روح لتاب <code style="color:var(--accent)">Data</code> في الشريط العلوي</li>
+                <li>دوس على <code style="color:var(--accent)">Data Validation</code> في مجموعة Data Tools</li>
+                <li>في تاب Settings، اختار النوع (Allow) وحدد الشروط</li>
+                <li>اختيارياً: أضف رسالة إدخال (Input Message) ورسالة خطأ (Error Alert)</li>
+                <li>دوس OK</li>
+            </ol>
+        </div>
+    </section>
+
+    <section class="section" id="dropdown-list">
+        <span class="section-label">القوائم المنسدلة</span>
+        <h2>إنشاء Dropdown List</h2>
+        <p>الـ <strong style="color:var(--accent)">Dropdown List</strong> (القائمة المنسدلة) هي أكتر نوع مستخدم من Data Validation. بتسهّل الإدخال وبتمنع الأخطاء الإملائية.</p>
+        <h3>الطريقة الأولى: كتابة القيم يدوياً</h3>
+        <div class="content-card">
+            <h4>خطوات الإنشاء</h4>
+            <ol class="steps-list">
+                <li>حدد الخلايا (مثلاً <code style="color:var(--accent)">C2:C100</code> - عمود القسم)</li>
+                <li>Data → Data Validation</li>
+                <li>في Allow اختار <code style="color:var(--accent)">List</code></li>
+                <li>في Source اكتب القيم مفصولة بفاصلة: <code style="color:var(--accent3)">مبيعات,تسويق,IT,مالية,موارد بشرية</code></li>
+                <li>دوس OK</li>
+            </ol>
+        </div>
+        <div class="dropdown-mock">
+            <div class="dd-header">اختر القسم <span>▼</span></div>
+            <div class="dd-item selected">مبيعات</div>
+            <div class="dd-item">تسويق</div>
+            <div class="dd-item">IT</div>
+            <div class="dd-item">مالية</div>
+            <div class="dd-item">موارد بشرية</div>
+        </div>
+        <h3>الطريقة الثانية: من نطاق خلايا (الأفضل!)</h3>
+        <div class="content-card">
+            <h4>خطوات الإنشاء من نطاق</h4>
+            <ol class="steps-list">
+                <li>اكتب القيم في عمود منفصل (مثلاً في Sheet تاني اسمه "Lists" في <code style="color:var(--accent)">A1:A5</code>)</li>
+                <li>حدد الخلايا اللي عايز تضيف عليها الـ Dropdown</li>
+                <li>Data → Data Validation → List</li>
+                <li>في Source، حدد النطاق: <code style="color:var(--accent)">=Lists!$A$1:$A$5</code></li>
+                <li>دوس OK</li>
+            </ol>
+        </div>
+        <div class="info-box success"><strong>ليه الطريقة التانية أفضل؟</strong> لأنك لو عايز تضيف خيار جديد، بتضيفه في مكان واحد بس (في شيت Lists) وكل الـ Dropdowns في الملف كله بتتحدث تلقائياً!</div>
+        <div class="code-block"><div class="code-header"><span>Source من نطاق في نفس الشيت</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre>=$F$1:$F$5</pre>
+        </div>
+        <div class="code-block"><div class="code-header"><span>Source من شيت تاني</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre>=Lists!$A$1:$A$10</pre>
+        </div>
+        <div class="code-block"><div class="code-header"><span>Source باستخدام Named Range (الأفضل)</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre>=Departments</pre>
+        </div>
+    </section>
+
+    <section class="section" id="input-error-msg">
+        <span class="section-label">الرسائل</span>
+        <h2>رسائل الإدخال والخطأ</h2>
+        <p>الـ Data Validation مش بس بيمنع الإدخال الغلط - كمان بيقدر <strong style="color:var(--accent)">يوجّه المستخدم</strong> ويقوله إيه المطلوب!</p>
+        <h3>Input Message (رسالة الإدخال)</h3>
+        <div class="content-card">
+            <h4>إيه هي ومتى بتظهر؟</h4>
+            <p>رسالة صغيرة بتظهر لما المستخدم <strong style="color:var(--accent)">يختار الخلية</strong> (قبل ما يكتب حاجة). بتوضح إيه البيانات المطلوبة.</p>
+            <ol class="steps-list">
+                <li>Data → Data Validation → تاب <code style="color:var(--accent)">Input Message</code></li>
+                <li>اكتب العنوان (Title) مثلاً: "إدخال العمر"</li>
+                <li>اكتب الرسالة (Input Message) مثلاً: "من فضلك أدخل العمر بين 18 و 65 سنة"</li>
+                <li>خلي "Show input message when cell is selected" متفعل</li>
+            </ol>
+        </div>
+        <h3>Error Alert (رسالة الخطأ)</h3>
+        <div class="content-card">
+            <h4>أنواع رسائل الخطأ</h4>
+            <p>لما المستخدم يحاول يدخل قيمة غلط، بتظهر رسالة خطأ. فيه 3 أنواع:</p>
+            <table class="table-visual">
+                <thead><tr><th>النوع</th><th>الأيقونة</th><th>السلوك</th><th>متى تستخدمه</th></tr></thead>
+                <tbody>
+                    <tr><td><strong style="color:var(--accent2)">Stop</strong></td><td>❌</td><td>بيمنع الإدخال تماماً - المستخدم مش هيقدر يدخل القيمة الغلط</td><td>بيانات لازم تكون صح 100%</td></tr>
+                    <tr><td><strong style="color:var(--accent)">Warning</strong></td><td>⚠️</td><td>بيحذّر المستخدم لكن بيسمحله يكمل لو دوس Yes</td><td>بيانات المفروض تكون في نطاق معين لكن فيه استثناءات</td></tr>
+                    <tr><td><strong style="color:var(--accent4)">Information</strong></td><td>ℹ️</td><td>بيعرض معلومة بس وبيسمح بالإدخال في كل الأحوال</td><td>توجيه بسيط - تقدر تكتب أي حاجة</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="info-box danger"><strong>انتبه!</strong> النوع الافتراضي هو <code style="color:var(--accent2)">Stop</code> - يعني لو ما غيرتوش، المستخدم مش هيقدر يدخل أي قيمة غلط. ده كويس في أغلب الحالات، بس لو عايز تسمح باستثناءات استخدم Warning.</div>
+        <div class="content-card">
+            <h4>خطوات إضافة رسالة خطأ</h4>
+            <ol class="steps-list">
+                <li>Data → Data Validation → تاب <code style="color:var(--accent)">Error Alert</code></li>
+                <li>اختار النوع (Style): Stop أو Warning أو Information</li>
+                <li>اكتب العنوان (Title) مثلاً: "خطأ في الإدخال"</li>
+                <li>اكتب رسالة الخطأ مثلاً: "العمر لازم يكون بين 18 و 65. لو الموظف أصغر أو أكبر، تواصل مع HR."</li>
+            </ol>
+        </div>
+    </section>
+
+    <section class="section" id="dv-formulas">
+        <span class="section-label">معادلات متقدمة</span>
+        <h2>Data Validation بالمعادلات</h2>
+        <p>باستخدام نوع <code style="color:var(--accent)">Custom</code>، تقدر تكتب معادلة ترجع TRUE (الإدخال مقبول) أو FALSE (الإدخال مرفوض).</p>
+        <h3>1. منع القيم المكررة</h3>
+        <div class="code-block"><div class="code-header"><span>Custom Validation - No Duplicates</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre>=COUNTIF($A:$A,A1)=1</pre>
+        </div>
+        <p>COUNTIF بتعد كام مرة القيمة موجودة في العمود. لو = 1 يعني أول مرة (مقبول). لو &gt; 1 يعني مكررة (مرفوض).</p>
+        <h3>2. التحقق من صيغة الإيميل</h3>
+        <div class="code-block"><div class="code-header"><span>Custom Validation - Email Format</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre>=AND(
+  ISNUMBER(FIND("@",A1)),
+  ISNUMBER(FIND(".",A1,FIND("@",A1))),
+  LEN(A1)&gt;5
+)</pre>
+        </div>
+        <p>المعادلة بتتأكد من 3 حاجات: فيه @ في النص، فيه نقطة بعد الـ @، وطول النص أكتر من 5 حروف.</p>
+        <h3>3. التأكد إن تاريخ النهاية بعد تاريخ البداية</h3>
+        <div class="code-block"><div class="code-header"><span>Custom Validation - Date Range</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre>=B1&gt;A1</pre>
+        </div>
+        <p>لو عمود A فيه تاريخ البداية وعمود B فيه تاريخ النهاية، المعادلة بتتأكد إن النهاية بعد البداية.</p>
+        <h3>4. إجبار الحروف الكبيرة (إنجليزي)</h3>
+        <div class="code-block"><div class="code-header"><span>Custom Validation - Uppercase Only</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre>=EXACT(A1,UPPER(A1))</pre>
+        </div>
+        <h3>5. التحقق من رقم تليفون مصري</h3>
+        <div class="code-block"><div class="code-header"><span>Custom Validation - Egyptian Phone</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre>=AND(
+  LEN(A1)=11,
+  LEFT(A1,2)="01",
+  ISNUMBER(A1*1)
+)</pre>
+        </div>
+        <p>بيتأكد إن الرقم 11 خانة، بيبدأ بـ 01، وكله أرقام.</p>
+        <div class="info-box warning"><strong>نصيحة:</strong> لما تستخدم Custom validation، اكتب رسالة خطأ واضحة توضح إيه المطلوب بالظبط. المستخدم مش هيعرف ليه الإدخال مرفوض لو الرسالة مش واضحة!</div>
+    </section>
+
+    <section class="section" id="what-is-nr">
+        <span class="section-label">النطاقات المسماة</span>
+        <h2>إيه هي Named Ranges؟</h2>
+        <p>الـ <strong style="color:var(--accent)">Named Ranges</strong> (النطاقات المسماة) هي إنك تدي <strong style="color:var(--accent)">اسم واضح</strong> لنطاق خلايا بدل ما تفضل تستخدم العناوين زي A2:A100.</p>
+        <div class="analogy-box">
+            <span class="emoji">📱</span>
+            <h4>تشبيه: جهات الاتصال في الموبايل!</h4>
+            <p>بدل ما تحفظ رقم 01012345678 وتكتبه كل مرة، بتحفظه باسم "أحمد". نفس الفكرة! بدل <code style="color:var(--text-dim)">Sheet1!$B$2:$B$100</code>، بتسميه <code style="color:var(--accent)">Salaries</code> وتستخدمه في أي مكان.</p>
+        </div>
+        <div class="vs-container">
+            <div class="vs-card left">
+                <h4>بدون Named Range ❌</h4>
+                <div class="code-block" style="margin:12px 0"><pre style="font-size:.8rem">=SUM(Sheet1!$B$2:$B$100)
+=AVERAGE(Sheet1!$B$2:$B$100)
+=MAX(Sheet1!$B$2:$B$100)
+=VLOOKUP(A1,Sheet1!$A$2:$D$100,3,0)</pre></div>
+                <p style="color:var(--accent2);font-size:.85rem">صعب القراية - مش واضح B2:B100 ده إيه!</p>
+            </div>
+            <span class="vs-badge">VS</span>
+            <div class="vs-card right">
+                <h4>مع Named Range ✅</h4>
+                <div class="code-block" style="margin:12px 0"><pre style="font-size:.8rem">=SUM(Salaries)
+=AVERAGE(Salaries)
+=MAX(Salaries)
+=VLOOKUP(A1,EmployeeData,3,0)</pre></div>
+                <p style="color:var(--accent3);font-size:.85rem">واضح وسهل - أي حد يفهم المعادلة!</p>
+            </div>
+        </div>
+        <div class="named-range-box">
+            <span class="nr-label">Salaries</span>
+            <p style="color:var(--text-dim);font-size:.85rem;margin:8px 0">= B2:B10</p>
+            <div class="nr-cells">
+                <span class="nr-cell">5000</span><span class="nr-cell">6200</span><span class="nr-cell">4800</span>
+                <span class="nr-cell">7100</span><span class="nr-cell">5500</span><span class="nr-cell">8000</span>
+                <span class="nr-cell">4200</span><span class="nr-cell">6800</span><span class="nr-cell">5900</span>
+            </div>
+        </div>
+        <div class="content-card">
+            <h4>فوائد Named Ranges</h4>
+            <ul>
+                <li><strong style="color:var(--accent3)">قراية أسهل:</strong> =SUM(Salaries) أوضح بكتير من =SUM(B2:B100)</li>
+                <li><strong style="color:var(--accent4)">صيانة أسهل:</strong> لو النطاق اتغير، بتعدله في مكان واحد وكل المعادلات بتتحدث</li>
+                <li><strong style="color:var(--accent)">أقل أخطاء:</strong> مفيش خطر إنك تكتب النطاق غلط في معادلة</li>
+                <li><strong style="color:var(--accent5)">Navigation سريع:</strong> تقدر تنقر على الاسم في الـ Name Box وتروح للنطاق فوراً</li>
+                <li><strong style="color:var(--accent3)">بتشتغل مع Data Validation:</strong> تقدر تستخدمها كـ Source للـ Dropdown Lists</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section" id="nr-create-use">
+        <span class="section-label">الإنشاء والاستخدام</span>
+        <h2>إنشاء واستخدام Named Ranges</h2>
+        <h3>الطريقة 1: Name Box (الأسرع)</h3>
+        <div class="content-card">
+            <h4>خطوات الإنشاء عن طريق الـ Name Box</h4>
+            <ol class="steps-list">
+                <li>حدد النطاق اللي عايز تسميه (مثلاً <code style="color:var(--accent)">B2:B50</code>)</li>
+                <li>دوس على الـ <code style="color:var(--accent)">Name Box</code> (الخانة اللي فوق على الشمال اللي فيها عنوان الخلية زي "B2")</li>
+                <li>اكتب الاسم اللي عايزه (مثلاً <code style="color:var(--accent3)">Salaries</code>)</li>
+                <li>دوس <code style="color:var(--accent)">Enter</code> - وخلاص!</li>
+            </ol>
+        </div>
+        <h3>الطريقة 2: Define Name Dialog (أكتر تحكم)</h3>
+        <div class="content-card">
+            <h4>خطوات الإنشاء عن طريق Define Name</h4>
+            <ol class="steps-list">
+                <li>حدد النطاق (مثلاً <code style="color:var(--accent)">A2:D50</code>)</li>
+                <li>روح لتاب <code style="color:var(--accent)">Formulas</code> → <code style="color:var(--accent)">Define Name</code></li>
+                <li>في Name، اكتب اسم النطاق (مثلاً <code style="color:var(--accent3)">EmployeeData</code>)</li>
+                <li>في Scope، اختار هل الاسم لـ Workbook كله أو Sheet معين</li>
+                <li>في Comment، اكتب وصف (اختياري لكن مفيد)</li>
+                <li>في Refers to، تأكد إن النطاق صح</li>
+                <li>دوس OK</li>
+            </ol>
+        </div>
+        <div class="info-box warning">
+            <strong>قواعد تسمية Named Ranges:</strong>
+            <ul style="margin-top:8px">
+                <li>لازم يبدأ بحرف أو underscore (_) - مينفعش يبدأ برقم</li>
+                <li>مفيهوش مسافات - استخدم _ بدل المسافة (مثلاً: <code style="color:var(--accent)">Employee_Salaries</code>)</li>
+                <li>مينفعش يكون زي عنوان خلية (يعني مينفعش تسميه A1 أو AB12)</li>
+                <li>الحد الأقصى 255 حرف (بس خليه قصير وواضح!)</li>
+            </ul>
+        </div>
+        <h3>استخدام Named Ranges في المعادلات</h3>
+        <div class="code-block"><div class="code-header"><span>Excel - استخدام Named Range في المعادلات</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre>=SUM(Salaries)
+=AVERAGE(Salaries)
+=MAX(Salaries)
+=MIN(Salaries)
+=COUNT(Salaries)
+=COUNTIF(Departments,"مبيعات")
+=SUMIF(Departments,"IT",Salaries)</pre>
+        </div>
+        <h3>إدارة Named Ranges</h3>
+        <div class="content-card">
+            <h4>Name Manager</h4>
+            <p>لإدارة كل الأسماء في الملف:</p>
+            <ol class="steps-list">
+                <li>Formulas → <code style="color:var(--accent)">Name Manager</code> (أو اختصار <code style="color:var(--accent4)">Ctrl + F3</code>)</li>
+                <li>هتشوف كل الأسماء المعرّفة مع النطاقات بتاعتها</li>
+                <li>تقدر تعمل New (جديد)، Edit (تعديل)، أو Delete (حذف)</li>
+            </ol>
+        </div>
+    </section>
+
+    <section class="section" id="nr-advanced">
+        <span class="section-label">استخدام متقدم</span>
+        <h2>Named Ranges مع VLOOKUP و Data Validation</h2>
+        <p>القوة الحقيقية لـ Named Ranges بتظهر لما تدمجها مع أدوات تانية زي VLOOKUP والقوائم المنسدلة!</p>
+        <h3>Named Range مع VLOOKUP</h3>
+        <div class="content-card">
+            <h4>مثال عملي</h4>
+            <p>عندك جدول موظفين (الاسم، القسم، المرتب، المدينة) في <code style="color:var(--accent)">A1:D50</code> وسميته <code style="color:var(--accent3)">EmployeeTable</code>:</p>
+            <div class="code-block"><div class="code-header"><span>VLOOKUP مع Named Range</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <pre>=VLOOKUP("أحمد",EmployeeTable,3,0)</pre>
+            </div>
+            <p>بدل ما تكتب <code style="color:var(--text-dim)">VLOOKUP("أحمد",Sheet1!$A$1:$D$50,3,0)</code> اللي طويلة ومحدش هيفهمها!</p>
+        </div>
+        <h3>Named Range مع Data Validation (Dropdown)</h3>
+        <div class="content-card">
+            <h4>إنشاء Dropdown من Named Range</h4>
+            <ol class="steps-list">
+                <li>اكتب قائمة الأقسام في <code style="color:var(--accent)">F1:F5</code> (مبيعات، تسويق، IT، مالية، HR)</li>
+                <li>سمّي النطاق <code style="color:var(--accent3)">DepartmentList</code> (باستخدام Name Box أو Define Name)</li>
+                <li>حدد الخلايا اللي عايز فيها الـ Dropdown</li>
+                <li>Data → Data Validation → List</li>
+                <li>في Source اكتب: <code style="color:var(--accent)">=DepartmentList</code></li>
+                <li>دوس OK - هتلاقي Dropdown بالأقسام!</li>
+            </ol>
+        </div>
+        <div class="info-box success"><strong>الميزة الكبيرة:</strong> لو ضفت قسم جديد في المستقبل، بتضيفه في القائمة الأصلية وتعدّل الـ Named Range - وكل الـ Dropdowns في الملف كله هتتحدث تلقائياً!</div>
+        <h3>Named Range مع SUMIF و COUNTIF</h3>
+        <div class="code-block"><div class="code-header"><span>SUMIF و COUNTIF مع Named Ranges</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre>=SUMIF(Departments,"مبيعات",Salaries)
+=COUNTIF(Cities,"القاهرة")
+=AVERAGEIF(Departments,"IT",Salaries)
+=SUMIFS(Salaries,Departments,"مبيعات",Cities,"القاهرة")</pre>
+        </div>
+        <p>كل المعادلات دي <strong style="color:var(--accent)">واضحة وسهلة القراية</strong> - ده الفرق بين شغل هاوي وشغل احترافي!</p>
+        <h3>Dependent Dropdown Lists (قوائم منسدلة متتابعة)</h3>
+        <div class="content-card">
+            <h4>مثال: اختيار المحافظة ثم المدينة</h4>
+            <p>لو عايز لما المستخدم يختار "القاهرة" تظهرله مدن القاهرة، ولما يختار "الإسكندرية" تظهرله مدن الإسكندرية:</p>
+            <ol class="steps-list">
+                <li>اعمل Named Range لكل محافظة: <code style="color:var(--accent3)">القاهرة</code> = مدن القاهرة، <code style="color:var(--accent3)">الإسكندرية</code> = مدن الإسكندرية</li>
+                <li>في الـ Dropdown التاني (المدينة)، استخدم INDIRECT مع الأول</li>
+                <li>في Source اكتب: <code style="color:var(--accent)">=INDIRECT(A1)</code> (حيث A1 فيها المحافظة المختارة)</li>
+            </ol>
+            <div class="info-box warning"><strong>ملاحظة:</strong> INDIRECT بتاخد نص وتحوله لمرجع. فلو A1 فيها "القاهرة"، <code style="color:var(--accent)">INDIRECT(A1)</code> بترجع النطاق المسمى "القاهرة"!</div>
+        </div>
+    </section>
+
+    <section class="section" id="best-practices">
+        <span class="section-label">نصائح</span>
+        <h2>نصائح عملية وأفضل الممارسات</h2>
+        <h3>نصائح Conditional Formatting</h3>
+        <div class="features-grid">
+            <div class="feature-card"><span class="icon">🎯</span><h4>لا تبالغ</h4><p>2-3 قواعد كفاية لكل نطاق. كتير ألوان بتشتت مش بتوضح!</p></div>
+            <div class="feature-card"><span class="icon">📏</span><h4>ترتيب القواعد</h4><p>رتب القواعد صح في Manage Rules - القاعدة اللي فوق ليها أولوية</p></div>
+            <div class="feature-card"><span class="icon">🔄</span><h4>Stop If True</h4><p>استخدم "Stop If True" لو عايز قاعدة واحدة بس تتطبق على الخلية</p></div>
+        </div>
+        <h3>نصائح Data Validation</h3>
+        <div class="features-grid">
+            <div class="feature-card"><span class="icon">💬</span><h4>اكتب رسائل واضحة</h4><p>دايماً ضيف Input Message و Error Alert - المستخدم لازم يفهم إيه المطلوب</p></div>
+            <div class="feature-card"><span class="icon">📋</span><h4>استخدم Lists</h4><p>لما يكون فيه خيارات محددة، استخدم Dropdown List بدل ما تسيب الإدخال حر</p></div>
+            <div class="feature-card"><span class="icon">🔒</span><h4>احمي الشيت</h4><p>بعد ما تضيف Validation، فعّل Sheet Protection عشان محدش يمسح الـ validation</p></div>
+        </div>
+        <h3>نصائح Named Ranges</h3>
+        <div class="features-grid">
+            <div class="feature-card"><span class="icon">🏷️</span><h4>أسماء واضحة</h4><p>سمّي باسم يوضح المحتوى: Salaries أفضل من MyRange1</p></div>
+            <div class="feature-card"><span class="icon">📊</span><h4>استخدم Tables</h4><p>حوّل البيانات لـ Table (Ctrl+T) - هيعمل Named Range تلقائي وبيتوسع لوحده</p></div>
+            <div class="feature-card"><span class="icon">🗂️</span><h4>نظّم ووثّق</h4><p>استخدم Name Manager بانتظام وامسح الأسماء اللي مش محتاجها</p></div>
+        </div>
+        <div class="content-card">
+            <h4>جدول الاختصارات المهمة</h4>
+            <table class="table-visual">
+                <thead><tr><th>الاختصار</th><th>الوظيفة</th></tr></thead>
+                <tbody>
+                    <tr><td><code style="color:var(--accent)">Ctrl + F3</code></td><td>فتح Name Manager</td></tr>
+                    <tr><td><code style="color:var(--accent)">F3</code></td><td>لصق اسم Named Range في المعادلة</td></tr>
+                    <tr><td><code style="color:var(--accent)">Alt + D + L</code></td><td>فتح Data Validation</td></tr>
+                    <tr><td><code style="color:var(--accent)">Alt + H + L</code></td><td>فتح Conditional Formatting</td></tr>
+                    <tr><td><code style="color:var(--accent)">Ctrl + T</code></td><td>تحويل البيانات لـ Table</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="quote-box">اللي بيفرق بين مستخدم Excel عادي ومحترف: المحترف بيعمل الملف مرة واحدة صح - بتنسيق شرطي واضح، data validation يمنع الأخطاء، وأسماء مفهومة - فأي حد يفتح الملف يقدر يشتغل عليه من غير ما يكسر حاجة!</div>
+    </section>
+
+    <section class="section" id="exercises">
+        <span class="section-label">تمارين</span>
+        <h2>تمارين عملية</h2>
+
+        <div class="exercise-card"><div class="exercise-header" onclick="toggleExercise(this)"><h4>تمرين 1: تلوين درجات الطلاب</h4><span class="exercise-badge easy">سهل</span></div><div class="exercise-body"><p>عندك عمود فيه درجات 20 طالب (من 0 لـ 100). طبّق Conditional Formatting: أكبر من أو يساوي 85 = أخضر (ممتاز)، بين 60 و 84 = أصفر (ناجح)، أقل من 60 = أحمر (راسب).</p><button class="hint-btn" onclick="toggleHint(this)">💡 تلميح</button><div class="hint-content"><p>استخدم Highlight Cells Rules أو New Rule مع Formula لكل حالة. ابدأ بالقاعدة الأهم (أقل من 60 = أحمر) وبعدين أضف الباقي.</p></div><button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button><div class="solution-content"><div class="content-card"><h4>الخطوات:</h4><ol><li>حدد نطاق الدرجات (مثلاً B2:B21)</li><li>Home → Conditional Formatting → New Rule → Use a formula</li><li><strong>القاعدة 1:</strong> <code style="color:var(--accent)">=B2&gt;=85</code> → Format: خلفية خضراء</li><li><strong>القاعدة 2:</strong> <code style="color:var(--accent)">=AND(B2&gt;=60,B2&lt;85)</code> → Format: خلفية صفراء</li><li><strong>القاعدة 3:</strong> <code style="color:var(--accent)">=B2&lt;60</code> → Format: خلفية حمراء</li></ol></div></div></div></div>
+
+        <div class="exercise-card"><div class="exercise-header" onclick="toggleExercise(this)"><h4>تمرين 2: Data Bars للمبيعات</h4><span class="exercise-badge easy">سهل</span></div><div class="exercise-body"><p>عندك عمود فيه مبيعات 10 فروع. أضف Data Bars باللون البرتقالي عشان تشوف المقارنة بسرعة. كمان أضف Icon Set (أسهم) لعمود نسبة النمو.</p><button class="hint-btn" onclick="toggleHint(this)">💡 تلميح</button><div class="hint-content"><p>حدد عمود المبيعات → Conditional Formatting → Data Bars → اختار البرتقالي. لعمود النمو: حدده → Conditional Formatting → Icon Sets → اختار الأسهم.</p></div><button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button><div class="solution-content"><div class="content-card"><h4>الخطوات:</h4><ol><li>حدد عمود المبيعات (مثلاً C2:C11)</li><li>Home → Conditional Formatting → Data Bars → Orange Data Bar</li><li>حدد عمود نسبة النمو (مثلاً D2:D11)</li><li>Home → Conditional Formatting → Icon Sets → 3 Arrows</li><li>لتعديل حدود الأيقونات: Manage Rules → Edit → حدد النسب يدوياً</li></ol></div></div></div></div>
+
+        <div class="exercise-card"><div class="exercise-header" onclick="toggleExercise(this)"><h4>تمرين 3: تلوين الصفوف بالتبادل + تمييز المكتمل</h4><span class="exercise-badge medium">متوسط</span></div><div class="exercise-body"><p>عندك جدول بيانات من A1 لـ E50. المطلوب: الصفوف الزوجية تتلون بلون خفيف (Zebra Stripes). وأي صف فيه عمود "الحالة" (العمود E) يساوي "مكتمل" يتلون بالأخضر.</p><button class="hint-btn" onclick="toggleHint(this)">💡 تلميح</button><div class="hint-content"><p>للصفوف بالتبادل: <code style="color:var(--accent)">=MOD(ROW(),2)=0</code>. للحالة: <code style="color:var(--accent)">=$E1="مكتمل"</code> (لاحظ $ قبل E بس). رتب قاعدة الحالة فوق التبادل في Manage Rules وفعّل Stop If True.</p></div><button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button><div class="solution-content"><div class="content-card"><h4>الخطوات:</h4><ol><li>حدد النطاق A1:E50</li><li><strong>القاعدة 1 (الحالة):</strong> Formula: <code style="color:var(--accent)">=$E1="مكتمل"</code> → خلفية خضراء فاتحة مع Stop If True</li><li><strong>القاعدة 2 (التبادل):</strong> Formula: <code style="color:var(--accent)">=MOD(ROW(),2)=0</code> → خلفية رمادية فاتحة</li><li>في Manage Rules، خلي قاعدة الحالة فوق قاعدة التبادل</li></ol></div></div></div></div>
+
+        <div class="exercise-card"><div class="exercise-header" onclick="toggleExercise(this)"><h4>تمرين 4: إنشاء Dropdown List للأقسام</h4><span class="exercise-badge easy">سهل</span></div><div class="exercise-body"><p>اعمل قائمة منسدلة في عمود "القسم" فيها: (مبيعات، تسويق، تقنية المعلومات، مالية، موارد بشرية). أضف Input Message و Error Alert مناسبين.</p><button class="hint-btn" onclick="toggleHint(this)">💡 تلميح</button><div class="hint-content"><p>Data → Data Validation → List → اكتب القيم مفصولة بفاصلة. لا تنسى تضيف Input Message ("اختر القسم") و Error Alert بنوع Stop.</p></div><button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button><div class="solution-content"><div class="content-card"><h4>الخطوات:</h4><ol><li>حدد عمود القسم (مثلاً C2:C100)</li><li>Data → Data Validation</li><li>Settings: Allow = List, Source = <code style="color:var(--accent)">مبيعات,تسويق,تقنية المعلومات,مالية,موارد بشرية</code></li><li>Input Message: Title = "القسم" | Message = "اختر القسم من القائمة المنسدلة"</li><li>Error Alert: Style = Stop | Title = "خطأ" | Message = "يجب اختيار قسم من القائمة فقط"</li></ol></div></div></div></div>
+
+        <div class="exercise-card"><div class="exercise-header" onclick="toggleExercise(this)"><h4>تمرين 5: Validation للعمر والمرتب والإيميل</h4><span class="exercise-badge medium">متوسط</span></div><div class="exercise-body"><p>أضف Data Validation: عمود العمر (أرقام صحيحة 18-65)، عمود المرتب (أرقام عشرية أكبر من 1500)، عمود الإيميل (لازم يحتوي على @ ونقطة). أضف رسائل إدخال وخطأ لكل عمود.</p><button class="hint-btn" onclick="toggleHint(this)">💡 تلميح</button><div class="hint-content"><p>العمر: Whole Number, Between 18 and 65. المرتب: Decimal, Greater than 1500. الإيميل: Custom مع <code style="color:var(--accent)">=AND(ISNUMBER(FIND("@",D2)),ISNUMBER(FIND(".",D2)))</code></p></div><button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button><div class="solution-content"><div class="content-card"><h4>الخطوات:</h4><ol><li><strong>العمر (B2:B100):</strong> Allow = Whole Number | Between | Min=18, Max=65 | Error: Stop - "العمر لازم يكون بين 18 و 65"</li><li><strong>المرتب (C2:C100):</strong> Allow = Decimal | Greater than 1500 | Error: Stop - "المرتب لا يقل عن 1500"</li><li><strong>الإيميل (D2:D100):</strong> Allow = Custom | Formula: <code style="color:var(--accent)">=AND(ISNUMBER(FIND("@",D2)),ISNUMBER(FIND(".",D2,FIND("@",D2))),LEN(D2)&gt;5)</code> | Error: Stop - "صيغة الإيميل غير صحيحة"</li></ol></div></div></div></div>
+
+        <div class="exercise-card"><div class="exercise-header" onclick="toggleExercise(this)"><h4>تمرين 6: إنشاء Named Ranges واستخدامها</h4><span class="exercise-badge medium">متوسط</span></div><div class="exercise-body"><p>عندك جدول موظفين (الاسم A، القسم B، المرتب C، المدينة D) من صف 2 لصف 50. سمّي عمود المرتبات <code style="color:var(--accent)">Salaries</code>، عمود الأقسام <code style="color:var(--accent)">Departments</code>، الجدول كله <code style="color:var(--accent)">EmpData</code>. اكتب معادلات باستخدام الأسماء.</p><button class="hint-btn" onclick="toggleHint(this)">💡 تلميح</button><div class="hint-content"><p>حدد كل نطاق واكتب الاسم في Name Box. بعدها استخدم: <code style="color:var(--accent)">=SUM(Salaries)</code> و <code style="color:var(--accent)">=AVERAGE(Salaries)</code> و <code style="color:var(--accent)">=COUNTIF(Departments,"IT")</code></p></div><button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button><div class="solution-content"><div class="content-card"><h4>الخطوات:</h4><ol><li>حدد C2:C50 → Name Box: <code style="color:var(--accent)">Salaries</code> → Enter</li><li>حدد B2:B50 → Name Box: <code style="color:var(--accent)">Departments</code> → Enter</li><li>حدد A2:D50 → Name Box: <code style="color:var(--accent)">EmpData</code> → Enter</li></ol><div class="code-block"><div class="code-header"><span>المعادلات</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div><pre>=SUM(Salaries)
+=AVERAGE(Salaries)
+=COUNTIF(Departments,"IT")</pre></div></div></div></div></div>
+
+        <div class="exercise-card"><div class="exercise-header" onclick="toggleExercise(this)"><h4>تمرين 7: Dropdown مع Named Range و Dependent Lists</h4><span class="exercise-badge hard">صعب</span></div><div class="exercise-body"><p>اعمل نظام اختيار متتابع: Dropdown أول فيه المحافظات (القاهرة، الإسكندرية، الجيزة). Dropdown تاني بيتغير حسب المحافظة ويعرض مدنها. استخدم Named Ranges و INDIRECT.</p><button class="hint-btn" onclick="toggleHint(this)">💡 تلميح</button><div class="hint-content"><p>اعمل Named Range لكل محافظة (اسم النطاق = اسم المحافظة بالظبط). في الـ Dropdown التاني استخدم <code style="color:var(--accent)">=INDIRECT(A2)</code> كـ Source. تأكد إن أسماء النطاقات مطابقة للقيم في الـ Dropdown الأول.</p></div><button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button><div class="solution-content"><div class="content-card"><h4>الخطوات التفصيلية:</h4><ol><li>في شيت "Lists": المحافظات في F1:F3، مدن القاهرة في H1:H4، مدن الإسكندرية في I1:I3، مدن الجيزة في J1:J3</li><li>سمّي F1:F3 باسم <code style="color:var(--accent)">Governorates</code></li><li>سمّي H1:H4 باسم <code style="color:var(--accent)">القاهرة</code>، I1:I3 باسم <code style="color:var(--accent)">الإسكندرية</code>، J1:J3 باسم <code style="color:var(--accent)">الجيزة</code></li><li>Dropdown المحافظة (A2): List → Source: <code style="color:var(--accent)">=Governorates</code></li><li>Dropdown المدينة (B2): List → Source: <code style="color:var(--accent)">=INDIRECT(A2)</code></li></ol></div></div></div></div>
+
+        <div class="exercise-card"><div class="exercise-header" onclick="toggleExercise(this)"><h4>تمرين 8: مشروع متكامل - نظام إدارة المبيعات</h4><span class="exercise-badge hard">تحدي</span></div><div class="exercise-body"><p>اعمل ملف Excel متكامل لإدارة المبيعات يشمل كل اللي اتعلمناه: Data Validation (Dropdown للمنتج والفرع، الكمية 1-1000، التاريخ)، Named Ranges (المبيعات، المنتجات، الجدول الكامل)، Conditional Formatting (فوق المتوسط أخضر، تحته أحمر، Data Bars للكمية، Icon Sets للأرباح)، ومعادلات بـ Named Ranges.</p><button class="hint-btn" onclick="toggleHint(this)">💡 تلميح</button><div class="hint-content"><p>ابدأ بشيت "Data" للبيانات وشيت "Lists" للقوائم. اعمل Named Ranges أولاً، بعدها Data Validation، وأخيراً Conditional Formatting. استخدم SUMIF و AVERAGEIF مع Named Ranges للتقارير.</p></div><button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button><div class="solution-content"><div class="content-card"><h4>هيكل المشروع:</h4><ol><li><strong>شيت "Lists":</strong> المنتجات (A1:A10)، الفروع (B1:B5)</li><li><strong>Named Ranges:</strong> ProductList, BranchList, Sales, Products, Branches</li><li><strong>شيت "Data":</strong> التاريخ (A) | المنتج (B - Dropdown) | الفرع (C - Dropdown) | الكمية (D - Whole Number 1-1000) | المبيعات (E) | الربح (F)</li><li><strong>Conditional Formatting:</strong> المبيعات فوق المتوسط أخضر، تحته أحمر، Data Bars للكمية، Icon Sets للأرباح</li></ol><div class="code-block"><div class="code-header"><span>المعادلات النهائية</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div><pre>=SUM(Sales)
+=AVERAGE(Sales)
+=MAX(Sales)
+=SUMIF(Products,"لابتوب",Sales)
+=AVERAGEIF(Branches,"القاهرة",Sales)
+=COUNTIF(Products,"لابتوب")
+=SUMIFS(Sales,Products,"لابتوب",Branches,"القاهرة")</pre></div></div></div></div></div>
+
+        <div class="summary-box">
+            <h3>ملخص اللي اتعلمناه النهاردة</h3>
+            <ul>
+                <li>Conditional Formatting بيغيّر شكل الخلايا تلقائياً حسب قيمها (ألوان، أشرطة، أيقونات)</li>
+                <li>5 أنواع: Highlight Rules, Top/Bottom, Data Bars, Color Scales, Icon Sets</li>
+                <li>تقدر تستخدم معادلات مخصصة مع CF لأي شرط تتخيله</li>
+                <li>Data Validation بيتحكم في نوع البيانات المسموح إدخالها في الخلايا</li>
+                <li>أنواع DV: Whole Number, Decimal, List, Date, Time, Text Length, Custom</li>
+                <li>Dropdown Lists بتسهّل الإدخال وبتمنع الأخطاء الإملائية</li>
+                <li>رسائل الإدخال والخطأ (Stop/Warning/Information) بتوجّه المستخدم</li>
+                <li>Custom Validation بالمعادلات بيفتح إمكانيات لا محدودة</li>
+                <li>Named Ranges بتدي أسماء واضحة للنطاقات بدل العناوين المعقدة</li>
+                <li>Named Ranges بتخلي المعادلات أسهل في القراية والصيانة</li>
+                <li>INDIRECT مع Named Ranges بتعمل Dependent Dropdown Lists</li>
+                <li>Name Manager (Ctrl+F3) لإدارة كل الأسماء في الملف</li>
+            </ul>
+        </div>
+    </section>
+</main>
+<a href="index.html" class="back-btn" title="العودة للخطة">↩</a>
+<script>
+function toggleExercise(h){h.nextElementSibling.classList.toggle('show')}
+function toggleHint(b){const h=b.nextElementSibling;h.classList.toggle('show');b.textContent=h.classList.contains('show')?'🙈 إخفاء':'💡 تلميح'}
+function toggleSolution(b){const s=b.nextElementSibling;s.classList.toggle('show');b.textContent=s.classList.contains('show')?'🔒 إخفاء':'🔓 الحل'}
+function copyCode(b){const c=b.closest('.code-block').querySelector('pre').textContent;navigator.clipboard.writeText(c).then(()=>{b.textContent='تم ✓';setTimeout(()=>b.textContent='نسخ',2000)})}
+const sections=document.querySelectorAll('.section[id]');const navLinks=document.querySelectorAll('.sidebar-nav a');
+window.addEventListener('scroll',()=>{let c='';sections.forEach(s=>{if(pageYOffset>=s.offsetTop-100)c=s.getAttribute('id')});navLinks.forEach(l=>{l.classList.remove('active');if(l.getAttribute('href')==='#'+c)l.classList.add('active')})});
+</script>
+</body>
+</html>

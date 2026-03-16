@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Macros و Data Analysis و What-If - اليوم السادس</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root{--bg:#06060f;--bg-card:#0d0d1f;--bg-code:#0a0a1a;--border:#1a1a3e;--text:#e2e2f0;--text-dim:#8888aa;--accent:#a855f7;--accent2:#4d8cff;--accent3:#00d47e;--accent4:#ff8c00;--accent5:#ff4d4d;--glow:0 0 30px rgba(168,85,247,0.15)}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);line-height:1.8;min-height:100vh}
+        .sidebar{position:fixed;top:0;right:0;width:300px;height:100vh;background:var(--bg-card);border-left:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:100;transition:transform .3s}
+        .sidebar-header{padding:0 24px 20px;border-bottom:1px solid var(--border);margin-bottom:16px}
+        .sidebar-header h3{font-size:1rem;color:var(--accent);margin-bottom:4px}
+        .sidebar-header p{font-size:.8rem;color:var(--text-dim)}
+        .sidebar-nav a{display:flex;align-items:center;gap:10px;padding:10px 24px;color:var(--text-dim);text-decoration:none;font-size:.85rem;transition:all .2s;border-right:3px solid transparent}
+        .sidebar-nav a:hover,.sidebar-nav a.active{color:var(--text);background:rgba(168,85,247,.05);border-right-color:var(--accent)}
+        .sidebar-nav .num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--border);font-size:.7rem;font-weight:700;color:var(--accent);flex-shrink:0}
+        .sidebar-toggle{display:none;position:fixed;top:20px;right:20px;z-index:200;background:var(--accent);border:none;color:#fff;width:44px;height:44px;border-radius:12px;font-size:1.3rem;cursor:pointer}
+        .main{margin-right:300px}
+        .hero{padding:80px 60px 60px;background:linear-gradient(135deg,rgba(168,85,247,.08),rgba(77,140,255,.06));border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+        .hero::before{content:'';position:absolute;top:-100px;left:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(168,85,247,.06),transparent 70%);pointer-events:none}
+        .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);padding:6px 16px;border-radius:100px;font-size:.85rem;color:var(--accent);margin-bottom:20px}
+        .hero h1{font-size:2.5rem;font-weight:900;margin-bottom:16px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .hero p{font-size:1.1rem;color:var(--text-dim);max-width:600px}
+        .section{padding:60px;border-bottom:1px solid var(--border)}
+        .section-label{display:inline-flex;align-items:center;gap:8px;font-size:.8rem;color:var(--accent);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;font-weight:700}
+        .section h2{font-size:1.8rem;font-weight:800;margin-bottom:24px}
+        .section h3{font-size:1.3rem;font-weight:700;margin:24px 0 16px;color:var(--accent2)}
+        .section p,.section li{font-size:1rem;color:var(--text-dim);margin-bottom:12px}
+        .section ul,.section ol{padding-right:24px;margin-bottom:16px}
+        .content-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;margin:20px 0;box-shadow:var(--glow)}
+        .content-card h4{font-size:1.1rem;color:var(--accent);margin-bottom:16px}
+        .code-block{background:var(--bg-code);border:1px solid var(--border);border-radius:12px;margin:16px 0;overflow:hidden}
+        .code-header{display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--border)}
+        .code-header span{font-size:.8rem;color:var(--text-dim)}
+        .code-header .copy-btn{background:rgba(77,140,255,.1);border:1px solid rgba(77,140,255,.2);color:var(--accent2);padding:4px 12px;border-radius:6px;font-size:.75rem;cursor:pointer;font-family:'Cairo',sans-serif;transition:all .2s}
+        .code-header .copy-btn:hover{background:rgba(77,140,255,.2)}
+        .code-block pre{padding:20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.9rem;line-height:1.7;direction:ltr;text-align:left}
+        .kw{color:#ff7b72;font-weight:700}.str{color:#a5d6ff}.cm{color:#6a737d;font-style:italic}.num{color:#79c0ff}.fn{color:#d2a8ff}.tp{color:#ff8c00}.op{color:#ff4d4d}.tbl{color:#00d47e}
+        .info-box{background:rgba(77,140,255,.05);border:1px solid rgba(77,140,255,.15);border-radius:12px;padding:20px 24px;margin:16px 0}
+        .info-box.warning{background:rgba(255,140,0,.05);border-color:rgba(255,140,0,.15)}
+        .info-box.success{background:rgba(0,212,126,.05);border-color:rgba(0,212,126,.15)}
+        .info-box.danger{background:rgba(255,77,77,.05);border-color:rgba(255,77,77,.15)}
+        .info-box strong{color:var(--accent2)}
+        .info-box.warning strong{color:var(--accent4)}
+        .info-box.success strong{color:var(--accent3)}
+        .info-box.danger strong{color:var(--accent5)}
+        .quote-box{border-right:4px solid var(--accent);background:rgba(168,85,247,.05);padding:20px 24px;border-radius:0 12px 12px 0;margin:16px 0;font-style:italic}
+        .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin:20px 0}
+        .feature-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;text-align:center;transition:all .3s}
+        .feature-card:hover{border-color:var(--accent);transform:translateY(-4px)}
+        .feature-card .icon{font-size:2.5rem;margin-bottom:16px}
+        .feature-card h4{color:var(--accent);margin-bottom:8px;font-size:1.1rem}
+        .feature-card p{font-size:.85rem;color:var(--text-dim)}
+        .analogy-box{background:linear-gradient(135deg,rgba(168,85,247,.08),rgba(77,140,255,.08));border:1px solid rgba(168,85,247,.2);border-radius:16px;padding:28px;margin:24px 0}
+        .analogy-box h4{color:var(--accent);font-size:1.1rem;margin-bottom:12px}
+        .analogy-box .emoji{font-size:2rem;margin-bottom:12px;display:block}
+        .table-visual{background:var(--bg-code);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:16px 0}
+        .table-visual table{width:100%;border-collapse:collapse;direction:ltr;text-align:center}
+        .table-visual th{background:rgba(168,85,247,.1);padding:10px 16px;border:1px solid var(--border);font-size:.85rem;color:var(--accent)}
+        .table-visual td{padding:10px 16px;border:1px solid var(--border);font-size:.9rem;font-family:'JetBrains Mono',monospace}
+        .table-visual td.highlight{background:rgba(168,85,247,.12);color:var(--accent);font-weight:700}
+        .table-visual td.highlight-green{background:rgba(0,212,126,.1);color:var(--accent3);font-weight:700}
+        .table-visual td.highlight-blue{background:rgba(77,140,255,.1);color:var(--accent2);font-weight:700}
+        .table-visual td.highlight-orange{background:rgba(255,140,0,.1);color:var(--accent4);font-weight:700}
+        .table-visual td.highlight-red{background:rgba(255,77,77,.1);color:var(--accent5);font-weight:700}
+        .table-visual .row-num{color:var(--text-dim);font-size:.75rem;background:rgba(255,255,255,.02)}
+        .vs-container{display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:start;margin:24px 0}
+        .vs-side{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px}
+        .vs-side h4{font-size:1.2rem;margin-bottom:16px}
+        .vs-side.left h4{color:var(--accent4)}.vs-side.right h4{color:var(--accent)}
+        .vs-side ul{list-style:none;padding:0}
+        .vs-side li{padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);color:var(--text-dim);font-size:.95rem}
+        .vs-badge{background:var(--accent);color:#fff;padding:10px 16px;border-radius:50%;font-weight:900;font-size:1rem;align-self:center}
+        .exercise-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;margin:20px 0;overflow:hidden}
+        .exercise-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;cursor:pointer;transition:background .2s}
+        .exercise-header:hover{background:rgba(168,85,247,.03)}
+        .exercise-header h4{color:var(--text);font-size:1rem}
+        .exercise-badge{padding:4px 12px;border-radius:100px;font-size:.75rem;font-weight:700}
+        .exercise-badge.easy{background:rgba(0,212,126,.1);color:var(--accent3)}
+        .exercise-badge.medium{background:rgba(255,140,0,.1);color:var(--accent4)}
+        .exercise-badge.hard{background:rgba(255,77,77,.1);color:var(--accent5)}
+        .exercise-body{display:none;padding:0 24px 24px;border-top:1px solid var(--border)}
+        .exercise-body.show{display:block}
+        .exercise-body p{padding-top:16px}
+        .hint-btn,.solution-toggle{background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);color:var(--accent);padding:8px 20px;border-radius:8px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.85rem;margin-top:12px;margin-left:8px;transition:all .2s}
+        .hint-btn:hover,.solution-toggle:hover{background:rgba(168,85,247,.2)}
+        .hint-content,.solution-content{display:none;margin-top:12px}
+        .hint-content.show,.solution-content.show{display:block}
+        .summary-box{background:linear-gradient(135deg,rgba(168,85,247,.06),rgba(77,140,255,.06));border:1px solid rgba(168,85,247,.15);border-radius:16px;padding:32px;margin:24px 0}
+        .summary-box h3{color:var(--accent);margin-bottom:16px}
+        .summary-box ul{list-style:none;padding:0}
+        .summary-box li{padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);color:var(--text-dim)}
+        .summary-box li::before{content:'\2705 '}
+        .steps-list{list-style:none;padding:0;counter-reset:step}
+        .steps-list li{counter-increment:step;padding:16px 16px 16px 0;margin:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:16px}
+        .steps-list li::before{content:counter(step);display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:36px;border-radius:50%;background:rgba(168,85,247,.15);color:var(--accent);font-weight:800;font-size:.9rem;flex-shrink:0}
+        .step-flow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:20px 0;direction:ltr}
+        .step-flow .step{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;text-align:center;flex:1;min-width:150px}
+        .step-flow .step .step-num{display:block;font-size:.75rem;color:var(--accent);font-weight:700;margin-bottom:6px}
+        .step-flow .step .step-text{font-size:.85rem;color:var(--text-dim)}
+        .step-flow .step code{font-family:'JetBrains Mono',monospace;color:var(--accent2);font-size:.8rem}
+        .step-flow .arrow{color:var(--accent);font-size:1.3rem;flex-shrink:0}
+        .back-btn{position:fixed;bottom:30px;left:30px;background:var(--accent);color:#fff;border:none;width:50px;height:50px;border-radius:50%;font-size:1.3rem;cursor:pointer;z-index:200;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 4px 20px rgba(168,85,247,.3);transition:transform .2s}
+        .back-btn:hover{transform:scale(1.1)}
+        @media(max-width:768px){.sidebar{transform:translateX(100%)}.sidebar.open{transform:translateX(0)}.sidebar-toggle{display:flex;align-items:center;justify-content:center}.main{margin-right:0}.hero{padding:60px 24px 40px}.hero h1{font-size:1.8rem}.section{padding:40px 24px}.vs-container{grid-template-columns:1fr}.vs-badge{justify-self:center}.step-flow{flex-direction:column}.step-flow .arrow{transform:rotate(90deg)}.features-grid{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+
+<button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">&#9776;</button>
+
+<aside class="sidebar">
+    <div class="sidebar-header"><h3>Macros &amp; Data Analysis</h3><p>اليوم السادس</p></div>
+    <nav class="sidebar-nav">
+        <a href="#intro"><span class="num">1</span> مقدمة</a>
+        <a href="#what-macros"><span class="num">2</span> إيه هي Macros؟</a>
+        <a href="#record-macro"><span class="num">3</span> تسجيل أول Macro</a>
+        <a href="#run-macro"><span class="num">4</span> تشغيل Macro</a>
+        <a href="#vba-peek"><span class="num">5</span> نظرة على VBA</a>
+        <a href="#macro-examples"><span class="num">6</span> أمثلة عملية</a>
+        <a href="#save-macro"><span class="num">7</span> حفظ ملف Macros</a>
+        <a href="#data-analysis"><span class="num">8</span> Data Analysis</a>
+        <a href="#descriptive"><span class="num">9</span> Descriptive Statistics</a>
+        <a href="#histogram"><span class="num">10</span> Histogram</a>
+        <a href="#whatif-intro"><span class="num">11</span> What-If Analysis</a>
+        <a href="#goal-seek"><span class="num">12</span> Goal Seek</a>
+        <a href="#data-tables"><span class="num">13</span> Data Tables</a>
+        <a href="#scenario-manager"><span class="num">14</span> Scenario Manager</a>
+        <a href="#exercises"><span class="num">15</span> تمارين</a>
+    </nav>
+</aside>
+
+<main class="main">
+
+    <!-- ===== HERO ===== -->
+    <section class="hero">
+        <div class="hero-badge">&#128202; اليوم السادس</div>
+        <h1>Macros و Data Analysis</h1>
+        <p>أتمتة المهام وتحليل البيانات واستكشاف السيناريوهات</p>
+    </section>
+
+    <!-- ===== SECTION 1: مقدمة ===== -->
+    <section class="section" id="intro">
+        <span class="section-label">المقدمة</span>
+        <h2>مقدمة</h2>
+
+        <p>النهاردة هنتعلم تلات أدوات قوية جداً في Excel بتحولك من مستخدم عادي لمستخدم محترف. الأدوات دي بتسمحلك <strong style="color:var(--accent)">تأتمت المهام المتكررة</strong>، <strong style="color:var(--accent2)">تحلل البيانات إحصائياً</strong>، و<strong style="color:var(--accent3)">تستكشف سيناريوهات مختلفة</strong> عشان تاخد قرارات أفضل.</p>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="icon">&#9881;&#65039;</span>
+                <h4>Macros - أتمتة</h4>
+                <p>سجل خطواتك مرة واحدة وخلي Excel يكررها تلقائياً. وفر ساعات من الشغل اليدوي المتكرر.</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">&#128200;</span>
+                <h4>Data Analysis - تحليل</h4>
+                <p>أدوات إحصائية متقدمة: المتوسط، الانحراف المعياري، التوزيعات التكرارية، والارتباط.</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">&#128302;</span>
+                <h4>What-If - سيناريوهات</h4>
+                <p>استكشف "ماذا لو؟" - غير المدخلات وشوف تأثيرها على النتائج قبل ما تاخد قرار.</p>
+            </div>
+        </div>
+
+        <div class="quote-box">
+            "المحترف مش اللي بيشتغل أكتر، المحترف اللي بيخلي الكمبيوتر يشتغل بداله. Macros بتأتمت الشغل، Data Analysis بتحلل البيانات، و What-If بتساعدك تاخد قرارات ذكية."
+        </div>
+    </section>
+
+    <!-- ===== SECTION 2: إيه هي Macros؟ ===== -->
+    <section class="section" id="what-macros">
+        <span class="section-label">الأتمتة</span>
+        <h2>إيه هي Macros؟</h2>
+
+        <p>الـ <strong style="color:var(--accent)">Macro</strong> هو مجموعة من الأوامر والإجراءات اللي بتتسجل عشان Excel ينفذها تلقائياً. بدل ما تعمل نفس الخطوات كل يوم يدوياً، بتسجلها مرة واحدة وبعدها بتشغلها بضغطة زر!</p>
+
+        <div class="analogy-box">
+            <span class="emoji">&#127859;</span>
+            <h4>تشبيه: الـ Macro زي الوصفة!</h4>
+            <p>تخيل إنك بتعمل كيكة كل أسبوع. بدل ما تفتكر الخطوات كل مرة، بتكتب الوصفة مرة واحدة وبتتبعها. الـ Macro هو نفس الفكرة - بتسجل الخطوات مرة واحدة و Excel بيتبعها بالظبط كل مرة تشغلها!</p>
+        </div>
+
+        <div class="content-card">
+            <h4>إيه اللي بيحصل ورا الكواليس؟</h4>
+            <p>لما بتسجل Macro، Excel بيحول كل حركة بتعملها لكود بلغة اسمها <strong style="color:var(--accent2)">VBA (Visual Basic for Applications)</strong>. مش لازم تعرف تكتب VBA عشان تستخدم Macros - بس لو فهمت الأساسيات هتقدر تعدل وتحسن الـ Macros بتاعتك.</p>
+            <ul>
+                <li><strong style="color:var(--accent)">تسجيل تلقائي:</strong> Excel بيراقب كل حاجة بتعملها وبيحولها لكود VBA</li>
+                <li><strong style="color:var(--accent)">تنفيذ سريع:</strong> الـ Macro بينفذ الخطوات في ثواني حتى لو كانت بتاخد منك ساعة</li>
+                <li><strong style="color:var(--accent)">بدون أخطاء:</strong> الكمبيوتر مش بينسى خطوة ومش بيغلط في التنسيق</li>
+                <li><strong style="color:var(--accent)">قابل للتعديل:</strong> تقدر تفتح الكود وتعدله يدوياً لو محتاج</li>
+            </ul>
+        </div>
+
+        <h3>أمثلة على مهام ممكن تأتمتها</h3>
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="icon">&#127912;</span>
+                <h4>تنسيق التقارير</h4>
+                <p>Bold للعناوين، ألوان، حدود، عرض الأعمدة - كله بضغطة زر</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">&#128424;&#65039;</span>
+                <h4>طباعة جاهزة</h4>
+                <p>ضبط إعدادات الطباعة، الهوامش، Header/Footer تلقائياً</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">&#129529;</span>
+                <h4>تنظيف البيانات</h4>
+                <p>حذف الصفوف الفارغة، توحيد التنسيق، إزالة المسافات الزائدة</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SECTION 3: تسجيل أول Macro ===== -->
+    <section class="section" id="record-macro">
+        <span class="section-label">خطوة بخطوة</span>
+        <h2>تسجيل أول Macro</h2>
+
+        <p>خلينا نسجل أول Macro مع بعض! هنعمل Macro بسيط بيقوم بتنسيق خلية (Bold + لون خلفية + توسيط).</p>
+
+        <div class="content-card">
+            <h4>الطريقة الأولى: من تاب View</h4>
+            <ol class="steps-list">
+                <li>افتح ملف Excel جديد واكتب أي بيانات في الخلايا</li>
+                <li>روح لتاب <code style="color:var(--accent)">View</code> في الشريط العلوي</li>
+                <li>دوس على <code style="color:var(--accent)">Macros</code> واختار <code style="color:var(--accent)">Record Macro</code></li>
+                <li>هتظهر نافذة - اكتب اسم الـ Macro (مثلاً <code style="color:var(--accent3)">FormatHeader</code>) بدون مسافات</li>
+                <li>اختار Shortcut Key (اختياري) - مثلاً <code style="color:var(--accent4)">Ctrl+Shift+H</code></li>
+                <li>في Store macro in اختار <code style="color:var(--accent2)">This Workbook</code></li>
+                <li>دوس <code style="color:var(--accent)">OK</code> - التسجيل بدأ دلوقتي!</li>
+                <li>نفذ الخطوات اللي عايز تسجلها: اعمل Bold، غير لون الخلفية، وسط النص</li>
+                <li>لما تخلص، روح <code style="color:var(--accent)">View</code> &#8594; <code style="color:var(--accent)">Macros</code> &#8594; <code style="color:var(--accent)">Stop Recording</code></li>
+            </ol>
+        </div>
+
+        <div class="content-card">
+            <h4>الطريقة الثانية: من تاب Developer</h4>
+            <ol class="steps-list">
+                <li>لو تاب Developer مش ظاهر: <code style="color:var(--accent)">File</code> &#8594; <code style="color:var(--accent)">Options</code> &#8594; <code style="color:var(--accent)">Customize Ribbon</code> &#8594; فعّل <code style="color:var(--accent3)">Developer</code></li>
+                <li>روح لتاب <code style="color:var(--accent)">Developer</code></li>
+                <li>دوس على <code style="color:var(--accent)">Record Macro</code></li>
+                <li>نفس الخطوات السابقة: اسم، اختصار، مكان الحفظ</li>
+                <li>نفذ الخطوات اللي عايز تسجلها</li>
+                <li>دوس <code style="color:var(--accent)">Stop Recording</code> من تاب Developer</li>
+            </ol>
+        </div>
+
+        <div class="info-box warning">
+            <strong>نصيحة مهمة:</strong> قبل ما تبدأ التسجيل، خطط الخطوات اللي هتعملها. لأن الـ Macro بيسجل <strong>كل</strong> حاجة بتعملها - حتى الأخطاء! لو غلطت وعملت Undo أثناء التسجيل، الـ Undo نفسه هيتسجل.
+        </div>
+
+        <div class="info-box">
+            <strong>قواعد تسمية الـ Macro:</strong> الاسم لازم يبدأ بحرف (مش رقم)، مفيهوش مسافات (استخدم _ بدل المسافة)، ومش بيقبل رموز خاصة. أمثلة صحيحة: <code style="color:var(--accent3)">Format_Report</code>، <code style="color:var(--accent3)">CleanData</code>، <code style="color:var(--accent3)">MonthlyReport1</code>.
+        </div>
+    </section>
+
+    <!-- ===== SECTION 4: تشغيل Macro ===== -->
+    <section class="section" id="run-macro">
+        <span class="section-label">التشغيل</span>
+        <h2>تشغيل Macro</h2>
+
+        <p>بعد ما سجلت الـ Macro، عندك أكتر من طريقة تشغله:</p>
+
+        <div class="content-card">
+            <h4>الطريقة 1: من قائمة Macros</h4>
+            <ol class="steps-list">
+                <li>روح <code style="color:var(--accent)">View</code> &#8594; <code style="color:var(--accent)">Macros</code> &#8594; <code style="color:var(--accent)">View Macros</code> (أو اضغط <code style="color:var(--accent4)">Alt+F8</code>)</li>
+                <li>اختار الـ Macro اللي عايز تشغله من القائمة</li>
+                <li>دوس <code style="color:var(--accent)">Run</code></li>
+            </ol>
+        </div>
+
+        <div class="content-card">
+            <h4>الطريقة 2: اختصار الكيبورد</h4>
+            <p>لو حددت Shortcut Key وقت التسجيل (مثلاً <code style="color:var(--accent4)">Ctrl+Shift+H</code>)، بتضغط الاختصار وبيشتغل فوراً. دي أسرع طريقة!</p>
+        </div>
+
+        <div class="content-card">
+            <h4>الطريقة 3: ربط الـ Macro بزرار (Button)</h4>
+            <ol class="steps-list">
+                <li>روح تاب <code style="color:var(--accent)">Developer</code> &#8594; <code style="color:var(--accent)">Insert</code> &#8594; اختار <code style="color:var(--accent)">Button (Form Control)</code></li>
+                <li>ارسم الزرار على الشيت بالماوس</li>
+                <li>هتظهر نافذة - اختار الـ Macro اللي عايز تربطه بالزرار</li>
+                <li>دوس <code style="color:var(--accent)">OK</code></li>
+                <li>كلك يمين على الزرار &#8594; <code style="color:var(--accent)">Edit Text</code> عشان تغير النص اللي عليه</li>
+            </ol>
+            <div class="info-box success">
+                <strong>الأفضل للمستخدمين:</strong> لو هتشارك الملف مع ناس تانية، الزرار هو أسهل طريقة عشان أي حد يقدر يشغل الـ Macro بدون ما يعرف اختصارات أو يفتح قوائم.
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h4>الطريقة 4: من تاب Developer</h4>
+            <p>روح تاب <code style="color:var(--accent)">Developer</code> &#8594; <code style="color:var(--accent)">Macros</code> &#8594; اختار الـ Macro &#8594; <code style="color:var(--accent)">Run</code>. نفس الطريقة الأولى بس من مكان مختلف.</p>
+        </div>
+    </section>
+
+    <!-- ===== SECTION 5: نظرة على VBA ===== -->
+    <section class="section" id="vba-peek">
+        <span class="section-label">ورا الكواليس</span>
+        <h2>نظرة على VBA</h2>
+
+        <p>مش لازم تبقى خبير VBA عشان تستخدم Macros. بس فهم الأساسيات هيساعدك <strong style="color:var(--accent)">تعدل</strong> الـ Macros المسجلة وتحسنها.</p>
+
+        <div class="content-card">
+            <h4>فتح محرر VBA</h4>
+            <p>اضغط <code style="color:var(--accent4)">Alt+F11</code> عشان تفتح محرر VBA. هتلاقي الكود بتاع الـ Macros في <code style="color:var(--accent)">Modules</code> على الشمال.</p>
+        </div>
+
+        <h3>هيكل كود الـ Macro</h3>
+        <p>كل Macro بيبدأ بـ <code style="color:var(--accent)">Sub</code> وبينتهي بـ <code style="color:var(--accent)">End Sub</code>:</p>
+
+        <div class="code-block">
+            <div class="code-header"><span>VBA Code</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">Sub</span> <span class="fn">FormatHeader</span>()
+<span class="cm">'</span>
+<span class="cm">' FormatHeader Macro</span>
+<span class="cm">' تنسيق العناوين</span>
+<span class="cm">'</span>
+    Selection.<span class="fn">Font</span>.<span class="tbl">Bold</span> = <span class="kw">True</span>
+    Selection.<span class="fn">Font</span>.<span class="tbl">Size</span> = <span class="num">14</span>
+    Selection.<span class="fn">Font</span>.<span class="tbl">Color</span> = <span class="fn">RGB</span>(<span class="num">255</span>, <span class="num">255</span>, <span class="num">255</span>)
+    Selection.<span class="fn">Interior</span>.<span class="tbl">Color</span> = <span class="fn">RGB</span>(<span class="num">0</span>, <span class="num">0</span>, <span class="num">128</span>)
+    Selection.<span class="fn">HorizontalAlignment</span> = <span class="tbl">xlCenter</span>
+<span class="kw">End Sub</span></pre>
+        </div>
+
+        <h3>تعديلات بسيطة تقدر تعملها</h3>
+
+        <div class="content-card">
+            <h4>تغيير نطاق الخلايا</h4>
+            <div class="code-block">
+                <div class="code-header"><span>VBA Code</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <pre><span class="cm">' بدل ما يشتغل على الخلية المحددة بس</span>
+Selection.<span class="fn">Font</span>.<span class="tbl">Bold</span> = <span class="kw">True</span>
+
+<span class="cm">' خليه يشتغل على نطاق محدد</span>
+<span class="fn">Range</span>(<span class="str">"A1:D1"</span>).<span class="fn">Font</span>.<span class="tbl">Bold</span> = <span class="kw">True</span></pre>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h4>تغيير القيم والألوان</h4>
+            <div class="code-block">
+                <div class="code-header"><span>VBA Code</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <pre><span class="cm">' تغيير حجم الخط</span>
+<span class="fn">Range</span>(<span class="str">"A1"</span>).<span class="fn">Font</span>.<span class="tbl">Size</span> = <span class="num">16</span>
+
+<span class="cm">' تغيير لون الخلفية (أحمر)</span>
+<span class="fn">Range</span>(<span class="str">"A1"</span>).<span class="fn">Interior</span>.<span class="tbl">Color</span> = <span class="fn">RGB</span>(<span class="num">255</span>, <span class="num">0</span>, <span class="num">0</span>)
+
+<span class="cm">' كتابة قيمة في خلية</span>
+<span class="fn">Range</span>(<span class="str">"A1"</span>).<span class="tbl">Value</span> = <span class="str">"التقرير الشهري"</span></pre>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <strong>مش لازم تحفظ كل ده:</strong> الهدف إنك تفهم الهيكل العام. لما تسجل Macro وتفتح الكود، هتقدر تتعرف على الأجزاء وتعدلها. مع الوقت هتتعلم أكتر وأكتر.
+        </div>
+    </section>
+
+    <!-- ===== SECTION 6: أمثلة عملية على Macros ===== -->
+    <section class="section" id="macro-examples">
+        <span class="section-label">تطبيقات عملية</span>
+        <h2>أمثلة عملية على Macros</h2>
+
+        <h3>مثال 1: تنسيق تقرير كامل</h3>
+        <p>Macro بيعمل تنسيق احترافي لأول صف (العناوين) مع حدود لكل الجدول:</p>
+
+        <div class="code-block">
+            <div class="code-header"><span>VBA Code</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">Sub</span> <span class="fn">FormatReport</span>()
+    <span class="cm">' تنسيق صف العناوين</span>
+    <span class="fn">Rows</span>(<span class="num">1</span>).<span class="fn">Font</span>.<span class="tbl">Bold</span> = <span class="kw">True</span>
+    <span class="fn">Rows</span>(<span class="num">1</span>).<span class="fn">Font</span>.<span class="tbl">Size</span> = <span class="num">12</span>
+    <span class="fn">Rows</span>(<span class="num">1</span>).<span class="fn">Interior</span>.<span class="tbl">Color</span> = <span class="fn">RGB</span>(<span class="num">0</span>, <span class="num">51</span>, <span class="num">102</span>)
+    <span class="fn">Rows</span>(<span class="num">1</span>).<span class="fn">Font</span>.<span class="tbl">Color</span> = <span class="fn">RGB</span>(<span class="num">255</span>, <span class="num">255</span>, <span class="num">255</span>)
+    <span class="fn">Rows</span>(<span class="num">1</span>).<span class="fn">HorizontalAlignment</span> = <span class="tbl">xlCenter</span>
+
+    <span class="cm">' إضافة حدود للجدول</span>
+    <span class="fn">ActiveSheet</span>.<span class="fn">UsedRange</span>.<span class="fn">Borders</span>.<span class="tbl">LineStyle</span> = <span class="tbl">xlContinuous</span>
+    <span class="fn">ActiveSheet</span>.<span class="fn">UsedRange</span>.<span class="fn">Borders</span>.<span class="tbl">Weight</span> = <span class="tbl">xlThin</span>
+
+    <span class="cm">' ضبط عرض الأعمدة تلقائياً</span>
+    <span class="fn">Cells</span>.<span class="fn">EntireColumn</span>.<span class="fn">AutoFit</span>
+<span class="kw">End Sub</span></pre>
+        </div>
+
+        <h3>مثال 2: مسح وإعادة تعيين فورم</h3>
+        <p>Macro بيمسح بيانات معينة ويرجع الخلايا لحالتها الأصلية:</p>
+
+        <div class="code-block">
+            <div class="code-header"><span>VBA Code</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">Sub</span> <span class="fn">ClearForm</span>()
+    <span class="cm">' مسح خلايا الإدخال بس (مش العناوين)</span>
+    <span class="fn">Range</span>(<span class="str">"B2:B10"</span>).<span class="fn">ClearContents</span>
+    <span class="fn">Range</span>(<span class="str">"D2:D10"</span>).<span class="fn">ClearContents</span>
+
+    <span class="cm">' إرجاع المؤشر لأول خلية إدخال</span>
+    <span class="fn">Range</span>(<span class="str">"B2"</span>).<span class="fn">Select</span>
+
+    <span class="cm">' رسالة تأكيد</span>
+    <span class="fn">MsgBox</span> <span class="str">"تم مسح البيانات بنجاح!"</span>
+<span class="kw">End Sub</span></pre>
+        </div>
+
+        <h3>مثال 3: حفظ تلقائي بالتاريخ والوقت</h3>
+        <p>Macro بيحفظ نسخة من الملف باسم فيه التاريخ والوقت:</p>
+
+        <div class="code-block">
+            <div class="code-header"><span>VBA Code</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="kw">Sub</span> <span class="fn">SaveWithTimestamp</span>()
+    <span class="kw">Dim</span> <span class="tbl">fileName</span> <span class="kw">As String</span>
+    <span class="kw">Dim</span> <span class="tbl">savePath</span> <span class="kw">As String</span>
+
+    <span class="cm">' إنشاء اسم الملف بالتاريخ</span>
+    <span class="tbl">fileName</span> = <span class="str">"Report_"</span> &amp; <span class="fn">Format</span>(<span class="fn">Now</span>, <span class="str">"yyyy-mm-dd_hh-mm"</span>)
+    <span class="tbl">savePath</span> = <span class="fn">ThisWorkbook</span>.<span class="tbl">Path</span> &amp; <span class="str">"\"</span> &amp; <span class="tbl">fileName</span> &amp; <span class="str">".xlsm"</span>
+
+    <span class="cm">' حفظ نسخة</span>
+    <span class="fn">ThisWorkbook</span>.<span class="fn">SaveCopyAs</span> <span class="tbl">savePath</span>
+
+    <span class="fn">MsgBox</span> <span class="str">"تم الحفظ: "</span> &amp; <span class="tbl">fileName</span>
+<span class="kw">End Sub</span></pre>
+        </div>
+
+        <div class="info-box success">
+            <strong>ملاحظة:</strong> الأمثلة دي تقدر تسجلها بالـ Macro Recorder (ماعدا مثال 3 اللي محتاج كتابة يدوية). جرب تسجل الخطوات وبعدين قارن الكود الناتج بالأمثلة فوق!
+        </div>
+    </section>
+
+    <!-- ===== SECTION 7: حفظ ملف يحتوي Macros ===== -->
+    <section class="section" id="save-macro">
+        <span class="section-label">حفظ الملف</span>
+        <h2>حفظ ملف يحتوي Macros</h2>
+
+        <p>لو ملفك فيه Macros، <strong style="color:var(--accent5)">مش هينفع تحفظه كملف .xlsx عادي</strong>. لازم تحفظه بصيغة خاصة!</p>
+
+        <div class="content-card">
+            <h4>صيغة الحفظ الصحيحة</h4>
+            <ol class="steps-list">
+                <li>اضغط <code style="color:var(--accent)">File</code> &#8594; <code style="color:var(--accent)">Save As</code></li>
+                <li>في Save as type، اختار <code style="color:var(--accent3)">Excel Macro-Enabled Workbook (*.xlsm)</code></li>
+                <li>اختار مكان الحفظ واضغط <code style="color:var(--accent)">Save</code></li>
+            </ol>
+        </div>
+
+        <div class="vs-container">
+            <div class="vs-side left">
+                <h4>.xlsx (عادي)</h4>
+                <ul>
+                    <li>&#10060; مش بيحفظ Macros</li>
+                    <li>&#10060; لو حفظت بيها، الـ Macros هتتمسح</li>
+                    <li>&#9989; آمن - مفيهوش كود ممكن يكون ضار</li>
+                </ul>
+            </div>
+            <div class="vs-badge">VS</div>
+            <div class="vs-side right">
+                <h4>.xlsm (Macro-Enabled)</h4>
+                <ul>
+                    <li>&#9989; بيحفظ الـ Macros كاملة</li>
+                    <li>&#9989; بيشتغل عادي زي .xlsx</li>
+                    <li>&#9888;&#65039; محتاج تفعيل Macros عند الفتح</li>
+                </ul>
+            </div>
+        </div>
+
+        <h3>إعدادات الأمان</h3>
+        <div class="content-card">
+            <h4>مستويات أمان الـ Macros</h4>
+            <p>تقدر تتحكم في إعدادات الأمان من: <code style="color:var(--accent)">File</code> &#8594; <code style="color:var(--accent)">Options</code> &#8594; <code style="color:var(--accent)">Trust Center</code> &#8594; <code style="color:var(--accent)">Trust Center Settings</code> &#8594; <code style="color:var(--accent)">Macro Settings</code></p>
+
+            <div class="table-visual">
+                <table>
+                    <tr><th>المستوى</th><th>الوصف</th><th>الاستخدام</th></tr>
+                    <tr><td class="highlight-red">Disable all</td><td>تعطيل كل الـ Macros بدون إشعار</td><td>أعلى مستوى أمان</td></tr>
+                    <tr><td class="highlight-orange">Disable with notification</td><td>تعطيل مع إظهار تحذير (الافتراضي)</td><td>الأفضل للاستخدام اليومي</td></tr>
+                    <tr><td class="highlight-blue">Disable except signed</td><td>تشغيل الـ Macros الموقعة رقمياً فقط</td><td>بيئة العمل المؤسسية</td></tr>
+                    <tr><td class="highlight-green">Enable all</td><td>تشغيل كل الـ Macros تلقائياً</td><td>غير منصوح بيه</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="info-box danger">
+            <strong>تحذير أمني:</strong> لا تفتح ملفات .xlsm من مصادر غير موثوقة! الـ Macros ممكن تحتوي على كود ضار يقدر يحذف ملفاتك أو يسرق بياناتك. دايماً فعّل الـ Macros بس في الملفات اللي أنت عاملها أو من مصادر تثق فيها.
+        </div>
+    </section>
+
+    <!-- ===== SECTION 8: إيه هو Data Analysis؟ ===== -->
+    <section class="section" id="data-analysis">
+        <span class="section-label">التحليل الإحصائي</span>
+        <h2>إيه هو Data Analysis؟</h2>
+
+        <p>الـ <strong style="color:var(--accent)">Data Analysis ToolPak</strong> هو إضافة (Add-in) في Excel بتوفر أدوات إحصائية متقدمة. بدل ما تكتب معادلات معقدة بنفسك، الأدوات دي بتعمل التحليل كامل بخطوات بسيطة.</p>
+
+        <div class="content-card">
+            <h4>تفعيل Analysis ToolPak</h4>
+            <p>الأداة مش مفعلة افتراضياً. لازم تفعلها الأول:</p>
+            <ol class="steps-list">
+                <li>روح <code style="color:var(--accent)">File</code> &#8594; <code style="color:var(--accent)">Options</code></li>
+                <li>اختار <code style="color:var(--accent)">Add-ins</code> من القائمة على الشمال</li>
+                <li>في الأسفل عند Manage، اختار <code style="color:var(--accent)">Excel Add-ins</code> واضغط <code style="color:var(--accent)">Go</code></li>
+                <li>ضع علامة صح على <code style="color:var(--accent3)">Analysis ToolPak</code></li>
+                <li>اضغط <code style="color:var(--accent)">OK</code></li>
+            </ol>
+            <div class="info-box success">
+                <strong>بعد التفعيل:</strong> هتلاقي زر <code style="color:var(--accent3)">Data Analysis</code> ظاهر في تاب <code style="color:var(--accent)">Data</code> في مجموعة Analysis.
+            </div>
+        </div>
+
+        <h3>الأدوات المتاحة</h3>
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="icon">&#128202;</span>
+                <h4>Descriptive Statistics</h4>
+                <p>إحصائيات وصفية: المتوسط، الوسيط، المنوال، الانحراف المعياري</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">&#128203;</span>
+                <h4>Histogram</h4>
+                <p>التوزيع التكراري: تقسيم البيانات لفئات وحساب عدد كل فئة</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">&#128279;</span>
+                <h4>Correlation</h4>
+                <p>الارتباط: قياس العلاقة بين متغيرين (مثلاً: المبيعات والإعلانات)</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">&#128201;</span>
+                <h4>Regression</h4>
+                <p>الانحدار: تحليل العلاقة بين متغير تابع ومتغيرات مستقلة</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SECTION 9: Descriptive Statistics ===== -->
+    <section class="section" id="descriptive">
+        <span class="section-label">إحصائيات وصفية</span>
+        <h2>Descriptive Statistics</h2>
+
+        <p>الإحصائيات الوصفية بتديك ملخص شامل لبياناتك في ثواني. بدل ما تكتب كل معادلة لوحدها (AVERAGE, MEDIAN, STDEV, إلخ)، الأداة دي بتحسبهم كلهم مرة واحدة!</p>
+
+        <div class="content-card">
+            <h4>خطوات الاستخدام</h4>
+            <ol class="steps-list">
+                <li>جهّز بياناتك في عمود (أو أكتر) مع عناوين في الصف الأول</li>
+                <li>روح <code style="color:var(--accent)">Data</code> &#8594; <code style="color:var(--accent)">Data Analysis</code></li>
+                <li>اختار <code style="color:var(--accent3)">Descriptive Statistics</code> واضغط OK</li>
+                <li>في <code style="color:var(--accent)">Input Range</code>: حدد نطاق البيانات (مثلاً <code style="color:var(--accent2)">A1:A50</code>)</li>
+                <li>فعّل <code style="color:var(--accent)">Labels in first row</code> لو الصف الأول فيه عنوان</li>
+                <li>اختار <code style="color:var(--accent)">Output Range</code> وحدد خلية لوضع النتائج فيها</li>
+                <li>فعّل <code style="color:var(--accent3)">Summary statistics</code></li>
+                <li>اضغط <code style="color:var(--accent)">OK</code></li>
+            </ol>
+        </div>
+
+        <h3>مثال على النتائج</h3>
+        <p>لو عندنا بيانات مبيعات شهرية (50 قيمة)، النتيجة هتكون جدول زي ده:</p>
+
+        <div class="table-visual">
+            <table>
+                <tr><th>الإحصائية</th><th>القيمة</th><th>المعنى</th></tr>
+                <tr><td>Mean</td><td class="highlight">15,420</td><td>المتوسط الحسابي</td></tr>
+                <tr><td>Standard Error</td><td>342.5</td><td>الخطأ المعياري</td></tr>
+                <tr><td>Median</td><td class="highlight-blue">14,800</td><td>الوسيط (القيمة في النص)</td></tr>
+                <tr><td>Mode</td><td class="highlight-green">12,000</td><td>المنوال (الأكثر تكراراً)</td></tr>
+                <tr><td>Standard Deviation</td><td>2,421.8</td><td>الانحراف المعياري</td></tr>
+                <tr><td>Variance</td><td>5,865,115</td><td>التباين</td></tr>
+                <tr><td>Range</td><td class="highlight-orange">18,500</td><td>المدى (أكبر - أصغر)</td></tr>
+                <tr><td>Minimum</td><td>8,500</td><td>أصغر قيمة</td></tr>
+                <tr><td>Maximum</td><td>27,000</td><td>أكبر قيمة</td></tr>
+                <tr><td>Sum</td><td>771,000</td><td>المجموع</td></tr>
+                <tr><td>Count</td><td>50</td><td>عدد القيم</td></tr>
+            </table>
+        </div>
+
+        <div class="info-box">
+            <strong>الفايدة:</strong> بدل ما تكتب 11 معادلة مختلفة، ضغطة واحدة أعطتك كل الإحصائيات! ده بيوفر وقت كبير خصوصاً لما يكون عندك بيانات كتيرة.
+        </div>
+    </section>
+
+    <!-- ===== SECTION 10: Histogram ===== -->
+    <section class="section" id="histogram">
+        <span class="section-label">التوزيع التكراري</span>
+        <h2>Histogram</h2>
+
+        <p>الـ <strong style="color:var(--accent)">Histogram</strong> (التوزيع التكراري) بيقسم بياناتك لفئات وبيحسب كم قيمة في كل فئة. ده بيساعدك تفهم شكل توزيع البيانات: هل أغلبها في النص؟ على الأطراف؟ متوزعة بالتساوي؟</p>
+
+        <div class="content-card">
+            <h4>خطوات إنشاء Histogram</h4>
+            <ol class="steps-list">
+                <li>جهّز البيانات في عمود (مثلاً درجات الطلاب في <code style="color:var(--accent2)">A1:A100</code>)</li>
+                <li>اكتب حدود الفئات (Bin Range) في عمود تاني (مثلاً: 50, 60, 70, 80, 90, 100 في <code style="color:var(--accent2)">C1:C6</code>)</li>
+                <li>روح <code style="color:var(--accent)">Data</code> &#8594; <code style="color:var(--accent)">Data Analysis</code> &#8594; <code style="color:var(--accent3)">Histogram</code></li>
+                <li>حدد <code style="color:var(--accent)">Input Range</code> (بيانات الدرجات)</li>
+                <li>حدد <code style="color:var(--accent)">Bin Range</code> (حدود الفئات)</li>
+                <li>اختار Output Range</li>
+                <li>فعّل <code style="color:var(--accent3)">Chart Output</code> عشان يرسم الشارت تلقائياً</li>
+                <li>اضغط OK</li>
+            </ol>
+        </div>
+
+        <h3>مثال: توزيع درجات الطلاب</h3>
+        <p>لو عندنا درجات 100 طالب والفئات هي (50, 60, 70, 80, 90, 100):</p>
+
+        <div class="table-visual">
+            <table>
+                <tr><th>Bin (الفئة)</th><th>Frequency (التكرار)</th><th>التفسير</th></tr>
+                <tr><td>50</td><td class="highlight-red">8</td><td>8 طلاب درجاتهم 50 أو أقل</td></tr>
+                <tr><td>60</td><td class="highlight-orange">15</td><td>15 طالب درجاتهم بين 51 و 60</td></tr>
+                <tr><td>70</td><td class="highlight">28</td><td>28 طالب درجاتهم بين 61 و 70</td></tr>
+                <tr><td>80</td><td class="highlight-green">30</td><td>30 طالب درجاتهم بين 71 و 80</td></tr>
+                <tr><td>90</td><td class="highlight-blue">14</td><td>14 طالب درجاتهم بين 81 و 90</td></tr>
+                <tr><td>100</td><td>5</td><td>5 طلاب درجاتهم بين 91 و 100</td></tr>
+            </table>
+        </div>
+
+        <div class="analogy-box">
+            <span class="emoji">&#128230;</span>
+            <h4>تشبيه: الصناديق!</h4>
+            <p>تخيل إن عندك 100 كرة (القيم) و 6 صناديق (الفئات). الـ Histogram بيقولك كل صندوق فيه كام كرة. لو صندوق فيه كرات كتيرة، ده معناه إن معظم القيم بتقع في الفئة دي.</p>
+        </div>
+
+        <div class="info-box">
+            <strong>قراءة النتائج:</strong> لو أكتر الطلاب في فئة 70-80، ده معناه إن أغلب الطلاب مستواهم متوسط-جيد. لو فيه طلاب كتير في فئة أقل من 50، ده مؤشر إن فيه مشكلة في الفهم.
+        </div>
+    </section>
+
+    <!-- ===== SECTION 11: What-If Analysis ===== -->
+    <section class="section" id="whatif-intro">
+        <span class="section-label">استكشاف السيناريوهات</span>
+        <h2>What-If Analysis - إيه هو؟</h2>
+
+        <p>أدوات <strong style="color:var(--accent)">What-If Analysis</strong> بتسمحلك تستكشف سيناريوهات مختلفة: "لو غيرت القيمة دي، إيه اللي هيحصل؟". بدل ما تجرب كل احتمال يدوياً، الأدوات دي بتعرضلك كل النتائج مرة واحدة!</p>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="icon">&#127919;</span>
+                <h4>Goal Seek</h4>
+                <p>عارف النتيجة وعايز تعرف المدخل. "إيه المبيعات المطلوبة عشان الربح يبقى 100,000؟"</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">&#128203;</span>
+                <h4>Data Tables</h4>
+                <p>شوف نتائج متعددة لمدخلات مختلفة في جدول واحد. "إيه القسط لو الفائدة 5%، 6%، 7%...؟"</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">&#128194;</span>
+                <h4>Scenario Manager</h4>
+                <p>احفظ مجموعات مختلفة من المدخلات وقارن بينها. "Best Case vs Worst Case"</p>
+            </div>
+        </div>
+
+        <div class="analogy-box">
+            <span class="emoji">&#128302;</span>
+            <h4>تشبيه: الكرة البلورية!</h4>
+            <p>تخيل إن عندك كرة بلورية بتوريك المستقبل بناءً على قراراتك. "لو رفعت السعر 10%؟"، "لو قللت الموظفين؟"، "لو زودت الإنتاج؟". What-If Analysis هي الكرة البلورية بتاعت Excel!</p>
+        </div>
+
+        <div class="content-card">
+            <h4>الفرق بين الأدوات الثلاثة</h4>
+            <div class="table-visual">
+                <table>
+                    <tr><th>الأداة</th><th>متى تستخدمها</th><th>المدخل</th><th>المخرج</th></tr>
+                    <tr><td class="highlight">Goal Seek</td><td>عارف النتيجة، عايز المدخل</td><td>النتيجة المطلوبة</td><td>المدخل المطلوب</td></tr>
+                    <tr><td class="highlight-blue">Data Tables</td><td>عايز تقارن نتائج كتيرة</td><td>مجموعة قيم</td><td>جدول نتائج</td></tr>
+                    <tr><td class="highlight-green">Scenario Manager</td><td>عايز تحفظ وتقارن سيناريوهات</td><td>مجموعات مسماة</td><td>تقرير مقارنة</td></tr>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SECTION 12: Goal Seek ===== -->
+    <section class="section" id="goal-seek">
+        <span class="section-label">البحث عن الهدف</span>
+        <h2>Goal Seek</h2>
+
+        <p><strong style="color:var(--accent)">Goal Seek</strong> بيشتغل بالعكس: بدل ما تدخل المدخلات وتشوف النتيجة، أنت بتحدد النتيجة اللي عايزها وهو بيحسبلك المدخل المطلوب!</p>
+
+        <div class="content-card">
+            <h4>خطوات الاستخدام</h4>
+            <ol class="steps-list">
+                <li>تأكد إن عندك معادلة في خلية النتيجة (مثلاً: <code style="color:var(--accent2)">=B1*B2-B3</code> لحساب الربح)</li>
+                <li>روح <code style="color:var(--accent)">Data</code> &#8594; <code style="color:var(--accent)">What-If Analysis</code> &#8594; <code style="color:var(--accent3)">Goal Seek</code></li>
+                <li><code style="color:var(--accent)">Set cell</code>: حدد خلية النتيجة (اللي فيها المعادلة)</li>
+                <li><code style="color:var(--accent)">To value</code>: اكتب القيمة اللي عايز توصلها</li>
+                <li><code style="color:var(--accent)">By changing cell</code>: حدد الخلية اللي Goal Seek هيغير قيمتها</li>
+                <li>اضغط <code style="color:var(--accent)">OK</code> وشوف النتيجة</li>
+            </ol>
+        </div>
+
+        <h3>مثال 1: إيه المرتب المطلوب عشان الميزانية تتوازن؟</h3>
+
+        <div class="table-visual">
+            <table>
+                <tr><th></th><th>A</th><th>B</th></tr>
+                <tr><td class="row-num">1</td><td>الإيرادات</td><td>50,000</td></tr>
+                <tr><td class="row-num">2</td><td>المرتبات</td><td class="highlight">???</td></tr>
+                <tr><td class="row-num">3</td><td>الإيجار</td><td>10,000</td></tr>
+                <tr><td class="row-num">4</td><td>المصاريف الأخرى</td><td>5,000</td></tr>
+                <tr><td class="row-num">5</td><td>الربح =B1-B2-B3-B4</td><td class="highlight-green">0 (نقطة التعادل)</td></tr>
+            </table>
+        </div>
+
+        <p>عايز الربح (B5) يبقى <strong style="color:var(--accent3)">0</strong> (نقطة التعادل). Goal Seek هيحسب إن المرتبات (B2) لازم تبقى <strong style="color:var(--accent)">35,000</strong>.</p>
+
+        <div class="step-flow">
+            <div class="step">
+                <span class="step-num">Set cell</span>
+                <span class="step-text"><code>B5</code> (الربح)</span>
+            </div>
+            <span class="arrow">&#8594;</span>
+            <div class="step">
+                <span class="step-num">To value</span>
+                <span class="step-text"><code>0</code></span>
+            </div>
+            <span class="arrow">&#8594;</span>
+            <div class="step">
+                <span class="step-num">By changing</span>
+                <span class="step-text"><code>B2</code> (المرتبات)</span>
+            </div>
+            <span class="arrow">&#8594;</span>
+            <div class="step">
+                <span class="step-num">النتيجة</span>
+                <span class="step-text">B2 = <code>35,000</code></span>
+            </div>
+        </div>
+
+        <h3>مثال 2: إيه السعر المطلوب عشان الربح يبقى 100,000؟</h3>
+
+        <div class="table-visual">
+            <table>
+                <tr><th></th><th>A</th><th>B</th></tr>
+                <tr><td class="row-num">1</td><td>سعر الوحدة</td><td class="highlight">???</td></tr>
+                <tr><td class="row-num">2</td><td>عدد الوحدات</td><td>500</td></tr>
+                <tr><td class="row-num">3</td><td>التكلفة الإجمالية</td><td>150,000</td></tr>
+                <tr><td class="row-num">4</td><td>الربح =B1*B2-B3</td><td class="highlight-green">100,000</td></tr>
+            </table>
+        </div>
+
+        <p>Goal Seek هيحسب إن سعر الوحدة لازم يبقى <strong style="color:var(--accent)">500</strong> عشان الربح يبقى 100,000. (500 &times; 500 - 150,000 = 100,000)</p>
+
+        <div class="info-box warning">
+            <strong>ملاحظة:</strong> Goal Seek بيغير خلية واحدة بس. لو عايز تغير أكتر من خلية، استخدم Solver (أداة أكثر تقدماً) أو Scenario Manager.
+        </div>
+    </section>
+
+    <!-- ===== SECTION 13: Data Tables ===== -->
+    <section class="section" id="data-tables">
+        <span class="section-label">جداول البيانات</span>
+        <h2>Data Tables</h2>
+
+        <p><strong style="color:var(--accent)">Data Tables</strong> بتسمحلك تشوف نتائج المعادلة لمدخلات مختلفة كلها مرة واحدة في جدول منظم. عندك نوعين: جدول بمتغير واحد وجدول بمتغيرين.</p>
+
+        <h3>One-Variable Data Table (متغير واحد)</h3>
+
+        <p>عايز تعرف قسط القرض الشهري لو الفائدة اتغيرت من 3% لـ 8%؟</p>
+
+        <div class="content-card">
+            <h4>إعداد الجدول</h4>
+            <p>المعادلة الأساسية:</p>
+            <div class="code-block">
+                <div class="code-header"><span>Excel Formula</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                <pre><span class="cm">B1: مبلغ القرض = 500,000</span>
+<span class="cm">B2: نسبة الفائدة السنوية = 5%</span>
+<span class="cm">B3: عدد السنوات = 20</span>
+<span class="cm">B4: القسط الشهري</span>
+<span class="fn">=PMT</span>(<span class="tbl">B2</span>/<span class="num">12</span>, <span class="tbl">B3</span>*<span class="num">12</span>, -<span class="tbl">B1</span>)</pre>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h4>خطوات إنشاء One-Variable Data Table</h4>
+            <ol class="steps-list">
+                <li>اكتب القيم المختلفة للمتغير في عمود (مثلاً: 3%, 4%, 5%, 6%, 7%, 8% في <code style="color:var(--accent2)">D2:D7</code>)</li>
+                <li>في الخلية <strong>فوق</strong> العمود وعلى <strong>يمين</strong> القيم (يعني <code style="color:var(--accent2)">E1</code>)، اكتب مرجع لمعادلة النتيجة: <code style="color:var(--accent)">=B4</code></li>
+                <li>حدد الجدول كامل (القيم + خلية المعادلة): <code style="color:var(--accent2)">D1:E7</code></li>
+                <li>روح <code style="color:var(--accent)">Data</code> &#8594; <code style="color:var(--accent)">What-If Analysis</code> &#8594; <code style="color:var(--accent3)">Data Table</code></li>
+                <li>في <code style="color:var(--accent)">Column input cell</code>: حدد خلية الفائدة <code style="color:var(--accent2)">B2</code> (لأن القيم في عمود)</li>
+                <li>اضغط OK - هيحسب القسط لكل نسبة فائدة!</li>
+            </ol>
+        </div>
+
+        <div class="table-visual">
+            <table>
+                <tr><th>نسبة الفائدة</th><th>القسط الشهري</th></tr>
+                <tr><td>3%</td><td class="highlight-green">2,773</td></tr>
+                <tr><td>4%</td><td>3,030</td></tr>
+                <tr><td>5%</td><td class="highlight">3,300</td></tr>
+                <tr><td>6%</td><td>3,582</td></tr>
+                <tr><td>7%</td><td>3,877</td></tr>
+                <tr><td>8%</td><td class="highlight-red">4,182</td></tr>
+            </table>
+        </div>
+
+        <h3>Two-Variable Data Table (متغيرين)</h3>
+
+        <p>عايز تشوف تأثير تغيير السعر <strong>و</strong> الكمية على الربح في نفس الوقت؟</p>
+
+        <div class="content-card">
+            <h4>خطوات إنشاء Two-Variable Data Table</h4>
+            <ol class="steps-list">
+                <li>اكتب قيم المتغير الأول في <strong>عمود</strong> (الأسعار: 50, 60, 70, 80 في <code style="color:var(--accent2)">D3:D6</code>)</li>
+                <li>اكتب قيم المتغير الثاني في <strong>صف</strong> (الكميات: 100, 200, 300 في <code style="color:var(--accent2)">E2:G2</code>)</li>
+                <li>في الزاوية (تقاطع الصف والعمود <code style="color:var(--accent2)">D2</code>)، اكتب مرجع لمعادلة الربح: <code style="color:var(--accent)">=B5</code></li>
+                <li>حدد الجدول كامل: <code style="color:var(--accent2)">D2:G6</code></li>
+                <li><code style="color:var(--accent)">Data</code> &#8594; <code style="color:var(--accent)">What-If Analysis</code> &#8594; <code style="color:var(--accent3)">Data Table</code></li>
+                <li><code style="color:var(--accent)">Row input cell</code>: خلية الكمية <code style="color:var(--accent2)">B2</code></li>
+                <li><code style="color:var(--accent)">Column input cell</code>: خلية السعر <code style="color:var(--accent2)">B1</code></li>
+                <li>اضغط OK</li>
+            </ol>
+        </div>
+
+        <div class="table-visual">
+            <table>
+                <tr><th>السعر \ الكمية</th><th>100</th><th>200</th><th>300</th></tr>
+                <tr><td class="highlight">50</td><td class="highlight-red">-5,000</td><td class="highlight-orange">0</td><td class="highlight-green">5,000</td></tr>
+                <tr><td class="highlight">60</td><td>-4,000</td><td class="highlight-green">2,000</td><td class="highlight-green">8,000</td></tr>
+                <tr><td class="highlight">70</td><td>-3,000</td><td class="highlight-green">4,000</td><td class="highlight-green">11,000</td></tr>
+                <tr><td class="highlight">80</td><td>-2,000</td><td class="highlight-green">6,000</td><td class="highlight-green">14,000</td></tr>
+            </table>
+        </div>
+
+        <div class="info-box success">
+            <strong>قراءة الجدول:</strong> القيم الحمراء = خسارة، البرتقالية = نقطة تعادل، الخضراء = ربح. كده بنظرة واحدة تقدر تعرف أفضل مزيج من السعر والكمية!
+        </div>
+    </section>
+
+    <!-- ===== SECTION 14: Scenario Manager ===== -->
+    <section class="section" id="scenario-manager">
+        <span class="section-label">مدير السيناريوهات</span>
+        <h2>Scenario Manager</h2>
+
+        <p><strong style="color:var(--accent)">Scenario Manager</strong> بيسمحلك تحفظ مجموعات مختلفة من المدخلات (سيناريوهات) وتقارن بينها. مثلاً: سيناريو متفائل، متشائم، وواقعي.</p>
+
+        <div class="content-card">
+            <h4>خطوات إنشاء السيناريوهات</h4>
+            <ol class="steps-list">
+                <li>جهز النموذج المالي بتاعك مع المعادلات (مثلاً: إيرادات، تكاليف، ربح)</li>
+                <li>روح <code style="color:var(--accent)">Data</code> &#8594; <code style="color:var(--accent)">What-If Analysis</code> &#8594; <code style="color:var(--accent3)">Scenario Manager</code></li>
+                <li>اضغط <code style="color:var(--accent)">Add</code> لإضافة سيناريو جديد</li>
+                <li>اكتب اسم السيناريو (مثلاً: <code style="color:var(--accent3)">Best Case</code>)</li>
+                <li>في <code style="color:var(--accent)">Changing cells</code>: حدد الخلايا اللي هتتغير (مثلاً: <code style="color:var(--accent2)">B1:B3</code>)</li>
+                <li>اضغط OK واكتب القيم للسيناريو ده</li>
+                <li>كرر الخطوات لكل سيناريو (Worst Case, Most Likely)</li>
+            </ol>
+        </div>
+
+        <h3>مثال: تحليل مشروع جديد</h3>
+
+        <div class="table-visual">
+            <table>
+                <tr><th>المتغير</th><th>Best Case</th><th>Most Likely</th><th>Worst Case</th></tr>
+                <tr><td>عدد الوحدات المباعة</td><td class="highlight-green">1,000</td><td class="highlight-blue">700</td><td class="highlight-red">400</td></tr>
+                <tr><td>سعر الوحدة</td><td class="highlight-green">150</td><td class="highlight-blue">120</td><td class="highlight-red">100</td></tr>
+                <tr><td>التكلفة لكل وحدة</td><td class="highlight-green">60</td><td class="highlight-blue">75</td><td class="highlight-red">90</td></tr>
+                <tr><td><strong>الربح المتوقع</strong></td><td class="highlight-green">90,000</td><td class="highlight-blue">31,500</td><td class="highlight-red">4,000</td></tr>
+            </table>
+        </div>
+
+        <div class="content-card">
+            <h4>إنشاء تقرير المقارنة (Summary)</h4>
+            <ol class="steps-list">
+                <li>في نافذة Scenario Manager، اضغط <code style="color:var(--accent)">Summary</code></li>
+                <li>اختار نوع التقرير: <code style="color:var(--accent3)">Scenario summary</code></li>
+                <li>في <code style="color:var(--accent)">Result cells</code>: حدد خلايا النتائج (مثلاً الربح <code style="color:var(--accent2)">B5</code>)</li>
+                <li>اضغط OK - Excel هيعمل شيت جديد فيه تقرير المقارنة!</li>
+            </ol>
+        </div>
+
+        <div class="content-card">
+            <h4>عرض سيناريو معين</h4>
+            <p>في نافذة Scenario Manager، اختار أي سيناريو واضغط <code style="color:var(--accent)">Show</code>. Excel هيغير القيم في الشيت للقيم بتاعة السيناريو ده. كده تقدر تشوف تأثيره على كل المعادلات والجداول.</p>
+        </div>
+
+        <div class="info-box">
+            <strong>متى تستخدم Scenario Manager؟</strong> لما يكون عندك نموذج مالي أو خطة عمل وعايز تقارن بين سيناريوهات مختلفة. مثلاً: خطة مبيعات متفائلة vs متشائمة، أو تأثير تغيير أسعار المواد الخام على الأرباح.
+        </div>
+
+        <div class="quote-box">
+            "القرار الذكي مش إنك تختار الأفضل بس، إنك تعرف كل الاحتمالات وتكون مستعد لكلها. Scenario Manager بيديك القدرة دي."
+        </div>
+    </section>
+
+    <!-- ===== SECTION 15: تمارين ===== -->
+    <section class="section" id="exercises">
+        <span class="section-label">تدريب عملي</span>
+        <h2>تمارين</h2>
+
+        <p>حاول تحل التمارين دي لوحدك الأول. لو محتاج مساعدة، افتح التلميح. ولو عايز تشوف الحل الكامل، افتح الحل.</p>
+
+        <!-- تمرين 1 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 1: تسجيل Macro للتنسيق</h4>
+                <span class="exercise-badge easy">سهل</span>
+            </div>
+            <div class="exercise-body">
+                <p>سجل Macro اسمه <code style="color:var(--accent)">FormatTable</code> بيقوم بالآتي على الصف الأول: Bold + لون خلفية أزرق غامق + لون خط أبيض + توسيط + حجم خط 12. اربطه باختصار <code style="color:var(--accent4)">Ctrl+Shift+T</code>.</p>
+                <button class="hint-btn" onclick="toggleHint(this)">تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> ابدأ التسجيل من View &#8594; Macros &#8594; Record Macro. حدد الاسم والاختصار. بعدين حدد الصف الأول ونفذ كل خطوات التنسيق بالترتيب. لما تخلص، Stop Recording.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>VBA Code (الكود الناتج)</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">Sub</span> <span class="fn">FormatTable</span>()
+    <span class="fn">Rows</span>(<span class="num">1</span>).<span class="fn">Select</span>
+    Selection.<span class="fn">Font</span>.<span class="tbl">Bold</span> = <span class="kw">True</span>
+    Selection.<span class="fn">Font</span>.<span class="tbl">Size</span> = <span class="num">12</span>
+    Selection.<span class="fn">Interior</span>.<span class="tbl">Color</span> = <span class="fn">RGB</span>(<span class="num">0</span>, <span class="num">0</span>, <span class="num">128</span>)
+    Selection.<span class="fn">Font</span>.<span class="tbl">Color</span> = <span class="fn">RGB</span>(<span class="num">255</span>, <span class="num">255</span>, <span class="num">255</span>)
+    Selection.<span class="fn">HorizontalAlignment</span> = <span class="tbl">xlCenter</span>
+<span class="kw">End Sub</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- تمرين 2 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 2: Descriptive Statistics على بيانات مبيعات</h4>
+                <span class="exercise-badge easy">سهل</span>
+            </div>
+            <div class="exercise-body">
+                <p>عندك بيانات مبيعات يومية لمدة 30 يوم في العمود A. استخدم Data Analysis عشان تطلع Descriptive Statistics. إيه المتوسط؟ إيه أعلى وأقل يوم مبيعات؟</p>
+                <button class="hint-btn" onclick="toggleHint(this)">تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> Data &#8594; Data Analysis &#8594; Descriptive Statistics. حدد Input Range = A1:A31 (مع العنوان). فعّل Labels in first row و Summary statistics. حدد Output Range.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">الحل</button>
+                <div class="solution-content">
+                    <div class="info-box success">
+                        <strong>الخطوات:</strong>
+                        <ol>
+                            <li>Data &#8594; Data Analysis &#8594; Descriptive Statistics &#8594; OK</li>
+                            <li>Input Range: $A$1:$A$31</li>
+                            <li>Grouped By: Columns</li>
+                            <li>Labels in first row: محدد</li>
+                            <li>Output Range: اختار خلية فاضية (مثلاً C1)</li>
+                            <li>Summary statistics: محدد</li>
+                            <li>OK &#8594; هتظهر كل الإحصائيات تلقائياً</li>
+                        </ol>
+                        <p>Mean = المتوسط، Maximum = أعلى يوم، Minimum = أقل يوم.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- تمرين 3 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 3: Goal Seek لنقطة التعادل</h4>
+                <span class="exercise-badge medium">متوسط</span>
+            </div>
+            <div class="exercise-body">
+                <p>عندك مشروع: سعر البيع = 80 جنيه، التكلفة المتغيرة = 50 جنيه/وحدة، التكاليف الثابتة = 30,000 جنيه. الربح = (سعر البيع - تكلفة متغيرة) &times; الكمية - تكاليف ثابتة. استخدم Goal Seek عشان تلاقي الكمية اللي بتحقق نقطة التعادل (ربح = 0).</p>
+                <button class="hint-btn" onclick="toggleHint(this)">تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> اعمل النموذج: B1=80, B2=50, B3=الكمية (ابدأ بأي رقم), B4=30000, B5=(B1-B2)*B3-B4. بعدين Goal Seek: Set cell=B5, To value=0, By changing=B3.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">الحل</button>
+                <div class="solution-content">
+                    <div class="info-box success">
+                        <strong>الحل:</strong> الكمية المطلوبة = <strong style="color:var(--accent)">1,000 وحدة</strong>.<br>
+                        التحقق: (80 - 50) &times; 1000 - 30,000 = 30,000 - 30,000 = 0
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- تمرين 4 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 4: One-Variable Data Table</h4>
+                <span class="exercise-badge medium">متوسط</span>
+            </div>
+            <div class="exercise-body">
+                <p>قرض بقيمة 200,000 جنيه لمدة 10 سنوات. اعمل One-Variable Data Table يوضح القسط الشهري عند نسب فائدة مختلفة: 5%, 6%, 7%, 8%, 9%, 10%.</p>
+                <button class="hint-btn" onclick="toggleHint(this)">تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> استخدم دالة PMT لحساب القسط. اكتب نسب الفائدة في عمود، وفوقها مرجع لمعادلة PMT. بعدين حدد الجدول واستخدم Data Table مع Column input cell = خلية الفائدة.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>Excel Setup</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="cm">B1: 200000    (مبلغ القرض)</span>
+<span class="cm">B2: 5%        (الفائدة)</span>
+<span class="cm">B3: 10        (السنوات)</span>
+<span class="cm">B4: =PMT(B2/12, B3*12, -B1)</span>
+
+<span class="cm">D2:D7: 5%, 6%, 7%, 8%, 9%, 10%</span>
+<span class="cm">E1: =B4</span>
+
+<span class="cm">حدد D1:E7 &#8594; Data &#8594; What-If &#8594; Data Table</span>
+<span class="cm">Column input cell: B2</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- تمرين 5 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 5: Two-Variable Data Table</h4>
+                <span class="exercise-badge hard">صعب</span>
+            </div>
+            <div class="exercise-body">
+                <p>نفس القرض (200,000 جنيه) لكن عايز تشوف القسط الشهري لنسب فائدة مختلفة (5%-10%) ومدد مختلفة (5, 10, 15, 20 سنة) في نفس الوقت. اعمل Two-Variable Data Table.</p>
+                <button class="hint-btn" onclick="toggleHint(this)">تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> نسب الفائدة في عمود، المدد في صف. في الزاوية اكتب مرجع لمعادلة PMT. حدد الجدول واستخدم Data Table مع Row input cell = خلية السنوات، Column input cell = خلية الفائدة.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>Excel Setup</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="cm">D2: =B4 (مرجع لمعادلة القسط)</span>
+<span class="cm">E1:H1: 5, 10, 15, 20 (السنوات - في صف)</span>
+<span class="cm">D3:D8: 5%, 6%, 7%, 8%, 9%, 10% (الفائدة - في عمود)</span>
+
+<span class="cm">حدد D2:H8</span>
+<span class="cm">Data &#8594; What-If &#8594; Data Table</span>
+<span class="cm">Row input cell: B3 (خلية السنوات)</span>
+<span class="cm">Column input cell: B2 (خلية الفائدة)</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- تمرين 6 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 6: مقارنة السيناريوهات</h4>
+                <span class="exercise-badge medium">متوسط</span>
+            </div>
+            <div class="exercise-body">
+                <p>مشروع كافيه: المدخلات هي (عدد الزبائن يومياً، متوسط الفاتورة، إيجار شهري). اعمل 3 سيناريوهات: Best Case (100 زبون، 50 جنيه، 5000 إيجار)، Worst Case (30 زبون، 30 جنيه، 8000 إيجار)، Most Likely (60 زبون، 40 جنيه، 6000 إيجار). قارن الربح الشهري.</p>
+                <button class="hint-btn" onclick="toggleHint(this)">تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> اعمل النموذج: الإيرادات = عدد زبائن &times; متوسط فاتورة &times; 30 يوم. الربح = الإيرادات - الإيجار - مصاريف أخرى. بعدين Data &#8594; What-If &#8594; Scenario Manager &#8594; أضف 3 سيناريوهات.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">الحل</button>
+                <div class="solution-content">
+                    <div class="info-box success">
+                        <strong>النتائج المتوقعة:</strong>
+                        <ul>
+                            <li><strong style="color:var(--accent3)">Best Case:</strong> 100 &times; 50 &times; 30 - 5000 = 150,000 - 5,000 = 145,000 ربح</li>
+                            <li><strong style="color:var(--accent2)">Most Likely:</strong> 60 &times; 40 &times; 30 - 6000 = 72,000 - 6,000 = 66,000 ربح</li>
+                            <li><strong style="color:var(--accent5)">Worst Case:</strong> 30 &times; 30 &times; 30 - 8000 = 27,000 - 8,000 = 19,000 ربح</li>
+                        </ul>
+                        <p>استخدم Summary لإنشاء تقرير المقارنة في شيت جديد.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- تمرين 7 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 7: Histogram لدرجات الطلاب</h4>
+                <span class="exercise-badge easy">سهل</span>
+            </div>
+            <div class="exercise-body">
+                <p>عندك درجات 50 طالب في امتحان (من 0 لـ 100). اعمل Histogram باستخدام الفئات: 0, 20, 40, 60, 80, 100. فعّل Chart Output.</p>
+                <button class="hint-btn" onclick="toggleHint(this)">تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> اكتب الدرجات في عمود A والفئات في عمود C. بعدين Data &#8594; Data Analysis &#8594; Histogram. حدد Input Range و Bin Range وفعّل Chart Output.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">الحل</button>
+                <div class="solution-content">
+                    <div class="info-box success">
+                        <strong>الخطوات:</strong>
+                        <ol>
+                            <li>اكتب الدرجات في A1:A51 (A1 عنوان + 50 درجة)</li>
+                            <li>اكتب الفئات في C1:C7 (C1 عنوان + 0, 20, 40, 60, 80, 100)</li>
+                            <li>Data &#8594; Data Analysis &#8594; Histogram &#8594; OK</li>
+                            <li>Input Range: $A$1:$A$51 | Bin Range: $C$1:$C$7</li>
+                            <li>Labels: محدد | Chart Output: محدد</li>
+                            <li>Output Range: حدد خلية فاضية</li>
+                            <li>OK &#8594; هيظهر الجدول والشارت</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- تمرين 8 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 8: سيناريو تحليل كامل</h4>
+                <span class="exercise-badge hard">صعب</span>
+            </div>
+            <div class="exercise-body">
+                <p>أنت مدير مالي لشركة. عندك: إيرادات = سعر &times; كمية، التكاليف = تكلفة ثابتة + (تكلفة متغيرة &times; كمية)، الربح = إيرادات - تكاليف. المطلوب:</p>
+                <ul>
+                    <li>1) استخدم Goal Seek عشان تلاقي الكمية اللي بتحقق ربح 500,000</li>
+                    <li>2) اعمل Data Table يوضح الربح عند أسعار مختلفة (100-200 بزيادة 20)</li>
+                    <li>3) اعمل 3 سيناريوهات (Best, Worst, Most Likely) وقارن بينهم</li>
+                    <li>4) اعمل Descriptive Statistics على بيانات المبيعات الشهرية (12 شهر)</li>
+                </ul>
+                <button class="hint-btn" onclick="toggleHint(this)">تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> ابدأ بإنشاء النموذج المالي. بعدين طبق كل أداة واحدة واحدة. Goal Seek للسؤال الأول، Data Table للثاني، Scenario Manager للثالث، وData Analysis ToolPak للرابع.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>النموذج المالي</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="cm">B1: سعر البيع = 150</span>
+<span class="cm">B2: الكمية = 5000</span>
+<span class="cm">B3: التكلفة الثابتة = 200,000</span>
+<span class="cm">B4: التكلفة المتغيرة = 80</span>
+<span class="cm">B5: الإيرادات = B1 * B2 = 750,000</span>
+<span class="cm">B6: التكاليف = B3 + (B4 * B2) = 600,000</span>
+<span class="cm">B7: الربح = B5 - B6 = 150,000</span>
+
+<span class="cm">1) Goal Seek: Set B7=500000, By changing B2</span>
+<span class="cm">   النتيجة: B2 = 10,000 وحدة</span>
+
+<span class="cm">2) Data Table: أسعار 100, 120, 140, 160, 180, 200</span>
+<span class="cm">   Column input cell: B1</span>
+
+<span class="cm">3) Scenarios:</span>
+<span class="cm">   Best:  سعر=200, كمية=8000, ثابتة=150000, متغيرة=60</span>
+<span class="cm">   Most:  سعر=150, كمية=5000, ثابتة=200000, متغيرة=80</span>
+<span class="cm">   Worst: سعر=100, كمية=3000, ثابتة=250000, متغيرة=90</span>
+
+<span class="cm">4) Descriptive Statistics على بيانات 12 شهر</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SUMMARY ===== -->
+    <section class="section" id="summary">
+        <span class="section-label">الملخص</span>
+        <h2>ملخص اليوم السادس</h2>
+
+        <div class="summary-box">
+            <h3>اللي اتعلمناه النهاردة</h3>
+            <ul>
+                <li>Macros بتسجل خطواتك وبتعيد تنفيذها تلقائياً - بتوفر ساعات من الشغل اليدوي</li>
+                <li>تسجيل Macro من View &#8594; Macros &#8594; Record Macro أو من تاب Developer</li>
+                <li>تشغيل Macro من القائمة (Alt+F8)، اختصار كيبورد، أو زرار مخصص</li>
+                <li>VBA هي اللغة ورا الـ Macros - مش لازم تبقى خبير بس فهم الأساسيات مفيد</li>
+                <li>لازم تحفظ الملف كـ .xlsm عشان الـ Macros متتمسحش</li>
+                <li>Analysis ToolPak بيوفر أدوات إحصائية متقدمة بتتفعل من Add-ins</li>
+                <li>Descriptive Statistics بتديك ملخص إحصائي شامل بضغطة واحدة</li>
+                <li>Histogram بيوريك توزيع البيانات على فئات مختلفة</li>
+                <li>Goal Seek بيلاقي المدخل المطلوب لنتيجة محددة</li>
+                <li>Data Tables بتعرضلك نتائج متعددة لمدخلات مختلفة في جدول واحد</li>
+                <li>Scenario Manager بيحفظ سيناريوهات مختلفة وبيقارن بينها</li>
+            </ul>
+        </div>
+
+        <div class="quote-box">
+            "الأدوات اللي اتعلمناها النهاردة هي اللي بتفرق بين مستخدم Excel عادي ومحترف. Macros بتوفر وقتك، Data Analysis بتحلل بياناتك، و What-If بتساعدك تاخد قرارات أفضل. ابدأ استخدمهم في شغلك اليومي!"
+        </div>
+    </section>
+
+</main>
+
+<a href="index.html" class="back-btn" title="العودة للفهرس">&#8617;</a>
+
+<script>
+function toggleExercise(header) {
+    const body = header.nextElementSibling;
+    body.classList.toggle('show');
+}
+
+function toggleHint(btn) {
+    const hint = btn.nextElementSibling;
+    hint.classList.toggle('show');
+    btn.textContent = hint.classList.contains('show') ? '\u0625\u062E\u0641\u0627\u0621 \u0627\u0644\u062A\u0644\u0645\u064A\u062D' : '\u062A\u0644\u0645\u064A\u062D';
+}
+
+function toggleSolution(btn) {
+    const solution = btn.nextElementSibling;
+    solution.classList.toggle('show');
+    btn.textContent = solution.classList.contains('show') ? '\u0625\u062E\u0641\u0627\u0621 \u0627\u0644\u062D\u0644' : '\u0627\u0644\u062D\u0644';
+}
+
+function copyCode(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre');
+    const text = pre.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = '\u062A\u0645 \u0627\u0644\u0646\u0633\u062E!';
+        setTimeout(() => { btn.textContent = '\u0646\u0633\u062E'; }, 2000);
+    });
+}
+
+// Sidebar scroll highlighting
+const sections = document.querySelectorAll('.section[id]');
+const navLinks = document.querySelectorAll('.sidebar-nav a');
+
+function updateActiveLink() {
+    let current = '';
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.offsetHeight;
+        if (window.scrollY >= sectionTop - 200) {
+            current = section.getAttribute('id');
+        }
+    });
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) {
+            link.classList.add('active');
+        }
+    });
+}
+
+window.addEventListener('scroll', updateActiveLink);
+window.addEventListener('load', updateActiveLink);
+
+// Close sidebar on mobile when clicking a link
+navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+        if (window.innerWidth <= 768) {
+            document.querySelector('.sidebar').classList.remove('open');
+        }
+    });
+});
+</script>
+
+</body>
+</html>

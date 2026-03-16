@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تمارين عملية - اليوم الثاني | JOINs + Functions</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        :root{--bg:#06060f;--bg-card:#0d0d1f;--bg-code:#0a0a1a;--accent:#ff4d4d;--accent-glow:rgba(255,77,77,0.15);--accent2:#ff8c00;--accent3:#00d47e;--accent4:#4d8cff;--accent5:#a855f7;--text:#e8e8f0;--text-sec:#8888aa;--text-muted:#555577;--border:#1a1a35;--border-light:#252550;}
+        body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);line-height:1.8;overflow-x:hidden;}
+        body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 15%,rgba(0,212,126,0.07) 0%,transparent 50%),radial-gradient(ellipse at 80% 85%,rgba(255,77,77,0.06) 0%,transparent 50%);pointer-events:none;z-index:0;}
+        .sidebar{position:fixed;top:0;right:0;width:280px;height:100vh;background:var(--bg-card);border-left:1px solid var(--border);padding:30px 20px;overflow-y:auto;z-index:100;transition:transform .3s;}
+        .sidebar__title{font-size:.8rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:20px;font-weight:700;}
+        .sidebar__nav a{display:flex;align-items:center;gap:10px;padding:10px 14px;color:var(--text-sec);text-decoration:none;font-size:.82rem;font-weight:600;border-radius:10px;margin-bottom:4px;transition:all .2s;}
+        .sidebar__nav a:hover,.sidebar__nav a.active{background:rgba(0,212,126,0.12);color:var(--accent3);}
+        .sidebar__nav a .nav-num{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;background:var(--border);color:var(--text-muted);flex-shrink:0;}
+        .sidebar__nav a:hover .nav-num,.sidebar__nav a.active .nav-num{background:var(--accent3);color:#fff;}
+        .sidebar__back{display:flex;align-items:center;gap:8px;color:var(--accent3);text-decoration:none;font-weight:700;font-size:.9rem;margin-bottom:25px;padding:10px 14px;border-radius:10px;transition:background .2s;}
+        .sidebar__back:hover{background:rgba(0,212,126,0.12);}
+        .sidebar__divider{height:1px;background:var(--border);margin:12px 0;}
+        .menu-toggle{display:none;position:fixed;top:20px;right:20px;z-index:200;width:48px;height:48px;border-radius:12px;background:var(--bg-card);border:1px solid var(--border);color:var(--text);font-size:1.3rem;cursor:pointer;align-items:center;justify-content:center;}
+        @media(max-width:900px){.sidebar{transform:translateX(100%);width:270px;}.sidebar--open{transform:translateX(0);}.menu-toggle{display:flex;}.main{margin-right:0!important;}}
+        .main{margin-right:280px;padding:40px 50px 80px;max-width:900px;position:relative;z-index:1;}
+        @media(max-width:1100px){.main{padding:30px 25px 60px;}}
+        .hero{margin-bottom:50px;padding-bottom:40px;border-bottom:1px solid var(--border);}
+        .hero__badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,212,126,0.15);color:var(--accent3);padding:6px 16px;border-radius:8px;font-size:.8rem;font-weight:700;margin-bottom:16px;}
+        .hero__title{font-size:2.2rem;font-weight:900;line-height:1.3;margin-bottom:12px;background:linear-gradient(135deg,#fff,#ccc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+        .hero__desc{color:var(--text-sec);font-size:1.05rem;font-weight:600;max-width:600px;}
+        .hero__meta{display:flex;gap:24px;margin-top:20px;flex-wrap:wrap;}
+        .hero__meta-item{display:flex;align-items:center;gap:8px;color:var(--text-muted);font-size:.85rem;font-weight:600;}
+        .section{margin-bottom:55px;scroll-margin-top:30px;}
+        .section__header{display:flex;align-items:center;gap:14px;margin-bottom:24px;}
+        .section__icon{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+        .section__icon--red{background:rgba(255,77,77,0.15);}.section__icon--orange{background:rgba(255,140,0,0.15);}.section__icon--green{background:rgba(0,212,126,0.15);}.section__icon--blue{background:rgba(77,140,255,0.15);}.section__icon--purple{background:rgba(168,85,247,0.15);}
+        .section__title{font-size:1.5rem;font-weight:800;}
+        .content-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:20px;}
+        .content-card__title{font-size:1.1rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+        .content-card p,.content-card li{color:var(--text-sec);font-size:.95rem;font-weight:600;margin-bottom:8px;}
+        .content-card ul{list-style:none;padding:0;}.content-card ul li::before{content:"◈ ";color:var(--accent3);}
+        .quote-box{background:var(--accent-glow);border-right:4px solid var(--accent);padding:18px 22px;border-radius:0 12px 12px 0;margin:20px 0;font-weight:700;font-size:1rem;color:var(--text);}
+        .quote-box--blue{background:rgba(77,140,255,0.1);border-right-color:var(--accent4);}
+        .quote-box--green{background:rgba(0,212,126,0.1);border-right-color:var(--accent3);}
+        .quote-box--orange{background:rgba(255,140,0,0.1);border-right-color:var(--accent2);}
+        .quote-box--purple{background:rgba(168,85,247,0.1);border-right-color:var(--accent5);}
+        .code-block{background:var(--bg-code);border:1px solid var(--border);border-radius:12px;margin:16px 0;overflow:hidden;}
+        .code-block__header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;background:var(--border);font-size:.78rem;font-weight:700;color:var(--text-muted);}
+        .code-block__dots{display:flex;gap:6px;}
+        .code-block__dot{width:10px;height:10px;border-radius:50%;}.code-block__dot--red{background:#ff5f57;}.code-block__dot--yellow{background:#febc2e;}.code-block__dot--green{background:#28c840;}
+        .code-block__body{padding:18px 22px;font-family:'JetBrains Mono',monospace;font-size:.83rem;line-height:1.9;overflow-x:auto;direction:ltr;text-align:left;color:#c8c8e0;}
+        .kw{color:#ff79c6;font-weight:700;}.str{color:#f1fa8c;}.cm{color:#555577;font-style:italic;}.num{color:#bd93f9;}.fn{color:#50fa7b;}.tp{color:#8be9fd;}.ac{color:#ff4d4d;}.or{color:#ff8c00;}
+        code.inline{background:var(--bg-code);padding:2px 8px;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--accent2);direction:ltr;display:inline-block;}
+        .info-box{border-radius:12px;padding:18px 22px;margin:16px 0;display:flex;align-items:flex-start;gap:12px;}
+        .info-box--warn{background:rgba(255,140,0,0.1);border:1px solid rgba(255,140,0,0.25);}
+        .info-box--success{background:rgba(0,212,126,0.1);border:1px solid rgba(0,212,126,0.25);}
+        .info-box--tip{background:rgba(77,140,255,0.1);border:1px solid rgba(77,140,255,0.25);}
+        .info-box--danger{background:rgba(255,77,77,0.1);border:1px solid rgba(255,77,77,0.25);}
+        .info-box__icon{font-size:1.3rem;flex-shrink:0;}
+        .info-box__text{font-size:.9rem;font-weight:600;}
+        .info-box--warn .info-box__text{color:var(--accent2);}.info-box--success .info-box__text{color:var(--accent3);}.info-box--tip .info-box__text{color:var(--accent4);}.info-box--danger .info-box__text{color:var(--accent);}
+        .table-visual{background:var(--bg-code);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin:16px 0;}
+        .table-visual__header{padding:12px 18px;font-weight:700;font-size:.9rem;display:flex;align-items:center;gap:8px;}
+        .table-visual__header--blue{background:rgba(77,140,255,0.12);color:var(--accent4);}
+        .table-visual__header--green{background:rgba(0,212,126,0.12);color:var(--accent3);}
+        .table-visual__header--orange{background:rgba(255,140,0,0.12);color:var(--accent2);}
+        .table-visual__header--purple{background:rgba(168,85,247,0.12);color:var(--accent5);}
+        .table-visual table{width:100%;border-collapse:collapse;}
+        .table-visual th{background:var(--border);padding:10px 16px;text-align:right;font-size:.8rem;font-weight:700;color:var(--accent4);font-family:'JetBrains Mono',monospace;}
+        .table-visual td{padding:10px 16px;border-bottom:1px solid var(--border);font-size:.85rem;color:var(--text-sec);font-weight:600;}
+        .sub-title{font-size:1.15rem;font-weight:800;margin:30px 0 16px;color:var(--text);}
+        .badge{display:inline-block;padding:3px 10px;border-radius:6px;font-size:.75rem;font-weight:700;}
+        .badge--easy{background:rgba(0,212,126,0.15);color:var(--accent3);}
+        .badge--medium{background:rgba(255,140,0,0.15);color:var(--accent2);}
+        .badge--hard{background:rgba(255,77,77,0.15);color:var(--accent);}
+        .badge--boss{background:rgba(168,85,247,0.15);color:var(--accent5);}
+
+        .scenario-box{background:linear-gradient(135deg,rgba(0,212,126,0.06),rgba(77,140,255,0.06));border:2px solid var(--accent3);border-radius:18px;padding:30px;margin:24px 0;}
+        .scenario-box__title{font-size:1.2rem;font-weight:800;color:var(--accent3);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+        .scenario-box p{color:var(--text-sec);font-size:.95rem;font-weight:600;margin-bottom:8px;}
+
+        .exercise-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;margin-bottom:20px;overflow:hidden;transition:border-color .2s;}
+        .exercise-card:hover{border-color:var(--border-light);}
+        .exercise-card__head{padding:20px 24px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:background .2s;}
+        .exercise-card__head:hover{background:rgba(255,255,255,0.02);}
+        .exercise-card__title{font-weight:700;font-size:1rem;display:flex;align-items:center;gap:10px;}
+        .exercise-card__arrow{transition:transform .3s;font-size:1.2rem;color:var(--text-muted);}
+        .exercise-card__arrow--open{transform:rotate(90deg);}
+        .exercise-card__body{padding:0 24px 24px;display:none;}
+        .exercise-card__body--open{display:block;}
+        .exercise-card__task{color:var(--text-sec);font-weight:600;font-size:.95rem;margin-bottom:14px;padding:14px 18px;background:rgba(0,0,0,0.2);border-radius:10px;}
+        .exercise-card__hint{color:var(--text-muted);font-size:.85rem;font-weight:600;margin-bottom:14px;padding:10px 14px;background:rgba(77,140,255,0.06);border-radius:8px;border-right:3px solid var(--accent4);cursor:pointer;display:none;}
+        .exercise-card__hint--show{display:block;}
+        .hint-btn{background:rgba(77,140,255,0.15);color:var(--accent4);border:none;padding:8px 16px;border-radius:8px;font-family:'Cairo',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;margin-left:8px;transition:opacity .2s;}
+        .hint-btn:hover{opacity:.8;}
+        .solution-btn{background:linear-gradient(135deg,var(--accent3),#00b368);color:#fff;border:none;padding:10px 22px;border-radius:10px;font-family:'Cairo',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:opacity .2s;}
+        .solution-btn:hover{opacity:.85;}
+        .solution-content{display:none;margin-top:14px;}
+        .solution-content--open{display:block;}
+
+        .progress-tracker{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;margin-bottom:30px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+        .progress-tracker__label{font-weight:700;font-size:.9rem;color:var(--text-sec);}
+        .progress-tracker__bar{flex:1;min-width:200px;height:12px;background:var(--border);border-radius:6px;overflow:hidden;}
+        .progress-tracker__fill{height:100%;background:linear-gradient(90deg,var(--accent3),#00ffaa);border-radius:6px;transition:width .5s;width:0%;}
+        .progress-tracker__text{font-weight:800;font-size:1rem;color:var(--accent3);min-width:45px;text-align:center;}
+
+        .summary-box{background:linear-gradient(135deg,rgba(0,212,126,0.08),rgba(77,140,255,0.08));border:1px solid var(--border-light);border-radius:18px;padding:30px;margin:30px 0;}
+        .summary-box__title{font-size:1.2rem;font-weight:800;margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+
+        .cheat-sheet{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0;}
+        @media(max-width:600px){.cheat-sheet{grid-template-columns:1fr;}}
+        .cheat-item{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:16px;}
+        .cheat-item__title{font-weight:800;font-size:.9rem;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+        .cheat-item__code{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--text-sec);background:var(--bg-code);padding:8px 12px;border-radius:6px;direction:ltr;text-align:left;}
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('sidebar--open')">☰</button>
+    <aside class="sidebar">
+        <a href="index.html" class="sidebar__back">→ العودة للخطة</a>
+        <div class="sidebar__title">تمارين اليوم الثاني</div>
+        <nav class="sidebar__nav">
+            <a href="#scenario"><span class="nav-num">📋</span> السيناريو والبيانات</a>
+            <div class="sidebar__divider"></div>
+            <a href="#easy"><span class="nav-num">🟢</span> سهل (1-4)</a>
+            <a href="#ex1"><span class="nav-num">1</span> إنشاء الجداول</a>
+            <a href="#ex2"><span class="nav-num">2</span> إدخال البيانات</a>
+            <a href="#ex3"><span class="nav-num">3</span> UPDATE + DELETE</a>
+            <a href="#ex4"><span class="nav-num">4</span> إحصائيات أساسية</a>
+            <div class="sidebar__divider"></div>
+            <a href="#medium"><span class="nav-num">🟠</span> متوسط (5-8)</a>
+            <a href="#ex5"><span class="nav-num">5</span> GROUP BY + HAVING</a>
+            <a href="#ex6"><span class="nav-num">6</span> INNER JOIN</a>
+            <a href="#ex7"><span class="nav-num">7</span> LEFT JOIN</a>
+            <a href="#ex8"><span class="nav-num">8</span> تقرير بـ JOIN</a>
+            <div class="sidebar__divider"></div>
+            <a href="#hard"><span class="nav-num">🔴</span> صعب (9-12)</a>
+            <a href="#ex9"><span class="nav-num">9</span> Multi JOIN</a>
+            <a href="#ex10"><span class="nav-num">10</span> SELF JOIN</a>
+            <a href="#ex11"><span class="nav-num">11</span> تقرير المدير</a>
+            <a href="#ex12"><span class="nav-num">12</span> التحدي النهائي</a>
+            <div class="sidebar__divider"></div>
+            <a href="#cheatsheet"><span class="nav-num">📝</span> Cheat Sheet</a>
+        </nav>
+    </aside>
+
+    <main class="main">
+        <div class="hero">
+            <div class="hero__badge">💪 اليوم الثاني - تمارين عملية</div>
+            <h1 class="hero__title">تمارين شاملة: JOINs + Functions</h1>
+            <p class="hero__desc">سيناريو حقيقي لشركة فيها أقسام وموظفين ومشاريع وعملاء. 12 تمرين من السهل للصعب!</p>
+            <div class="hero__meta">
+                <span class="hero__meta-item">⏱️ 90 دقيقة</span>
+                <span class="hero__meta-item">💪 12 تمرين</span>
+                <span class="hero__meta-item">🏢 سيناريو حقيقي</span>
+            </div>
+        </div>
+
+        <div class="progress-tracker">
+            <span class="progress-tracker__label">تقدمك:</span>
+            <div class="progress-tracker__bar"><div class="progress-tracker__fill" id="progressFill"></div></div>
+            <span class="progress-tracker__text" id="progressText">0/12</span>
+        </div>
+
+        <!-- Scenario -->
+        <div class="section" id="scenario">
+            <div class="section__header">
+                <div class="section__icon section__icon--green">🏢</div>
+                <h2 class="section__title">السيناريو: شركة النجمة للتكنولوجيا</h2>
+            </div>
+            <div class="scenario-box">
+                <div class="scenario-box__title">🏢 شركة النجمة للتكنولوجيا</div>
+                <p>انت Database Administrator جديد في شركة النجمة. المدير طلب منك تبني قاعدة البيانات وتعمل تقارير.</p>
+                <p>الشركة فيها: <strong>5 أقسام</strong> و <strong>12 موظف</strong> و <strong>5 مشاريع</strong> و <strong>8 عملاء</strong>.</p>
+                <p>بعض الموظفين مش مرتبطين بقسم لسه (جداد). وبعض الأقسام لسه فاضية.</p>
+            </div>
+            <div class="info-box info-box--tip">
+                <span class="info-box__icon">💡</span>
+                <span class="info-box__text">حل كل تمرين لوحدك الأول! لو وقفت، اضغط "تلميح". ولو لسه وقفت، اضغط "إظهار الحل". التعلم الحقيقي بيحصل لما تحاول بنفسك!</span>
+            </div>
+        </div>
+
+        <!-- EASY SECTION -->
+        <div class="section" id="easy">
+            <div class="section__header">
+                <div class="section__icon section__icon--green">🟢</div>
+                <h2 class="section__title">المستوى السهل</h2>
+            </div>
+
+            <!-- Exercise 1 -->
+            <div class="exercise-card" id="ex1">
+                <div class="exercise-card__head" onclick="toggleExercise(1)">
+                    <span class="exercise-card__title"><span class="badge badge--easy">سهل</span> تمرين 1: إنشاء قاعدة البيانات</span>
+                    <span class="exercise-card__arrow" id="arrow-1">◀</span>
+                </div>
+                <div class="exercise-card__body" id="ex-body-1">
+                    <div class="exercise-card__task">
+                        أنشئ 4 جداول للشركة:<br>
+                        <strong>1. departments:</strong> dept_id (PK), dept_name, location, budget<br>
+                        <strong>2. employees:</strong> emp_id (PK), first_name, last_name, email (UNIQUE), salary, hire_date, dept_id (FK), manager_id<br>
+                        <strong>3. projects:</strong> project_id (PK), project_name, dept_id (FK), start_date, budget<br>
+                        <strong>4. customers:</strong> customer_id (PK), customer_name, city, contact_email, assigned_emp_id (FK)
+                    </div>
+                    <button class="hint-btn" onclick="toggleHint(1)">💡 تلميح</button>
+                    <div class="exercise-card__hint" id="hint-1">ابدأ بالجدول اللي مالوش FK أول (departments)، بعدين employees، بعدين projects و customers.</div>
+                    <button class="solution-btn" onclick="toggleSolution(1);markDone(1)">إظهار الحل</button>
+                    <div class="solution-content" id="sol-1">
+                        <div class="code-block"><div class="code-block__body"><span class="kw">CREATE TABLE</span> departments (
+    dept_id   <span class="tp">NUMBER</span>(<span class="num">4</span>) <span class="kw">PRIMARY KEY</span>,
+    dept_name <span class="tp">VARCHAR2</span>(<span class="num">50</span>) <span class="kw">NOT NULL</span>,
+    location  <span class="tp">VARCHAR2</span>(<span class="num">50</span>),
+    budget    <span class="tp">NUMBER</span>(<span class="num">12</span>,<span class="num">2</span>)
+);
+
+<span class="kw">CREATE TABLE</span> employees (
+    emp_id     <span class="tp">NUMBER</span>(<span class="num">6</span>) <span class="kw">PRIMARY KEY</span>,
+    first_name <span class="tp">VARCHAR2</span>(<span class="num">30</span>) <span class="kw">NOT NULL</span>,
+    last_name  <span class="tp">VARCHAR2</span>(<span class="num">30</span>) <span class="kw">NOT NULL</span>,
+    email      <span class="tp">VARCHAR2</span>(<span class="num">60</span>) <span class="kw">UNIQUE</span>,
+    salary     <span class="tp">NUMBER</span>(<span class="num">10</span>,<span class="num">2</span>),
+    hire_date  <span class="tp">DATE</span>,
+    dept_id    <span class="tp">NUMBER</span>(<span class="num">4</span>) <span class="kw">REFERENCES</span> departments(dept_id),
+    manager_id <span class="tp">NUMBER</span>(<span class="num">6</span>)
+);
+
+<span class="kw">CREATE TABLE</span> projects (
+    project_id   <span class="tp">NUMBER</span>(<span class="num">4</span>) <span class="kw">PRIMARY KEY</span>,
+    project_name <span class="tp">VARCHAR2</span>(<span class="num">60</span>) <span class="kw">NOT NULL</span>,
+    dept_id      <span class="tp">NUMBER</span>(<span class="num">4</span>) <span class="kw">REFERENCES</span> departments(dept_id),
+    start_date   <span class="tp">DATE</span>,
+    budget       <span class="tp">NUMBER</span>(<span class="num">12</span>,<span class="num">2</span>)
+);
+
+<span class="kw">CREATE TABLE</span> customers (
+    customer_id    <span class="tp">NUMBER</span>(<span class="num">6</span>) <span class="kw">PRIMARY KEY</span>,
+    customer_name  <span class="tp">VARCHAR2</span>(<span class="num">60</span>) <span class="kw">NOT NULL</span>,
+    city           <span class="tp">VARCHAR2</span>(<span class="num">50</span>),
+    contact_email  <span class="tp">VARCHAR2</span>(<span class="num">60</span>),
+    assigned_emp_id <span class="tp">NUMBER</span>(<span class="num">6</span>) <span class="kw">REFERENCES</span> employees(emp_id)
+);</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exercise 2 -->
+            <div class="exercise-card" id="ex2">
+                <div class="exercise-card__head" onclick="toggleExercise(2)">
+                    <span class="exercise-card__title"><span class="badge badge--easy">سهل</span> تمرين 2: إدخال البيانات</span>
+                    <span class="exercise-card__arrow" id="arrow-2">◀</span>
+                </div>
+                <div class="exercise-card__body" id="ex-body-2">
+                    <div class="exercise-card__task">
+                        أدخل البيانات التالية:<br>
+                        <strong>أقسام:</strong> المبيعات (القاهرة)، التقنية (الإسكندرية)، الموارد البشرية (القاهرة)، التسويق (المنصورة)، المالية (القاهرة)<br>
+                        <strong>موظفين:</strong> 12 موظف (بعضهم dept_id = NULL، وبعضهم salary = NULL)<br>
+                        <strong>مشاريع:</strong> 5 مشاريع موزعة على الأقسام<br>
+                        <strong>عملاء:</strong> 8 عملاء (بعضهم بدون موظف مسؤول)
+                    </div>
+                    <button class="hint-btn" onclick="toggleHint(2)">💡 تلميح</button>
+                    <div class="exercise-card__hint" id="hint-2">اتأكد إنك بتدخل الأقسام الأول، بعدين الموظفين، بعدين المشاريع والعملاء.</div>
+                    <button class="solution-btn" onclick="toggleSolution(2);markDone(2)">إظهار الحل</button>
+                    <div class="solution-content" id="sol-2">
+                        <div class="code-block"><div class="code-block__body"><span class="cm">-- الأقسام</span>
+<span class="kw">INSERT INTO</span> departments <span class="kw">VALUES</span>(<span class="num">10</span>,<span class="str">'المبيعات'</span>,<span class="str">'القاهرة'</span>,<span class="num">500000</span>);
+<span class="kw">INSERT INTO</span> departments <span class="kw">VALUES</span>(<span class="num">20</span>,<span class="str">'التقنية'</span>,<span class="str">'الإسكندرية'</span>,<span class="num">800000</span>);
+<span class="kw">INSERT INTO</span> departments <span class="kw">VALUES</span>(<span class="num">30</span>,<span class="str">'الموارد البشرية'</span>,<span class="str">'القاهرة'</span>,<span class="num">300000</span>);
+<span class="kw">INSERT INTO</span> departments <span class="kw">VALUES</span>(<span class="num">40</span>,<span class="str">'التسويق'</span>,<span class="str">'المنصورة'</span>,<span class="num">400000</span>);
+<span class="kw">INSERT INTO</span> departments <span class="kw">VALUES</span>(<span class="num">50</span>,<span class="str">'المالية'</span>,<span class="str">'القاهرة'</span>,<span class="num">350000</span>);
+
+<span class="cm">-- الموظفين</span>
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">101</span>,<span class="str">'أحمد'</span>,<span class="str">'محمد'</span>,<span class="str">'ahmed@star.com'</span>,<span class="num">15000</span>,<span class="kw">DATE</span> <span class="str">'2020-01-10'</span>,<span class="num">10</span>,<span class="kw">NULL</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">102</span>,<span class="str">'سارة'</span>,<span class="str">'علي'</span>,<span class="str">'sara@star.com'</span>,<span class="num">18000</span>,<span class="kw">DATE</span> <span class="str">'2020-03-15'</span>,<span class="num">20</span>,<span class="num">101</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">103</span>,<span class="str">'محمد'</span>,<span class="str">'حسن'</span>,<span class="str">'moh@star.com'</span>,<span class="num">9000</span>,<span class="kw">DATE</span> <span class="str">'2022-06-01'</span>,<span class="num">10</span>,<span class="num">101</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">104</span>,<span class="str">'فاطمة'</span>,<span class="str">'أحمد'</span>,<span class="str">'fatma@star.com'</span>,<span class="num">22000</span>,<span class="kw">DATE</span> <span class="str">'2019-11-20'</span>,<span class="num">20</span>,<span class="num">101</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">105</span>,<span class="str">'عمر'</span>,<span class="str">'خالد'</span>,<span class="str">'omar@star.com'</span>,<span class="num">7500</span>,<span class="kw">DATE</span> <span class="str">'2023-01-05'</span>,<span class="num">30</span>,<span class="num">102</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">106</span>,<span class="str">'نور'</span>,<span class="str">'سعيد'</span>,<span class="str">'nour@star.com'</span>,<span class="num">13000</span>,<span class="kw">DATE</span> <span class="str">'2021-08-15'</span>,<span class="num">20</span>,<span class="num">104</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">107</span>,<span class="str">'يوسف'</span>,<span class="str">'إبراهيم'</span>,<span class="str">'yousef@star.com'</span>,<span class="num">6000</span>,<span class="kw">DATE</span> <span class="str">'2024-02-01'</span>,<span class="num">10</span>,<span class="num">103</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">108</span>,<span class="str">'منى'</span>,<span class="str">'عبدالله'</span>,<span class="str">'mona@star.com'</span>,<span class="num">16000</span>,<span class="kw">DATE</span> <span class="str">'2021-04-20'</span>,<span class="kw">NULL</span>,<span class="num">101</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">109</span>,<span class="str">'خالد'</span>,<span class="str">'محمود'</span>,<span class="str">'khaled@star.com'</span>,<span class="num">5500</span>,<span class="kw">DATE</span> <span class="str">'2024-06-10'</span>,<span class="num">40</span>,<span class="num">103</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">110</span>,<span class="str">'ريم'</span>,<span class="str">'حسين'</span>,<span class="str">'reem@star.com'</span>,<span class="kw">NULL</span>,<span class="kw">DATE</span> <span class="str">'2024-09-01'</span>,<span class="num">30</span>,<span class="num">105</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">111</span>,<span class="str">'تامر'</span>,<span class="str">'فوزي'</span>,<span class="str">'tamer@star.com'</span>,<span class="num">11000</span>,<span class="kw">DATE</span> <span class="str">'2023-03-15'</span>,<span class="num">10</span>,<span class="num">101</span>);
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>(<span class="num">112</span>,<span class="str">'هدى'</span>,<span class="str">'ناصر'</span>,<span class="str">'huda@star.com'</span>,<span class="num">14000</span>,<span class="kw">DATE</span> <span class="str">'2022-01-10'</span>,<span class="kw">NULL</span>,<span class="num">102</span>);
+
+<span class="cm">-- المشاريع</span>
+<span class="kw">INSERT INTO</span> projects <span class="kw">VALUES</span>(<span class="num">1</span>,<span class="str">'موقع التجارة الإلكترونية'</span>,<span class="num">20</span>,<span class="kw">DATE</span> <span class="str">'2024-01-01'</span>,<span class="num">500000</span>);
+<span class="kw">INSERT INTO</span> projects <span class="kw">VALUES</span>(<span class="num">2</span>,<span class="str">'حملة التسويق الرقمي'</span>,<span class="num">40</span>,<span class="kw">DATE</span> <span class="str">'2024-03-15'</span>,<span class="num">200000</span>);
+<span class="kw">INSERT INTO</span> projects <span class="kw">VALUES</span>(<span class="num">3</span>,<span class="str">'نظام إدارة المبيعات'</span>,<span class="num">10</span>,<span class="kw">DATE</span> <span class="str">'2023-06-01'</span>,<span class="num">350000</span>);
+<span class="kw">INSERT INTO</span> projects <span class="kw">VALUES</span>(<span class="num">4</span>,<span class="str">'تطبيق الموبايل'</span>,<span class="num">20</span>,<span class="kw">DATE</span> <span class="str">'2024-06-01'</span>,<span class="num">750000</span>);
+<span class="kw">INSERT INTO</span> projects <span class="kw">VALUES</span>(<span class="num">5</span>,<span class="str">'نظام المحاسبة'</span>,<span class="num">50</span>,<span class="kw">DATE</span> <span class="str">'2024-09-01'</span>,<span class="num">450000</span>);
+
+<span class="cm">-- العملاء</span>
+<span class="kw">INSERT INTO</span> customers <span class="kw">VALUES</span>(<span class="num">1</span>,<span class="str">'شركة الأمل'</span>,<span class="str">'القاهرة'</span>,<span class="str">'amal@co.com'</span>,<span class="num">103</span>);
+<span class="kw">INSERT INTO</span> customers <span class="kw">VALUES</span>(<span class="num">2</span>,<span class="str">'مؤسسة النور'</span>,<span class="str">'الإسكندرية'</span>,<span class="str">'noor@co.com'</span>,<span class="num">103</span>);
+<span class="kw">INSERT INTO</span> customers <span class="kw">VALUES</span>(<span class="num">3</span>,<span class="str">'شركة البناء'</span>,<span class="str">'القاهرة'</span>,<span class="str">'bena@co.com'</span>,<span class="num">111</span>);
+<span class="kw">INSERT INTO</span> customers <span class="kw">VALUES</span>(<span class="num">4</span>,<span class="str">'مجموعة الفجر'</span>,<span class="str">'المنصورة'</span>,<span class="str">'fagr@co.com'</span>,<span class="num">101</span>);
+<span class="kw">INSERT INTO</span> customers <span class="kw">VALUES</span>(<span class="num">5</span>,<span class="str">'شركة الصفا'</span>,<span class="str">'أسوان'</span>,<span class="str">'safa@co.com'</span>,<span class="kw">NULL</span>);
+<span class="kw">INSERT INTO</span> customers <span class="kw">VALUES</span>(<span class="num">6</span>,<span class="str">'مصنع الكيمياء'</span>,<span class="str">'القاهرة'</span>,<span class="str">'chem@co.com'</span>,<span class="num">107</span>);
+<span class="kw">INSERT INTO</span> customers <span class="kw">VALUES</span>(<span class="num">7</span>,<span class="str">'شركة التقدم'</span>,<span class="str">'طنطا'</span>,<span class="str">'prog@co.com'</span>,<span class="kw">NULL</span>);
+<span class="kw">INSERT INTO</span> customers <span class="kw">VALUES</span>(<span class="num">8</span>,<span class="str">'مؤسسة الخير'</span>,<span class="str">'القاهرة'</span>,<span class="str">'kheir@co.com'</span>,<span class="num">111</span>);
+
+<span class="kw">COMMIT</span>;</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exercise 3 -->
+            <div class="exercise-card" id="ex3">
+                <div class="exercise-card__head" onclick="toggleExercise(3)">
+                    <span class="exercise-card__title"><span class="badge badge--easy">سهل</span> تمرين 3: UPDATE و DELETE</span>
+                    <span class="exercise-card__arrow" id="arrow-3">◀</span>
+                </div>
+                <div class="exercise-card__body" id="ex-body-3">
+                    <div class="exercise-card__task">
+                        1. زوّد مرتب كل موظفين قسم التقنية (20) بنسبة 10%<br>
+                        2. عيّن منى (108) لقسم التسويق (40)<br>
+                        3. عيّن هدى (112) لقسم المالية (50)<br>
+                        4. حدّث مرتب ريم (110) لـ 6500
+                    </div>
+                    <button class="hint-btn" onclick="toggleHint(3)">💡 تلميح</button>
+                    <div class="exercise-card__hint" id="hint-3">استخدم UPDATE مع SET و WHERE. للنسبة: salary = salary * 1.10</div>
+                    <button class="solution-btn" onclick="toggleSolution(3);markDone(3)">إظهار الحل</button>
+                    <div class="solution-content" id="sol-3">
+                        <div class="code-block"><div class="code-block__body"><span class="cm">-- 1. زيادة 10% لقسم التقنية</span>
+<span class="kw">UPDATE</span> employees <span class="kw">SET</span> salary = salary * <span class="num">1.10</span> <span class="kw">WHERE</span> dept_id = <span class="num">20</span>;
+
+<span class="cm">-- 2. تعيين منى لقسم التسويق</span>
+<span class="kw">UPDATE</span> employees <span class="kw">SET</span> dept_id = <span class="num">40</span> <span class="kw">WHERE</span> emp_id = <span class="num">108</span>;
+
+<span class="cm">-- 3. تعيين هدى لقسم المالية</span>
+<span class="kw">UPDATE</span> employees <span class="kw">SET</span> dept_id = <span class="num">50</span> <span class="kw">WHERE</span> emp_id = <span class="num">112</span>;
+
+<span class="cm">-- 4. تحديث مرتب ريم</span>
+<span class="kw">UPDATE</span> employees <span class="kw">SET</span> salary = <span class="num">6500</span> <span class="kw">WHERE</span> emp_id = <span class="num">110</span>;
+
+<span class="kw">COMMIT</span>;</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exercise 4 -->
+            <div class="exercise-card" id="ex4">
+                <div class="exercise-card__head" onclick="toggleExercise(4)">
+                    <span class="exercise-card__title"><span class="badge badge--easy">سهل</span> تمرين 4: إحصائيات أساسية</span>
+                    <span class="exercise-card__arrow" id="arrow-4">◀</span>
+                </div>
+                <div class="exercise-card__body" id="ex-body-4">
+                    <div class="exercise-card__task">
+                        اعرض في Query واحد: عدد الموظفين الكلي، عدد اللي عندهم مرتب، إجمالي المرتبات، المتوسط (مقرب)، أعلى مرتب، أقل مرتب.
+                    </div>
+                    <button class="hint-btn" onclick="toggleHint(4)">💡 تلميح</button>
+                    <div class="exercise-card__hint" id="hint-4">استخدم COUNT(*), COUNT(salary), SUM, ROUND(AVG()), MAX, MIN كلهم في SELECT واحد.</div>
+                    <button class="solution-btn" onclick="toggleSolution(4);markDone(4)">إظهار الحل</button>
+                    <div class="solution-content" id="sol-4">
+                        <div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span>
+    <span class="fn">COUNT</span>(*)            <span class="kw">AS</span> total_emp,
+    <span class="fn">COUNT</span>(salary)        <span class="kw">AS</span> with_salary,
+    <span class="fn">SUM</span>(salary)          <span class="kw">AS</span> total_sal,
+    <span class="fn">ROUND</span>(<span class="fn">AVG</span>(salary))   <span class="kw">AS</span> avg_sal,
+    <span class="fn">MAX</span>(salary)          <span class="kw">AS</span> max_sal,
+    <span class="fn">MIN</span>(salary)          <span class="kw">AS</span> min_sal
+<span class="kw">FROM</span> employees;</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MEDIUM SECTION -->
+        <div class="section" id="medium">
+            <div class="section__header">
+                <div class="section__icon section__icon--orange">🟠</div>
+                <h2 class="section__title">المستوى المتوسط</h2>
+            </div>
+
+            <div class="exercise-card" id="ex5">
+                <div class="exercise-card__head" onclick="toggleExercise(5)"><span class="exercise-card__title"><span class="badge badge--medium">متوسط</span> تمرين 5: GROUP BY + HAVING</span><span class="exercise-card__arrow" id="arrow-5">◀</span></div>
+                <div class="exercise-card__body" id="ex-body-5">
+                    <div class="exercise-card__task">اعرض لكل قسم: عدد الموظفين، إجمالي المرتبات، متوسط المرتب. بس الأقسام اللي فيها أكتر من موظف واحد ومتوسط مرتبها فوق 8000. رتب تنازلياً حسب المتوسط.</div>
+                    <button class="hint-btn" onclick="toggleHint(5)">💡 تلميح</button>
+                    <div class="exercise-card__hint" id="hint-5">GROUP BY dept_id ثم HAVING مع شرطين: COUNT(*) > 1 AND AVG(salary) > 8000</div>
+                    <button class="solution-btn" onclick="toggleSolution(5);markDone(5)">إظهار الحل</button>
+                    <div class="solution-content" id="sol-5">
+                        <div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span>
+    dept_id,
+    <span class="fn">COUNT</span>(*)            <span class="kw">AS</span> emp_count,
+    <span class="fn">SUM</span>(salary)          <span class="kw">AS</span> total_sal,
+    <span class="fn">ROUND</span>(<span class="fn">AVG</span>(salary))   <span class="kw">AS</span> avg_sal
+<span class="kw">FROM</span> employees
+<span class="kw">GROUP BY</span> dept_id
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(*) > <span class="num">1</span>
+   <span class="kw">AND</span> <span class="fn">AVG</span>(salary) > <span class="num">8000</span>
+<span class="kw">ORDER BY</span> avg_sal <span class="kw">DESC</span>;</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="exercise-card" id="ex6">
+                <div class="exercise-card__head" onclick="toggleExercise(6)"><span class="exercise-card__title"><span class="badge badge--medium">متوسط</span> تمرين 6: INNER JOIN - التقرير الأساسي</span><span class="exercise-card__arrow" id="arrow-6">◀</span></div>
+                <div class="exercise-card__body" id="ex-body-6">
+                    <div class="exercise-card__task">اعرض اسم كل موظف واسم قسمه ومكان القسم ومرتبه. بس الموظفين اللي في القاهرة ومرتبهم فوق 10000. رتب حسب المرتب تنازلياً.</div>
+                    <button class="hint-btn" onclick="toggleHint(6)">💡 تلميح</button>
+                    <div class="exercise-card__hint" id="hint-6">INNER JOIN employees مع departments على dept_id. WHERE على location و salary.</div>
+                    <button class="solution-btn" onclick="toggleSolution(6);markDone(6)">إظهار الحل</button>
+                    <div class="solution-content" id="sol-6">
+                        <div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span>
+    e.first_name, e.last_name,
+    d.dept_name, d.location,
+    e.salary
+<span class="kw">FROM</span> employees e
+<span class="kw">INNER JOIN</span> departments d <span class="kw">ON</span> e.dept_id = d.dept_id
+<span class="kw">WHERE</span> d.location = <span class="str">'القاهرة'</span>
+  <span class="kw">AND</span> e.salary > <span class="num">10000</span>
+<span class="kw">ORDER BY</span> e.salary <span class="kw">DESC</span>;</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="exercise-card" id="ex7">
+                <div class="exercise-card__head" onclick="toggleExercise(7)"><span class="exercise-card__title"><span class="badge badge--medium">متوسط</span> تمرين 7: LEFT JOIN - المفقودين</span><span class="exercise-card__arrow" id="arrow-7">◀</span></div>
+                <div class="exercise-card__body" id="ex-body-7">
+                    <div class="exercise-card__task">
+                        1. اعرض العملاء اللي مالهمش موظف مسؤول عنهم<br>
+                        2. اعرض الموظفين اللي مش مسؤولين عن أي عميل
+                    </div>
+                    <button class="hint-btn" onclick="toggleHint(7)">💡 تلميح</button>
+                    <div class="exercise-card__hint" id="hint-7">LEFT JOIN + WHERE ... IS NULL. للسؤال الأول: customers LEFT JOIN employees. للتاني: employees LEFT JOIN customers.</div>
+                    <button class="solution-btn" onclick="toggleSolution(7);markDone(7)">إظهار الحل</button>
+                    <div class="solution-content" id="sol-7">
+                        <div class="code-block"><div class="code-block__body"><span class="cm">-- 1. عملاء بدون موظف مسؤول</span>
+<span class="kw">SELECT</span> c.customer_name, c.city
+<span class="kw">FROM</span> customers c
+<span class="kw">LEFT JOIN</span> employees e <span class="kw">ON</span> c.assigned_emp_id = e.emp_id
+<span class="kw">WHERE</span> e.emp_id <span class="kw">IS NULL</span>;
+
+<span class="cm">-- 2. موظفين مش مسؤولين عن أي عميل</span>
+<span class="kw">SELECT</span> e.first_name, e.last_name, d.dept_name
+<span class="kw">FROM</span> employees e
+<span class="kw">LEFT JOIN</span> customers c <span class="kw">ON</span> e.emp_id = c.assigned_emp_id
+<span class="kw">LEFT JOIN</span> departments d <span class="kw">ON</span> e.dept_id = d.dept_id
+<span class="kw">WHERE</span> c.customer_id <span class="kw">IS NULL</span>;</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="exercise-card" id="ex8">
+                <div class="exercise-card__head" onclick="toggleExercise(8)"><span class="exercise-card__title"><span class="badge badge--medium">متوسط</span> تمرين 8: JOIN + GROUP BY - تقرير الأقسام</span><span class="exercise-card__arrow" id="arrow-8">◀</span></div>
+                <div class="exercise-card__body" id="ex-body-8">
+                    <div class="exercise-card__task">اعرض اسم كل قسم وعدد موظفينه ومتوسط مرتبه وأعلى مرتب. حتى الأقسام الفاضية تظهر. رتب حسب عدد الموظفين تنازلياً.</div>
+                    <button class="hint-btn" onclick="toggleHint(8)">💡 تلميح</button>
+                    <div class="exercise-card__hint" id="hint-8">departments LEFT JOIN employees. GROUP BY dept_name. استخدم COUNT(e.emp_id) مش COUNT(*) عشان الأقسام الفاضية تعرض 0.</div>
+                    <button class="solution-btn" onclick="toggleSolution(8);markDone(8)">إظهار الحل</button>
+                    <div class="solution-content" id="sol-8">
+                        <div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span>
+    d.dept_name,
+    <span class="fn">COUNT</span>(e.emp_id)        <span class="kw">AS</span> emp_count,
+    <span class="fn">ROUND</span>(<span class="fn">AVG</span>(e.salary))   <span class="kw">AS</span> avg_salary,
+    <span class="fn">MAX</span>(e.salary)           <span class="kw">AS</span> max_salary
+<span class="kw">FROM</span> departments d
+<span class="kw">LEFT JOIN</span> employees e <span class="kw">ON</span> d.dept_id = e.dept_id
+<span class="kw">GROUP BY</span> d.dept_name
+<span class="kw">ORDER BY</span> emp_count <span class="kw">DESC</span>;</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HARD SECTION -->
+        <div class="section" id="hard">
+            <div class="section__header">
+                <div class="section__icon section__icon--red">🔴</div>
+                <h2 class="section__title">المستوى الصعب</h2>
+            </div>
+
+            <div class="exercise-card" id="ex9">
+                <div class="exercise-card__head" onclick="toggleExercise(9)"><span class="exercise-card__title"><span class="badge badge--hard">صعب</span> تمرين 9: Multi JOIN - 3 جداول</span><span class="exercise-card__arrow" id="arrow-9">◀</span></div>
+                <div class="exercise-card__body" id="ex-body-9">
+                    <div class="exercise-card__task">اعرض اسم كل مشروع واسم القسم بتاعه وعدد الموظفين في القسم ده وميزانية المشروع. رتب حسب الميزانية تنازلياً.</div>
+                    <button class="hint-btn" onclick="toggleHint(9)">💡 تلميح</button>
+                    <div class="exercise-card__hint" id="hint-9">projects JOIN departments JOIN employees. استخدم COUNT(DISTINCT e.emp_id) عشان لو القسم عنده أكتر من مشروع الموظف ميتعدش مرتين.</div>
+                    <button class="solution-btn" onclick="toggleSolution(9);markDone(9)">إظهار الحل</button>
+                    <div class="solution-content" id="sol-9">
+                        <div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span>
+    p.project_name,
+    d.dept_name,
+    <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> e.emp_id) <span class="kw">AS</span> emp_count,
+    p.budget
+<span class="kw">FROM</span> projects p
+<span class="kw">INNER JOIN</span> departments d <span class="kw">ON</span> p.dept_id = d.dept_id
+<span class="kw">LEFT JOIN</span> employees e    <span class="kw">ON</span> d.dept_id = e.dept_id
+<span class="kw">GROUP BY</span> p.project_name, d.dept_name, p.budget
+<span class="kw">ORDER BY</span> p.budget <span class="kw">DESC</span>;</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="exercise-card" id="ex10">
+                <div class="exercise-card__head" onclick="toggleExercise(10)"><span class="exercise-card__title"><span class="badge badge--hard">صعب</span> تمرين 10: SELF JOIN - الهيكل الإداري</span><span class="exercise-card__arrow" id="arrow-10">◀</span></div>
+                <div class="exercise-card__body" id="ex-body-10">
+                    <div class="exercise-card__task">
+                        1. اعرض كل موظف مع اسم مديره (اعرض "المدير العام" للي مالوش مدير)<br>
+                        2. اعرض الموظفين اللي مرتبهم أعلى من مرتب مديرهم وفرق المرتب
+                    </div>
+                    <button class="hint-btn" onclick="toggleHint(10)">💡 تلميح</button>
+                    <div class="exercise-card__hint" id="hint-10">LEFT JOIN employees مع نفسها: ON e.manager_id = m.emp_id. استخدم NVL للـ NULL.</div>
+                    <button class="solution-btn" onclick="toggleSolution(10);markDone(10)">إظهار الحل</button>
+                    <div class="solution-content" id="sol-10">
+                        <div class="code-block"><div class="code-block__body"><span class="cm">-- 1. كل موظف مع مديره</span>
+<span class="kw">SELECT</span>
+    e.first_name || <span class="str">' '</span> || e.last_name <span class="kw">AS</span> employee,
+    e.salary,
+    <span class="fn">NVL</span>(m.first_name || <span class="str">' '</span> || m.last_name, <span class="str">'المدير العام'</span>) <span class="kw">AS</span> manager
+<span class="kw">FROM</span> employees e
+<span class="kw">LEFT JOIN</span> employees m <span class="kw">ON</span> e.manager_id = m.emp_id
+<span class="kw">ORDER BY</span> e.emp_id;
+
+<span class="cm">-- 2. الموظفين الأغنى من مديرهم</span>
+<span class="kw">SELECT</span>
+    e.first_name        <span class="kw">AS</span> employee,
+    e.salary            <span class="kw">AS</span> emp_salary,
+    m.first_name        <span class="kw">AS</span> manager,
+    m.salary            <span class="kw">AS</span> mgr_salary,
+    e.salary - m.salary <span class="kw">AS</span> difference
+<span class="kw">FROM</span> employees e
+<span class="kw">INNER JOIN</span> employees m <span class="kw">ON</span> e.manager_id = m.emp_id
+<span class="kw">WHERE</span> e.salary > m.salary
+<span class="kw">ORDER BY</span> difference <span class="kw">DESC</span>;</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="exercise-card" id="ex11">
+                <div class="exercise-card__head" onclick="toggleExercise(11)"><span class="exercise-card__title"><span class="badge badge--hard">صعب</span> تمرين 11: تقرير المدير - 4 جداول</span><span class="exercise-card__arrow" id="arrow-11">◀</span></div>
+                <div class="exercise-card__body" id="ex-body-11">
+                    <div class="exercise-card__task">المدير عايز تقرير فيه: اسم كل قسم، مكانه، عدد الموظفين، متوسط المرتب، عدد المشاريع، إجمالي ميزانية المشاريع. للأقسام اللي فيها موظفين بس.</div>
+                    <button class="hint-btn" onclick="toggleHint(11)">💡 تلميح</button>
+                    <div class="exercise-card__hint" id="hint-11">departments INNER JOIN employees LEFT JOIN projects. استخدم DISTINCT في COUNT و SUM عشان التكرار. GROUP BY dept_name و location.</div>
+                    <button class="solution-btn" onclick="toggleSolution(11);markDone(11)">إظهار الحل</button>
+                    <div class="solution-content" id="sol-11">
+                        <div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span>
+    d.dept_name,
+    d.location,
+    <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> e.emp_id)    <span class="kw">AS</span> emp_count,
+    <span class="fn">ROUND</span>(<span class="fn">AVG</span>(<span class="kw">DISTINCT</span> e.salary)) <span class="kw">AS</span> avg_salary,
+    <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> p.project_id) <span class="kw">AS</span> project_count,
+    <span class="fn">SUM</span>(<span class="kw">DISTINCT</span> p.budget)       <span class="kw">AS</span> total_project_budget
+<span class="kw">FROM</span> departments d
+<span class="kw">INNER JOIN</span> employees e <span class="kw">ON</span> d.dept_id = e.dept_id
+<span class="kw">LEFT JOIN</span> projects p   <span class="kw">ON</span> d.dept_id = p.dept_id
+<span class="kw">GROUP BY</span> d.dept_name, d.location
+<span class="kw">ORDER BY</span> emp_count <span class="kw">DESC</span>;</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="exercise-card" id="ex12">
+                <div class="exercise-card__head" onclick="toggleExercise(12)"><span class="exercise-card__title"><span class="badge badge--boss">التحدي النهائي</span> تمرين 12: التقرير الشامل</span><span class="exercise-card__arrow" id="arrow-12">◀</span></div>
+                <div class="exercise-card__body" id="ex-body-12">
+                    <div class="exercise-card__task">
+                        اعرض تقرير شامل لكل موظف فيه:<br>
+                        - اسمه الكامل (first + last)<br>
+                        - مرتبه (لو NULL اعرض "لم يحدد")<br>
+                        - اسم قسمه (لو NULL اعرض "بدون قسم")<br>
+                        - مكان القسم<br>
+                        - اسم مديره (لو NULL اعرض "المدير العام")<br>
+                        - عدد العملاء المسؤول عنهم<br>
+                        رتب حسب عدد العملاء تنازلياً ثم المرتب تنازلياً.
+                    </div>
+                    <button class="hint-btn" onclick="toggleHint(12)">💡 تلميح</button>
+                    <div class="exercise-card__hint" id="hint-12">4 JOINs: employees LEFT JOIN departments + LEFT JOIN employees (manager) + LEFT JOIN customers. GROUP BY كل الأعمدة اللي مش في دوال تجميعية. NVL للـ NULLs. TO_CHAR للمرتب.</div>
+                    <button class="solution-btn" onclick="toggleSolution(12);markDone(12)">إظهار الحل</button>
+                    <div class="solution-content" id="sol-12">
+                        <div class="code-block"><div class="code-block__body"><span class="kw">SELECT</span>
+    e.first_name || <span class="str">' '</span> || e.last_name      <span class="kw">AS</span> full_name,
+    <span class="fn">NVL</span>(<span class="fn">TO_CHAR</span>(e.salary), <span class="str">'لم يحدد'</span>) <span class="kw">AS</span> salary,
+    <span class="fn">NVL</span>(d.dept_name, <span class="str">'بدون قسم'</span>)          <span class="kw">AS</span> department,
+    <span class="fn">NVL</span>(d.location, <span class="str">'-'</span>)                  <span class="kw">AS</span> location,
+    <span class="fn">NVL</span>(m.first_name || <span class="str">' '</span> || m.last_name,
+        <span class="str">'المدير العام'</span>)                     <span class="kw">AS</span> manager,
+    <span class="fn">COUNT</span>(c.customer_id)                   <span class="kw">AS</span> customer_count
+<span class="kw">FROM</span> employees e
+<span class="kw">LEFT JOIN</span> departments d <span class="kw">ON</span> e.dept_id = d.dept_id
+<span class="kw">LEFT JOIN</span> employees m   <span class="kw">ON</span> e.manager_id = m.emp_id
+<span class="kw">LEFT JOIN</span> customers c   <span class="kw">ON</span> e.emp_id = c.assigned_emp_id
+<span class="kw">GROUP BY</span>
+    e.first_name, e.last_name, e.salary,
+    d.dept_name, d.location,
+    m.first_name, m.last_name
+<span class="kw">ORDER BY</span> customer_count <span class="kw">DESC</span>, e.salary <span class="kw">DESC NULLS LAST</span>;</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cheat Sheet -->
+        <div class="section" id="cheatsheet">
+            <div class="section__header">
+                <div class="section__icon section__icon--purple">📝</div>
+                <h2 class="section__title">Cheat Sheet سريع</h2>
+            </div>
+            <div class="cheat-sheet">
+                <div class="cheat-item">
+                    <div class="cheat-item__title" style="color:var(--accent2);">✏️ UPDATE</div>
+                    <div class="cheat-item__code">UPDATE table SET col = val WHERE condition;</div>
+                </div>
+                <div class="cheat-item">
+                    <div class="cheat-item__title" style="color:var(--accent);">🗑️ DELETE</div>
+                    <div class="cheat-item__code">DELETE FROM table WHERE condition;</div>
+                </div>
+                <div class="cheat-item">
+                    <div class="cheat-item__title" style="color:var(--accent4);">📊 GROUP BY</div>
+                    <div class="cheat-item__code">SELECT col, AGG(col) FROM t GROUP BY col;</div>
+                </div>
+                <div class="cheat-item">
+                    <div class="cheat-item__title" style="color:var(--accent5);">🎯 HAVING</div>
+                    <div class="cheat-item__code">GROUP BY col HAVING AGG(col) > value;</div>
+                </div>
+                <div class="cheat-item">
+                    <div class="cheat-item__title" style="color:var(--accent4);">🎯 INNER JOIN</div>
+                    <div class="cheat-item__code">FROM a INNER JOIN b ON a.id = b.id;</div>
+                </div>
+                <div class="cheat-item">
+                    <div class="cheat-item__title" style="color:var(--accent3);">⬅️ LEFT JOIN</div>
+                    <div class="cheat-item__code">FROM a LEFT JOIN b ON a.id = b.id;</div>
+                </div>
+                <div class="cheat-item">
+                    <div class="cheat-item__title" style="color:var(--accent);">🔎 Find Missing</div>
+                    <div class="cheat-item__code">LEFT JOIN b ON ... WHERE b.id IS NULL;</div>
+                </div>
+                <div class="cheat-item">
+                    <div class="cheat-item__title" style="color:var(--accent5);">🪞 SELF JOIN</div>
+                    <div class="cheat-item__code">FROM emp e LEFT JOIN emp m ON e.mgr = m.id;</div>
+                </div>
+            </div>
+            <div class="quote-box quote-box--green">🎉 لو حليت كل التمارين، انت كده فاهم SQL كويس جداً! مبروك!</div>
+        </div>
+    </main>
+
+    <script>
+        let solved = JSON.parse(localStorage.getItem('day2_practice_solved') || '{}');
+        function toggleExercise(n){const b=document.getElementById('ex-body-'+n);const a=document.getElementById('arrow-'+n);b.classList.toggle('exercise-card__body--open');a.classList.toggle('exercise-card__arrow--open');}
+        function toggleHint(n){document.getElementById('hint-'+n).classList.toggle('exercise-card__hint--show');}
+        function toggleSolution(n){document.getElementById('sol-'+n).classList.toggle('solution-content--open');}
+        function markDone(n){solved[n]=true;localStorage.setItem('day2_practice_solved',JSON.stringify(solved));updateProgress();}
+        function updateProgress(){const total=12;const done=Object.keys(solved).length;const pct=Math.round((done/total)*100);document.getElementById('progressFill').style.width=pct+'%';document.getElementById('progressText').textContent=done+'/'+total;}
+        updateProgress();
+        const sections=document.querySelectorAll('.section');const navLinks=document.querySelectorAll('.sidebar__nav a');
+        window.addEventListener('scroll',()=>{let c='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-100)c=s.getAttribute('id');});navLinks.forEach(a=>{a.classList.remove('active');if(a.getAttribute('href')==='#'+c)a.classList.add('active');});});
+    </script>
+</body>
+</html>

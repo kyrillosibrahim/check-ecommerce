@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خطة 6 أيام - Oracle & Excel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a1a;
+            --bg-card: #12122a;
+            --bg-card-hover: #1a1a3e;
+            --accent-oracle: #ff4d4d;
+            --accent-excel: #00d47e;
+            --accent-oracle-glow: rgba(255, 77, 77, 0.3);
+            --accent-excel-glow: rgba(0, 212, 126, 0.3);
+            --text-primary: #ffffff;
+            --text-secondary: #8888aa;
+            --text-muted: #555577;
+            --border-color: #222244;
+            --success: #00d47e;
+            --progress-bg: #1a1a3e;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(255, 77, 77, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(0, 212, 126, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(100, 100, 255, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header__icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .header__title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-oracle), #ff8c00, var(--accent-excel));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .header__subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        /* ===== OVERALL PROGRESS ===== */
+        .overall-progress {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 28px 32px;
+            margin-bottom: 35px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .overall-progress::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-oracle), #ff8c00, var(--accent-excel));
+        }
+
+        .overall-progress__header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .overall-progress__label {
+            font-size: 1.15rem;
+            font-weight: 700;
+        }
+
+        .overall-progress__percent {
+            font-size: 2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-oracle), var(--accent-excel));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .overall-progress__bar {
+            width: 100%;
+            height: 14px;
+            background: var(--progress-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .overall-progress__fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-oracle), #ff8c00, var(--accent-excel));
+            border-radius: 10px;
+            transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+        }
+
+        .overall-progress__fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .overall-progress__stats {
+            display: flex;
+            gap: 30px;
+            margin-top: 16px;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat__dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .stat__dot--oracle { background: var(--accent-oracle); }
+        .stat__dot--excel { background: var(--accent-excel); }
+
+        .stat__text {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* ===== DAYS GRID ===== */
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+            gap: 24px;
+        }
+
+        @media (max-width: 540px) {
+            .days-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== DAY CARD ===== */
+        .day-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .day-card:hover {
+            border-color: #333366;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        }
+
+        .day-card--oracle .day-card__header { border-right: 4px solid var(--accent-oracle); }
+        .day-card--excel .day-card__header { border-right: 4px solid var(--accent-excel); }
+
+        .day-card--completed {
+            border-color: var(--success) !important;
+            box-shadow: 0 0 20px rgba(0, 212, 126, 0.1);
+        }
+
+        .day-card__header {
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        .day-card__header:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .day-card__header-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .day-card__number {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.1rem;
+        }
+
+        .day-card--oracle .day-card__number {
+            background: rgba(255, 77, 77, 0.15);
+            color: var(--accent-oracle);
+        }
+
+        .day-card--excel .day-card__number {
+            background: rgba(0, 212, 126, 0.15);
+            color: var(--accent-excel);
+        }
+
+        .day-card__title-wrap {}
+
+        .day-card__title {
+            font-size: 1.05rem;
+            font-weight: 700;
+        }
+
+        .day-card__tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        .day-card--oracle .day-card__tag {
+            background: rgba(255, 77, 77, 0.15);
+            color: var(--accent-oracle);
+        }
+
+        .day-card--excel .day-card__tag {
+            background: rgba(0, 212, 126, 0.15);
+            color: var(--accent-excel);
+        }
+
+        .day-card__header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .day-card__percent {
+            font-size: 1.3rem;
+            font-weight: 900;
+            min-width: 55px;
+            text-align: left;
+        }
+
+        .day-card--oracle .day-card__percent { color: var(--accent-oracle); }
+        .day-card--excel .day-card__percent { color: var(--accent-excel); }
+
+        .day-card__toggle {
+            font-size: 1.2rem;
+            transition: transform 0.3s;
+            color: var(--text-muted);
+        }
+
+        .day-card__toggle--open {
+            transform: rotate(180deg);
+        }
+
+        /* Mini progress in header */
+        .day-card__mini-progress {
+            height: 4px;
+            background: var(--progress-bg);
+        }
+
+        .day-card__mini-fill {
+            height: 100%;
+            transition: width 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .day-card--oracle .day-card__mini-fill { background: var(--accent-oracle); }
+        .day-card--excel .day-card__mini-fill { background: var(--accent-excel); }
+
+        /* Tasks body */
+        .day-card__body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .day-card__body--open {
+            max-height: 800px;
+        }
+
+        .day-card__tasks {
+            padding: 8px 24px 20px;
+        }
+
+        /* ===== TIME BLOCK ===== */
+        .time-block {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .time-block:last-child {
+            border-bottom: none;
+        }
+
+        .time-block__checkbox {
+            position: relative;
+            width: 26px;
+            height: 26px;
+            min-width: 26px;
+            margin-top: 2px;
+            cursor: pointer;
+        }
+
+        .time-block__checkbox input {
+            display: none;
+        }
+
+        .time-block__checkmark {
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
+            border: 2px solid var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .time-block__checkbox input:checked + .time-block__checkmark {
+            border-color: var(--success);
+            background: var(--success);
+        }
+
+        .time-block__checkbox input:checked + .time-block__checkmark::after {
+            content: '✓';
+            color: #fff;
+            font-weight: 900;
+        }
+
+        .time-block__content {
+            flex: 1;
+        }
+
+        .time-block__time {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            margin-bottom: 3px;
+            font-feature-settings: "tnum";
+            direction: ltr;
+            text-align: right;
+        }
+
+        .time-block__text {
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: all 0.3s;
+        }
+
+        .time-block--done .time-block__text {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .time-block--break {
+            opacity: 0.5;
+        }
+
+        .time-block--break .time-block__text {
+            font-style: italic;
+        }
+
+        /* ===== LESSON LINK ===== */
+        .time-block__lesson {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 8px;
+            padding: 5px 14px;
+            background: linear-gradient(135deg, rgba(255,77,77,0.15), rgba(255,140,0,0.15));
+            color: #ff8c00;
+            border: 1px solid rgba(255,140,0,0.25);
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .time-block__lesson:hover {
+            background: linear-gradient(135deg, rgba(255,77,77,0.25), rgba(255,140,0,0.25));
+            transform: translateX(-3px);
+        }
+
+        /* ===== COMPLETED BADGE ===== */
+        .day-card__completed-badge {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px;
+            background: rgba(0, 212, 126, 0.1);
+            color: var(--success);
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .day-card--completed .day-card__completed-badge {
+            display: flex;
+        }
+
+        /* ===== RESET BTN ===== */
+        .reset-wrap {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .reset-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 10px 28px;
+            border-radius: 10px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .reset-btn:hover {
+            border-color: var(--accent-oracle);
+            color: var(--accent-oracle);
+        }
+
+        /* ===== CONFETTI ===== */
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            animation: confetti-fall 3s ease-out forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-10vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 600px) {
+            .header__title { font-size: 1.6rem; }
+            .overall-progress { padding: 20px; }
+            .overall-progress__stats { flex-direction: column; gap: 10px; }
+            .day-card__header { padding: 16px 18px; }
+            .day-card__tasks { padding: 8px 18px 16px; }
+            .day-card__number { width: 38px; height: 38px; font-size: 0.95rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <div class="header__icon">🔥</div>
+        <h1 class="header__title">خطة 6 أيام للإتقان</h1>
+        <p class="header__subtitle">Oracle Database & Excel Advanced</p>
+    </div>
+
+    <!-- Overall Progress -->
+    <div class="overall-progress">
+        <div class="overall-progress__header">
+            <span class="overall-progress__label">التقدم الكلي</span>
+            <span class="overall-progress__percent" id="overallPercent">0%</span>
+        </div>
+        <div class="overall-progress__bar">
+            <div class="overall-progress__fill" id="overallFill" style="width: 0%"></div>
+        </div>
+        <div class="overall-progress__stats">
+            <div class="stat">
+                <span class="stat__dot stat__dot--oracle"></span>
+                <span class="stat__text" id="oracleStats">Oracle: 0/16</span>
+            </div>
+            <div class="stat">
+                <span class="stat__dot stat__dot--excel"></span>
+                <span class="stat__text" id="excelStats">Excel: 0/8</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Days Grid -->
+    <div class="days-grid" id="daysGrid"></div>
+
+    <!-- Reset -->
+    <div class="reset-wrap">
+        <button class="reset-btn" onclick="resetAll()">🔄 إعادة تعيين الكل</button>
+    </div>
+</div>
+
+<div class="confetti-container" id="confettiContainer"></div>
+
+<script>
+const STORAGE_KEY = 'study_planner_v1';
+
+const days = [
+    {
+        id: 1,
+        title: 'أساسيات SQL - الجزء الأول',
+        tag: 'Oracle Database',
+        type: 'oracle',
+        tasks: [
+            { time: '6:00 - 7:30', text: 'فهم إيه هي Oracle Database، أنواع الـ Databases، تثبيت Oracle XE + SQL Developer', lessonUrl: 'day1-oracle-intro.html' },
+            { time: '7:30 - 9:00', text: 'CREATE TABLE, Data Types (NUMBER, VARCHAR2, DATE)، INSERT INTO', lessonUrl: 'day1-create-table.html' },
+            { time: '9:00 - 9:15', text: '☕ استراحة', isBreak: true },
+            { time: '9:15 - 10:30', text: 'SELECT, WHERE, ORDER BY, DISTINCT', lessonUrl: 'day1-select.html' },
+            { time: '10:30 - 12:00', text: 'تمارين عملية - أنشئ جدول موظفين وجدول أقسام واكتب queries', lessonUrl: 'day1-practice.html' }
+        ]
+    },
+    {
+        id: 2,
+        title: 'أساسيات SQL - الجزء الثاني',
+        tag: 'Oracle Database',
+        type: 'oracle',
+        tasks: [
+            { time: '6:00 - 7:30', text: 'UPDATE, DELETE, ALTER TABLE, DROP TABLE', lessonUrl: 'day2-update-delete.html' },
+            { time: '7:30 - 9:00', text: 'Functions: COUNT, SUM, AVG, MAX, MIN + GROUP BY و HAVING', lessonUrl: 'day2-functions.html' },
+            { time: '9:00 - 9:15', text: '☕ استراحة', isBreak: true },
+            { time: '9:15 - 10:30', text: 'JOIN بأنواعها - INNER JOIN, LEFT JOIN, RIGHT JOIN (أهم موضوع!)', lessonUrl: 'day2-joins.html' },
+            { time: '10:30 - 12:00', text: 'تمارين عملية على الـ JOINs مع بيانات حقيقية', lessonUrl: 'day2-practice.html' }
+        ]
+    },
+    {
+        id: 3,
+        title: 'SQL متوسط + مقدمة PL/SQL',
+        tag: 'Oracle Database',
+        type: 'oracle',
+        tasks: [
+            { time: '6:00 - 7:30', text: 'Subqueries، IN, EXISTS, BETWEEN, LIKE', lessonUrl: 'day3-subqueries.html' },
+            { time: '7:30 - 9:00', text: 'Views، Indexes - إيه هي وليه مهمة', lessonUrl: 'day3-views-indexes.html' },
+            { time: '9:00 - 9:15', text: '☕ استراحة', isBreak: true },
+            { time: '9:15 - 10:30', text: 'مقدمة PL/SQL - Variables, BEGIN...END, DBMS_OUTPUT.PUT_LINE', lessonUrl: 'day3-plsql-intro.html' },
+            { time: '10:30 - 12:00', text: 'IF/ELSE، LOOP، كتابة أول Stored Procedure', lessonUrl: 'day3-ifelse-loops.html' }
+        ]
+    },
+    {
+        id: 4,
+        title: 'PL/SQL + مراجعة Oracle',
+        tag: 'Oracle Database',
+        type: 'oracle',
+        tasks: [
+            { time: '6:00 - 7:30', text: 'Cursors، Exception Handling (WHEN NO_DATA_FOUND)', lessonUrl: 'day4-cursors-exceptions.html' },
+            { time: '7:30 - 9:00', text: 'Stored Procedures و Functions - الفرق بينهم وطريقة كتابتهم', lessonUrl: 'day4-procedures-functions.html' },
+            { time: '9:00 - 9:15', text: '☕ استراحة', isBreak: true },
+            { time: '9:15 - 10:30', text: 'Triggers - إيه هي وامتى تستخدمها', lessonUrl: 'day4-triggers.html' },
+            { time: '10:30 - 12:00', text: '🔁 مراجعة شاملة - حل تمارين على كل اللي فات', lessonUrl: 'day4-review.html' }
+        ]
+    },
+    {
+        id: 5,
+        title: 'Excel Advanced - الجزء الأول',
+        tag: 'Excel Advanced',
+        type: 'excel',
+        tasks: [
+            { time: '6:00 - 7:30', text: 'VLOOKUP و HLOOKUP و XLOOKUP (الأهم في أي انترفيو!)', lessonUrl: 'day5-vlookup.html' },
+            { time: '7:30 - 9:00', text: 'IF, IFS, COUNTIF, SUMIF, AVERAGEIF', lessonUrl: 'day5-if-countif.html' },
+            { time: '9:00 - 9:15', text: '☕ استراحة', isBreak: true },
+            { time: '9:15 - 10:30', text: 'INDEX + MATCH (بديل أقوى لـ VLOOKUP)', lessonUrl: 'day5-index-match.html' },
+            { time: '10:30 - 12:00', text: 'Conditional Formatting، Data Validation، Named Ranges', lessonUrl: 'day5-formatting.html' }
+        ]
+    },
+    {
+        id: 6,
+        title: 'Excel Advanced - الجزء الثاني + مراجعة نهائية',
+        tag: 'Excel Advanced',
+        type: 'excel',
+        tasks: [
+            { time: '6:00 - 7:30', text: 'Pivot Tables + Pivot Charts (مهم جداً!)' },
+            { time: '7:30 - 9:00', text: 'TEXT, LEFT, RIGHT, MID, CONCATENATE، Date Functions' },
+            { time: '9:00 - 9:15', text: '☕ استراحة', isBreak: true },
+            { time: '9:15 - 10:30', text: 'Macros مقدمة بسيطة، Data Analysis، What-If Analysis' },
+            { time: '10:30 - 12:00', text: '🔁 مراجعة شاملة نهائية - Oracle + Excel' }
+        ]
+    }
+];
+
+// Load saved state
+function loadState() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) return JSON.parse(saved);
+    const state = {};
+    days.forEach(day => {
+        state[day.id] = day.tasks.map(() => false);
+    });
+    return state;
+}
+
+function saveState(state) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+let state = loadState();
+let openDays = {};
+
+// Calculate percentages
+function getDayPercent(dayId) {
+    const day = days.find(d => d.id === dayId);
+    const checks = state[dayId];
+    const countable = day.tasks.filter((t, i) => !t.isBreak);
+    const done = countable.filter((t, i) => {
+        const realIndex = day.tasks.indexOf(t);
+        return checks[realIndex];
+    });
+    return countable.length ? Math.round((done.length / countable.length) * 100) : 0;
+}
+
+function getOverallPercent() {
+    let total = 0, done = 0;
+    days.forEach(day => {
+        day.tasks.forEach((task, i) => {
+            if (!task.isBreak) {
+                total++;
+                if (state[day.id][i]) done++;
+            }
+        });
+    });
+    return total ? Math.round((done / total) * 100) : 0;
+}
+
+function getTypeStats(type) {
+    let total = 0, done = 0;
+    days.filter(d => d.type === type).forEach(day => {
+        day.tasks.forEach((task, i) => {
+            if (!task.isBreak) {
+                total++;
+                if (state[day.id][i]) done++;
+            }
+        });
+    });
+    return { done, total };
+}
+
+// Confetti effect
+function launchConfetti() {
+    const container = document.getElementById('confettiContainer');
+    const colors = ['#ff4d4d', '#00d47e', '#ff8c00', '#4d79ff', '#ffdd00', '#ff4dff'];
+    for (let i = 0; i < 60; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + '%';
+        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.animationDelay = Math.random() * 0.5 + 's';
+        confetti.style.animationDuration = (2 + Math.random() * 2) + 's';
+        confetti.style.width = (6 + Math.random() * 8) + 'px';
+        confetti.style.height = (6 + Math.random() * 8) + 'px';
+        container.appendChild(confetti);
+    }
+    setTimeout(() => { container.innerHTML = ''; }, 4000);
+}
+
+// Toggle task
+function toggleTask(dayId, taskIndex) {
+    state[dayId][taskIndex] = !state[dayId][taskIndex];
+    saveState(state);
+
+    const prevPercent = getDayPercent(dayId);
+    render();
+
+    // Check if day just completed
+    if (getDayPercent(dayId) === 100) {
+        launchConfetti();
+    }
+
+    // Check if all completed
+    if (getOverallPercent() === 100) {
+        setTimeout(launchConfetti, 500);
+        setTimeout(launchConfetti, 1500);
+    }
+}
+
+// Toggle day open/close
+function toggleDay(dayId) {
+    openDays[dayId] = !openDays[dayId];
+    render();
+}
+
+// Render
+function render() {
+    const grid = document.getElementById('daysGrid');
+    grid.innerHTML = '';
+
+    days.forEach(day => {
+        const percent = getDayPercent(day.id);
+        const isComplete = percent === 100;
+        const isOpen = openDays[day.id];
+
+        const card = document.createElement('div');
+        card.className = `day-card day-card--${day.type}${isComplete ? ' day-card--completed' : ''}`;
+
+        card.innerHTML = `
+            <div class="day-card__header" onclick="toggleDay(${day.id})">
+                <div class="day-card__header-right">
+                    <div class="day-card__number">${day.id}</div>
+                    <div class="day-card__title-wrap">
+                        <div class="day-card__title">${day.title}</div>
+                        <span class="day-card__tag">${day.tag}</span>
+                    </div>
+                </div>
+                <div class="day-card__header-left">
+                    <span class="day-card__percent">${percent}%</span>
+                    <span class="day-card__toggle ${isOpen ? 'day-card__toggle--open' : ''}">▼</span>
+                </div>
+            </div>
+            <div class="day-card__mini-progress">
+                <div class="day-card__mini-fill" style="width: ${percent}%"></div>
+            </div>
+            <div class="day-card__body ${isOpen ? 'day-card__body--open' : ''}">
+                <div class="day-card__tasks">
+                    ${day.tasks.map((task, i) => {
+                        const checked = state[day.id][i];
+                        const isBreak = task.isBreak;
+                        return `
+                            <div class="time-block ${checked ? 'time-block--done' : ''} ${isBreak ? 'time-block--break' : ''}">
+                                <label class="time-block__checkbox">
+                                    <input type="checkbox" ${checked ? 'checked' : ''}
+                                        onchange="toggleTask(${day.id}, ${i})" ${isBreak ? '' : ''}>
+                                    <span class="time-block__checkmark"></span>
+                                </label>
+                                <div class="time-block__content">
+                                    <div class="time-block__time">${task.time}</div>
+                                    <div class="time-block__text">${task.text}</div>
+                                    ${task.lessonUrl ? `<a href="${task.lessonUrl}" class="time-block__lesson" target="_blank">📖 افتح الدرس التفصيلي</a>` : ''}
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+                <div class="day-card__completed-badge">
+                    ✅ تم إكمال اليوم بالكامل - أحسنت!
+                </div>
+            </div>
+        `;
+
+        grid.appendChild(card);
+    });
+
+    // Update overall
+    const overall = getOverallPercent();
+    document.getElementById('overallPercent').textContent = overall + '%';
+    document.getElementById('overallFill').style.width = overall + '%';
+
+    const oracleStats = getTypeStats('oracle');
+    const excelStats = getTypeStats('excel');
+    document.getElementById('oracleStats').textContent = `Oracle: ${oracleStats.done}/${oracleStats.total}`;
+    document.getElementById('excelStats').textContent = `Excel: ${excelStats.done}/${excelStats.total}`;
+}
+
+function resetAll() {
+    if (confirm('هل أنت متأكد من إعادة تعيين كل التقدم؟')) {
+        days.forEach(day => {
+            state[day.id] = day.tasks.map(() => false);
+        });
+        saveState(state);
+        render();
+    }
+}
+
+// Initial render - open day 1 by default
+openDays[1] = true;
+render();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اليوم الأول - مقدمة Oracle Database</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #06060f;
+            --bg-card: #0d0d1f;
+            --bg-card-alt: #111128;
+            --bg-code: #0a0a1a;
+            --accent: #ff4d4d;
+            --accent-glow: rgba(255, 77, 77, 0.15);
+            --accent2: #ff8c00;
+            --accent3: #00d47e;
+            --accent4: #4d8cff;
+            --text: #e8e8f0;
+            --text-sec: #8888aa;
+            --text-muted: #555577;
+            --border: #1a1a35;
+            --border-light: #252550;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 15% 10%, rgba(255,77,77,0.07) 0%, transparent 50%),
+                radial-gradient(ellipse at 85% 90%, rgba(77,140,255,0.06) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ===== SIDEBAR NAV ===== */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--bg-card);
+            border-left: 1px solid var(--border);
+            padding: 30px 20px;
+            overflow-y: auto;
+            z-index: 100;
+            transition: transform 0.3s;
+        }
+
+        .sidebar__title {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .sidebar__nav a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            color: var(--text-sec);
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 600;
+            border-radius: 10px;
+            margin-bottom: 4px;
+            transition: all 0.2s;
+        }
+
+        .sidebar__nav a:hover,
+        .sidebar__nav a.active {
+            background: var(--accent-glow);
+            color: var(--accent);
+        }
+
+        .sidebar__nav a .nav-num {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 800;
+            background: var(--border);
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .sidebar__nav a:hover .nav-num,
+        .sidebar__nav a.active .nav-num {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .sidebar__back {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            transition: background 0.2s;
+        }
+
+        .sidebar__back:hover {
+            background: var(--accent-glow);
+        }
+
+        /* Mobile menu toggle */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 200;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-size: 1.3rem;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar { transform: translateX(100%); width: 270px; }
+            .sidebar--open { transform: translateX(0); }
+            .menu-toggle { display: flex; }
+            .main { margin-right: 0 !important; }
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main {
+            margin-right: 280px;
+            padding: 40px 50px 80px;
+            max-width: 900px;
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (max-width: 1100px) {
+            .main { padding: 30px 25px 60px; }
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            margin-bottom: 50px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hero__badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--accent-glow);
+            color: var(--accent);
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .hero__title {
+            font-size: 2.4rem;
+            font-weight: 900;
+            line-height: 1.3;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #fff, #ccc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero__desc {
+            color: var(--text-sec);
+            font-size: 1.05rem;
+            font-weight: 600;
+            max-width: 600px;
+        }
+
+        .hero__meta {
+            display: flex;
+            gap: 24px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .hero__meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .hero__meta-item span {
+            font-size: 1.1rem;
+        }
+
+        /* ===== SECTIONS ===== */
+        .section {
+            margin-bottom: 55px;
+            scroll-margin-top: 30px;
+        }
+
+        .section__header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .section__icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .section__icon--red { background: rgba(255,77,77,0.15); }
+        .section__icon--orange { background: rgba(255,140,0,0.15); }
+        .section__icon--green { background: rgba(0,212,126,0.15); }
+        .section__icon--blue { background: rgba(77,140,255,0.15); }
+        .section__icon--purple { background: rgba(160,80,255,0.15); }
+
+        .section__title {
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        /* ===== CONTENT CARDS ===== */
+        .content-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+
+        .content-card--highlight {
+            border-color: var(--accent);
+            background: linear-gradient(135deg, var(--bg-card), rgba(255,77,77,0.05));
+        }
+
+        .content-card--green {
+            border-color: var(--accent3);
+            background: linear-gradient(135deg, var(--bg-card), rgba(0,212,126,0.05));
+        }
+
+        .content-card__title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .content-card p {
+            color: var(--text-sec);
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .content-card p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* ===== QUOTE BOX ===== */
+        .quote-box {
+            background: var(--accent-glow);
+            border-right: 4px solid var(--accent);
+            padding: 18px 22px;
+            border-radius: 0 12px 12px 0;
+            margin: 20px 0;
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--text);
+        }
+
+        .quote-box--blue {
+            background: rgba(77,140,255,0.1);
+            border-right-color: var(--accent4);
+        }
+
+        .quote-box--green {
+            background: rgba(0,212,126,0.1);
+            border-right-color: var(--accent3);
+        }
+
+        /* ===== CODE BLOCKS ===== */
+        .code-block {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin: 16px 0;
+            overflow: hidden;
+        }
+
+        .code-block__header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 18px;
+            background: var(--border);
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .code-block__dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .code-block__dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .code-block__dot--red { background: #ff5f57; }
+        .code-block__dot--yellow { background: #febc2e; }
+        .code-block__dot--green { background: #28c840; }
+
+        .code-block__body {
+            padding: 18px 22px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.9;
+            overflow-x: auto;
+            direction: ltr;
+            text-align: left;
+            color: #c8c8e0;
+        }
+
+        .code-block__body .keyword { color: #ff79c6; }
+        .code-block__body .string { color: #f1fa8c; }
+        .code-block__body .comment { color: #555577; font-style: italic; }
+        .code-block__body .number { color: #bd93f9; }
+        .code-block__body .func { color: #50fa7b; }
+        .code-block__body .type { color: #8be9fd; }
+        .code-block__body .accent { color: #ff4d4d; }
+        .code-block__body .orange { color: #ff8c00; }
+
+        /* ===== TABLE ===== */
+        .styled-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 0.9rem;
+        }
+
+        .styled-table thead {
+            background: var(--border);
+        }
+
+        .styled-table th {
+            padding: 14px 18px;
+            text-align: right;
+            font-weight: 700;
+            color: var(--text);
+            font-size: 0.85rem;
+        }
+
+        .styled-table td {
+            padding: 12px 18px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-sec);
+            font-weight: 600;
+        }
+
+        .styled-table tr:hover td {
+            background: rgba(255,255,255,0.02);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .badge--red { background: rgba(255,77,77,0.15); color: var(--accent); }
+        .badge--green { background: rgba(0,212,126,0.15); color: var(--accent3); }
+        .badge--blue { background: rgba(77,140,255,0.15); color: var(--accent4); }
+        .badge--orange { background: rgba(255,140,0,0.15); color: var(--accent2); }
+
+        /* ===== COMPARISON GRID ===== */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 600px) {
+            .compare-grid { grid-template-columns: 1fr; }
+        }
+
+        .compare-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 22px;
+        }
+
+        .compare-card__title {
+            font-weight: 800;
+            font-size: 1rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .compare-card__list {
+            list-style: none;
+        }
+
+        .compare-card__list li {
+            padding: 6px 0;
+            color: var(--text-sec);
+            font-size: 0.88rem;
+            font-weight: 600;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .compare-card__list li::before {
+            content: '✓';
+            color: var(--accent3);
+            font-weight: 900;
+            flex-shrink: 0;
+        }
+
+        /* ===== DIAGRAM BOX ===== */
+        .diagram-box {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 30px;
+            margin: 20px 0;
+            font-family: 'JetBrains Mono', monospace;
+            overflow-x: auto;
+            direction: ltr;
+            text-align: center;
+        }
+
+        .diagram-box__title {
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            direction: rtl;
+            text-align: center;
+        }
+
+        /* Architecture Diagram */
+        .arch-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            direction: ltr;
+        }
+
+        .arch-box {
+            border-radius: 12px;
+            padding: 16px 28px;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-align: center;
+            min-width: 260px;
+            position: relative;
+        }
+
+        .arch-box--user {
+            background: rgba(77,140,255,0.15);
+            border: 1px solid rgba(77,140,255,0.3);
+            color: var(--accent4);
+        }
+
+        .arch-box--instance {
+            background: rgba(255,77,77,0.1);
+            border: 1px solid rgba(255,77,77,0.25);
+            color: var(--accent);
+            min-width: 340px;
+            padding: 20px;
+        }
+
+        .arch-box--storage {
+            background: rgba(0,212,126,0.1);
+            border: 1px solid rgba(0,212,126,0.25);
+            color: var(--accent3);
+        }
+
+        .arch-arrow {
+            color: var(--text-muted);
+            font-size: 1.5rem;
+        }
+
+        .arch-sub {
+            font-size: 0.8rem;
+            color: var(--text-sec);
+            font-weight: 600;
+            margin-top: 6px;
+        }
+
+        .arch-inner-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .arch-inner-box {
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 0.78rem;
+            color: var(--text-sec);
+        }
+
+        .arch-inner-box strong {
+            color: var(--text);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        /* ===== STEPS ===== */
+        .steps {
+            margin: 20px 0;
+        }
+
+        .step {
+            display: flex;
+            gap: 18px;
+            margin-bottom: 8px;
+            padding: 18px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .step:hover {
+            border-color: var(--border-light);
+        }
+
+        .step__num {
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            border-radius: 10px;
+            background: var(--accent-glow);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 0.9rem;
+        }
+
+        .step__content {
+            flex: 1;
+        }
+
+        .step__title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+
+        .step__desc {
+            color: var(--text-sec);
+            font-size: 0.88rem;
+            font-weight: 600;
+        }
+
+        .step__desc code {
+            background: var(--bg-code);
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--accent2);
+            direction: ltr;
+            display: inline-block;
+        }
+
+        /* ===== WARNING BOX ===== */
+        .warning-box {
+            background: rgba(255,140,0,0.1);
+            border: 1px solid rgba(255,140,0,0.25);
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin: 16px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .warning-box__icon {
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .warning-box__text {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--accent2);
+        }
+
+        /* ===== SUCCESS BOX ===== */
+        .success-box {
+            background: rgba(0,212,126,0.1);
+            border: 1px solid rgba(0,212,126,0.25);
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin: 16px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .success-box__icon {
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .success-box__text {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--accent3);
+        }
+
+        /* ===== CONNECTION FORM ===== */
+        .connection-form {
+            background: var(--bg-card-alt);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+            margin: 16px 0;
+        }
+
+        .connection-form__title {
+            font-weight: 700;
+            margin-bottom: 16px;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            padding: 8px 14px;
+            background: var(--bg-code);
+            border-radius: 8px;
+        }
+
+        .form-row__label {
+            min-width: 100px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .form-row__value {
+            color: var(--accent2);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.88rem;
+            font-weight: 600;
+        }
+
+        /* ===== SUMMARY BOX ===== */
+        .summary-box {
+            background: linear-gradient(135deg, rgba(255,77,77,0.08), rgba(77,140,255,0.08));
+            border: 1px solid var(--border-light);
+            border-radius: 18px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .summary-box__title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .summary-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .summary-list { grid-template-columns: 1fr; }
+        }
+
+        .summary-list li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-sec);
+        }
+
+        .summary-list li .check {
+            color: var(--accent3);
+            font-weight: 900;
+        }
+
+        .summary-list li strong {
+            color: var(--text);
+        }
+
+        /* ===== EXAMPLE BOX ===== */
+        .example-box {
+            margin: 20px 0;
+        }
+
+        .example-box__title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        /* ===== TABLE DIAGRAM ===== */
+        .table-diagram {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            margin: 16px 0;
+        }
+
+        .table-diagram__header {
+            background: var(--accent-glow);
+            padding: 10px 18px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .table-diagram table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table-diagram th {
+            background: var(--border);
+            padding: 10px 16px;
+            text-align: right;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--accent4);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .table-diagram td {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
+            color: var(--text-sec);
+            font-weight: 600;
+        }
+
+        .table-diagram__link {
+            font-size: 0.8rem;
+            color: var(--accent2);
+            padding: 10px 18px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 700;
+        }
+
+        /* NoSQL Example Blocks */
+        .nosql-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin: 16px 0;
+        }
+
+        .nosql-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .nosql-card__header {
+            padding: 14px 20px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nosql-card__body {
+            padding: 18px 20px;
+        }
+
+        .nosql-card__example {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        /* ===== EDITIONS GRID ===== */
+        .editions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        .edition-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .edition-card:hover {
+            border-color: var(--border-light);
+            transform: translateY(-2px);
+        }
+
+        .edition-card--active {
+            border-color: var(--accent3);
+            background: linear-gradient(135deg, var(--bg-card), rgba(0,212,126,0.05));
+        }
+
+        .edition-card__icon { font-size: 2rem; margin-bottom: 10px; }
+
+        .edition-card__name {
+            font-weight: 800;
+            font-size: 0.95rem;
+            margin-bottom: 6px;
+        }
+
+        .edition-card__desc {
+            color: var(--text-sec);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .edition-card__tag {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 3px 12px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+
+        /* scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        /* smooth scroll */
+        html { scroll-behavior: smooth; }
+    </style>
+</head>
+<body>
+
+<!-- Mobile Menu Toggle -->
+<button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('sidebar--open')">☰</button>
+
+<!-- Sidebar Navigation -->
+<aside class="sidebar">
+    <a href="index.html" class="sidebar__back">→ العودة للخطة</a>
+    <div class="sidebar__title">محتويات الدرس</div>
+    <nav class="sidebar__nav" id="sidebarNav">
+        <a href="#what-is-db"><span class="nav-num">1</span> إيه هي الـ Database؟</a>
+        <a href="#db-types"><span class="nav-num">2</span> أنواع الـ Databases</a>
+        <a href="#relational"><span class="nav-num">3</span> Relational Database</a>
+        <a href="#nosql"><span class="nav-num">4</span> NoSQL Databases</a>
+        <a href="#comparison"><span class="nav-num">5</span> مقارنة بينهم</a>
+        <a href="#what-is-oracle"><span class="nav-num">6</span> إيه هي Oracle؟</a>
+        <a href="#oracle-editions"><span class="nav-num">7</span> إصدارات Oracle</a>
+        <a href="#architecture"><span class="nav-num">8</span> Oracle Architecture</a>
+        <a href="#install-xe"><span class="nav-num">9</span> تثبيت Oracle XE</a>
+        <a href="#install-sqldev"><span class="nav-num">10</span> تثبيت SQL Developer</a>
+        <a href="#connect"><span class="nav-num">11</span> الربط والتشغيل</a>
+        <a href="#summary"><span class="nav-num">12</span> الملخص</a>
+    </nav>
+</aside>
+
+<!-- Main Content -->
+<div class="main">
+
+    <!-- Hero -->
+    <div class="hero">
+        <div class="hero__badge">📅 اليوم الأول • 6:00 - 7:30 مساءً</div>
+        <h1 class="hero__title">مقدمة Oracle Database</h1>
+        <p class="hero__desc">فهم إيه هي الـ Database، أنواعها، إيه هي Oracle، وتثبيت بيئة العمل الكاملة على جهازك</p>
+        <div class="hero__meta">
+            <div class="hero__meta-item"><span>⏱</span> المدة: 90 دقيقة</div>
+            <div class="hero__meta-item"><span>📊</span> المستوى: مبتدئ</div>
+            <div class="hero__meta-item"><span>💻</span> عملي + نظري</div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECTION 1: What is Database -->
+    <!-- ============================================ -->
+    <div class="section" id="what-is-db">
+        <div class="section__header">
+            <div class="section__icon section__icon--blue">💾</div>
+            <h2 class="section__title">إيه هي الـ Database؟</h2>
+        </div>
+
+        <div class="content-card">
+            <p>تخيل إنك عندك <strong>دولاب ملفات</strong> كبير في مكتب. كل درج فيه نوع معين من الورق:</p>
+            <p>🗂️ درج للعملاء &nbsp; 🗂️ درج للمنتجات &nbsp; 🗂️ درج للفواتير</p>
+            <p>الـ Database هي <strong>نفس الفكرة بالظبط</strong> بس على الكمبيوتر - مخزن بيانات إلكتروني منظم.</p>
+        </div>
+
+        <div class="quote-box">
+            Database = مخزن بيانات منظم بيتحفظ فيه بيانات بشكل مرتب وتقدر تبحث فيه وتعدل عليه بسهولة وبسرعة
+        </div>
+
+        <div class="content-card">
+            <div class="content-card__title">🤔 ليه منستخدمش Excel أو ملفات عادية؟</div>
+            <table class="styled-table">
+                <thead>
+                    <tr><th>الموضوع</th><th>ملفات عادية / Excel</th><th>Database</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>حجم البيانات</td><td>بطيئة مع بيانات كتير</td><td>ملايين الصفوف بسرعة</td></tr>
+                    <tr><td>أكتر من شخص</td><td>مشاكل لو فتحوها مع بعض</td><td>آلاف المستخدمين في نفس الوقت</td></tr>
+                    <tr><td>الأمان</td><td>أي حد يقدر يفتح الملف</td><td>صلاحيات وتشفير</td></tr>
+                    <tr><td>البحث</td><td>بطيء ومحدود</td><td>بحث لحظي في ملايين السجلات</td></tr>
+                    <tr><td>النسخ الاحتياطي</td><td>يدوي</td><td>تلقائي ومجدول</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECTION 2: Database Types -->
+    <!-- ============================================ -->
+    <div class="section" id="db-types">
+        <div class="section__header">
+            <div class="section__icon section__icon--orange">📂</div>
+            <h2 class="section__title">أنواع الـ Databases</h2>
+        </div>
+
+        <div class="content-card">
+            <p>في نوعين رئيسيين لازم تعرفهم:</p>
+        </div>
+
+        <div class="compare-grid">
+            <div class="compare-card" style="border-color: var(--accent);">
+                <div class="compare-card__title" style="color: var(--accent);">🏛️ Relational (علائقية)</div>
+                <ul class="compare-card__list">
+                    <li>البيانات في جداول (Tables)</li>
+                    <li>صفوف وأعمدة زي Excel</li>
+                    <li>الجداول مرتبطة ببعض</li>
+                    <li>بتستخدم لغة SQL</li>
+                    <li>مثال: Oracle, MySQL, SQL Server</li>
+                </ul>
+            </div>
+            <div class="compare-card" style="border-color: var(--accent4);">
+                <div class="compare-card__title" style="color: var(--accent4);">🌐 NoSQL (غير علائقية)</div>
+                <ul class="compare-card__list">
+                    <li>البيانات مش في جداول</li>
+                    <li>أشكال مختلفة (مستندات/مفاتيح)</li>
+                    <li>مرنة ومتغيرة</li>
+                    <li>كل نوع ليه لغته</li>
+                    <li>مثال: MongoDB, Redis, Neo4j</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECTION 3: Relational Database -->
+    <!-- ============================================ -->
+    <div class="section" id="relational">
+        <div class="section__header">
+            <div class="section__icon section__icon--red">🏛️</div>
+            <h2 class="section__title">Relational Database - بالتفصيل</h2>
+        </div>
+
+        <div class="content-card">
+            <p>البيانات بتتخزن في <strong>جداول (Tables)</strong> فيها <strong>صفوف (Rows)</strong> و<strong>أعمدة (Columns)</strong>، والجداول بتبقى مرتبطة ببعض بـ <strong>علاقات (Relations)</strong>.</p>
+        </div>
+
+        <div class="example-box">
+            <div class="example-box__title">مثال عملي: نظام موظفين</div>
+
+            <div class="table-diagram">
+                <div class="table-diagram__header">📋 جدول الموظفين - EMPLOYEES</div>
+                <table>
+                    <thead>
+                        <tr><th>EMP_ID</th><th>NAME</th><th>SALARY</th><th>DEPT_ID</th><th>HIRE_DATE</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>1</td><td>أحمد</td><td>8,000</td><td style="color: var(--accent2);">10</td><td>2024-01</td></tr>
+                        <tr><td>2</td><td>سارة</td><td>9,500</td><td style="color: var(--accent2);">20</td><td>2023-05</td></tr>
+                        <tr><td>3</td><td>محمد</td><td>7,000</td><td style="color: var(--accent2);">10</td><td>2024-06</td></tr>
+                    </tbody>
+                </table>
+                <div class="table-diagram__link">🔗 DEPT_ID بيشاور على جدول الأقسام</div>
+            </div>
+
+            <div class="table-diagram">
+                <div class="table-diagram__header" style="background: rgba(77,140,255,0.12); color: var(--accent4);">📋 جدول الأقسام - DEPARTMENTS</div>
+                <table>
+                    <thead>
+                        <tr><th>DEPT_ID</th><th>DEPT_NAME</th><th>LOCATION</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td style="color: var(--accent2);">10</td><td>المبيعات</td><td>القاهرة</td></tr>
+                        <tr><td style="color: var(--accent2);">20</td><td>التسويق</td><td>الإسكندرية</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="quote-box quote-box--blue">
+            العلاقة: DEPT_ID في جدول الموظفين (Foreign Key) بيشاور على DEPT_ID في جدول الأقسام (Primary Key) - كده أحمد ومحمد في قسم المبيعات، وسارة في قسم التسويق
+        </div>
+
+        <div class="content-card">
+            <div class="content-card__title">🏆 أشهر قواعد البيانات العلائقية</div>
+            <table class="styled-table">
+                <thead>
+                    <tr><th>الاسم</th><th>الشركة</th><th>الاستخدام</th><th>السعر</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong style="color:var(--accent)">Oracle Database</strong></td>
+                        <td>Oracle</td>
+                        <td>الشركات الكبيرة والبنوك</td>
+                        <td><span class="badge badge--red">مدفوع + نسخة مجانية</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong style="color:var(--accent4)">MySQL</strong></td>
+                        <td>Oracle</td>
+                        <td>المواقع والتطبيقات</td>
+                        <td><span class="badge badge--green">مجاني</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong style="color:var(--accent4)">SQL Server</strong></td>
+                        <td>Microsoft</td>
+                        <td>بيئة Windows</td>
+                        <td><span class="badge badge--orange">مدفوع + نسخة مجانية</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong style="color:var(--accent4)">PostgreSQL</strong></td>
+                        <td>مفتوح المصدر</td>
+                        <td>مشاريع متقدمة</td>
+                        <td><span class="badge badge--green">مجاني</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECTION 4: NoSQL -->
+    <!-- ============================================ -->
+    <div class="section" id="nosql">
+        <div class="section__header">
+            <div class="section__icon section__icon--blue">🌐</div>
+            <h2 class="section__title">NoSQL Databases - بالتفصيل</h2>
+        </div>
+
+        <div class="nosql-grid">
+            <!-- Document -->
+            <div class="nosql-card">
+                <div class="nosql-card__header">📄 Document Database - بيانات على شكل مستندات</div>
+                <div class="nosql-card__body">
+                    <div class="code-block" style="margin: 0;">
+                        <div class="code-block__header">
+                            <span>JSON Document</span>
+                            <div class="code-block__dots">
+                                <span class="code-block__dot code-block__dot--red"></span>
+                                <span class="code-block__dot code-block__dot--yellow"></span>
+                                <span class="code-block__dot code-block__dot--green"></span>
+                            </div>
+                        </div>
+                        <div class="code-block__body">{
+  <span class="string">"name"</span>: <span class="string">"أحمد"</span>,
+  <span class="string">"salary"</span>: <span class="number">8000</span>,
+  <span class="string">"skills"</span>: [<span class="string">"SQL"</span>, <span class="string">"Excel"</span>, <span class="string">"Python"</span>],
+  <span class="string">"address"</span>: {
+    <span class="string">"city"</span>: <span class="string">"القاهرة"</span>,
+    <span class="string">"street"</span>: <span class="string">"شارع التحرير"</span>
+  }
+}</div>
+                    </div>
+                    <div class="nosql-card__example">🏷️ مثال: <strong>MongoDB</strong> - الأشهر في تطبيقات الويب</div>
+                </div>
+            </div>
+
+            <!-- Key-Value -->
+            <div class="nosql-card">
+                <div class="nosql-card__header">🔑 Key-Value Database - مفتاح وقيمة</div>
+                <div class="nosql-card__body">
+                    <div class="code-block" style="margin: 0;">
+                        <div class="code-block__header">
+                            <span>Key → Value</span>
+                            <div class="code-block__dots">
+                                <span class="code-block__dot code-block__dot--red"></span>
+                                <span class="code-block__dot code-block__dot--yellow"></span>
+                                <span class="code-block__dot code-block__dot--green"></span>
+                            </div>
+                        </div>
+                        <div class="code-block__body"><span class="string">"user:1001"</span>  →  <span class="string">"أحمد"</span>
+<span class="string">"user:1002"</span>  →  <span class="string">"سارة"</span>
+<span class="string">"session:abc"</span> →  <span class="string">"{ logged_in: true }"</span></div>
+                    </div>
+                    <div class="nosql-card__example">🏷️ مثال: <strong>Redis</strong> - سريع جداً، بيستخدم للـ Cache</div>
+                </div>
+            </div>
+
+            <!-- Graph -->
+            <div class="nosql-card">
+                <div class="nosql-card__header">🕸️ Graph Database - شبكة علاقات</div>
+                <div class="nosql-card__body">
+                    <div class="code-block" style="margin: 0;">
+                        <div class="code-block__header">
+                            <span>Nodes & Relationships</span>
+                            <div class="code-block__dots">
+                                <span class="code-block__dot code-block__dot--red"></span>
+                                <span class="code-block__dot code-block__dot--yellow"></span>
+                                <span class="code-block__dot code-block__dot--green"></span>
+                            </div>
+                        </div>
+                        <div class="code-block__body">(أحمد) --[<span class="func">صديق</span>]-->    (سارة)
+(أحمد) --[<span class="func">يعمل في</span>]--> (شركة X)
+(سارة) --[<span class="func">تعرف</span>]-->   (محمد)</div>
+                    </div>
+                    <div class="nosql-card__example">🏷️ مثال: <strong>Neo4j</strong> - بيستخدم في Facebook و LinkedIn</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECTION 5: Comparison -->
+    <!-- ============================================ -->
+    <div class="section" id="comparison">
+        <div class="section__header">
+            <div class="section__icon section__icon--orange">⚖️</div>
+            <h2 class="section__title">Relational vs NoSQL</h2>
+        </div>
+
+        <div class="compare-grid">
+            <div class="compare-card" style="border-color: var(--accent);">
+                <div class="compare-card__title" style="color: var(--accent);">🏛️ Relational (Oracle, MySQL)</div>
+                <ul class="compare-card__list">
+                    <li>بيانات منظمة ومحددة الشكل</li>
+                    <li>علاقات واضحة بين الجداول</li>
+                    <li>أمان ودقة عالية جداً</li>
+                    <li>مثالي للبنوك والشركات و ERP</li>
+                    <li>بيستخدم لغة SQL موحدة</li>
+                </ul>
+            </div>
+            <div class="compare-card" style="border-color: var(--accent4);">
+                <div class="compare-card__title" style="color: var(--accent4);">🌐 NoSQL (MongoDB, Redis)</div>
+                <ul class="compare-card__list">
+                    <li>بيانات مرنة ومتغيرة الشكل</li>
+                    <li>سرعة عالية في القراءة والكتابة</li>
+                    <li>سهولة التوسع أفقياً</li>
+                    <li>مثالي للتطبيقات وسوشيال ميديا</li>
+                    <li>كل نوع ليه طريقة مختلفة</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECTION 6: What is Oracle -->
+    <!-- ============================================ -->
+    <div class="section" id="what-is-oracle">
+        <div class="section__header">
+            <div class="section__icon section__icon--red">🔴</div>
+            <h2 class="section__title">إيه هي Oracle Database بالتحديد؟</h2>
+        </div>
+
+        <div class="quote-box">
+            Oracle Database هي نظام إدارة قواعد بيانات علائقية (RDBMS) من شركة Oracle Corporation، وهي الأقوى والأكثر استخداماً في الشركات الكبيرة والبنوك والحكومات حول العالم.
+        </div>
+
+        <div class="content-card">
+            <div class="content-card__title">🌟 ليه Oracle مميزة ومختلفة؟</div>
+            <table class="styled-table">
+                <thead>
+                    <tr><th>الميزة</th><th>التفاصيل</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>🔒 <strong>الأمان</strong></td><td>أعلى مستوى أمان - عشان كده البنوك بتستخدمها</td></tr>
+                    <tr><td>⚡ <strong>الأداء</strong></td><td>بتتعامل مع ملايين العمليات في الثانية الواحدة</td></tr>
+                    <tr><td>📈 <strong>التوسع</strong></td><td>من شركة صغيرة لشركة عملاقة بدون مشاكل</td></tr>
+                    <tr><td>🔄 <strong>الاستمرارية</strong></td><td>لو السيرفر وقع البيانات مش هتضيع أبداً</td></tr>
+                    <tr><td>🛠️ <strong>الأدوات</strong></td><td>أدوات إدارة ومراقبة احترافية مدمجة</td></tr>
+                    <tr><td>📚 <strong>PL/SQL</strong></td><td>لغة برمجة خاصة بيها قوية جداً</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="content-card">
+            <div class="content-card__title">🏢 مين بيستخدم Oracle؟</div>
+            <p>🏦 البنوك (الأهلي، QNB، CIB) &nbsp;•&nbsp; 🏥 المستشفيات &nbsp;•&nbsp; 📱 شركات الاتصالات (فودافون، اورانچ) &nbsp;•&nbsp; 🏛️ الحكومات &nbsp;•&nbsp; ✈️ شركات الطيران &nbsp;•&nbsp; 🛒 شركات التجارة الكبيرة</p>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECTION 7: Oracle Editions -->
+    <!-- ============================================ -->
+    <div class="section" id="oracle-editions">
+        <div class="section__header">
+            <div class="section__icon section__icon--purple">📦</div>
+            <h2 class="section__title">إصدارات Oracle Database</h2>
+        </div>
+
+        <div class="editions-grid">
+            <div class="edition-card">
+                <div class="edition-card__icon">🏢</div>
+                <div class="edition-card__name">Enterprise (EE)</div>
+                <div class="edition-card__desc">النسخة الكاملة للشركات الكبيرة - كل المميزات</div>
+                <span class="edition-card__tag badge badge--red">مدفوع - غالي</span>
+            </div>
+            <div class="edition-card">
+                <div class="edition-card__icon">🏬</div>
+                <div class="edition-card__name">Standard (SE)</div>
+                <div class="edition-card__desc">نسخة أقل للشركات المتوسطة</div>
+                <span class="edition-card__tag badge badge--orange">مدفوع - أرخص</span>
+            </div>
+            <div class="edition-card edition-card--active">
+                <div class="edition-card__icon">🎓</div>
+                <div class="edition-card__name">Express (XE)</div>
+                <div class="edition-card__desc">نسخة مجانية للتعلم والمشاريع الصغيرة</div>
+                <span class="edition-card__tag badge badge--green">مجاني! - هنستخدمه</span>
+            </div>
+            <div class="edition-card">
+                <div class="edition-card__icon">☁️</div>
+                <div class="edition-card__name">Oracle Cloud</div>
+                <div class="edition-card__desc">على السحابة - بدون تثبيت</div>
+                <span class="edition-card__tag badge badge--blue">أونلاين</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECTION 8: Architecture -->
+    <!-- ============================================ -->
+    <div class="section" id="architecture">
+        <div class="section__header">
+            <div class="section__icon section__icon--blue">🏗️</div>
+            <h2 class="section__title">Oracle Architecture - البنية الداخلية</h2>
+        </div>
+
+        <div class="content-card">
+            <p>فهم البنية مهم عشان تعرف إيه اللي بيحصل ورا الكواليس لما بتكتب أمر SQL.</p>
+        </div>
+
+        <div class="diagram-box">
+            <div class="diagram-box__title">البنية العامة لـ Oracle Database</div>
+            <div class="arch-diagram">
+                <div class="arch-box arch-box--user">
+                    👤 أنت (المستخدم)
+                    <div class="arch-sub">SQL Developer / التطبيق / SQL*Plus</div>
+                </div>
+                <div class="arch-arrow">⬇</div>
+                <div class="arch-box arch-box--instance">
+                    ⚙️ Oracle Instance (الذاكرة + العمليات)
+                    <div class="arch-inner-grid">
+                        <div class="arch-inner-box">
+                            <strong>🧠 SGA (الذاكرة المشتركة)</strong>
+                            • Shared Pool<br>
+                            • Buffer Cache<br>
+                            • Redo Log Buffer
+                        </div>
+                        <div class="arch-inner-box">
+                            <strong>👷 Background Processes</strong>
+                            • DBWR (كتابة البيانات)<br>
+                            • LGWR (كتابة الـ Logs)<br>
+                            • SMON / PMON
+                        </div>
+                    </div>
+                </div>
+                <div class="arch-arrow">⬇</div>
+                <div class="arch-box arch-box--storage">
+                    💾 Database Files (الملفات على الهارد)
+                    <div class="arch-sub">Data Files (.dbf) &nbsp;•&nbsp; Redo Log Files &nbsp;•&nbsp; Control Files</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <div class="content-card__title">📖 شرح كل جزء ببساطة</div>
+            <table class="styled-table">
+                <thead>
+                    <tr><th>الجزء</th><th>الشرح</th><th>مثال توضيحي</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong style="color:var(--accent)">SGA</strong></td>
+                        <td>الذاكرة اللي Oracle بتستخدمها عشان تشتغل بسرعة</td>
+                        <td>زي الـ RAM - بتحط فيها البيانات اللي بتتعامل معاها دلوقتي</td>
+                    </tr>
+                    <tr>
+                        <td><strong style="color:var(--accent)">Buffer Cache</strong></td>
+                        <td>نسخة من البيانات في الذاكرة</td>
+                        <td>بدل ما تروح للهارد كل مرة، بتقرأ من الذاكرة (أسرع 1000x)</td>
+                    </tr>
+                    <tr>
+                        <td><strong style="color:var(--accent)">Shared Pool</strong></td>
+                        <td>بيحفظ أوامر SQL اللي اتنفذت</td>
+                        <td>لو كتبت نفس الأمر تاني، مش هيحلله من الأول</td>
+                    </tr>
+                    <tr>
+                        <td><strong style="color:var(--accent)">DBWR</strong></td>
+                        <td>بيكتب البيانات من الذاكرة للهارد</td>
+                        <td>زي حد بيحفظ شغلك على الهارد بشكل دوري</td>
+                    </tr>
+                    <tr>
+                        <td><strong style="color:var(--accent)">LGWR</strong></td>
+                        <td>بيسجل كل عملية حصلت</td>
+                        <td>زي كاميرا مراقبة - لو حصل مشكلة يقدر يرجع لنقطة معينة</td>
+                    </tr>
+                    <tr>
+                        <td><strong style="color:var(--accent)">Data Files</strong></td>
+                        <td>الملفات اللي البيانات بتتحفظ فيها فعلياً</td>
+                        <td>الملفات على الهارد اللي فيها الجداول والبيانات</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECTION 9: Install Oracle XE -->
+    <!-- ============================================ -->
+    <div class="section" id="install-xe">
+        <div class="section__header">
+            <div class="section__icon section__icon--green">⬇️</div>
+            <h2 class="section__title">تثبيت Oracle XE - خطوة بخطوة</h2>
+        </div>
+
+        <div class="content-card">
+            <div class="content-card__title">📋 المتطلبات</div>
+            <p>🖥️ Windows 10/11 (64-bit) &nbsp;•&nbsp; 💾 مساحة 9 GB على الأقل &nbsp;•&nbsp; 🧠 RAM: 2 GB كحد أدنى (4 GB أفضل)</p>
+        </div>
+
+        <h3 style="margin: 24px 0 16px; font-size: 1.1rem;">الخطوة 1: تحميل Oracle XE</h3>
+        <div class="steps">
+            <div class="step">
+                <div class="step__num">1</div>
+                <div class="step__content">
+                    <div class="step__title">روح على صفحة التحميل</div>
+                    <div class="step__desc">افتح المتصفح وروح على: <code>oracle.com/database/technologies/xe-downloads.html</code></div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step__num">2</div>
+                <div class="step__content">
+                    <div class="step__title">اختار النسخة</div>
+                    <div class="step__desc">اضغط على <code>Oracle Database 21c Express Edition for Windows x64</code></div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step__num">3</div>
+                <div class="step__content">
+                    <div class="step__title">اعمل حساب Oracle (مجاني)</div>
+                    <div class="step__desc">لو مش عندك حساب، هيطلب تعمل واحد مجاني - سجل بالإيميل وباسورد</div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step__num">4</div>
+                <div class="step__content">
+                    <div class="step__title">حمّل الملف</div>
+                    <div class="step__desc">حجم الملف حوالي <strong>1.7 GB</strong> - استنى التحميل يخلص</div>
+                </div>
+            </div>
+        </div>
+
+        <h3 style="margin: 24px 0 16px; font-size: 1.1rem;">الخطوة 2: التثبيت</h3>
+        <div class="steps">
+            <div class="step">
+                <div class="step__num">1</div>
+                <div class="step__content">
+                    <div class="step__title">فك الضغط</div>
+                    <div class="step__desc">كليك يمين على الملف المحمل → <code>Extract Here</code></div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step__num">2</div>
+                <div class="step__content">
+                    <div class="step__title">شغّل كـ Administrator</div>
+                    <div class="step__desc">كليك يمين على <code>setup.exe</code> → <code>Run as Administrator</code></div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step__num">3</div>
+                <div class="step__content">
+                    <div class="step__title">اقبل الشروط</div>
+                    <div class="step__desc">اختار <code>I accept</code> واضغط Next</div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step__num">4</div>
+                <div class="step__content">
+                    <div class="step__title">مسار التثبيت</div>
+                    <div class="step__desc">سيبه Default (متغيروش) واضغط Next</div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step__num">5</div>
+                <div class="step__content">
+                    <div class="step__title">⚠️ اكتب الباسورد (مهم جداً!)</div>
+                    <div class="step__desc">ده باسورد المستخدم <code>SYS</code> و <code>SYSTEM</code> - احفظه كويس! مثال: <code>Oracle123</code></div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step__num">6</div>
+                <div class="step__content">
+                    <div class="step__title">اضغط Install واستنى</div>
+                    <div class="step__desc">التثبيت بياخد حوالي <strong>10-20 دقيقة</strong> - متقفلوش!</div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step__num">7</div>
+                <div class="step__content">
+                    <div class="step__title">اضغط Finish</div>
+                    <div class="step__desc">مبروك! Oracle XE اتثبت بنجاح 🎉</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="warning-box">
+            <div class="warning-box__icon">⚠️</div>
+            <div class="warning-box__text">
+                <strong>مهم جداً:</strong> احفظ الباسورد اللي كتبته في مكان آمن! لو نسيته هتحتاج تعيد التثبيت من الأول.
+            </div>
+        </div>
+
+        <h3 style="margin: 24px 0 16px; font-size: 1.1rem;">الخطوة 3: التأكد إنه شغال</h3>
+        <div class="code-block">
+            <div class="code-block__header">
+                <span>Command Prompt (CMD)</span>
+                <div class="code-block__dots">
+                    <span class="code-block__dot code-block__dot--red"></span>
+                    <span class="code-block__dot code-block__dot--yellow"></span>
+                    <span class="code-block__dot code-block__dot--green"></span>
+                </div>
+            </div>
+            <div class="code-block__body"><span class="comment">-- افتح CMD واكتب:</span>
+sqlplus sys/Oracle123@localhost:1521/XEPDB1 as sysdba
+
+<span class="comment">-- لو ظهرلك:</span>
+<span class="func">Connected to:</span>
+<span class="func">Oracle Database 21c Express Edition Release 21.0.0.0.0</span>
+
+<span class="comment">-- يبقى مبروك! Oracle شغال ✅</span></div>
+        </div>
+
+        <div class="success-box">
+            <div class="success-box__icon">✅</div>
+            <div class="success-box__text">لو ظهرتلك رسالة "Connected to" يبقى كل حاجة تمام ونقدر نكمّل!</div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECTION 10: Install SQL Developer -->
+    <!-- ============================================ -->
+    <div class="section" id="install-sqldev">
+        <div class="section__header">
+            <div class="section__icon section__icon--orange">🛠️</div>
+            <h2 class="section__title">تثبيت SQL Developer</h2>
+        </div>
+
+        <div class="quote-box quote-box--blue">
+            SQL Developer هو برنامج مجاني من Oracle بواجهة رسومية سهلة تكتب فيه أوامر SQL وتشوف النتائج بشكل مريح. بدله هتضطر تشتغل من الـ Command Line!
+        </div>
+
+        <div class="steps">
+            <div class="step">
+                <div class="step__num">1</div>
+                <div class="step__content">
+                    <div class="step__title">روح على صفحة التحميل</div>
+                    <div class="step__desc">افتح: <code>oracle.com/tools/downloads/sqldev-downloads.html</code></div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step__num">2</div>
+                <div class="step__content">
+                    <div class="step__title">حمّل النسخة الصح</div>
+                    <div class="step__desc">اختار <code>Windows 64-bit with JDK included</code> (عشان متحتاجش تنزل Java لوحدها)</div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step__num">3</div>
+                <div class="step__content">
+                    <div class="step__title">فك الضغط</div>
+                    <div class="step__desc">كليك يمين → <code>Extract Here</code> → هيطلع مجلد اسمه <code>sqldeveloper</code></div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step__num">4</div>
+                <div class="step__content">
+                    <div class="step__title">شغّله!</div>
+                    <div class="step__desc">افتح المجلد وشغّل <code>sqldeveloper.exe</code> - مفيش تثبيت! بيشتغل مباشرة 🎉</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="success-box">
+            <div class="success-box__icon">💡</div>
+            <div class="success-box__text"><strong>نصيحة:</strong> اعمل Shortcut لـ sqldeveloper.exe على الـ Desktop عشان توصله بسهولة كل مرة.</div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECTION 11: Connect -->
+    <!-- ============================================ -->
+    <div class="section" id="connect">
+        <div class="section__header">
+            <div class="section__icon section__icon--green">🔌</div>
+            <h2 class="section__title">ربط SQL Developer بـ Oracle XE</h2>
+        </div>
+
+        <div class="steps">
+            <div class="step">
+                <div class="step__num">1</div>
+                <div class="step__content">
+                    <div class="step__title">افتح SQL Developer</div>
+                    <div class="step__desc">شغّل البرنامج واستنى يفتح</div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step__num">2</div>
+                <div class="step__content">
+                    <div class="step__title">اعمل Connection جديد</div>
+                    <div class="step__desc">اضغط على علامة <code>+</code> (الأخضر) أو <code>New Connection</code></div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step__num">3</div>
+                <div class="step__content">
+                    <div class="step__title">املأ البيانات التالية:</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="connection-form">
+            <div class="connection-form__title">🔗 بيانات الاتصال</div>
+            <div class="form-row">
+                <span class="form-row__label">Name:</span>
+                <span class="form-row__value">MyOracleXE</span>
+            </div>
+            <div class="form-row">
+                <span class="form-row__label">Username:</span>
+                <span class="form-row__value">sys</span>
+            </div>
+            <div class="form-row">
+                <span class="form-row__label">Password:</span>
+                <span class="form-row__value">Oracle123</span>
+            </div>
+            <div class="form-row">
+                <span class="form-row__label">Role:</span>
+                <span class="form-row__value">SYSDBA</span>
+            </div>
+            <div class="form-row">
+                <span class="form-row__label">Hostname:</span>
+                <span class="form-row__value">localhost</span>
+            </div>
+            <div class="form-row">
+                <span class="form-row__label">Port:</span>
+                <span class="form-row__value">1521</span>
+            </div>
+            <div class="form-row">
+                <span class="form-row__label">Service Name:</span>
+                <span class="form-row__value">XEPDB1</span>
+            </div>
+        </div>
+
+        <div class="steps">
+            <div class="step">
+                <div class="step__num">4</div>
+                <div class="step__content">
+                    <div class="step__title">اختبر الاتصال</div>
+                    <div class="step__desc">اضغط <code>Test</code> → لو ظهر <strong style="color:var(--accent3)">Status: Success</strong> يبقى تمام!</div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step__num">5</div>
+                <div class="step__content">
+                    <div class="step__title">اتصل!</div>
+                    <div class="step__desc">اضغط <code>Connect</code> → هتفتح نافذة SQL Worksheet تكتب فيها أوامر SQL</div>
+                </div>
+            </div>
+        </div>
+
+        <h3 style="margin: 24px 0 16px; font-size: 1.1rem;">🎉 أول أمر SQL تكتبه!</h3>
+
+        <div class="code-block">
+            <div class="code-block__header">
+                <span>SQL Worksheet</span>
+                <div class="code-block__dots">
+                    <span class="code-block__dot code-block__dot--red"></span>
+                    <span class="code-block__dot code-block__dot--yellow"></span>
+                    <span class="code-block__dot code-block__dot--green"></span>
+                </div>
+            </div>
+            <div class="code-block__body"><span class="keyword">SELECT</span> <span class="string">'مبروك! Oracle شغال!'</span> <span class="keyword">AS</span> <span class="type">message</span> <span class="keyword">FROM</span> <span class="func">DUAL</span>;
+
+<span class="comment">-- اضغط Ctrl+Enter أو زر ▶️ لتشغيل الأمر</span>
+<span class="comment">-- النتيجة:</span>
+<span class="comment">-- ┌─────────────────────┐</span>
+<span class="comment">-- │ MESSAGE             │</span>
+<span class="comment">-- ├─────────────────────┤</span>
+<span class="comment">-- │ مبروك! Oracle شغال! │</span>
+<span class="comment">-- └─────────────────────┘</span></div>
+        </div>
+
+        <div class="success-box">
+            <div class="success-box__icon">🎉</div>
+            <div class="success-box__text"><strong>مبروك!</strong> لو ظهرتلك الرسالة يبقى كل حاجة جاهزة وتقدر تبدأ تتعلم SQL!</div>
+        </div>
+
+        <div class="content-card">
+            <div class="content-card__title">📝 ملاحظة عن DUAL</div>
+            <p><code style="background: var(--bg-code); padding: 2px 8px; border-radius: 5px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--accent2);">DUAL</code> هو جدول وهمي موجود في Oracle - بنستخدمه لما عايزين نشغل أمر SELECT من غير ما نحتاج جدول حقيقي. زي ما تقول "اطبعلي الحاجة دي وخلاص".</p>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECTION 12: Summary -->
+    <!-- ============================================ -->
+    <div class="section" id="summary">
+        <div class="summary-box">
+            <div class="summary-box__title">📌 ملخص اليوم الأول</div>
+            <ul class="summary-list">
+                <li><span class="check">✓</span> <strong>Database</strong> = مخزن بيانات منظم</li>
+                <li><span class="check">✓</span> نوعين: <strong>Relational</strong> و <strong>NoSQL</strong></li>
+                <li><span class="check">✓</span> <strong>Oracle</strong> = أقوى Relational DB</li>
+                <li><span class="check">✓</span> <strong>Oracle XE</strong> = النسخة المجانية</li>
+                <li><span class="check">✓</span> <strong>SQL Developer</strong> = برنامج كتابة SQL</li>
+                <li><span class="check">✓</span> <strong>SYS/SYSTEM</strong> = المستخدم الرئيسي</li>
+                <li><span class="check">✓</span> <strong>Port 1521</strong> = بورت Oracle</li>
+                <li><span class="check">✓</span> <strong>XEPDB1</strong> = اسم الـ Service</li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// Sidebar active state on scroll
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.sidebar__nav a');
+
+function updateActiveNav() {
+    let current = '';
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (window.scrollY >= sectionTop - 100) {
+            current = section.getAttribute('id');
+        }
+    });
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) {
+            link.classList.add('active');
+        }
+    });
+}
+
+window.addEventListener('scroll', updateActiveNav);
+updateActiveNav();
+
+// Close mobile sidebar on link click
+navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+        document.querySelector('.sidebar').classList.remove('sidebar--open');
+    });
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تمارين عملية - اليوم الأول</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        :root{--bg:#06060f;--bg-card:#0d0d1f;--bg-code:#0a0a1a;--accent:#ff4d4d;--accent-glow:rgba(255,77,77,0.15);--accent2:#ff8c00;--accent3:#00d47e;--accent4:#4d8cff;--accent5:#a855f7;--text:#e8e8f0;--text-sec:#8888aa;--text-muted:#555577;--border:#1a1a35;--border-light:#252550;}
+        body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);line-height:1.8;overflow-x:hidden;}
+        body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 15%,rgba(0,212,126,0.07) 0%,transparent 50%),radial-gradient(ellipse at 80% 85%,rgba(255,77,77,0.06) 0%,transparent 50%);pointer-events:none;z-index:0;}
+
+        .sidebar{position:fixed;top:0;right:0;width:280px;height:100vh;background:var(--bg-card);border-left:1px solid var(--border);padding:30px 20px;overflow-y:auto;z-index:100;transition:transform .3s;}
+        .sidebar__title{font-size:.8rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:20px;font-weight:700;}
+        .sidebar__nav a{display:flex;align-items:center;gap:10px;padding:10px 14px;color:var(--text-sec);text-decoration:none;font-size:.85rem;font-weight:600;border-radius:10px;margin-bottom:4px;transition:all .2s;}
+        .sidebar__nav a:hover,.sidebar__nav a.active{background:rgba(0,212,126,0.12);color:var(--accent3);}
+        .sidebar__nav a .nav-num{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;background:var(--border);color:var(--text-muted);flex-shrink:0;}
+        .sidebar__nav a:hover .nav-num,.sidebar__nav a.active .nav-num{background:var(--accent3);color:#fff;}
+        .sidebar__back{display:flex;align-items:center;gap:8px;color:var(--accent3);text-decoration:none;font-weight:700;font-size:.9rem;margin-bottom:25px;padding:10px 14px;border-radius:10px;transition:background .2s;}
+        .sidebar__back:hover{background:rgba(0,212,126,0.12);}
+
+        .menu-toggle{display:none;position:fixed;top:20px;right:20px;z-index:200;width:48px;height:48px;border-radius:12px;background:var(--bg-card);border:1px solid var(--border);color:var(--text);font-size:1.3rem;cursor:pointer;align-items:center;justify-content:center;}
+        @media(max-width:900px){.sidebar{transform:translateX(100%);width:270px;}.sidebar--open{transform:translateX(0);}.menu-toggle{display:flex;}.main{margin-right:0!important;}}
+
+        .main{margin-right:280px;padding:40px 50px 80px;max-width:900px;position:relative;z-index:1;}
+        @media(max-width:1100px){.main{padding:30px 25px 60px;}}
+
+        .hero{margin-bottom:50px;padding-bottom:40px;border-bottom:1px solid var(--border);}
+        .hero__badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,212,126,0.15);color:var(--accent3);padding:6px 16px;border-radius:8px;font-size:.8rem;font-weight:700;margin-bottom:16px;}
+        .hero__title{font-size:2.2rem;font-weight:900;line-height:1.3;margin-bottom:12px;background:linear-gradient(135deg,#fff,#ccc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+        .hero__desc{color:var(--text-sec);font-size:1.05rem;font-weight:600;max-width:600px;}
+        .hero__meta{display:flex;gap:24px;margin-top:20px;flex-wrap:wrap;}
+        .hero__meta-item{display:flex;align-items:center;gap:8px;color:var(--text-muted);font-size:.85rem;font-weight:600;}
+
+        .section{margin-bottom:55px;scroll-margin-top:30px;}
+        .section__header{display:flex;align-items:center;gap:14px;margin-bottom:24px;}
+        .section__icon{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+        .section__icon--red{background:rgba(255,77,77,0.15);}.section__icon--orange{background:rgba(255,140,0,0.15);}.section__icon--green{background:rgba(0,212,126,0.15);}.section__icon--blue{background:rgba(77,140,255,0.15);}.section__icon--purple{background:rgba(168,85,247,0.15);}
+        .section__title{font-size:1.5rem;font-weight:800;}
+
+        .content-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:20px;}
+        .content-card__title{font-size:1.1rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+        .content-card p,.content-card li{color:var(--text-sec);font-size:.95rem;font-weight:600;margin-bottom:8px;}
+
+        .quote-box{background:var(--accent-glow);border-right:4px solid var(--accent);padding:18px 22px;border-radius:0 12px 12px 0;margin:20px 0;font-weight:700;font-size:1rem;color:var(--text);}
+        .quote-box--green{background:rgba(0,212,126,0.1);border-right-color:var(--accent3);}
+        .quote-box--orange{background:rgba(255,140,0,0.1);border-right-color:var(--accent2);}
+        .quote-box--blue{background:rgba(77,140,255,0.1);border-right-color:var(--accent4);}
+
+        .code-block{background:var(--bg-code);border:1px solid var(--border);border-radius:12px;margin:16px 0;overflow:hidden;}
+        .code-block__header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;background:var(--border);font-size:.78rem;font-weight:700;color:var(--text-muted);}
+        .code-block__dots{display:flex;gap:6px;}
+        .code-block__dot{width:10px;height:10px;border-radius:50%;}
+        .code-block__dot--red{background:#ff5f57;}.code-block__dot--yellow{background:#febc2e;}.code-block__dot--green{background:#28c840;}
+        .code-block__body{padding:18px 22px;font-family:'JetBrains Mono',monospace;font-size:.83rem;line-height:1.9;overflow-x:auto;direction:ltr;text-align:left;color:#c8c8e0;}
+        .kw{color:#ff79c6;font-weight:700;}.str{color:#f1fa8c;}.cm{color:#555577;font-style:italic;}.num{color:#bd93f9;}.fn{color:#50fa7b;}.tp{color:#8be9fd;}.or{color:#ff8c00;}
+
+        .table-visual{background:var(--bg-code);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin:16px 0;}
+        .table-visual__header{padding:12px 18px;font-weight:700;font-size:.9rem;display:flex;align-items:center;gap:8px;}
+        .table-visual__header--blue{background:rgba(77,140,255,0.12);color:var(--accent4);}
+        .table-visual__header--green{background:rgba(0,212,126,0.12);color:var(--accent3);}
+        .table-visual__header--orange{background:rgba(255,140,0,0.12);color:var(--accent2);}
+        .table-visual table{width:100%;border-collapse:collapse;}
+        .table-visual th{background:var(--border);padding:10px 16px;text-align:right;font-size:.8rem;font-weight:700;color:var(--accent4);font-family:'JetBrains Mono',monospace;}
+        .table-visual td{padding:10px 16px;border-bottom:1px solid var(--border);font-size:.85rem;color:var(--text-sec);font-weight:600;}
+        .table-visual .row-highlight td{background:rgba(0,212,126,0.08);color:var(--accent3);}
+
+        code.inline{background:var(--bg-code);padding:2px 8px;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--accent2);direction:ltr;display:inline-block;}
+        .sub-title{font-size:1.15rem;font-weight:800;margin:30px 0 16px;color:var(--text);}
+
+        .info-box{border-radius:12px;padding:18px 22px;margin:16px 0;display:flex;align-items:flex-start;gap:12px;}
+        .info-box--warn{background:rgba(255,140,0,0.1);border:1px solid rgba(255,140,0,0.25);}
+        .info-box--success{background:rgba(0,212,126,0.1);border:1px solid rgba(0,212,126,0.25);}
+        .info-box--tip{background:rgba(77,140,255,0.1);border:1px solid rgba(77,140,255,0.25);}
+        .info-box__icon{font-size:1.3rem;flex-shrink:0;}
+        .info-box__text{font-size:.9rem;font-weight:600;}
+        .info-box--warn .info-box__text{color:var(--accent2);}
+        .info-box--success .info-box__text{color:var(--accent3);}
+        .info-box--tip .info-box__text{color:var(--accent4);}
+
+        /* ===== EXERCISE CARD ===== */
+        .exercise{background:var(--bg-card);border:1px solid var(--border);border-radius:18px;margin-bottom:24px;overflow:hidden;transition:border-color .2s;}
+        .exercise:hover{border-color:var(--border-light);}
+        .exercise__header{padding:22px 28px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;transition:background .2s;}
+        .exercise__header:hover{background:rgba(255,255,255,0.02);}
+        .exercise__header-right{display:flex;align-items:center;gap:14px;}
+        .exercise__num{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.1rem;flex-shrink:0;}
+        .exercise__num--easy{background:rgba(0,212,126,0.15);color:var(--accent3);}
+        .exercise__num--medium{background:rgba(255,140,0,0.15);color:var(--accent2);}
+        .exercise__num--hard{background:rgba(255,77,77,0.15);color:var(--accent);}
+        .exercise__title{font-weight:700;font-size:1rem;}
+        .exercise__difficulty{font-size:.75rem;font-weight:700;padding:3px 10px;border-radius:6px;}
+        .exercise__difficulty--easy{background:rgba(0,212,126,0.15);color:var(--accent3);}
+        .exercise__difficulty--medium{background:rgba(255,140,0,0.15);color:var(--accent2);}
+        .exercise__difficulty--hard{background:rgba(255,77,77,0.15);color:var(--accent);}
+        .exercise__toggle{font-size:1.2rem;color:var(--text-muted);transition:transform .3s;}
+        .exercise__toggle--open{transform:rotate(180deg);}
+        .exercise__body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.25,.46,.45,.94);}
+        .exercise__body--open{max-height:3000px;}
+        .exercise__content{padding:0 28px 24px;}
+        .exercise__question{background:rgba(77,140,255,0.08);border:1px solid rgba(77,140,255,0.15);border-radius:12px;padding:18px 22px;margin-bottom:16px;font-weight:600;font-size:.95rem;color:var(--accent4);}
+        .exercise__hint{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.15);border-radius:12px;padding:14px 18px;margin-bottom:16px;font-size:.88rem;font-weight:600;color:var(--accent5);cursor:pointer;transition:all .2s;}
+        .exercise__hint-text{display:none;margin-top:10px;color:var(--text-sec);font-size:.85rem;}
+        .exercise__hint.open .exercise__hint-text{display:block;}
+        .exercise__solution-toggle{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;background:rgba(0,212,126,0.08);border:1px solid rgba(0,212,126,0.2);border-radius:12px;color:var(--accent3);font-weight:700;font-size:.9rem;cursor:pointer;transition:all .2s;margin-bottom:16px;font-family:'Cairo',sans-serif;width:100%;}
+        .exercise__solution-toggle:hover{background:rgba(0,212,126,0.15);}
+        .exercise__solution{display:none;}
+        .exercise__solution--show{display:block;}
+
+        /* ===== SCENARIO BOX ===== */
+        .scenario-box{background:linear-gradient(135deg,rgba(255,140,0,0.08),rgba(255,77,77,0.08));border:1px solid rgba(255,140,0,0.2);border-radius:14px;padding:24px;margin:20px 0;}
+        .scenario-box__title{font-weight:800;font-size:1.1rem;color:var(--accent2);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+        .scenario-box__text{color:var(--text-sec);font-size:.95rem;font-weight:600;line-height:1.8;}
+
+        .summary-box{background:linear-gradient(135deg,rgba(0,212,126,0.08),rgba(77,140,255,0.08));border:1px solid var(--border-light);border-radius:18px;padding:30px;margin:30px 0;}
+        .summary-box__title{font-size:1.2rem;font-weight:800;margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+
+        ::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+        html{scroll-behavior:smooth;}
+    </style>
+</head>
+<body>
+
+<button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('sidebar--open')">☰</button>
+
+<aside class="sidebar">
+    <a href="index.html" class="sidebar__back">→ العودة للخطة</a>
+    <div class="sidebar__title">التمارين</div>
+    <nav class="sidebar__nav" id="sidebarNav">
+        <a href="#scenario"><span class="nav-num">📋</span> السيناريو</a>
+        <a href="#setup"><span class="nav-num">⚙️</span> تجهيز البيانات</a>
+        <a href="#ex1"><span class="nav-num">1</span> إنشاء الجداول</a>
+        <a href="#ex2"><span class="nav-num">2</span> إدخال الأقسام</a>
+        <a href="#ex3"><span class="nav-num">3</span> إدخال الموظفين</a>
+        <a href="#ex4"><span class="nav-num">4</span> استعلامات بسيطة</a>
+        <a href="#ex5"><span class="nav-num">5</span> WHERE بشروط</a>
+        <a href="#ex6"><span class="nav-num">6</span> AND و OR</a>
+        <a href="#ex7"><span class="nav-num">7</span> BETWEEN و IN</a>
+        <a href="#ex8"><span class="nav-num">8</span> LIKE وبحث</a>
+        <a href="#ex9"><span class="nav-num">9</span> ORDER BY</a>
+        <a href="#ex10"><span class="nav-num">10</span> DISTINCT</a>
+        <a href="#ex11"><span class="nav-num">11</span> حسابات وتجميع</a>
+        <a href="#ex12"><span class="nav-num">12</span> التحدي النهائي</a>
+        <a href="#cheatsheet"><span class="nav-num">📝</span> Cheat Sheet</a>
+    </nav>
+</aside>
+
+<div class="main">
+
+    <div class="hero">
+        <div class="hero__badge">📅 اليوم الأول • 10:30 - 12:00 مساءً</div>
+        <h1 class="hero__title">تمارين عملية شاملة</h1>
+        <p class="hero__desc">طبّق كل اللي اتعلمته النهاردة - 12 تمرين من السهل للصعب مع الحلول</p>
+        <div class="hero__meta">
+            <div class="hero__meta-item"><span>⏱</span> المدة: 90 دقيقة</div>
+            <div class="hero__meta-item"><span>🏋️</span> 12 تمرين</div>
+            <div class="hero__meta-item"><span>📊</span> سهل ← متوسط ← صعب</div>
+        </div>
+    </div>
+
+    <!-- ======== SCENARIO ======== -->
+    <div class="section" id="scenario">
+        <div class="section__header">
+            <div class="section__icon section__icon--orange">🏢</div>
+            <h2 class="section__title">السيناريو</h2>
+        </div>
+
+        <div class="scenario-box">
+            <div class="scenario-box__title">🏢 شركة النيل للتكنولوجيا</div>
+            <div class="scenario-box__text">
+                أنت اتعيّنت كـ <strong>Database Administrator</strong> في شركة "النيل للتكنولوجيا".<br>
+                أول مهمة ليك هي إنك تبني قاعدة بيانات الموظفين من الصفر:<br><br>
+                📋 الشركة فيها <strong>5 أقسام</strong> في مدن مختلفة<br>
+                👥 فيها <strong>12 موظف</strong> بمرتبات ومسميات وظيفية مختلفة<br>
+                🎯 المدير عايز <strong>تقارير</strong> عن الموظفين (استعلامات SQL)<br><br>
+                <strong>يلا نبدأ خطوة بخطوة...</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======== SETUP ======== -->
+    <div class="section" id="setup">
+        <div class="section__header">
+            <div class="section__icon section__icon--blue">⚙️</div>
+            <h2 class="section__title">تجهيز - امسح أي جداول قديمة</h2>
+        </div>
+
+        <div class="code-block"><div class="code-block__header"><span>SQL - تنظيف</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+            <div class="code-block__body"><span class="cm">-- لو عندك جداول قديمة بنفس الاسم، امسحها الأول</span>
+<span class="cm">-- (لو مفيش جداول قديمة تجاهل الأخطاء)</span>
+<span class="kw">DROP TABLE</span> <span class="fn">employees</span> <span class="kw">CASCADE CONSTRAINTS</span>;
+<span class="kw">DROP TABLE</span> <span class="fn">departments</span> <span class="kw">CASCADE CONSTRAINTS</span>;</div></div>
+
+        <div class="info-box info-box--tip">
+            <div class="info-box__icon">💡</div>
+            <div class="info-box__text"><strong>نصيحة:</strong> افتح SQL Developer وشغّل الأوامر واحد واحد. بعد كل أمر شوف النتيجة قبل ما تكمل. لو حصل خطأ، اقرأ رسالة الخطأ كويس وحاول تفهم السبب قبل ما تبص على الحل.</div>
+        </div>
+    </div>
+
+    <!-- ======== EXERCISE 1 ======== -->
+    <div class="section" id="ex1">
+        <div class="exercise">
+            <div class="exercise__header" onclick="toggleExercise(this)">
+                <div class="exercise__header-right">
+                    <div class="exercise__num exercise__num--easy">1</div>
+                    <div>
+                        <div class="exercise__title">إنشاء الجداول</div>
+                        <span class="exercise__difficulty exercise__difficulty--easy">سهل</span>
+                    </div>
+                </div>
+                <span class="exercise__toggle">▼</span>
+            </div>
+            <div class="exercise__body">
+                <div class="exercise__content">
+                    <div class="exercise__question">
+                        🎯 <strong>المطلوب:</strong> اعمل جدولين:<br><br>
+                        <strong>1. جدول departments:</strong><br>
+                        • dept_id - رقم (4 أرقام) - المفتاح الأساسي<br>
+                        • dept_name - نص (50 حرف) - مطلوب وفريد<br>
+                        • location - نص (100 حرف)<br>
+                        • manager_name - نص (50 حرف)<br><br>
+                        <strong>2. جدول employees:</strong><br>
+                        • emp_id - رقم (6 أرقام) - المفتاح الأساسي<br>
+                        • first_name - نص (50) - مطلوب<br>
+                        • last_name - نص (50) - مطلوب<br>
+                        • email - نص (100) - فريد<br>
+                        • phone - نص (20)<br>
+                        • job_title - نص (50)<br>
+                        • salary - رقم (8,2) - لازم أكبر من 0<br>
+                        • hire_date - تاريخ - افتراضي تاريخ اليوم<br>
+                        • dept_id - رقم (4) - مرتبط بجدول departments
+                    </div>
+
+                    <div class="exercise__hint" onclick="this.classList.toggle('open')">
+                        💡 <strong>تلميح (اضغط للكشف)</strong>
+                        <div class="exercise__hint-text">
+                            • لازم تعمل جدول departments الأول (عشان employees مرتبط بيه)<br>
+                            • استخدم PRIMARY KEY, NOT NULL, UNIQUE, CHECK, DEFAULT, REFERENCES<br>
+                            • الهاتف VARCHAR2 مش NUMBER (بيبدأ بـ 0)
+                        </div>
+                    </div>
+
+                    <button class="exercise__solution-toggle" onclick="toggleSolution(this)">👁️ اظهر الحل</button>
+                    <div class="exercise__solution">
+                        <div class="code-block"><div class="code-block__header"><span>SQL - الحل</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                            <div class="code-block__body"><span class="cm">-- 1. جدول الأقسام (لازم يتعمل الأول!)</span>
+<span class="kw">CREATE TABLE</span> <span class="fn">departments</span> (
+    <span class="tp">dept_id</span>       <span class="or">NUMBER</span>(<span class="num">4</span>)       <span class="kw">PRIMARY KEY</span>,
+    <span class="tp">dept_name</span>     <span class="or">VARCHAR2</span>(<span class="num">50</span>)   <span class="kw">NOT NULL</span> <span class="kw">UNIQUE</span>,
+    <span class="tp">location</span>      <span class="or">VARCHAR2</span>(<span class="num">100</span>),
+    <span class="tp">manager_name</span>  <span class="or">VARCHAR2</span>(<span class="num">50</span>)
+);
+
+<span class="cm">-- 2. جدول الموظفين</span>
+<span class="kw">CREATE TABLE</span> <span class="fn">employees</span> (
+    <span class="tp">emp_id</span>      <span class="or">NUMBER</span>(<span class="num">6</span>)       <span class="kw">PRIMARY KEY</span>,
+    <span class="tp">first_name</span>  <span class="or">VARCHAR2</span>(<span class="num">50</span>)   <span class="kw">NOT NULL</span>,
+    <span class="tp">last_name</span>   <span class="or">VARCHAR2</span>(<span class="num">50</span>)   <span class="kw">NOT NULL</span>,
+    <span class="tp">email</span>       <span class="or">VARCHAR2</span>(<span class="num">100</span>)  <span class="kw">UNIQUE</span>,
+    <span class="tp">phone</span>       <span class="or">VARCHAR2</span>(<span class="num">20</span>),
+    <span class="tp">job_title</span>   <span class="or">VARCHAR2</span>(<span class="num">50</span>),
+    <span class="tp">salary</span>      <span class="or">NUMBER</span>(<span class="num">8,2</span>)    <span class="kw">CHECK</span> (<span class="tp">salary</span> > <span class="num">0</span>),
+    <span class="tp">hire_date</span>   <span class="or">DATE</span>           <span class="kw">DEFAULT</span> <span class="fn">SYSDATE</span>,
+    <span class="tp">dept_id</span>     <span class="or">NUMBER</span>(<span class="num">4</span>)       <span class="kw">REFERENCES</span> <span class="fn">departments</span>(<span class="tp">dept_id</span>)
+);</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======== EXERCISE 2 ======== -->
+    <div class="section" id="ex2">
+        <div class="exercise">
+            <div class="exercise__header" onclick="toggleExercise(this)">
+                <div class="exercise__header-right">
+                    <div class="exercise__num exercise__num--easy">2</div>
+                    <div><div class="exercise__title">إدخال بيانات الأقسام</div><span class="exercise__difficulty exercise__difficulty--easy">سهل</span></div>
+                </div>
+                <span class="exercise__toggle">▼</span>
+            </div>
+            <div class="exercise__body">
+                <div class="exercise__content">
+                    <div class="exercise__question">
+                        🎯 <strong>المطلوب:</strong> ادخّل الأقسام الـ 5 دول:<br><br>
+                        <table class="table-visual" style="margin:0;"><table style="width:100%;border-collapse:collapse;font-size:.85rem;">
+                        <tr style="background:var(--border);"><th style="padding:8px 12px;text-align:right;color:var(--accent4);font-size:.8rem;">dept_id</th><th style="padding:8px 12px;text-align:right;color:var(--accent4);">dept_name</th><th style="padding:8px 12px;text-align:right;color:var(--accent4);">location</th><th style="padding:8px 12px;text-align:right;color:var(--accent4);">manager_name</th></tr>
+                        <tr><td style="padding:8px 12px;color:var(--text-sec);">10</td><td style="padding:8px 12px;color:var(--text-sec);">التطوير</td><td style="padding:8px 12px;color:var(--text-sec);">القاهرة</td><td style="padding:8px 12px;color:var(--text-sec);">م. أحمد</td></tr>
+                        <tr><td style="padding:8px 12px;color:var(--text-sec);">20</td><td style="padding:8px 12px;color:var(--text-sec);">المبيعات</td><td style="padding:8px 12px;color:var(--text-sec);">الإسكندرية</td><td style="padding:8px 12px;color:var(--text-sec);">م. سارة</td></tr>
+                        <tr><td style="padding:8px 12px;color:var(--text-sec);">30</td><td style="padding:8px 12px;color:var(--text-sec);">التسويق</td><td style="padding:8px 12px;color:var(--text-sec);">القاهرة</td><td style="padding:8px 12px;color:var(--text-sec);">م. خالد</td></tr>
+                        <tr><td style="padding:8px 12px;color:var(--text-sec);">40</td><td style="padding:8px 12px;color:var(--text-sec);">الموارد البشرية</td><td style="padding:8px 12px;color:var(--text-sec);">الجيزة</td><td style="padding:8px 12px;color:var(--text-sec);">م. نورا</td></tr>
+                        <tr><td style="padding:8px 12px;color:var(--text-sec);">50</td><td style="padding:8px 12px;color:var(--text-sec);">المحاسبة</td><td style="padding:8px 12px;color:var(--text-sec);">المنصورة</td><td style="padding:8px 12px;color:var(--text-sec);">م. عمر</td></tr>
+                        </table></table>
+                    </div>
+
+                    <button class="exercise__solution-toggle" onclick="toggleSolution(this)">👁️ اظهر الحل</button>
+                    <div class="exercise__solution">
+                        <div class="code-block"><div class="code-block__header"><span>SQL - الحل</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                            <div class="code-block__body"><span class="kw">INSERT INTO</span> <span class="fn">departments</span> <span class="kw">VALUES</span> (<span class="num">10</span>, <span class="str">'التطوير'</span>, <span class="str">'القاهرة'</span>, <span class="str">'م. أحمد'</span>);
+<span class="kw">INSERT INTO</span> <span class="fn">departments</span> <span class="kw">VALUES</span> (<span class="num">20</span>, <span class="str">'المبيعات'</span>, <span class="str">'الإسكندرية'</span>, <span class="str">'م. سارة'</span>);
+<span class="kw">INSERT INTO</span> <span class="fn">departments</span> <span class="kw">VALUES</span> (<span class="num">30</span>, <span class="str">'التسويق'</span>, <span class="str">'القاهرة'</span>, <span class="str">'م. خالد'</span>);
+<span class="kw">INSERT INTO</span> <span class="fn">departments</span> <span class="kw">VALUES</span> (<span class="num">40</span>, <span class="str">'الموارد البشرية'</span>, <span class="str">'الجيزة'</span>, <span class="str">'م. نورا'</span>);
+<span class="kw">INSERT INTO</span> <span class="fn">departments</span> <span class="kw">VALUES</span> (<span class="num">50</span>, <span class="str">'المحاسبة'</span>, <span class="str">'المنصورة'</span>, <span class="str">'م. عمر'</span>);
+
+<span class="kw">COMMIT</span>;
+
+<span class="cm">-- تأكد:</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="fn">departments</span>;</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======== EXERCISE 3 ======== -->
+    <div class="section" id="ex3">
+        <div class="exercise">
+            <div class="exercise__header" onclick="toggleExercise(this)">
+                <div class="exercise__header-right">
+                    <div class="exercise__num exercise__num--easy">3</div>
+                    <div><div class="exercise__title">إدخال بيانات الموظفين (12 موظف)</div><span class="exercise__difficulty exercise__difficulty--easy">سهل</span></div>
+                </div>
+                <span class="exercise__toggle">▼</span>
+            </div>
+            <div class="exercise__body">
+                <div class="exercise__content">
+                    <div class="exercise__question">
+                        🎯 <strong>المطلوب:</strong> ادخّل 12 موظف بالبيانات دي. حاول تكتبهم بنفسك الأول!<br>
+                        (خلّي بالك: hire_date استخدم TO_DATE، والتليفون VARCHAR2)
+                    </div>
+
+                    <button class="exercise__solution-toggle" onclick="toggleSolution(this)">👁️ اظهر الحل (والبيانات كاملة)</button>
+                    <div class="exercise__solution">
+                        <div class="code-block"><div class="code-block__header"><span>SQL - الحل</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                            <div class="code-block__body"><span class="kw">INSERT INTO</span> <span class="fn">employees</span> (<span class="tp">emp_id</span>,<span class="tp">first_name</span>,<span class="tp">last_name</span>,<span class="tp">email</span>,<span class="tp">phone</span>,<span class="tp">job_title</span>,<span class="tp">salary</span>,<span class="tp">hire_date</span>,<span class="tp">dept_id</span>)
+<span class="kw">VALUES</span> (<span class="num">101</span>,<span class="str">'أحمد'</span>,<span class="str">'محمود'</span>,<span class="str">'ahmed@nile.com'</span>,<span class="str">'01012345678'</span>,<span class="str">'مطور أول'</span>,<span class="num">15000</span>,<span class="fn">TO_DATE</span>(<span class="str">'2021-03-15'</span>,<span class="str">'YYYY-MM-DD'</span>),<span class="num">10</span>);
+
+<span class="kw">INSERT INTO</span> <span class="fn">employees</span> (<span class="tp">emp_id</span>,<span class="tp">first_name</span>,<span class="tp">last_name</span>,<span class="tp">email</span>,<span class="tp">phone</span>,<span class="tp">job_title</span>,<span class="tp">salary</span>,<span class="tp">hire_date</span>,<span class="tp">dept_id</span>)
+<span class="kw">VALUES</span> (<span class="num">102</span>,<span class="str">'سارة'</span>,<span class="str">'علي'</span>,<span class="str">'sara@nile.com'</span>,<span class="str">'01198765432'</span>,<span class="str">'مدير مبيعات'</span>,<span class="num">18000</span>,<span class="fn">TO_DATE</span>(<span class="str">'2020-06-01'</span>,<span class="str">'YYYY-MM-DD'</span>),<span class="num">20</span>);
+
+<span class="kw">INSERT INTO</span> <span class="fn">employees</span> (<span class="tp">emp_id</span>,<span class="tp">first_name</span>,<span class="tp">last_name</span>,<span class="tp">email</span>,<span class="tp">phone</span>,<span class="tp">job_title</span>,<span class="tp">salary</span>,<span class="tp">hire_date</span>,<span class="tp">dept_id</span>)
+<span class="kw">VALUES</span> (<span class="num">103</span>,<span class="str">'محمد'</span>,<span class="str">'سعيد'</span>,<span class="str">'mohamed@nile.com'</span>,<span class="str">'01055555555'</span>,<span class="str">'مطور'</span>,<span class="num">10000</span>,<span class="fn">TO_DATE</span>(<span class="str">'2022-01-10'</span>,<span class="str">'YYYY-MM-DD'</span>),<span class="num">10</span>);
+
+<span class="kw">INSERT INTO</span> <span class="fn">employees</span> (<span class="tp">emp_id</span>,<span class="tp">first_name</span>,<span class="tp">last_name</span>,<span class="tp">email</span>,<span class="tp">phone</span>,<span class="tp">job_title</span>,<span class="tp">salary</span>,<span class="tp">hire_date</span>,<span class="tp">dept_id</span>)
+<span class="kw">VALUES</span> (<span class="num">104</span>,<span class="str">'نورا'</span>,<span class="str">'حسن'</span>,<span class="str">'noura@nile.com'</span>,<span class="str">'01211111111'</span>,<span class="str">'مدير HR'</span>,<span class="num">16000</span>,<span class="fn">TO_DATE</span>(<span class="str">'2019-11-20'</span>,<span class="str">'YYYY-MM-DD'</span>),<span class="num">40</span>);
+
+<span class="kw">INSERT INTO</span> <span class="fn">employees</span> (<span class="tp">emp_id</span>,<span class="tp">first_name</span>,<span class="tp">last_name</span>,<span class="tp">email</span>,<span class="tp">phone</span>,<span class="tp">job_title</span>,<span class="tp">salary</span>,<span class="tp">hire_date</span>,<span class="tp">dept_id</span>)
+<span class="kw">VALUES</span> (<span class="num">105</span>,<span class="str">'خالد'</span>,<span class="str">'عمر'</span>,<span class="str">'khaled@nile.com'</span>,<span class="str">'01577777777'</span>,<span class="str">'مسوّق'</span>,<span class="num">8000</span>,<span class="fn">TO_DATE</span>(<span class="str">'2023-04-05'</span>,<span class="str">'YYYY-MM-DD'</span>),<span class="num">30</span>);
+
+<span class="kw">INSERT INTO</span> <span class="fn">employees</span> (<span class="tp">emp_id</span>,<span class="tp">first_name</span>,<span class="tp">last_name</span>,<span class="tp">email</span>,<span class="tp">phone</span>,<span class="tp">job_title</span>,<span class="tp">salary</span>,<span class="tp">hire_date</span>,<span class="tp">dept_id</span>)
+<span class="kw">VALUES</span> (<span class="num">106</span>,<span class="str">'ياسمين'</span>,<span class="str">'فوزي'</span>,<span class="str">'yasmin@nile.com'</span>,<span class="str">'01099999999'</span>,<span class="str">'مندوب مبيعات'</span>,<span class="num">7000</span>,<span class="fn">TO_DATE</span>(<span class="str">'2023-08-15'</span>,<span class="str">'YYYY-MM-DD'</span>),<span class="num">20</span>);
+
+<span class="kw">INSERT INTO</span> <span class="fn">employees</span> (<span class="tp">emp_id</span>,<span class="tp">first_name</span>,<span class="tp">last_name</span>,<span class="tp">email</span>,<span class="tp">phone</span>,<span class="tp">job_title</span>,<span class="tp">salary</span>,<span class="tp">hire_date</span>,<span class="tp">dept_id</span>)
+<span class="kw">VALUES</span> (<span class="num">107</span>,<span class="str">'عمر'</span>,<span class="str">'إبراهيم'</span>,<span class="str">'omar@nile.com'</span>,<span class="str">'01288888888'</span>,<span class="str">'محاسب'</span>,<span class="num">9000</span>,<span class="fn">TO_DATE</span>(<span class="str">'2022-05-01'</span>,<span class="str">'YYYY-MM-DD'</span>),<span class="num">50</span>);
+
+<span class="kw">INSERT INTO</span> <span class="fn">employees</span> (<span class="tp">emp_id</span>,<span class="tp">first_name</span>,<span class="tp">last_name</span>,<span class="tp">email</span>,<span class="tp">phone</span>,<span class="tp">job_title</span>,<span class="tp">salary</span>,<span class="tp">hire_date</span>,<span class="tp">dept_id</span>)
+<span class="kw">VALUES</span> (<span class="num">108</span>,<span class="str">'فاطمة'</span>,<span class="str">'خالد'</span>,<span class="str">'fatma@nile.com'</span>,<span class="kw">NULL</span>,<span class="str">'مطورة'</span>,<span class="num">11000</span>,<span class="fn">TO_DATE</span>(<span class="str">'2022-09-20'</span>,<span class="str">'YYYY-MM-DD'</span>),<span class="num">10</span>);
+
+<span class="kw">INSERT INTO</span> <span class="fn">employees</span> (<span class="tp">emp_id</span>,<span class="tp">first_name</span>,<span class="tp">last_name</span>,<span class="tp">email</span>,<span class="tp">phone</span>,<span class="tp">job_title</span>,<span class="tp">salary</span>,<span class="tp">hire_date</span>,<span class="tp">dept_id</span>)
+<span class="kw">VALUES</span> (<span class="num">109</span>,<span class="str">'علي'</span>,<span class="str">'محمد'</span>,<span class="str">'ali@nile.com'</span>,<span class="str">'01566666666'</span>,<span class="str">'مندوب مبيعات'</span>,<span class="num">7500</span>,<span class="fn">TO_DATE</span>(<span class="str">'2024-01-10'</span>,<span class="str">'YYYY-MM-DD'</span>),<span class="num">20</span>);
+
+<span class="kw">INSERT INTO</span> <span class="fn">employees</span> (<span class="tp">emp_id</span>,<span class="tp">first_name</span>,<span class="tp">last_name</span>,<span class="tp">email</span>,<span class="tp">phone</span>,<span class="tp">job_title</span>,<span class="tp">salary</span>,<span class="tp">hire_date</span>,<span class="tp">dept_id</span>)
+<span class="kw">VALUES</span> (<span class="num">110</span>,<span class="str">'مريم'</span>,<span class="str">'أحمد'</span>,<span class="str">'mariam@nile.com'</span>,<span class="str">'01033333333'</span>,<span class="str">'أخصائي HR'</span>,<span class="num">8500</span>,<span class="fn">TO_DATE</span>(<span class="str">'2023-07-01'</span>,<span class="str">'YYYY-MM-DD'</span>),<span class="num">40</span>);
+
+<span class="kw">INSERT INTO</span> <span class="fn">employees</span> (<span class="tp">emp_id</span>,<span class="tp">first_name</span>,<span class="tp">last_name</span>,<span class="tp">email</span>,<span class="tp">phone</span>,<span class="tp">job_title</span>,<span class="tp">salary</span>,<span class="tp">hire_date</span>,<span class="tp">dept_id</span>)
+<span class="kw">VALUES</span> (<span class="num">111</span>,<span class="str">'حسن'</span>,<span class="str">'سمير'</span>,<span class="str">'hassan@nile.com'</span>,<span class="kw">NULL</span>,<span class="str">'مسوّق أول'</span>,<span class="num">12000</span>,<span class="fn">TO_DATE</span>(<span class="str">'2021-10-15'</span>,<span class="str">'YYYY-MM-DD'</span>),<span class="num">30</span>);
+
+<span class="kw">INSERT INTO</span> <span class="fn">employees</span> (<span class="tp">emp_id</span>,<span class="tp">first_name</span>,<span class="tp">last_name</span>,<span class="tp">email</span>,<span class="tp">phone</span>,<span class="tp">job_title</span>,<span class="tp">salary</span>,<span class="tp">hire_date</span>,<span class="tp">dept_id</span>)
+<span class="kw">VALUES</span> (<span class="num">112</span>,<span class="str">'دينا'</span>,<span class="str">'وليد'</span>,<span class="str">'dina@nile.com'</span>,<span class="str">'01244444444'</span>,<span class="str">'محاسبة'</span>,<span class="num">9500</span>,<span class="fn">TO_DATE</span>(<span class="str">'2023-02-28'</span>,<span class="str">'YYYY-MM-DD'</span>),<span class="num">50</span>);
+
+<span class="kw">COMMIT</span>;
+
+<span class="cm">-- تأكد:</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="fn">employees</span>;</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======== EXERCISES 4-12 (Query exercises) ======== -->
+    <!-- I'll create them as a compact but detailed format -->
+
+    <div class="section" id="ex4">
+        <div class="exercise"><div class="exercise__header" onclick="toggleExercise(this)"><div class="exercise__header-right"><div class="exercise__num exercise__num--easy">4</div><div><div class="exercise__title">استعلامات بسيطة (SELECT)</div><span class="exercise__difficulty exercise__difficulty--easy">سهل</span></div></div><span class="exercise__toggle">▼</span></div>
+            <div class="exercise__body"><div class="exercise__content">
+                <div class="exercise__question">🎯 اكتب الاستعلامات التالية:<br><br>
+                    <strong>4A)</strong> اظهر كل بيانات الموظفين<br>
+                    <strong>4B)</strong> اظهر الاسم الأول والمسمى الوظيفي والمرتب فقط<br>
+                    <strong>4C)</strong> اظهر الاسم الكامل (الأول + الأخير) مع المرتب السنوي (×12)<br>
+                    <strong>4D)</strong> اظهر اسم كل موظف ومرتبه بعد زيادة 15%
+                </div>
+                <button class="exercise__solution-toggle" onclick="toggleSolution(this)">👁️ اظهر الحل</button>
+                <div class="exercise__solution"><div class="code-block"><div class="code-block__header"><span>SQL - الحل</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                    <div class="code-block__body"><span class="cm">-- 4A</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="fn">employees</span>;
+
+<span class="cm">-- 4B</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">job_title</span>, <span class="tp">salary</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>;
+
+<span class="cm">-- 4C</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span> || <span class="str">' '</span> || <span class="tp">last_name</span> <span class="kw">AS</span> <span class="str">"الاسم الكامل"</span>,
+       <span class="tp">salary</span> * <span class="num">12</span>                        <span class="kw">AS</span> <span class="str">"المرتب السنوي"</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>;
+
+<span class="cm">-- 4D</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>,
+       <span class="tp">salary</span>          <span class="kw">AS</span> <span class="str">"المرتب الحالي"</span>,
+       <span class="tp">salary</span> * <span class="num">1.15</span>   <span class="kw">AS</span> <span class="str">"بعد الزيادة"</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>;</div></div></div>
+            </div></div>
+        </div>
+    </div>
+
+    <div class="section" id="ex5">
+        <div class="exercise"><div class="exercise__header" onclick="toggleExercise(this)"><div class="exercise__header-right"><div class="exercise__num exercise__num--easy">5</div><div><div class="exercise__title">WHERE بشروط بسيطة</div><span class="exercise__difficulty exercise__difficulty--easy">سهل</span></div></div><span class="exercise__toggle">▼</span></div>
+            <div class="exercise__body"><div class="exercise__content">
+                <div class="exercise__question">🎯 اكتب:<br><br>
+                    <strong>5A)</strong> الموظفين في قسم التطوير (dept_id = 10)<br>
+                    <strong>5B)</strong> الموظفين اللي مرتبهم أكبر من 10000<br>
+                    <strong>5C)</strong> الموظفين اللي مرتبهم أقل من أو يساوي 8000<br>
+                    <strong>5D)</strong> الموظف اللي إيميله 'sara@nile.com'
+                </div>
+                <button class="exercise__solution-toggle" onclick="toggleSolution(this)">👁️ اظهر الحل</button>
+                <div class="exercise__solution"><div class="code-block"><div class="code-block__header"><span>SQL - الحل</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                    <div class="code-block__body"><span class="cm">-- 5A</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">job_title</span>, <span class="tp">salary</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">dept_id</span> = <span class="num">10</span>;
+
+<span class="cm">-- 5B</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">salary</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">salary</span> > <span class="num">10000</span>;
+
+<span class="cm">-- 5C</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">salary</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">salary</span> <= <span class="num">8000</span>;
+
+<span class="cm">-- 5D</span>
+<span class="kw">SELECT</span> *
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">email</span> = <span class="str">'sara@nile.com'</span>;</div></div></div>
+            </div></div>
+        </div>
+    </div>
+
+    <div class="section" id="ex6">
+        <div class="exercise"><div class="exercise__header" onclick="toggleExercise(this)"><div class="exercise__header-right"><div class="exercise__num exercise__num--medium">6</div><div><div class="exercise__title">AND و OR - شروط مركبة</div><span class="exercise__difficulty exercise__difficulty--medium">متوسط</span></div></div><span class="exercise__toggle">▼</span></div>
+            <div class="exercise__body"><div class="exercise__content">
+                <div class="exercise__question">🎯 اكتب:<br><br>
+                    <strong>6A)</strong> الموظفين في التطوير (10) ومرتبهم فوق 10000<br>
+                    <strong>6B)</strong> الموظفين في المبيعات (20) أو التسويق (30)<br>
+                    <strong>6C)</strong> الموظفين اللي مش في المحاسبة (50) ومرتبهم أكبر من 9000<br>
+                    <strong>6D)</strong> الموظفين في (التطوير أو التسويق) ومرتبهم بين 8000 و 15000
+                </div>
+                <button class="exercise__solution-toggle" onclick="toggleSolution(this)">👁️ اظهر الحل</button>
+                <div class="exercise__solution"><div class="code-block"><div class="code-block__header"><span>SQL - الحل</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                    <div class="code-block__body"><span class="cm">-- 6A</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">salary</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">dept_id</span> = <span class="num">10</span> <span class="kw">AND</span> <span class="tp">salary</span> > <span class="num">10000</span>;
+
+<span class="cm">-- 6B</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">dept_id</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">dept_id</span> = <span class="num">20</span> <span class="kw">OR</span> <span class="tp">dept_id</span> = <span class="num">30</span>;
+
+<span class="cm">-- 6C</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">salary</span>, <span class="tp">dept_id</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">dept_id</span> != <span class="num">50</span> <span class="kw">AND</span> <span class="tp">salary</span> > <span class="num">9000</span>;
+
+<span class="cm">-- 6D (لاحظ الأقواس!)</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">salary</span>, <span class="tp">dept_id</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  (<span class="tp">dept_id</span> = <span class="num">10</span> <span class="kw">OR</span> <span class="tp">dept_id</span> = <span class="num">30</span>)
+  <span class="kw">AND</span>  <span class="tp">salary</span> <span class="kw">BETWEEN</span> <span class="num">8000</span> <span class="kw">AND</span> <span class="num">15000</span>;</div></div></div>
+            </div></div>
+        </div>
+    </div>
+
+    <div class="section" id="ex7">
+        <div class="exercise"><div class="exercise__header" onclick="toggleExercise(this)"><div class="exercise__header-right"><div class="exercise__num exercise__num--medium">7</div><div><div class="exercise__title">BETWEEN و IN</div><span class="exercise__difficulty exercise__difficulty--medium">متوسط</span></div></div><span class="exercise__toggle">▼</span></div>
+            <div class="exercise__body"><div class="exercise__content">
+                <div class="exercise__question">🎯 اكتب:<br><br>
+                    <strong>7A)</strong> الموظفين بمرتب بين 8000 و 12000<br>
+                    <strong>7B)</strong> الموظفين اللي اتعينوا في سنة 2023<br>
+                    <strong>7C)</strong> الموظفين في أقسام 10 و 20 و 40 باستخدام IN<br>
+                    <strong>7D)</strong> الموظفين اللي مسماهم الوظيفي "مطور" أو "مطورة" أو "مطور أول"
+                </div>
+                <button class="exercise__solution-toggle" onclick="toggleSolution(this)">👁️ اظهر الحل</button>
+                <div class="exercise__solution"><div class="code-block"><div class="code-block__header"><span>SQL - الحل</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                    <div class="code-block__body"><span class="cm">-- 7A</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">salary</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">salary</span> <span class="kw">BETWEEN</span> <span class="num">8000</span> <span class="kw">AND</span> <span class="num">12000</span>;
+
+<span class="cm">-- 7B</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">hire_date</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">hire_date</span> <span class="kw">BETWEEN</span> <span class="fn">TO_DATE</span>(<span class="str">'2023-01-01'</span>,<span class="str">'YYYY-MM-DD'</span>)
+                    <span class="kw">AND</span>     <span class="fn">TO_DATE</span>(<span class="str">'2023-12-31'</span>,<span class="str">'YYYY-MM-DD'</span>);
+
+<span class="cm">-- 7C</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">dept_id</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">dept_id</span> <span class="kw">IN</span> (<span class="num">10</span>, <span class="num">20</span>, <span class="num">40</span>);
+
+<span class="cm">-- 7D</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">job_title</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">job_title</span> <span class="kw">IN</span> (<span class="str">'مطور'</span>, <span class="str">'مطورة'</span>, <span class="str">'مطور أول'</span>);</div></div></div>
+            </div></div>
+        </div>
+    </div>
+
+    <div class="section" id="ex8">
+        <div class="exercise"><div class="exercise__header" onclick="toggleExercise(this)"><div class="exercise__header-right"><div class="exercise__num exercise__num--medium">8</div><div><div class="exercise__title">LIKE و IS NULL</div><span class="exercise__difficulty exercise__difficulty--medium">متوسط</span></div></div><span class="exercise__toggle">▼</span></div>
+            <div class="exercise__body"><div class="exercise__content">
+                <div class="exercise__question">🎯 اكتب:<br><br>
+                    <strong>8A)</strong> الموظفين اللي اسمهم بيبدأ بحرف "م"<br>
+                    <strong>8B)</strong> الموظفين اللي وظيفتهم فيها كلمة "مدير"<br>
+                    <strong>8C)</strong> الموظفين اللي مالهمش رقم تليفون (NULL)<br>
+                    <strong>8D)</strong> الموظفين اللي إيميلهم بينتهي بـ '@nile.com' واسمهم أكتر من 3 حروف
+                </div>
+                <button class="exercise__solution-toggle" onclick="toggleSolution(this)">👁️ اظهر الحل</button>
+                <div class="exercise__solution"><div class="code-block"><div class="code-block__header"><span>SQL - الحل</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                    <div class="code-block__body"><span class="cm">-- 8A</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span> <span class="kw">FROM</span> <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">first_name</span> <span class="kw">LIKE</span> <span class="str">'م%'</span>;
+
+<span class="cm">-- 8B</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">job_title</span> <span class="kw">FROM</span> <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">job_title</span> <span class="kw">LIKE</span> <span class="str">'%مدير%'</span>;
+
+<span class="cm">-- 8C</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">phone</span> <span class="kw">FROM</span> <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">phone</span> <span class="kw">IS NULL</span>;
+
+<span class="cm">-- 8D</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">email</span> <span class="kw">FROM</span> <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">email</span> <span class="kw">LIKE</span> <span class="str">'%@nile.com'</span>
+  <span class="kw">AND</span>  <span class="tp">first_name</span> <span class="kw">LIKE</span> <span class="str">'___%'</span>; <span class="cm">-- 3 underscores + %</span></div></div></div>
+            </div></div>
+        </div>
+    </div>
+
+    <div class="section" id="ex9">
+        <div class="exercise"><div class="exercise__header" onclick="toggleExercise(this)"><div class="exercise__header-right"><div class="exercise__num exercise__num--medium">9</div><div><div class="exercise__title">ORDER BY - الترتيب</div><span class="exercise__difficulty exercise__difficulty--medium">متوسط</span></div></div><span class="exercise__toggle">▼</span></div>
+            <div class="exercise__body"><div class="exercise__content">
+                <div class="exercise__question">🎯 اكتب:<br><br>
+                    <strong>9A)</strong> كل الموظفين مرتبين بالمرتب من الأعلى للأقل<br>
+                    <strong>9B)</strong> كل الموظفين مرتبين بتاريخ التعيين (الأقدم الأول)<br>
+                    <strong>9C)</strong> موظفين المبيعات (20) مرتبين بالمرتب تنازلياً<br>
+                    <strong>9D)</strong> كل الموظفين مرتبين بالقسم ثم بالمرتب تنازلياً جوا كل قسم
+                </div>
+                <button class="exercise__solution-toggle" onclick="toggleSolution(this)">👁️ اظهر الحل</button>
+                <div class="exercise__solution"><div class="code-block"><div class="code-block__header"><span>SQL - الحل</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                    <div class="code-block__body"><span class="cm">-- 9A</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">salary</span> <span class="kw">FROM</span> <span class="fn">employees</span>
+<span class="kw">ORDER BY</span> <span class="tp">salary</span> <span class="kw">DESC</span>;
+
+<span class="cm">-- 9B</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">hire_date</span> <span class="kw">FROM</span> <span class="fn">employees</span>
+<span class="kw">ORDER BY</span> <span class="tp">hire_date</span> <span class="kw">ASC</span>;
+
+<span class="cm">-- 9C</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">salary</span> <span class="kw">FROM</span> <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">dept_id</span> = <span class="num">20</span>
+<span class="kw">ORDER BY</span> <span class="tp">salary</span> <span class="kw">DESC</span>;
+
+<span class="cm">-- 9D</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">dept_id</span>, <span class="tp">salary</span> <span class="kw">FROM</span> <span class="fn">employees</span>
+<span class="kw">ORDER BY</span> <span class="tp">dept_id</span> <span class="kw">ASC</span>, <span class="tp">salary</span> <span class="kw">DESC</span>;</div></div></div>
+            </div></div>
+        </div>
+    </div>
+
+    <div class="section" id="ex10">
+        <div class="exercise"><div class="exercise__header" onclick="toggleExercise(this)"><div class="exercise__header-right"><div class="exercise__num exercise__num--medium">10</div><div><div class="exercise__title">DISTINCT - القيم الفريدة</div><span class="exercise__difficulty exercise__difficulty--medium">متوسط</span></div></div><span class="exercise__toggle">▼</span></div>
+            <div class="exercise__body"><div class="exercise__content">
+                <div class="exercise__question">🎯 اكتب:<br><br>
+                    <strong>10A)</strong> كل المسميات الوظيفية الموجودة (بدون تكرار)<br>
+                    <strong>10B)</strong> كل أرقام الأقسام اللي فيها موظفين (بدون تكرار)<br>
+                    <strong>10C)</strong> كل التوليفات الفريدة من (القسم + المسمى الوظيفي)
+                </div>
+                <button class="exercise__solution-toggle" onclick="toggleSolution(this)">👁️ اظهر الحل</button>
+                <div class="exercise__solution"><div class="code-block"><div class="code-block__header"><span>SQL - الحل</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                    <div class="code-block__body"><span class="cm">-- 10A</span>
+<span class="kw">SELECT DISTINCT</span> <span class="tp">job_title</span> <span class="kw">FROM</span> <span class="fn">employees</span>
+<span class="kw">ORDER BY</span> <span class="tp">job_title</span>;
+
+<span class="cm">-- 10B</span>
+<span class="kw">SELECT DISTINCT</span> <span class="tp">dept_id</span> <span class="kw">FROM</span> <span class="fn">employees</span>
+<span class="kw">ORDER BY</span> <span class="tp">dept_id</span>;
+
+<span class="cm">-- 10C</span>
+<span class="kw">SELECT DISTINCT</span> <span class="tp">dept_id</span>, <span class="tp">job_title</span> <span class="kw">FROM</span> <span class="fn">employees</span>
+<span class="kw">ORDER BY</span> <span class="tp">dept_id</span>;</div></div></div>
+            </div></div>
+        </div>
+    </div>
+
+    <div class="section" id="ex11">
+        <div class="exercise"><div class="exercise__header" onclick="toggleExercise(this)"><div class="exercise__header-right"><div class="exercise__num exercise__num--hard">11</div><div><div class="exercise__title">حسابات وتجميعات متقدمة</div><span class="exercise__difficulty exercise__difficulty--hard">صعب</span></div></div><span class="exercise__toggle">▼</span></div>
+            <div class="exercise__body"><div class="exercise__content">
+                <div class="exercise__question">🎯 اكتب:<br><br>
+                    <strong>11A)</strong> الاسم الكامل + المرتب الشهري + المرتب السنوي + الضرائب (14%) لموظفين التطوير<br>
+                    <strong>11B)</strong> الموظفين اللي مرتبهم السنوي (×12) أكبر من 120000 مرتبين تنازلياً<br>
+                    <strong>11C)</strong> اظهر جملة لكل موظف بالشكل: "أحمد محمود يعمل كـ مطور أول بمرتب 15000"
+                </div>
+                <button class="exercise__solution-toggle" onclick="toggleSolution(this)">👁️ اظهر الحل</button>
+                <div class="exercise__solution"><div class="code-block"><div class="code-block__header"><span>SQL - الحل</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                    <div class="code-block__body"><span class="cm">-- 11A</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span> || <span class="str">' '</span> || <span class="tp">last_name</span> <span class="kw">AS</span> <span class="str">"الاسم"</span>,
+       <span class="tp">salary</span>                            <span class="kw">AS</span> <span class="str">"الشهري"</span>,
+       <span class="tp">salary</span> * <span class="num">12</span>                       <span class="kw">AS</span> <span class="str">"السنوي"</span>,
+       <span class="tp">salary</span> * <span class="num">0.14</span>                     <span class="kw">AS</span> <span class="str">"الضرائب"</span>,
+       <span class="tp">salary</span> - (<span class="tp">salary</span> * <span class="num">0.14</span>)           <span class="kw">AS</span> <span class="str">"الصافي"</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">dept_id</span> = <span class="num">10</span>;
+
+<span class="cm">-- 11B</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">salary</span>, <span class="tp">salary</span> * <span class="num">12</span> <span class="kw">AS</span> <span class="str">"السنوي"</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">salary</span> * <span class="num">12</span> > <span class="num">120000</span>
+<span class="kw">ORDER BY</span> <span class="tp">salary</span> <span class="kw">DESC</span>;
+
+<span class="cm">-- 11C</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span> || <span class="str">' '</span> || <span class="tp">last_name</span>
+    || <span class="str">' يعمل كـ '</span> || <span class="tp">job_title</span>
+    || <span class="str">' بمرتب '</span> || <span class="tp">salary</span> <span class="kw">AS</span> <span class="str">"معلومات الموظف"</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>;</div></div></div>
+            </div></div>
+        </div>
+    </div>
+
+    <div class="section" id="ex12">
+        <div class="exercise"><div class="exercise__header" onclick="toggleExercise(this)"><div class="exercise__header-right"><div class="exercise__num exercise__num--hard">12</div><div><div class="exercise__title">🔥 التحدي النهائي - تقرير شامل</div><span class="exercise__difficulty exercise__difficulty--hard">صعب</span></div></div><span class="exercise__toggle">▼</span></div>
+            <div class="exercise__body"><div class="exercise__content">
+                <div class="exercise__question">🎯 <strong>المدير طلب التقارير دي قبل نهاية اليوم:</strong><br><br>
+                    <strong>12A)</strong> أعلى 5 مرتبات في الشركة مع الاسم الكامل والقسم<br>
+                    <strong>12B)</strong> الموظفين اللي اتعينوا في 2023 في (المبيعات أو التسويق) ومرتبهم أقل من 10000<br>
+                    <strong>12C)</strong> كل الموظفين ماعدا المديرين (job_title مفيهاش "مدير")، مرتبين بالقسم ثم الاسم<br>
+                    <strong>12D)</strong> تقرير شامل فيه: الاسم الكامل، المسمى، المرتب الشهري والسنوي والصافي بعد الضرائب، مرتبين من أعلى صافي
+                </div>
+                <button class="exercise__solution-toggle" onclick="toggleSolution(this)">👁️ اظهر الحل</button>
+                <div class="exercise__solution"><div class="code-block"><div class="code-block__header"><span>SQL - الحل</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                    <div class="code-block__body"><span class="cm">-- 12A</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span> || <span class="str">' '</span> || <span class="tp">last_name</span> <span class="kw">AS</span> <span class="str">"الاسم"</span>,
+       <span class="tp">salary</span>, <span class="tp">dept_id</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">ORDER BY</span> <span class="tp">salary</span> <span class="kw">DESC</span>
+<span class="kw">FETCH FIRST</span> <span class="num">5</span> <span class="kw">ROWS ONLY</span>;
+
+<span class="cm">-- 12B</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">hire_date</span>, <span class="tp">dept_id</span>, <span class="tp">salary</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">hire_date</span> <span class="kw">BETWEEN</span> <span class="fn">TO_DATE</span>(<span class="str">'2023-01-01'</span>,<span class="str">'YYYY-MM-DD'</span>)
+                    <span class="kw">AND</span>     <span class="fn">TO_DATE</span>(<span class="str">'2023-12-31'</span>,<span class="str">'YYYY-MM-DD'</span>)
+  <span class="kw">AND</span>  <span class="tp">dept_id</span> <span class="kw">IN</span> (<span class="num">20</span>, <span class="num">30</span>)
+  <span class="kw">AND</span>  <span class="tp">salary</span> < <span class="num">10000</span>;
+
+<span class="cm">-- 12C</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">job_title</span>, <span class="tp">dept_id</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">job_title</span> <span class="kw">NOT LIKE</span> <span class="str">'%مدير%'</span>
+<span class="kw">ORDER BY</span> <span class="tp">dept_id</span>, <span class="tp">first_name</span>;
+
+<span class="cm">-- 12D - التقرير الشامل 🔥</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span> || <span class="str">' '</span> || <span class="tp">last_name</span>    <span class="kw">AS</span> <span class="str">"الاسم الكامل"</span>,
+       <span class="tp">job_title</span>                           <span class="kw">AS</span> <span class="str">"المسمى الوظيفي"</span>,
+       <span class="tp">salary</span>                              <span class="kw">AS</span> <span class="str">"الشهري"</span>,
+       <span class="tp">salary</span> * <span class="num">12</span>                         <span class="kw">AS</span> <span class="str">"السنوي"</span>,
+       <span class="tp">salary</span> * <span class="num">0.14</span>                       <span class="kw">AS</span> <span class="str">"الضرائب"</span>,
+       <span class="tp">salary</span> - (<span class="tp">salary</span> * <span class="num">0.14</span>)             <span class="kw">AS</span> <span class="str">"الصافي"</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">ORDER BY</span> (<span class="tp">salary</span> - (<span class="tp">salary</span> * <span class="num">0.14</span>)) <span class="kw">DESC</span>;</div></div>
+
+                    <div class="info-box info-box--success">
+                        <div class="info-box__icon">🎉</div>
+                        <div class="info-box__text"><strong>مبروك!</strong> لو حليت كل التمارين يبقى أنت فهمت اليوم الأول كويس جداً! جاهز لليوم التاني.</div>
+                    </div>
+                </div>
+            </div></div>
+        </div>
+    </div>
+
+    <!-- ======== CHEAT SHEET ======== -->
+    <div class="section" id="cheatsheet">
+        <div class="section__header">
+            <div class="section__icon section__icon--green">📝</div>
+            <h2 class="section__title">Cheat Sheet - ملخص سريع</h2>
+        </div>
+
+        <div class="info-box info-box--tip">
+            <div class="info-box__icon">💡</div>
+            <div class="info-box__text">احفظ الصفحة دي أو اعمل Screenshot - هتفيدك كمرجع سريع في الشغل!</div>
+        </div>
+
+        <div class="code-block"><div class="code-block__header"><span>SQL Cheat Sheet - اليوم الأول</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+            <div class="code-block__body"><span class="cm">-- ═══════════════════════════════════</span>
+<span class="cm">-- 📋 CREATE TABLE</span>
+<span class="cm">-- ═══════════════════════════════════</span>
+<span class="kw">CREATE TABLE</span> <span class="fn">name</span> (
+    <span class="tp">col1</span>  <span class="or">NUMBER</span>(<span class="num">6</span>)      <span class="kw">PRIMARY KEY</span>,
+    <span class="tp">col2</span>  <span class="or">VARCHAR2</span>(<span class="num">50</span>)  <span class="kw">NOT NULL</span>,
+    <span class="tp">col3</span>  <span class="or">VARCHAR2</span>(<span class="num">100</span>) <span class="kw">UNIQUE</span>,
+    <span class="tp">col4</span>  <span class="or">NUMBER</span>(<span class="num">8,2</span>)   <span class="kw">CHECK</span> (<span class="tp">col4</span> > <span class="num">0</span>),
+    <span class="tp">col5</span>  <span class="or">DATE</span>          <span class="kw">DEFAULT</span> <span class="fn">SYSDATE</span>,
+    <span class="tp">col6</span>  <span class="or">NUMBER</span>(<span class="num">4</span>)     <span class="kw">REFERENCES</span> <span class="fn">other_table</span>(<span class="tp">id</span>)
+);
+
+<span class="cm">-- ═══════════════════════════════════</span>
+<span class="cm">-- ➕ INSERT INTO</span>
+<span class="cm">-- ═══════════════════════════════════</span>
+<span class="kw">INSERT INTO</span> <span class="fn">table</span> (<span class="tp">col1</span>, <span class="tp">col2</span>) <span class="kw">VALUES</span> (<span class="num">1</span>, <span class="str">'text'</span>);
+<span class="kw">COMMIT</span>;
+
+<span class="cm">-- ═══════════════════════════════════</span>
+<span class="cm">-- 🔍 SELECT</span>
+<span class="cm">-- ═══════════════════════════════════</span>
+<span class="kw">SELECT</span> *                     <span class="cm">-- كل الأعمدة</span>
+<span class="kw">SELECT</span> <span class="tp">col1</span>, <span class="tp">col2</span>            <span class="cm">-- أعمدة محددة</span>
+<span class="kw">SELECT</span> <span class="tp">col</span> <span class="kw">AS</span> <span class="str">"اسم"</span>          <span class="cm">-- اسم مستعار</span>
+<span class="kw">SELECT</span> <span class="tp">col1</span> || <span class="str">' '</span> || <span class="tp">col2</span>   <span class="cm">-- دمج نصوص</span>
+<span class="kw">SELECT</span> <span class="tp">salary</span> * <span class="num">12</span>          <span class="cm">-- عمليات حسابية</span>
+
+<span class="cm">-- ═══════════════════════════════════</span>
+<span class="cm">-- 🎯 WHERE</span>
+<span class="cm">-- ═══════════════════════════════════</span>
+<span class="kw">WHERE</span> <span class="tp">col</span> = <span class="str">'value'</span>          <span class="cm">-- يساوي</span>
+<span class="kw">WHERE</span> <span class="tp">col</span> != <span class="str">'value'</span>         <span class="cm">-- لا يساوي</span>
+<span class="kw">WHERE</span> <span class="tp">col</span> > <span class="num">100</span>              <span class="cm">-- أكبر من</span>
+<span class="kw">WHERE</span> <span class="tp">x</span> <span class="kw">AND</span> <span class="tp">y</span>               <span class="cm">-- الشرطين</span>
+<span class="kw">WHERE</span> <span class="tp">x</span> <span class="kw">OR</span> <span class="tp">y</span>                <span class="cm">-- أي شرط</span>
+<span class="kw">WHERE</span> <span class="kw">NOT</span> <span class="tp">x</span>                <span class="cm">-- عكس</span>
+<span class="kw">WHERE</span> <span class="tp">col</span> <span class="kw">BETWEEN</span> <span class="num">1</span> <span class="kw">AND</span> <span class="num">10</span>  <span class="cm">-- بين</span>
+<span class="kw">WHERE</span> <span class="tp">col</span> <span class="kw">IN</span> (<span class="str">'a'</span>,<span class="str">'b'</span>,<span class="str">'c'</span>)  <span class="cm">-- ضمن قائمة</span>
+<span class="kw">WHERE</span> <span class="tp">col</span> <span class="kw">LIKE</span> <span class="str">'م%'</span>         <span class="cm">-- بيبدأ بـ</span>
+<span class="kw">WHERE</span> <span class="tp">col</span> <span class="kw">LIKE</span> <span class="str">'%ة'</span>         <span class="cm">-- بينتهي بـ</span>
+<span class="kw">WHERE</span> <span class="tp">col</span> <span class="kw">IS NULL</span>            <span class="cm">-- فاضي</span>
+<span class="kw">WHERE</span> <span class="tp">col</span> <span class="kw">IS NOT NULL</span>        <span class="cm">-- مش فاضي</span>
+
+<span class="cm">-- ═══════════════════════════════════</span>
+<span class="cm">-- 🔃 ORDER BY + DISTINCT</span>
+<span class="cm">-- ═══════════════════════════════════</span>
+<span class="kw">ORDER BY</span> <span class="tp">col</span> <span class="kw">ASC</span>            <span class="cm">-- تصاعدي (افتراضي)</span>
+<span class="kw">ORDER BY</span> <span class="tp">col</span> <span class="kw">DESC</span>           <span class="cm">-- تنازلي</span>
+<span class="kw">ORDER BY</span> <span class="tp">col1</span>, <span class="tp">col2</span> <span class="kw">DESC</span>   <span class="cm">-- أكتر من عمود</span>
+<span class="kw">SELECT DISTINCT</span> <span class="tp">col</span>         <span class="cm">-- بدون تكرار</span></div></div>
+
+        <div class="summary-box">
+            <div class="summary-box__title">🏆 أنت خلصت اليوم الأول!</div>
+            <p style="color:var(--text-sec);font-weight:600;font-size:.95rem;">النهاردة اتعلمت: إيه هي Oracle + أنواع البيانات + CREATE TABLE + INSERT INTO + SELECT + WHERE بكل أنواعها + ORDER BY + DISTINCT. بكرة هنكمّل UPDATE و DELETE و JOIN!</p>
+        </div>
+    </div>
+
+</div>
+
+<script>
+function toggleExercise(header) {
+    const body = header.nextElementSibling;
+    const toggle = header.querySelector('.exercise__toggle');
+    body.classList.toggle('exercise__body--open');
+    toggle.classList.toggle('exercise__toggle--open');
+}
+
+function toggleSolution(btn) {
+    const solution = btn.nextElementSibling;
+    solution.classList.toggle('exercise__solution--show');
+    btn.textContent = solution.classList.contains('exercise__solution--show') ? '🙈 اخفي الحل' : '👁️ اظهر الحل';
+}
+
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.sidebar__nav a');
+function updateActiveNav() {
+    let c = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 100) c = s.getAttribute('id'); });
+    navLinks.forEach(l => { l.classList.remove('active'); if (l.getAttribute('href') === '#' + c) l.classList.add('active'); });
+}
+window.addEventListener('scroll', updateActiveNav);
+updateActiveNav();
+navLinks.forEach(l => { l.addEventListener('click', () => { document.querySelector('.sidebar').classList.remove('sidebar--open'); }); });
+</script>
+
+</body>
+</html>

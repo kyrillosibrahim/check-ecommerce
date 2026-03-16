@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مقدمة PL/SQL - اليوم الثالث</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root{--bg:#06060f;--bg-card:#0d0d1f;--bg-code:#0a0a1a;--border:#1a1a3e;--text:#e2e2f0;--text-dim:#8888aa;--accent:#ff4d4d;--accent2:#ff8c00;--accent3:#00d47e;--accent4:#4d8cff;--accent5:#a855f7;--glow:0 0 30px rgba(77,140,255,0.15)}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);line-height:1.8;min-height:100vh}
+        .sidebar{position:fixed;top:0;right:0;width:300px;height:100vh;background:var(--bg-card);border-left:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:100;transition:transform .3s}
+        .sidebar-header{padding:0 24px 20px;border-bottom:1px solid var(--border);margin-bottom:16px}
+        .sidebar-header h3{font-size:1rem;color:var(--accent4);margin-bottom:4px}
+        .sidebar-header p{font-size:.8rem;color:var(--text-dim)}
+        .sidebar-nav a{display:flex;align-items:center;gap:10px;padding:10px 24px;color:var(--text-dim);text-decoration:none;font-size:.85rem;transition:all .2s;border-right:3px solid transparent}
+        .sidebar-nav a:hover,.sidebar-nav a.active{color:var(--text);background:rgba(77,140,255,.05);border-right-color:var(--accent4)}
+        .sidebar-nav .num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--border);font-size:.7rem;font-weight:700;color:var(--accent4);flex-shrink:0}
+        .sidebar-toggle{display:none;position:fixed;top:20px;right:20px;z-index:200;background:var(--accent4);border:none;color:#fff;width:44px;height:44px;border-radius:12px;font-size:1.3rem;cursor:pointer}
+        .main{margin-right:300px}
+        .hero{padding:80px 60px 60px;background:linear-gradient(135deg,rgba(168,85,247,.08),rgba(77,140,255,.06));border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+        .hero::before{content:'';position:absolute;top:-100px;left:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(168,85,247,.06),transparent 70%);pointer-events:none}
+        .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);padding:6px 16px;border-radius:100px;font-size:.85rem;color:var(--accent5);margin-bottom:20px}
+        .hero h1{font-size:2.5rem;font-weight:900;margin-bottom:16px;background:linear-gradient(135deg,var(--accent5),var(--accent4));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .hero p{font-size:1.1rem;color:var(--text-dim);max-width:600px}
+        .section{padding:60px;border-bottom:1px solid var(--border)}
+        .section-label{display:inline-flex;align-items:center;gap:8px;font-size:.8rem;color:var(--accent5);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;font-weight:700}
+        .section h2{font-size:1.8rem;font-weight:800;margin-bottom:24px}
+        .section h3{font-size:1.3rem;font-weight:700;margin:24px 0 16px;color:var(--accent4)}
+        .section p,.section li{font-size:1rem;color:var(--text-dim);margin-bottom:12px}
+        .section ul,.section ol{padding-right:24px;margin-bottom:16px}
+        .content-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;margin:20px 0;box-shadow:var(--glow)}
+        .content-card h4{font-size:1.1rem;color:var(--accent3);margin-bottom:16px}
+        .code-block{background:var(--bg-code);border:1px solid var(--border);border-radius:12px;margin:16px 0;overflow:hidden}
+        .code-header{display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--border)}
+        .code-header span{font-size:.8rem;color:var(--text-dim)}
+        .code-header .copy-btn{background:rgba(77,140,255,.1);border:1px solid rgba(77,140,255,.2);color:var(--accent4);padding:4px 12px;border-radius:6px;font-size:.75rem;cursor:pointer;font-family:'Cairo',sans-serif;transition:all .2s}
+        .code-header .copy-btn:hover{background:rgba(77,140,255,.2)}
+        .code-block pre{padding:20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.9rem;line-height:1.7;direction:ltr;text-align:left}
+        .kw{color:#ff7b72;font-weight:700}.str{color:#a5d6ff}.cm{color:#6a737d;font-style:italic}.num{color:#79c0ff}.fn{color:#d2a8ff}.tp{color:#ff8c00}.op{color:#ff4d4d}.tbl{color:#00d47e}
+        .info-box{background:rgba(77,140,255,.05);border:1px solid rgba(77,140,255,.15);border-radius:12px;padding:20px 24px;margin:16px 0}
+        .info-box.warning{background:rgba(255,140,0,.05);border-color:rgba(255,140,0,.15)}
+        .info-box.success{background:rgba(0,212,126,.05);border-color:rgba(0,212,126,.15)}
+        .info-box.danger{background:rgba(255,77,77,.05);border-color:rgba(255,77,77,.15)}
+        .info-box strong{color:var(--accent4)}
+        .info-box.warning strong{color:var(--accent2)}
+        .info-box.success strong{color:var(--accent3)}
+        .info-box.danger strong{color:var(--accent)}
+        .quote-box{border-right:4px solid var(--accent5);background:rgba(168,85,247,.05);padding:20px 24px;border-radius:0 12px 12px 0;margin:16px 0;font-style:italic}
+        .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin:20px 0}
+        .feature-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;text-align:center;transition:all .3s}
+        .feature-card:hover{border-color:var(--accent5);transform:translateY(-4px);box-shadow:0 8px 30px rgba(168,85,247,.1)}
+        .feature-card .icon{font-size:2.5rem;margin-bottom:16px}
+        .feature-card h4{color:var(--accent5);margin-bottom:8px;font-size:1.1rem}
+        .feature-card p{font-size:.85rem;color:var(--text-dim)}
+        .analogy-box{background:linear-gradient(135deg,rgba(168,85,247,.08),rgba(77,140,255,.08));border:1px solid rgba(168,85,247,.2);border-radius:16px;padding:28px;margin:24px 0}
+        .analogy-box h4{color:var(--accent5);font-size:1.1rem;margin-bottom:12px}
+        .analogy-box .emoji{font-size:2rem;margin-bottom:12px;display:block}
+        .vs-container{display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:center;margin:24px 0}
+        .vs-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px}
+        .vs-card h4{font-size:1.2rem;margin-bottom:16px}
+        .vs-card.left h4{color:var(--accent4)}.vs-card.right h4{color:var(--accent5)}
+        .vs-badge{background:var(--accent2);color:#fff;padding:10px 16px;border-radius:50%;font-weight:900;font-size:1.1rem}
+        .table-visual{width:100%;border-collapse:collapse;margin:16px 0;font-size:.9rem}
+        .table-visual th{background:rgba(77,140,255,.1);color:var(--accent4);padding:12px 16px;text-align:right;font-weight:700;border-bottom:2px solid var(--accent4)}
+        .table-visual td{padding:10px 16px;border-bottom:1px solid var(--border);color:var(--text-dim)}
+        .table-visual tr:hover td{background:rgba(77,140,255,.03)}
+        .flow-diagram{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;align-items:center;margin:24px 0;direction:ltr}
+        .flow-step{background:var(--bg-card);border:1px solid var(--border);padding:14px 20px;border-radius:12px;text-align:center;min-width:130px}
+        .flow-step .label{font-size:.75rem;color:var(--text-dim);display:block;margin-bottom:4px}
+        .flow-step .value{font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--accent5);font-weight:700}
+        .flow-arrow{color:var(--accent2);font-size:1.5rem}
+        .exercise-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;margin:20px 0;overflow:hidden}
+        .exercise-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;cursor:pointer;transition:background .2s}
+        .exercise-header:hover{background:rgba(77,140,255,.03)}
+        .exercise-header h4{color:var(--text);font-size:1rem}
+        .exercise-badge{padding:4px 12px;border-radius:100px;font-size:.75rem;font-weight:700}
+        .exercise-badge.easy{background:rgba(0,212,126,.1);color:var(--accent3)}
+        .exercise-badge.medium{background:rgba(255,140,0,.1);color:var(--accent2)}
+        .exercise-badge.hard{background:rgba(255,77,77,.1);color:var(--accent)}
+        .exercise-body{display:none;padding:0 24px 24px;border-top:1px solid var(--border)}
+        .exercise-body.show{display:block}
+        .exercise-body p{padding-top:16px}
+        .hint-btn,.solution-toggle{background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);color:var(--accent5);padding:8px 20px;border-radius:8px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.85rem;margin-top:12px;margin-left:8px;transition:all .2s}
+        .hint-btn:hover,.solution-toggle:hover{background:rgba(168,85,247,.2)}
+        .hint-content,.solution-content{display:none;margin-top:12px}
+        .hint-content.show,.solution-content.show{display:block}
+        .summary-box{background:linear-gradient(135deg,rgba(168,85,247,.06),rgba(0,212,126,.06));border:1px solid rgba(168,85,247,.15);border-radius:16px;padding:32px;margin:24px 0}
+        .summary-box h3{color:var(--accent5);margin-bottom:16px}
+        .summary-box ul{list-style:none;padding:0}
+        .summary-box li{padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);color:var(--text-dim)}
+        .summary-box li::before{content:'✅ '}
+        .back-btn{position:fixed;bottom:30px;left:30px;background:var(--accent5);color:#fff;border:none;width:50px;height:50px;border-radius:50%;font-size:1.3rem;cursor:pointer;z-index:200;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 4px 20px rgba(168,85,247,.3);transition:transform .2s}
+        .back-btn:hover{transform:scale(1.1)}
+        @media(max-width:900px){.sidebar{transform:translateX(100%)}.sidebar.open{transform:translateX(0)}.sidebar-toggle{display:flex;align-items:center;justify-content:center}.main{margin-right:0}.hero{padding:60px 24px 40px}.hero h1{font-size:1.8rem}.section{padding:40px 24px}.vs-container{grid-template-columns:1fr}.vs-badge{justify-self:center}}
+    </style>
+</head>
+<body>
+
+<button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <h3>مقدمة PL/SQL</h3>
+        <p>اليوم الثالث - الحصة الثالثة</p>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="#intro"><span class="num">1</span> إيه هو PL/SQL؟</a>
+        <a href="#sql-vs-plsql"><span class="num">2</span> SQL vs PL/SQL</a>
+        <a href="#block-structure"><span class="num">3</span> هيكل الـ Block</a>
+        <a href="#first-program"><span class="num">4</span> أول برنامج</a>
+        <a href="#variables"><span class="num">5</span> المتغيرات Variables</a>
+        <a href="#data-types"><span class="num">6</span> أنواع البيانات</a>
+        <a href="#type-anchor"><span class="num">7</span> %TYPE و %ROWTYPE</a>
+        <a href="#constants"><span class="num">8</span> الثوابت Constants</a>
+        <a href="#dbms-output"><span class="num">9</span> DBMS_OUTPUT بالتفصيل</a>
+        <a href="#input-variables"><span class="num">10</span> متغيرات الإدخال</a>
+        <a href="#select-into"><span class="num">11</span> SELECT INTO</a>
+        <a href="#expressions"><span class="num">12</span> التعبيرات والعمليات</a>
+        <a href="#null-handling"><span class="num">13</span> التعامل مع NULL</a>
+        <a href="#exercises"><span class="num">14</span> تمارين عملية</a>
+    </nav>
+</aside>
+
+<main class="main">
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-badge">⚡ اليوم الثالث - الحصة الثالثة</div>
+        <h1>مقدمة PL/SQL</h1>
+        <p>هتتعلم لغة البرمجة الخاصة بـ Oracle! من المتغيرات والـ BEGIN...END لحد ما تكتب أول برنامج بتاعك.</p>
+    </section>
+
+    <!-- 1: What is PL/SQL -->
+    <section class="section" id="intro">
+        <span class="section-label">المقدمة</span>
+        <h2>إيه هو PL/SQL؟</h2>
+
+        <div class="content-card">
+            <h4>PL/SQL = Procedural Language / SQL</h4>
+            <p>هي لغة برمجة خاصة بـ Oracle بتضيف قدرات البرمجة (زي المتغيرات والـ loops والـ conditions) على الـ SQL العادي. يعني بدل ما تكتب SQL statement واحد، تقدر تكتب <strong style="color:var(--accent5)">برنامج كامل</strong> يشتغل جوه الداتابيز!</p>
+        </div>
+
+        <div class="analogy-box">
+            <span class="emoji">🧠</span>
+            <h4>تشبيه: SQL = الأوامر، PL/SQL = البرنامج!</h4>
+            <p>SQL زي إنك بتدي أوامر فردية: "هات البيانات"، "حدّث المرتب". لكن PL/SQL زي إنك بتكتب سيناريو كامل: "لو المرتب أقل من 5000، زوّده 10%، ولو أكتر اطبع رسالة".</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="icon">🔄</span>
+                <h4>Variables</h4>
+                <p>تقدر تخزن بيانات في متغيرات وتستخدمها</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">🔀</span>
+                <h4>IF / ELSE</h4>
+                <p>تقدر تعمل شروط وقرارات</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">🔁</span>
+                <h4>Loops</h4>
+                <p>تقدر تكرر عمليات</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">⚠️</span>
+                <h4>Exception Handling</h4>
+                <p>تقدر تتعامل مع الأخطاء</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2: SQL vs PL/SQL -->
+    <section class="section" id="sql-vs-plsql">
+        <span class="section-label">مقارنة</span>
+        <h2>SQL vs PL/SQL</h2>
+
+        <div class="vs-container">
+            <div class="vs-card left">
+                <h4>📝 SQL</h4>
+                <ul>
+                    <li>لغة استعلام (Query Language)</li>
+                    <li>أمر واحد في كل مرة</li>
+                    <li>مفيهاش متغيرات</li>
+                    <li>مفيهاش شروط أو loops</li>
+                    <li>بتتنفذ statement بـ statement</li>
+                </ul>
+            </div>
+            <span class="vs-badge">VS</span>
+            <div class="vs-card right">
+                <h4>⚡ PL/SQL</h4>
+                <ul>
+                    <li>لغة برمجة كاملة</li>
+                    <li>بلوك كامل من الأوامر</li>
+                    <li>فيها متغيرات وثوابت</li>
+                    <li>فيها IF/ELSE و LOOP</li>
+                    <li>بتتنفذ كبلوك واحد على الـ server</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="info-box success">
+            <strong>✅ ميزة الأداء:</strong> PL/SQL بتبعت البلوك كله مرة واحدة للـ server بدل ما تبعت كل أمر لوحده. ده بيقلل الـ network traffic وبيحسن الأداء!
+        </div>
+    </section>
+
+    <!-- 3: Block Structure -->
+    <section class="section" id="block-structure">
+        <span class="section-label">الأساسيات</span>
+        <h2>هيكل الـ PL/SQL Block</h2>
+
+        <p>كل برنامج PL/SQL بيتكون من <strong style="color:var(--accent5)">Block</strong> ليه 3 أجزاء:</p>
+
+        <div class="flow-diagram">
+            <div class="flow-step" style="border-color:var(--accent4)">
+                <span class="label">اختياري</span>
+                <span class="value">DECLARE</span>
+            </div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step" style="border-color:var(--accent3)">
+                <span class="label">إجباري ✅</span>
+                <span class="value">BEGIN...END</span>
+            </div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step" style="border-color:var(--accent2)">
+                <span class="label">اختياري</span>
+                <span class="value">EXCEPTION</span>
+            </div>
+        </div>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - Block Structure</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">DECLARE</span>
+    <span class="cm">-- هنا بتعرّف المتغيرات (اختياري)</span>
+    variable_name  datatype;
+
+<span class="kw">BEGIN</span>
+    <span class="cm">-- هنا الكود الرئيسي (إجباري!)</span>
+    <span class="cm">-- SQL statements + PL/SQL logic</span>
+
+<span class="kw">EXCEPTION</span>
+    <span class="cm">-- هنا بتتعامل مع الأخطاء (اختياري)</span>
+    <span class="kw">WHEN</span> error_name <span class="kw">THEN</span>
+        <span class="cm">-- handle error</span>
+
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+
+        <div class="info-box warning">
+            <strong>⚠️ مهم جداً:</strong> لازم تحط <code style="color:var(--accent2)">;</code> بعد كل statement ولازم تحط <code style="color:var(--accent2)">/</code> في سطر لوحده بعد END; عشان SQL*Plus ينفذ البلوك!
+        </div>
+    </section>
+
+    <!-- 4: First Program -->
+    <section class="section" id="first-program">
+        <span class="section-label">أول برنامج</span>
+        <h2>!Hello World أول برنامج PL/SQL</h2>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - Hello World</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="cm">-- أول حاجة: فعّل الـ output</span>
+<span class="kw">SET SERVEROUTPUT ON</span>;
+
+<span class="cm">-- أول برنامج!</span>
+<span class="kw">BEGIN</span>
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'Hello World! 🎉'</span>);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'أنا كاتب أول برنامج PL/SQL!'</span>);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+
+        <div class="content-card">
+            <h4>النتيجة:</h4>
+            <div class="code-block">
+                <div class="code-header"><span>Output</span></div>
+                <pre>Hello World! 🎉
+أنا كاتب أول برنامج PL/SQL!
+
+PL/SQL procedure successfully completed.</pre>
+            </div>
+        </div>
+
+        <div class="info-box danger">
+            <strong>🚨 لو مشفتش Output:</strong> لازم تكون كاتب <code>SET SERVEROUTPUT ON</code> الأول! ده بيفعّل عرض الـ output في SQL*Plus أو SQL Developer. في Oracle Live SQL ده بيكون مفعّل تلقائي.
+        </div>
+    </section>
+
+    <!-- 5: Variables -->
+    <section class="section" id="variables">
+        <span class="section-label">المتغيرات</span>
+        <h2>المتغيرات Variables</h2>
+
+        <p>المتغير = صندوق بتخزن فيه قيمة وتستخدمها بعدين.</p>
+
+        <h3>طريقة التعريف</h3>
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - Variable Syntax</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="cm">-- الصيغة:</span>
+variable_name  <span class="tp">datatype</span>  [<span class="op">:=</span> initial_value];
+
+<span class="cm">-- أمثلة:</span>
+v_name     <span class="tp">VARCHAR2</span>(<span class="num">50</span>);             <span class="cm">-- نص بدون قيمة أولية</span>
+v_salary   <span class="tp">NUMBER</span>(<span class="num">10</span>,<span class="num">2</span>) <span class="op">:=</span> <span class="num">5000</span>;     <span class="cm">-- رقم بقيمة أولية</span>
+v_is_active <span class="tp">BOOLEAN</span> <span class="op">:=</span> <span class="kw">TRUE</span>;       <span class="cm">-- قيمة منطقية</span>
+v_hire_date <span class="tp">DATE</span> <span class="op">:=</span> <span class="fn">SYSDATE</span>;       <span class="cm">-- تاريخ اليوم</span></pre>
+        </div>
+
+        <div class="info-box">
+            <strong>💡 اسم المتغير:</strong> العادة إنك تبدأ بـ <code style="color:var(--accent4)">v_</code> عشان تفرّقه عن أسماء الأعمدة. مثلاً: <code>v_salary</code> بدل <code>salary</code>.
+        </div>
+
+        <h3>مثال عملي كامل</h3>
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - Variables Example</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">DECLARE</span>
+    v_name    <span class="tp">VARCHAR2</span>(<span class="num">50</span>) <span class="op">:=</span> <span class="str">'أحمد محمد'</span>;
+    v_salary  <span class="tp">NUMBER</span>(<span class="num">10</span>,<span class="num">2</span>) <span class="op">:=</span> <span class="num">7500.50</span>;
+    v_bonus   <span class="tp">NUMBER</span>(<span class="num">10</span>,<span class="num">2</span>);
+    v_total   <span class="tp">NUMBER</span>(<span class="num">10</span>,<span class="num">2</span>);
+<span class="kw">BEGIN</span>
+    <span class="cm">-- حساب البونص (10% من المرتب)</span>
+    v_bonus <span class="op">:=</span> v_salary <span class="op">*</span> <span class="num">0.10</span>;
+    v_total <span class="op">:=</span> v_salary <span class="op">+</span> v_bonus;
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'الموظف: '</span> <span class="op">||</span> v_name);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'المرتب: '</span> <span class="op">||</span> v_salary);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'البونص: '</span> <span class="op">||</span> v_bonus);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'الإجمالي: '</span> <span class="op">||</span> v_total);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+
+        <div class="content-card">
+            <h4>النتيجة:</h4>
+            <div class="code-block">
+                <div class="code-header"><span>Output</span></div>
+                <pre>الموظف: أحمد محمد
+المرتب: 7500.5
+البونص: 750.05
+الإجمالي: 8250.55</pre>
+            </div>
+        </div>
+
+        <div class="quote-box">
+            <strong>لاحظ:</strong> علامة <code style="color:var(--accent5)">:=</code> هي علامة التعيين (assignment) في PL/SQL. مش <code>=</code> زي Java أو Python!
+        </div>
+    </section>
+
+    <!-- 6: Data Types -->
+    <section class="section" id="data-types">
+        <span class="section-label">أنواع البيانات</span>
+        <h2>أنواع البيانات في PL/SQL</h2>
+
+        <div class="content-card">
+            <h4>أهم الأنواع اللي هتستخدمها:</h4>
+            <table class="table-visual">
+                <thead>
+                    <tr>
+                        <th>النوع</th>
+                        <th>الوصف</th>
+                        <th>مثال</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code style="color:var(--accent2)">VARCHAR2(n)</code></td>
+                        <td>نص متغير الطول (حتى n حرف)</td>
+                        <td><code>v_name VARCHAR2(100)</code></td>
+                    </tr>
+                    <tr>
+                        <td><code style="color:var(--accent2)">NUMBER(p,s)</code></td>
+                        <td>رقم (p أرقام، s بعد الفاصلة)</td>
+                        <td><code>v_salary NUMBER(10,2)</code></td>
+                    </tr>
+                    <tr>
+                        <td><code style="color:var(--accent2)">DATE</code></td>
+                        <td>تاريخ ووقت</td>
+                        <td><code>v_date DATE</code></td>
+                    </tr>
+                    <tr>
+                        <td><code style="color:var(--accent2)">BOOLEAN</code></td>
+                        <td>TRUE / FALSE / NULL</td>
+                        <td><code>v_found BOOLEAN</code></td>
+                    </tr>
+                    <tr>
+                        <td><code style="color:var(--accent2)">INTEGER</code></td>
+                        <td>عدد صحيح</td>
+                        <td><code>v_count INTEGER</code></td>
+                    </tr>
+                    <tr>
+                        <td><code style="color:var(--accent2)">CHAR(n)</code></td>
+                        <td>نص ثابت الطول</td>
+                        <td><code>v_gender CHAR(1)</code></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="info-box warning">
+            <strong>⚠️ BOOLEAN خاص بـ PL/SQL بس!</strong> مش تقدر تستخدم BOOLEAN في SQL statements أو في جداول. هو موجود بس جوه PL/SQL blocks.
+        </div>
+    </section>
+
+    <!-- 7: %TYPE and %ROWTYPE -->
+    <section class="section" id="type-anchor">
+        <span class="section-label">ذكي</span>
+        <h2>%TYPE و %ROWTYPE</h2>
+
+        <p>بدل ما تحفظ نوع كل عمود، خلي PL/SQL يحدده تلقائي!</p>
+
+        <h3>%TYPE - نفس نوع عمود معين</h3>
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - %TYPE</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">DECLARE</span>
+    <span class="cm">-- المتغير هياخد نفس نوع عمود salary في جدول employees</span>
+    v_salary  employees.salary<span class="tp">%TYPE</span>;
+    v_name    employees.first_name<span class="tp">%TYPE</span>;
+    v_dept_id employees.department_id<span class="tp">%TYPE</span>;
+<span class="kw">BEGIN</span>
+    <span class="kw">SELECT</span> first_name, salary, department_id
+    <span class="kw">INTO</span> v_name, v_salary, v_dept_id
+    <span class="kw">FROM</span> employees
+    <span class="kw">WHERE</span> employee_id = <span class="num">100</span>;
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(v_name <span class="op">||</span> <span class="str">' - '</span> <span class="op">||</span> v_salary);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+
+        <h3>%ROWTYPE - صف كامل من الجدول</h3>
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - %ROWTYPE</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">DECLARE</span>
+    <span class="cm">-- متغير واحد فيه كل أعمدة الجدول!</span>
+    v_emp  employees<span class="tp">%ROWTYPE</span>;
+<span class="kw">BEGIN</span>
+    <span class="kw">SELECT</span> <span class="op">*</span>
+    <span class="kw">INTO</span> v_emp
+    <span class="kw">FROM</span> employees
+    <span class="kw">WHERE</span> employee_id = <span class="num">100</span>;
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'الاسم: '</span> <span class="op">||</span> v_emp.first_name);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'المرتب: '</span> <span class="op">||</span> v_emp.salary);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'القسم: '</span> <span class="op">||</span> v_emp.department_id);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+
+        <div class="info-box success">
+            <strong>✅ ليه %TYPE و %ROWTYPE أفضل؟</strong>
+            <ul style="margin-top:8px;">
+                <li>لو نوع العمود اتغير في الجدول، الكود بتاعك مش هيحتاج تعديل!</li>
+                <li>مش محتاج تحفظ إن salary هو NUMBER(10,2) - Oracle بيحدده لوحده</li>
+                <li>%ROWTYPE بتوفر عليك تعريف 10 متغيرات لـ 10 أعمدة</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 8: Constants -->
+    <section class="section" id="constants">
+        <span class="section-label">ثوابت</span>
+        <h2>الثوابت Constants</h2>
+
+        <p>الثابت زي المتغير بس قيمته مش بتتغير بعد التعريف:</p>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - Constants</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">DECLARE</span>
+    <span class="cm">-- ثوابت</span>
+    c_tax_rate    <span class="kw">CONSTANT</span> <span class="tp">NUMBER</span>(<span class="num">4</span>,<span class="num">2</span>) <span class="op">:=</span> <span class="num">0.14</span>;  <span class="cm">-- ضريبة 14%</span>
+    c_bonus_rate  <span class="kw">CONSTANT</span> <span class="tp">NUMBER</span>(<span class="num">4</span>,<span class="num">2</span>) <span class="op">:=</span> <span class="num">0.10</span>;  <span class="cm">-- بونص 10%</span>
+    c_company     <span class="kw">CONSTANT</span> <span class="tp">VARCHAR2</span>(<span class="num">50</span>) <span class="op">:=</span> <span class="str">'شركة النجمة'</span>;
+
+    v_salary  <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">8000</span>;
+    v_net     <span class="tp">NUMBER</span>;
+<span class="kw">BEGIN</span>
+    v_net <span class="op">:=</span> v_salary <span class="op">-</span> (v_salary <span class="op">*</span> c_tax_rate) <span class="op">+</span> (v_salary <span class="op">*</span> c_bonus_rate);
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(c_company);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'المرتب: '</span> <span class="op">||</span> v_salary);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'الصافي: '</span> <span class="op">||</span> v_net);
+
+    <span class="cm">-- ده هيفشل ❌</span>
+    <span class="cm">-- c_tax_rate := 0.20;  -- ORA-06550: cannot assign to a CONSTANT</span>
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+
+        <div class="quote-box">
+            <strong>نصيحة:</strong> استخدم <code style="color:var(--accent5)">c_</code> كبداية لأسماء الثوابت عشان تفرّقها عن المتغيرات. <code>c_tax_rate</code> = ثابت، <code>v_salary</code> = متغير.
+        </div>
+    </section>
+
+    <!-- 9: DBMS_OUTPUT -->
+    <section class="section" id="dbms-output">
+        <span class="section-label">الطباعة</span>
+        <h2>DBMS_OUTPUT بالتفصيل</h2>
+
+        <p>دي الطريقة الأساسية عشان تطبع output في PL/SQL:</p>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - DBMS_OUTPUT Methods</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">BEGIN</span>
+    <span class="cm">-- PUT_LINE: يطبع سطر كامل (مع سطر جديد في الآخر)</span>
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'سطر أول'</span>);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'سطر تاني'</span>);
+
+    <span class="cm">-- PUT: يطبع من غير سطر جديد</span>
+    <span class="fn">DBMS_OUTPUT.PUT</span>(<span class="str">'أحمد '</span>);
+    <span class="fn">DBMS_OUTPUT.PUT</span>(<span class="str">'محمد '</span>);
+    <span class="fn">DBMS_OUTPUT.NEW_LINE</span>;  <span class="cm">-- سطر جديد</span>
+
+    <span class="cm">-- دمج نصوص وأرقام بـ ||</span>
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'النتيجة = '</span> <span class="op">||</span> (<span class="num">100</span> <span class="op">+</span> <span class="num">200</span>));
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'التاريخ: '</span> <span class="op">||</span> <span class="fn">TO_CHAR</span>(<span class="fn">SYSDATE</span>, <span class="str">'YYYY-MM-DD'</span>));
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+
+        <div class="content-card">
+            <h4>النتيجة:</h4>
+            <div class="code-block">
+                <div class="code-header"><span>Output</span></div>
+                <pre>سطر أول
+سطر تاني
+أحمد محمد
+النتيجة = 300
+التاريخ: 2026-02-27</pre>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <strong>💡 الـ || (Concatenation):</strong> ده بيوصل نصوص مع بعض. تقدر توصل أي حاجة: نص + نص، نص + رقم، نص + تاريخ. Oracle بيحوّل تلقائي.
+        </div>
+    </section>
+
+    <!-- 10: Input Variables -->
+    <section class="section" id="input-variables">
+        <span class="section-label">إدخال</span>
+        <h2>متغيرات الإدخال (Substitution Variables)</h2>
+
+        <p>في SQL*Plus تقدر تاخد input من المستخدم بعلامة <code style="color:var(--accent2)">&</code>:</p>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - Substitution Variable</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="cm">-- هيسألك تدخل الـ employee_id</span>
+<span class="kw">DECLARE</span>
+    v_id     <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="op">&</span>enter_employee_id;
+    v_name   employees.first_name<span class="tp">%TYPE</span>;
+    v_salary employees.salary<span class="tp">%TYPE</span>;
+<span class="kw">BEGIN</span>
+    <span class="kw">SELECT</span> first_name, salary
+    <span class="kw">INTO</span> v_name, v_salary
+    <span class="kw">FROM</span> employees
+    <span class="kw">WHERE</span> employee_id = v_id;
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'الموظف: '</span> <span class="op">||</span> v_name);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'المرتب: '</span> <span class="op">||</span> v_salary);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+
+        <div class="info-box warning">
+            <strong>⚠️ ملاحظة:</strong> الـ &variable بتشتغل في SQL*Plus و SQL Developer. في Oracle Live SQL ممكن تكون مش متاحة، فاستخدم قيمة ثابتة بدلها.
+        </div>
+    </section>
+
+    <!-- 11: SELECT INTO -->
+    <section class="section" id="select-into">
+        <span class="section-label">مهم جداً</span>
+        <h2>SELECT INTO - جلب بيانات من الجدول</h2>
+
+        <p>عشان تجيب بيانات من جدول وتحطها في متغيرات، استخدم <code style="color:var(--accent5)">SELECT ... INTO</code>:</p>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - SELECT INTO</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">DECLARE</span>
+    v_name    employees.first_name<span class="tp">%TYPE</span>;
+    v_salary  employees.salary<span class="tp">%TYPE</span>;
+    v_dept    departments.department_name<span class="tp">%TYPE</span>;
+<span class="kw">BEGIN</span>
+    <span class="cm">-- جلب بيانات صف واحد</span>
+    <span class="kw">SELECT</span> e.first_name, e.salary, d.department_name
+    <span class="kw">INTO</span> v_name, v_salary, v_dept
+    <span class="kw">FROM</span> employees e
+    <span class="kw">JOIN</span> departments d <span class="kw">ON</span> e.department_id = d.department_id
+    <span class="kw">WHERE</span> e.employee_id = <span class="num">100</span>;
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'الاسم: '</span> <span class="op">||</span> v_name);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'المرتب: '</span> <span class="op">||</span> v_salary);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'القسم: '</span> <span class="op">||</span> v_dept);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+
+        <div class="info-box danger">
+            <strong>🚨 أخطاء شائعة مع SELECT INTO:</strong>
+            <table class="table-visual" style="margin-top:12px;">
+                <thead>
+                    <tr><th>الخطأ</th><th>السبب</th><th>الحل</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code style="color:var(--accent)">NO_DATA_FOUND</code></td>
+                        <td>الـ WHERE مرجعش أي صف</td>
+                        <td>تأكد إن البيانات موجودة</td>
+                    </tr>
+                    <tr>
+                        <td><code style="color:var(--accent)">TOO_MANY_ROWS</code></td>
+                        <td>الـ Query رجّعت أكتر من صف</td>
+                        <td>استخدم WHERE أدق أو Cursor</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>SELECT INTO مع Functions</h3>
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - SELECT INTO مع Aggregate</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">DECLARE</span>
+    v_count    <span class="tp">NUMBER</span>;
+    v_avg_sal  <span class="tp">NUMBER</span>(<span class="num">10</span>,<span class="num">2</span>);
+    v_max_sal  <span class="tp">NUMBER</span>(<span class="num">10</span>,<span class="num">2</span>);
+<span class="kw">BEGIN</span>
+    <span class="kw">SELECT</span> <span class="fn">COUNT</span>(<span class="op">*</span>), <span class="fn">ROUND</span>(<span class="fn">AVG</span>(salary),<span class="num">2</span>), <span class="fn">MAX</span>(salary)
+    <span class="kw">INTO</span> v_count, v_avg_sal, v_max_sal
+    <span class="kw">FROM</span> employees;
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'عدد الموظفين: '</span> <span class="op">||</span> v_count);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'متوسط المرتب: '</span> <span class="op">||</span> v_avg_sal);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'أعلى مرتب: '</span> <span class="op">||</span> v_max_sal);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+    </section>
+
+    <!-- 12: Expressions -->
+    <section class="section" id="expressions">
+        <span class="section-label">عمليات</span>
+        <h2>التعبيرات والعمليات</h2>
+
+        <div class="content-card">
+            <h4>العمليات الحسابية والمنطقية:</h4>
+            <table class="table-visual">
+                <thead>
+                    <tr><th>العملية</th><th>الرمز</th><th>مثال</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>جمع</td><td><code>+</code></td><td><code>v_total := v_a + v_b</code></td></tr>
+                    <tr><td>طرح</td><td><code>-</code></td><td><code>v_net := v_salary - v_tax</code></td></tr>
+                    <tr><td>ضرب</td><td><code>*</code></td><td><code>v_annual := v_salary * 12</code></td></tr>
+                    <tr><td>قسمة</td><td><code>/</code></td><td><code>v_daily := v_salary / 30</code></td></tr>
+                    <tr><td>باقي القسمة</td><td><code>MOD()</code></td><td><code>v_rem := MOD(v_num, 2)</code></td></tr>
+                    <tr><td>أس (Power)</td><td><code>**</code></td><td><code>v_sq := v_num ** 2</code></td></tr>
+                    <tr><td>تعيين</td><td><code>:=</code></td><td><code>v_x := 10</code></td></tr>
+                    <tr><td>دمج نصوص</td><td><code>||</code></td><td><code>v_full := v_first || ' ' || v_last</code></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - Expressions</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">DECLARE</span>
+    v_salary   <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">8000</span>;
+    v_tax_rate <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">0.14</span>;
+    v_tax      <span class="tp">NUMBER</span>;
+    v_net      <span class="tp">NUMBER</span>;
+    v_daily    <span class="tp">NUMBER</span>;
+<span class="kw">BEGIN</span>
+    v_tax   <span class="op">:=</span> v_salary <span class="op">*</span> v_tax_rate;
+    v_net   <span class="op">:=</span> v_salary <span class="op">-</span> v_tax;
+    v_daily <span class="op">:=</span> <span class="fn">ROUND</span>(v_net <span class="op">/</span> <span class="num">30</span>, <span class="num">2</span>);
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'المرتب: '</span> <span class="op">||</span> v_salary);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'الضريبة: '</span> <span class="op">||</span> v_tax);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'الصافي الشهري: '</span> <span class="op">||</span> v_net);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'الصافي اليومي: '</span> <span class="op">||</span> v_daily);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+    </section>
+
+    <!-- 13: NULL Handling -->
+    <section class="section" id="null-handling">
+        <span class="section-label">حالات خاصة</span>
+        <h2>التعامل مع NULL</h2>
+
+        <p>في PL/SQL أي متغير مش اتحدد له قيمة بيكون <code style="color:var(--accent)">NULL</code>. وأي عملية مع NULL نتيجتها NULL!</p>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span>PL/SQL - NULL Trap</span>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            </div>
+            <pre><span class="kw">DECLARE</span>
+    v_bonus  <span class="tp">NUMBER</span>;  <span class="cm">-- ده NULL! مفيش قيمة أولية</span>
+    v_salary <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">5000</span>;
+    v_total  <span class="tp">NUMBER</span>;
+<span class="kw">BEGIN</span>
+    v_total <span class="op">:=</span> v_salary <span class="op">+</span> v_bonus;
+    <span class="cm">-- v_total = NULL! 😱 (5000 + NULL = NULL)</span>
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'الإجمالي: '</span> <span class="op">||</span> v_total);
+    <span class="cm">-- Output: الإجمالي:    (فاضي!)</span>
+
+    <span class="cm">-- الحل: استخدم NVL</span>
+    v_total <span class="op">:=</span> v_salary <span class="op">+</span> <span class="fn">NVL</span>(v_bonus, <span class="num">0</span>);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'الإجمالي الصح: '</span> <span class="op">||</span> v_total);
+    <span class="cm">-- Output: الإجمالي الصح: 5000 ✅</span>
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+        </div>
+
+        <div class="info-box danger">
+            <strong>🚨 قاعدة: أي عملية مع NULL = NULL!</strong>
+            <ul style="margin-top:8px;">
+                <li><code>NULL + 5000 = NULL</code></li>
+                <li><code>NULL || 'text' = 'text'</code> (الاستثناء الوحيد: الدمج بـ ||)</li>
+                <li><code>NULL = NULL</code> → ليست TRUE! (استخدم IS NULL)</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 14: Exercises -->
+    <section class="section" id="exercises">
+        <span class="section-label">تمارين</span>
+        <h2>تمارين عملية</h2>
+
+        <!-- Exercise 1 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 1: Hello World</h4>
+                <span class="exercise-badge easy">سهل</span>
+            </div>
+            <div class="exercise-body">
+                <p>اكتب PL/SQL block يطبع اسمك وعمرك ووظيفتك في 3 أسطر منفصلة.</p>
+                <button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>PL/SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">BEGIN</span>
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'الاسم: أحمد محمد'</span>);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'العمر: 25'</span>);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'الوظيفة: مطور برمجيات'</span>);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 2 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 2: حاسبة المرتب</h4>
+                <span class="exercise-badge easy">سهل</span>
+            </div>
+            <div class="exercise-body">
+                <p>اكتب برنامج يحسب صافي المرتب. المرتب الأساسي 6000، البونص 15%، الضريبة 14%. اطبع المرتب الأساسي والبونص والضريبة والصافي.</p>
+                <button class="hint-btn" onclick="toggleHint(this)">💡 تلميح</button>
+                <div class="hint-content">
+                    <p>الصافي = المرتب + البونص - الضريبة. البونص = مرتب × 0.15، الضريبة = مرتب × 0.14</p>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>PL/SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">DECLARE</span>
+    v_salary <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">6000</span>;
+    v_bonus  <span class="tp">NUMBER</span>;
+    v_tax    <span class="tp">NUMBER</span>;
+    v_net    <span class="tp">NUMBER</span>;
+<span class="kw">BEGIN</span>
+    v_bonus <span class="op">:=</span> v_salary <span class="op">*</span> <span class="num">0.15</span>;
+    v_tax   <span class="op">:=</span> v_salary <span class="op">*</span> <span class="num">0.14</span>;
+    v_net   <span class="op">:=</span> v_salary <span class="op">+</span> v_bonus <span class="op">-</span> v_tax;
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'المرتب: '</span> <span class="op">||</span> v_salary);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'البونص: '</span> <span class="op">||</span> v_bonus);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'الضريبة: '</span> <span class="op">||</span> v_tax);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'الصافي: '</span> <span class="op">||</span> v_net);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 3 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 3: %TYPE</h4>
+                <span class="exercise-badge medium">متوسط</span>
+            </div>
+            <div class="exercise-body">
+                <p>اكتب برنامج يجيب first_name و salary للموظف رقم 101 باستخدام %TYPE و SELECT INTO واطبعهم.</p>
+                <button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>PL/SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">DECLARE</span>
+    v_name   employees.first_name<span class="tp">%TYPE</span>;
+    v_salary employees.salary<span class="tp">%TYPE</span>;
+<span class="kw">BEGIN</span>
+    <span class="kw">SELECT</span> first_name, salary
+    <span class="kw">INTO</span> v_name, v_salary
+    <span class="kw">FROM</span> employees
+    <span class="kw">WHERE</span> employee_id = <span class="num">101</span>;
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'الاسم: '</span> <span class="op">||</span> v_name);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'المرتب: '</span> <span class="op">||</span> v_salary);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 4 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 4: %ROWTYPE</h4>
+                <span class="exercise-badge medium">متوسط</span>
+            </div>
+            <div class="exercise-body">
+                <p>اكتب برنامج يجيب كل بيانات الموظف رقم 100 باستخدام %ROWTYPE واطبع الاسم والمرتب والقسم.</p>
+                <button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>PL/SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">DECLARE</span>
+    v_emp employees<span class="tp">%ROWTYPE</span>;
+<span class="kw">BEGIN</span>
+    <span class="kw">SELECT</span> <span class="op">*</span>
+    <span class="kw">INTO</span> v_emp
+    <span class="kw">FROM</span> employees
+    <span class="kw">WHERE</span> employee_id = <span class="num">100</span>;
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'الاسم: '</span> <span class="op">||</span> v_emp.first_name <span class="op">||</span> <span class="str">' '</span> <span class="op">||</span> v_emp.last_name);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'المرتب: '</span> <span class="op">||</span> v_emp.salary);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'القسم: '</span> <span class="op">||</span> v_emp.department_id);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 5 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 5: إحصائيات قسم</h4>
+                <span class="exercise-badge medium">متوسط</span>
+            </div>
+            <div class="exercise-body">
+                <p>اكتب برنامج يجيب عدد الموظفين ومتوسط المرتب وأعلى مرتب في قسم 10 واطبعهم.</p>
+                <button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>PL/SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">DECLARE</span>
+    v_count   <span class="tp">NUMBER</span>;
+    v_avg_sal <span class="tp">NUMBER</span>(<span class="num">10</span>,<span class="num">2</span>);
+    v_max_sal <span class="tp">NUMBER</span>(<span class="num">10</span>,<span class="num">2</span>);
+<span class="kw">BEGIN</span>
+    <span class="kw">SELECT</span> <span class="fn">COUNT</span>(<span class="op">*</span>), <span class="fn">ROUND</span>(<span class="fn">AVG</span>(salary),<span class="num">2</span>), <span class="fn">MAX</span>(salary)
+    <span class="kw">INTO</span> v_count, v_avg_sal, v_max_sal
+    <span class="kw">FROM</span> employees
+    <span class="kw">WHERE</span> department_id = <span class="num">10</span>;
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'عدد الموظفين: '</span> <span class="op">||</span> v_count);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'متوسط المرتب: '</span> <span class="op">||</span> v_avg_sal);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'أعلى مرتب: '</span> <span class="op">||</span> v_max_sal);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 6 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 6: حاسبة الضرائب المتقدمة</h4>
+                <span class="exercise-badge hard">صعب</span>
+            </div>
+            <div class="exercise-body">
+                <p>اكتب برنامج يحسب ضريبة الدخل. عرّف ثوابت للشرائح الضريبية:
+                <br>- أول 5000 معفية (0%)
+                <br>- من 5001 لـ 10000 ضريبة 10%
+                <br>- أكتر من 10000 ضريبة 15%
+                <br>المرتب = 12000. احسب الضريبة الإجمالية والصافي.</p>
+                <button class="hint-btn" onclick="toggleHint(this)">💡 تلميح</button>
+                <div class="hint-content">
+                    <p>الضريبة = 0 (أول 5000) + 5000 × 10% (الشريحة التانية) + 2000 × 15% (الباقي)</p>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>PL/SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">DECLARE</span>
+    c_bracket1 <span class="kw">CONSTANT</span> <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">5000</span>;
+    c_bracket2 <span class="kw">CONSTANT</span> <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">10000</span>;
+    c_rate1    <span class="kw">CONSTANT</span> <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">0.10</span>;
+    c_rate2    <span class="kw">CONSTANT</span> <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">0.15</span>;
+
+    v_salary <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">12000</span>;
+    v_tax    <span class="tp">NUMBER</span> <span class="op">:=</span> <span class="num">0</span>;
+    v_net    <span class="tp">NUMBER</span>;
+<span class="kw">BEGIN</span>
+    <span class="cm">-- أول 5000 معفية</span>
+    <span class="cm">-- من 5001 لـ 10000 = 5000 × 10%</span>
+    v_tax <span class="op">:=</span> v_tax <span class="op">+</span> (c_bracket2 <span class="op">-</span> c_bracket1) <span class="op">*</span> c_rate1;
+    <span class="cm">-- الباقي (12000 - 10000 = 2000) × 15%</span>
+    v_tax <span class="op">:=</span> v_tax <span class="op">+</span> (v_salary <span class="op">-</span> c_bracket2) <span class="op">*</span> c_rate2;
+
+    v_net <span class="op">:=</span> v_salary <span class="op">-</span> v_tax;
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'المرتب: '</span> <span class="op">||</span> v_salary);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'الضريبة: '</span> <span class="op">||</span> v_tax);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'الصافي: '</span> <span class="op">||</span> v_net);
+<span class="kw">END</span>;
+<span class="op">/</span>
+<span class="cm">-- المرتب: 12000</span>
+<span class="cm">-- الضريبة: 800  (500 + 300)</span>
+<span class="cm">-- الصافي: 11200</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 7 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 7: NVL مع SELECT INTO</h4>
+                <span class="exercise-badge hard">صعب</span>
+            </div>
+            <div class="exercise-body">
+                <p>اكتب برنامج يجيب اسم الموظف ومرتبه وعمولته (commission_pct) للموظف رقم 100. لو العمولة NULL اطبع "بدون عمولة" ولو فيها قيمة اطبع المبلغ (salary × commission_pct).</p>
+                <button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>PL/SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">DECLARE</span>
+    v_name employees.first_name<span class="tp">%TYPE</span>;
+    v_salary employees.salary<span class="tp">%TYPE</span>;
+    v_comm employees.commission_pct<span class="tp">%TYPE</span>;
+<span class="kw">BEGIN</span>
+    <span class="kw">SELECT</span> first_name, salary, commission_pct
+    <span class="kw">INTO</span> v_name, v_salary, v_comm
+    <span class="kw">FROM</span> employees
+    <span class="kw">WHERE</span> employee_id = <span class="num">100</span>;
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'الاسم: '</span> <span class="op">||</span> v_name);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'المرتب: '</span> <span class="op">||</span> v_salary);
+
+    <span class="kw">IF</span> v_comm <span class="kw">IS NULL THEN</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'العمولة: بدون عمولة'</span>);
+    <span class="kw">ELSE</span>
+        <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'العمولة: '</span> <span class="op">||</span> (v_salary <span class="op">*</span> v_comm));
+    <span class="kw">END IF</span>;
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 8 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 8: تقرير موظف كامل</h4>
+                <span class="exercise-badge hard">صعب</span>
+            </div>
+            <div class="exercise-body">
+                <p>اكتب برنامج يطبع تقرير كامل عن موظف (رقم 100): الاسم الكامل، القسم، المرتب الشهري والسنوي، وعدد سنين الخبرة (من hire_date لحد النهاردة).</p>
+                <button class="solution-toggle" onclick="toggleSolution(this)">🔓 الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>PL/SQL</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="kw">DECLARE</span>
+    v_emp     employees<span class="tp">%ROWTYPE</span>;
+    v_dept    departments.department_name<span class="tp">%TYPE</span>;
+    v_years   <span class="tp">NUMBER</span>;
+<span class="kw">BEGIN</span>
+    <span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">INTO</span> v_emp
+    <span class="kw">FROM</span> employees <span class="kw">WHERE</span> employee_id = <span class="num">100</span>;
+
+    <span class="kw">SELECT</span> department_name <span class="kw">INTO</span> v_dept
+    <span class="kw">FROM</span> departments <span class="kw">WHERE</span> department_id = v_emp.department_id;
+
+    v_years <span class="op">:=</span> <span class="fn">ROUND</span>(<span class="fn">MONTHS_BETWEEN</span>(<span class="fn">SYSDATE</span>, v_emp.hire_date) <span class="op">/</span> <span class="num">12</span>);
+
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'========= تقرير موظف ========='</span>);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'الاسم: '</span> <span class="op">||</span> v_emp.first_name <span class="op">||</span> <span class="str">' '</span> <span class="op">||</span> v_emp.last_name);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'القسم: '</span> <span class="op">||</span> v_dept);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'المرتب الشهري: '</span> <span class="op">||</span> v_emp.salary);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'المرتب السنوي: '</span> <span class="op">||</span> (v_emp.salary <span class="op">*</span> <span class="num">12</span>));
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'سنين الخبرة: '</span> <span class="op">||</span> v_years);
+    <span class="fn">DBMS_OUTPUT.PUT_LINE</span>(<span class="str">'==============================='</span>);
+<span class="kw">END</span>;
+<span class="op">/</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="summary-box">
+            <h3>ملخص اللي اتعلمناه</h3>
+            <ul>
+                <li>PL/SQL = Procedural Language / SQL (لغة برمجة بتشتغل جوه Oracle)</li>
+                <li>Block Structure: DECLARE → BEGIN → EXCEPTION → END</li>
+                <li>DBMS_OUTPUT.PUT_LINE للطباعة (لازم SET SERVEROUTPUT ON)</li>
+                <li>المتغيرات: v_name datatype := value; (علامة التعيين هي :=)</li>
+                <li>أنواع البيانات: VARCHAR2, NUMBER, DATE, BOOLEAN, INTEGER</li>
+                <li>%TYPE: المتغير ياخد نفس نوع العمود تلقائي</li>
+                <li>%ROWTYPE: متغير واحد يشيل صف كامل</li>
+                <li>الثوابت: CONSTANT (بتبدأ بـ c_)</li>
+                <li>SELECT INTO: جلب بيانات من الجدول في متغيرات</li>
+                <li>NULL + أي حاجة = NULL (استخدم NVL للحماية)</li>
+            </ul>
+        </div>
+    </section>
+
+</main>
+
+<a href="index.html" class="back-btn" title="العودة للخطة">↩</a>
+
+<script>
+function toggleExercise(h){h.nextElementSibling.classList.toggle('show')}
+function toggleHint(b){const h=b.nextElementSibling;h.classList.toggle('show');b.textContent=h.classList.contains('show')?'🙈 إخفاء التلميح':'💡 تلميح'}
+function toggleSolution(b){const s=b.nextElementSibling;s.classList.toggle('show');b.textContent=s.classList.contains('show')?'🔒 إخفاء الحل':'🔓 الحل'}
+function copyCode(b){const c=b.closest('.code-block').querySelector('pre').textContent;navigator.clipboard.writeText(c).then(()=>{b.textContent='تم النسخ ✓';setTimeout(()=>b.textContent='نسخ',2000)})}
+const sections=document.querySelectorAll('.section[id]');const navLinks=document.querySelectorAll('.sidebar-nav a');
+window.addEventListener('scroll',()=>{let c='';sections.forEach(s=>{if(pageYOffset>=s.offsetTop-100)c=s.getAttribute('id')});navLinks.forEach(l=>{l.classList.remove('active');if(l.getAttribute('href')==='#'+c)l.classList.add('active')})});
+</script>
+</body>
+</html>

@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pivot Tables و Pivot Charts - اليوم السادس</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root{--bg:#06060f;--bg-card:#0d0d1f;--bg-code:#0a0a1a;--border:#1a1a3e;--text:#e2e2f0;--text-dim:#8888aa;--accent:#ff4d4d;--accent2:#ff8c00;--accent3:#00d47e;--accent4:#4d8cff;--accent5:#a855f7;--glow:0 0 30px rgba(255,77,77,0.15)}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);line-height:1.8;min-height:100vh}
+        .sidebar{position:fixed;top:0;right:0;width:300px;height:100vh;background:var(--bg-card);border-left:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:100;transition:transform .3s}
+        .sidebar-header{padding:0 24px 20px;border-bottom:1px solid var(--border);margin-bottom:16px}
+        .sidebar-header h3{font-size:1rem;color:var(--accent);margin-bottom:4px}
+        .sidebar-header p{font-size:.8rem;color:var(--text-dim)}
+        .sidebar-nav a{display:flex;align-items:center;gap:10px;padding:10px 24px;color:var(--text-dim);text-decoration:none;font-size:.85rem;transition:all .2s;border-right:3px solid transparent}
+        .sidebar-nav a:hover,.sidebar-nav a.active{color:var(--text);background:rgba(255,77,77,.05);border-right-color:var(--accent)}
+        .sidebar-nav .num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--border);font-size:.7rem;font-weight:700;color:var(--accent);flex-shrink:0}
+        .sidebar-toggle{display:none;position:fixed;top:20px;right:20px;z-index:200;background:var(--accent);border:none;color:#fff;width:44px;height:44px;border-radius:12px;font-size:1.3rem;cursor:pointer}
+        .main{margin-right:300px}
+        .hero{padding:80px 60px 60px;background:linear-gradient(135deg,rgba(255,77,77,.08),rgba(255,140,0,.06));border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+        .hero::before{content:'';position:absolute;top:-100px;left:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(255,77,77,.06),transparent 70%);pointer-events:none}
+        .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,77,77,.1);border:1px solid rgba(255,77,77,.2);padding:6px 16px;border-radius:100px;font-size:.85rem;color:var(--accent);margin-bottom:20px}
+        .hero h1{font-size:2.5rem;font-weight:900;margin-bottom:16px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .hero p{font-size:1.1rem;color:var(--text-dim);max-width:600px}
+        .section{padding:60px;border-bottom:1px solid var(--border)}
+        .section-label{display:inline-flex;align-items:center;gap:8px;font-size:.8rem;color:var(--accent);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;font-weight:700}
+        .section h2{font-size:1.8rem;font-weight:800;margin-bottom:24px}
+        .section h3{font-size:1.3rem;font-weight:700;margin:24px 0 16px;color:var(--accent4)}
+        .section p,.section li{font-size:1rem;color:var(--text-dim);margin-bottom:12px}
+        .section ul,.section ol{padding-right:24px;margin-bottom:16px}
+        .content-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;margin:20px 0;box-shadow:var(--glow)}
+        .content-card h4{font-size:1.1rem;color:var(--accent3);margin-bottom:16px}
+        .code-block{background:var(--bg-code);border:1px solid var(--border);border-radius:12px;margin:16px 0;overflow:hidden}
+        .code-header{display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--border)}
+        .code-header span{font-size:.8rem;color:var(--text-dim)}
+        .code-header .copy-btn{background:rgba(255,77,77,.1);border:1px solid rgba(255,77,77,.2);color:var(--accent);padding:4px 12px;border-radius:6px;font-size:.75rem;cursor:pointer;font-family:'Cairo',sans-serif;transition:all .2s}
+        .code-header .copy-btn:hover{background:rgba(255,77,77,.2)}
+        .code-block pre{padding:20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.9rem;line-height:1.7;direction:ltr;text-align:left}
+        .kw{color:#ff7b72;font-weight:700}.str{color:#a5d6ff}.cm{color:#6a737d;font-style:italic}.num{color:#79c0ff}.fn{color:#d2a8ff}.tp{color:#ff8c00}.op{color:#ff4d4d}.tbl{color:#00d47e}
+        .info-box{background:rgba(77,140,255,.05);border:1px solid rgba(77,140,255,.15);border-radius:12px;padding:20px 24px;margin:16px 0}
+        .info-box.warning{background:rgba(255,140,0,.05);border-color:rgba(255,140,0,.15)}
+        .info-box.success{background:rgba(0,212,126,.05);border-color:rgba(0,212,126,.15)}
+        .info-box.danger{background:rgba(255,77,77,.05);border-color:rgba(255,77,77,.15)}
+        .info-box strong{color:var(--accent4)}
+        .info-box.warning strong{color:var(--accent2)}
+        .info-box.success strong{color:var(--accent3)}
+        .info-box.danger strong{color:var(--accent)}
+        .quote-box{border-right:4px solid var(--accent);background:rgba(255,77,77,.05);padding:20px 24px;border-radius:0 12px 12px 0;margin:16px 0;font-style:italic}
+        .analogy-box{background:linear-gradient(135deg,rgba(168,85,247,.05),rgba(77,140,255,.05));border:1px solid rgba(168,85,247,.15);border-radius:12px;padding:20px 24px;margin:16px 0}
+        .analogy-box strong{color:var(--accent5)}
+        .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin:20px 0}
+        .feature-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px;text-align:center;transition:transform .2s}
+        .feature-card:hover{transform:translateY(-4px)}
+        .feature-card .icon{font-size:2rem;margin-bottom:12px}
+        .feature-card h4{color:var(--accent);margin-bottom:8px}
+        .feature-card p{font-size:.85rem;color:var(--text-dim)}
+        .table-visual{background:var(--bg-code);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:16px 0}
+        .table-visual table{width:100%;border-collapse:collapse;direction:ltr;text-align:center}
+        .table-visual th{background:rgba(255,77,77,.1);padding:10px 16px;border:1px solid var(--border);font-size:.85rem;color:var(--accent)}
+        .table-visual td{padding:10px 16px;border:1px solid var(--border);font-size:.9rem;font-family:'JetBrains Mono',monospace}
+        .table-visual tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+        .table-visual .highlight-cell{background:rgba(255,77,77,.1);color:var(--accent);font-weight:700}
+        .table-visual .highlight-green{background:rgba(0,212,126,.1);color:var(--accent3);font-weight:700}
+        .table-visual .highlight-orange{background:rgba(255,140,0,.1);color:var(--accent2);font-weight:700}
+        .table-visual .highlight-blue{background:rgba(77,140,255,.1);color:var(--accent4);font-weight:700}
+        .table-visual .highlight-purple{background:rgba(168,85,247,.1);color:var(--accent5);font-weight:700}
+        .vs-container{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0}
+        .vs-side{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px}
+        .vs-side h4{margin-bottom:16px;font-size:1.1rem}
+        .summary-box{background:linear-gradient(135deg,rgba(0,212,126,.05),rgba(77,140,255,.05));border:1px solid rgba(0,212,126,.15);border-radius:16px;padding:28px;margin:20px 0}
+        .summary-box h3{color:var(--accent3);margin-bottom:16px}
+        .summary-box ul{list-style:none;padding:0}
+        .summary-box li{padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);color:var(--text-dim)}
+        .exercise-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;margin:20px 0;overflow:hidden}
+        .exercise-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;cursor:pointer;transition:background .2s}
+        .exercise-header:hover{background:rgba(255,77,77,.03)}
+        .exercise-header h4{color:var(--text);font-size:1rem}
+        .exercise-badge{padding:4px 12px;border-radius:100px;font-size:.75rem;font-weight:700}
+        .exercise-badge.easy{background:rgba(0,212,126,.1);color:var(--accent3)}
+        .exercise-badge.medium{background:rgba(255,140,0,.1);color:var(--accent2)}
+        .exercise-badge.hard{background:rgba(255,77,77,.1);color:var(--accent)}
+        .exercise-badge.challenge{background:rgba(168,85,247,.1);color:var(--accent5)}
+        .exercise-body{display:none;padding:0 24px 24px;border-top:1px solid var(--border)}
+        .exercise-body.show{display:block}
+        .exercise-body p{padding-top:16px}
+        .hint-btn,.solution-toggle{background:rgba(255,140,0,.1);border:1px solid rgba(255,140,0,.2);color:var(--accent2);padding:8px 20px;border-radius:8px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.85rem;margin-top:12px;margin-left:8px;transition:all .2s}
+        .solution-toggle{background:rgba(0,212,126,.1);border-color:rgba(0,212,126,.2);color:var(--accent3)}
+        .hint-btn:hover{background:rgba(255,140,0,.2)}
+        .solution-toggle:hover{background:rgba(0,212,126,.2)}
+        .hint-content,.solution-content{display:none;margin-top:12px}
+        .hint-content.show,.solution-content.show{display:block}
+        .steps-list{counter-reset:step;list-style:none;padding:0}
+        .steps-list li{counter-increment:step;padding:16px 20px 16px 0;border-bottom:1px solid var(--border);position:relative;padding-right:50px}
+        .steps-list li::before{content:counter(step);position:absolute;right:0;top:16px;width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem}
+        .back-btn{position:fixed;bottom:30px;left:30px;background:var(--accent);color:#fff;border:none;width:50px;height:50px;border-radius:50%;font-size:1.3rem;cursor:pointer;z-index:200;box-shadow:0 4px 15px rgba(255,77,77,.3);transition:transform .2s;text-decoration:none;display:flex;align-items:center;justify-content:center}
+        .back-btn:hover{transform:scale(1.1)}
+        @media(max-width:900px){
+        .sidebar{transform:translateX(100%)}
+        .sidebar.open{transform:translateX(0)}
+        .sidebar-toggle{display:flex;align-items:center;justify-content:center}
+        .main{margin-right:0}
+        .hero{padding:60px 24px 40px}
+        .section{padding:40px 24px}
+        .hero h1{font-size:1.8rem}
+        .vs-container{grid-template-columns:1fr}
+        .features-grid{grid-template-columns:1fr}
+        }
+    </style>
+</head>
+<body>
+
+<button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">&#9776;</button>
+
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <h3>Pivot Tables و Charts</h3>
+        <p>اليوم السادس - Excel</p>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="#intro"><span class="num">1</span> ليه Pivot Tables مهمة؟</a>
+        <a href="#what-is"><span class="num">2</span> إيه هي Pivot Table؟</a>
+        <a href="#data-prep"><span class="num">3</span> تحضير البيانات</a>
+        <a href="#create-pivot"><span class="num">4</span> إنشاء Pivot Table</a>
+        <a href="#four-areas"><span class="num">5</span> المناطق الأربعة</a>
+        <a href="#examples"><span class="num">6</span> أمثلة عملية</a>
+        <a href="#value-settings"><span class="num">7</span> تغيير نوع الحساب</a>
+        <a href="#grouping"><span class="num">8</span> التجميع Grouping</a>
+        <a href="#filter-sort"><span class="num">9</span> تصفية وترتيب</a>
+        <a href="#calculated"><span class="num">10</span> Calculated Fields</a>
+        <a href="#what-chart"><span class="num">11</span> إيه هي Pivot Charts؟</a>
+        <a href="#create-chart"><span class="num">12</span> إنشاء Pivot Chart</a>
+        <a href="#chart-types"><span class="num">13</span> أنواع Charts المناسبة</a>
+        <a href="#pro-tips"><span class="num">14</span> نصائح احترافية</a>
+        <a href="#exercises"><span class="num">15</span> تمارين</a>
+    </nav>
+</aside>
+
+<main class="main">
+
+    <section class="hero">
+        <div class="hero-badge">&#128202; اليوم السادس</div>
+        <h1>Pivot Tables و Pivot Charts</h1>
+        <p>أقوى أداة لتحليل البيانات في Excel - مهمة جداً في أي مقابلة!</p>
+    </section>
+
+    <!-- Section 1: Introduction -->
+    <section class="section" id="intro">
+        <span class="section-label">&#128218; مقدمة</span>
+        <h2>ليه Pivot Tables مهمة جداً؟</h2>
+
+        <p>لو في حاجة واحدة بس تتعلمها في Excel وتأهلك لأي مقابلة عمل، هتكون <strong style="color:var(--accent)">Pivot Tables</strong>. دي مش مجرد أداة عادية، دي أقوى سلاح لتحليل البيانات في Excel. أي شركة بتتعامل مع بيانات (يعني كل الشركات!) بتحتاج حد يعرف يستخدم Pivot Tables.</p>
+
+        <p>في المقابلات، السؤال عن Pivot Tables بييجي تقريباً في <strong style="color:var(--accent)">90%</strong> من مقابلات Data Analyst و Business Analyst و حتى Accountant. لو ما تعرفش تستخدمها، ده بيكون نقطة ضعف كبيرة.</p>
+
+        <div class="analogy-box">
+            <strong>تشبيه بسيط:</strong> تخيل إنك عندك مكتبة ضخمة فيها آلاف الكتب متراصة بشكل عشوائي. Pivot Table هي زي عدسة سحرية، لما بتبص من خلالها بتشوف الكتب مترتبة ومجمعة حسب النوع أو المؤلف أو السنة. البيانات الأصلية ما بتتغيرش، لكن طريقة عرضها بتتغير تماماً وبتبقى واضحة ومفهومة!
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="icon">&#9889;</div>
+                <h4>سرعة خيالية</h4>
+                <p>تحليل آلاف الصفوف في ثواني بدون أي صيغ أو معادلات معقدة</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">&#128256;</div>
+                <h4>مرونة كاملة</h4>
+                <p>غير طريقة العرض بالسحب والإفلات - جرب زوايا مختلفة للبيانات</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">&#128200;</div>
+                <h4>تلخيص تلقائي</h4>
+                <p>مجموع، متوسط، عدد، أكبر قيمة، أصغر قيمة - كلها بضغطة واحدة</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">&#127919;</div>
+                <h4>مطلوبة في السوق</h4>
+                <p>من أهم المهارات المطلوبة في مقابلات العمل لوظائف التحليل والمحاسبة</p>
+            </div>
+        </div>
+
+        <div class="quote-box">
+            "Pivot Tables هي الأداة رقم 1 اللي بتفرق بين مستخدم Excel عادي ومحترف. لو اتعلمتها صح، هتوفر على نفسك ساعات من الشغل اليدوي كل يوم!"
+        </div>
+    </section>
+
+    <!-- Section 2: What is Pivot Table -->
+    <section class="section" id="what-is">
+        <span class="section-label">&#128161; المفهوم</span>
+        <h2>إيه هي Pivot Table؟</h2>
+
+        <p><strong style="color:var(--accent)">Pivot Table</strong> (جدول محوري) هي أداة في Excel بتاخد البيانات الخام (Raw Data) وتحولها لملخصات ذات معنى. كلمة "Pivot" معناها "محور" أو "دوران" - يعني بتدور البيانات وتعرضها من زوايا مختلفة.</p>
+
+        <p>الفكرة بسيطة: عندك بيانات تفصيلية كتير (مثلاً كل عملية بيع) وعايز تعرف الصورة الكبيرة (مثلاً إجمالي المبيعات لكل منطقة أو كل منتج). بدل ما تكتب SUMIF و COUNTIF يدوي، Pivot Table بتعمل كل ده تلقائي!</p>
+
+        <h3>قبل وبعد - شوف الفرق</h3>
+
+        <div class="vs-container">
+            <div class="vs-side" style="border-color:rgba(255,77,77,.3)">
+                <h4 style="color:var(--accent)">البيانات الخام (قبل)</h4>
+                <div class="table-visual">
+                    <table>
+                        <tr><th>التاريخ</th><th>المنطقة</th><th>المنتج</th><th>المبيعات</th></tr>
+                        <tr><td>2024-01-05</td><td>القاهرة</td><td>لابتوب</td><td>15000</td></tr>
+                        <tr><td>2024-01-07</td><td>الإسكندرية</td><td>موبايل</td><td>8000</td></tr>
+                        <tr><td>2024-01-10</td><td>القاهرة</td><td>موبايل</td><td>6000</td></tr>
+                        <tr><td>2024-01-12</td><td>المنصورة</td><td>لابتوب</td><td>12000</td></tr>
+                        <tr><td>2024-01-15</td><td>الإسكندرية</td><td>تابلت</td><td>5000</td></tr>
+                        <tr><td>2024-01-18</td><td>القاهرة</td><td>تابلت</td><td>4500</td></tr>
+                        <tr><td>2024-01-20</td><td>المنصورة</td><td>موبايل</td><td>7000</td></tr>
+                        <tr><td>2024-01-22</td><td>القاهرة</td><td>لابتوب</td><td>18000</td></tr>
+                    </table>
+                </div>
+                <p style="font-size:.85rem;color:var(--text-dim);margin-top:8px">8 صفوف بيانات تفصيلية - صعب تفهم منها حاجة بسرعة</p>
+            </div>
+            <div class="vs-side" style="border-color:rgba(0,212,126,.3)">
+                <h4 style="color:var(--accent3)">Pivot Table (بعد)</h4>
+                <div class="table-visual">
+                    <table>
+                        <tr><th>المنطقة</th><th>لابتوب</th><th>موبايل</th><th>تابلت</th><th>الإجمالي</th></tr>
+                        <tr><td>القاهرة</td><td class="highlight-cell">33000</td><td>6000</td><td>4500</td><td class="highlight-green">43500</td></tr>
+                        <tr><td>الإسكندرية</td><td>-</td><td>8000</td><td>5000</td><td class="highlight-green">13000</td></tr>
+                        <tr><td>المنصورة</td><td>12000</td><td>7000</td><td>-</td><td class="highlight-green">19000</td></tr>
+                        <tr><td><strong>الإجمالي</strong></td><td class="highlight-orange">45000</td><td class="highlight-orange">21000</td><td class="highlight-orange">9500</td><td class="highlight-cell">75500</td></tr>
+                    </table>
+                </div>
+                <p style="font-size:.85rem;color:var(--text-dim);margin-top:8px">ملخص واضح! تشوف المبيعات لكل منطقة ولكل منتج فوراً</p>
+            </div>
+        </div>
+
+        <div class="info-box success">
+            <strong>النقطة المهمة:</strong> Pivot Table ما بتغيرش البيانات الأصلية أبداً! هي بتنشئ عرض جديد منفصل. تقدر تعمل أكتر من Pivot Table من نفس البيانات، كل واحدة بتعرض البيانات بطريقة مختلفة.
+        </div>
+    </section>
+
+    <!-- Section 3: Data Preparation -->
+    <section class="section" id="data-prep">
+        <span class="section-label">&#128195; تحضير</span>
+        <h2>تحضير البيانات</h2>
+
+        <p>قبل ما تنشئ Pivot Table، لازم البيانات تكون جاهزة ومنظمة. ده أهم خطوة! لو البيانات مش نظيفة، Pivot Table مش هتشتغل صح. فيه قواعد أساسية لازم تتبعها:</p>
+
+        <div class="content-card">
+            <h4>قواعد تحضير البيانات</h4>
+            <ul>
+                <li><strong style="color:var(--accent)">لا صفوف فارغة:</strong> ما ينفعش يكون فيه صف فارغ في نص البيانات. Excel بيفتكر إن البيانات خلصت عند أول صف فارغ.</li>
+                <li><strong style="color:var(--accent)">لا أعمدة فارغة:</strong> نفس الكلام - ما ينفعش عمود فارغ في نص الداتا.</li>
+                <li><strong style="color:var(--accent)">العناوين في الصف الأول:</strong> كل عمود لازم يكون له عنوان واضح في الصف الأول. العنوان ده هيبقى اسم الحقل في Pivot Table.</li>
+                <li><strong style="color:var(--accent)">نوع البيانات ثابت:</strong> كل عمود يحتوي على نوع واحد من البيانات. يعني عمود الأرقام يكون كله أرقام، وعمود التواريخ يكون كله تواريخ.</li>
+                <li><strong style="color:var(--accent)">لا خلايا مدمجة:</strong> Merge Cells هي عدو Pivot Tables! فك أي دمج قبل ما تبدأ.</li>
+                <li><strong style="color:var(--accent)">تحويل لجدول (Table):</strong> استخدم <span style="color:var(--accent4);font-family:'JetBrains Mono',monospace">Ctrl+T</span> لتحويل البيانات لجدول. ده بيضمن إن البيانات الجديدة تتضاف تلقائي لل Pivot Table.</li>
+            </ul>
+        </div>
+
+        <h3>مثال على بيانات جاهزة</h3>
+        <p>هنستخدم البيانات دي في كل الأمثلة اللي جاية:</p>
+
+        <div class="table-visual">
+            <table>
+                <tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th></tr>
+                <tr><td><strong>1</strong></td><td class="highlight-cell">الموظف</td><td class="highlight-cell">القسم</td><td class="highlight-cell">المنطقة</td><td class="highlight-cell">المبيعات</td><td class="highlight-cell">التكلفة</td></tr>
+                <tr><td><strong>2</strong></td><td>أحمد</td><td>المبيعات</td><td>القاهرة</td><td>25000</td><td>18000</td></tr>
+                <tr><td><strong>3</strong></td><td>سارة</td><td>التسويق</td><td>الإسكندرية</td><td>18000</td><td>12000</td></tr>
+                <tr><td><strong>4</strong></td><td>محمد</td><td>المبيعات</td><td>المنصورة</td><td>22000</td><td>16000</td></tr>
+                <tr><td><strong>5</strong></td><td>فاطمة</td><td>التسويق</td><td>القاهرة</td><td>30000</td><td>20000</td></tr>
+                <tr><td><strong>6</strong></td><td>عمر</td><td>المبيعات</td><td>الإسكندرية</td><td>15000</td><td>11000</td></tr>
+                <tr><td><strong>7</strong></td><td>نور</td><td>الدعم</td><td>القاهرة</td><td>12000</td><td>9000</td></tr>
+                <tr><td><strong>8</strong></td><td>يوسف</td><td>المبيعات</td><td>المنصورة</td><td>28000</td><td>19000</td></tr>
+                <tr><td><strong>9</strong></td><td>منى</td><td>التسويق</td><td>الإسكندرية</td><td>20000</td><td>14000</td></tr>
+                <tr><td><strong>10</strong></td><td>خالد</td><td>الدعم</td><td>المنصورة</td><td>10000</td><td>8000</td></tr>
+                <tr><td><strong>11</strong></td><td>ريم</td><td>المبيعات</td><td>القاهرة</td><td>35000</td><td>22000</td></tr>
+            </table>
+        </div>
+
+        <div class="info-box warning">
+            <strong>نصيحة مهمة:</strong> قبل ما تنشئ Pivot Table، اضغط <span style="color:var(--accent4);font-family:'JetBrains Mono',monospace">Ctrl+T</span> على البيانات لتحويلها لـ Table. كده لما تضيف بيانات جديدة، الـ Pivot Table هتشملها تلقائياً لما تعمل Refresh.
+        </div>
+    </section>
+
+    <!-- Section 4: Creating Pivot Table Step by Step -->
+    <section class="section" id="create-pivot">
+        <span class="section-label">&#128736; إنشاء</span>
+        <h2>إنشاء Pivot Table خطوة بخطوة</h2>
+
+        <p>دلوقتي هنتعلم نعمل Pivot Table من الصفر. العملية سهلة جداً ومش محتاجة أي معادلات:</p>
+
+        <div class="content-card">
+            <h4>الخطوات</h4>
+            <ol class="steps-list">
+                <li><strong style="color:var(--accent)">اختار البيانات:</strong> اضغط على أي خلية جوه البيانات. Excel هيختار النطاق كله تلقائي. أو حدد النطاق يدوي (مثلاً A1:E11).</li>
+                <li><strong style="color:var(--accent)">Insert ثم PivotTable:</strong> روح لتاب Insert في الشريط العلوي واضغط على PivotTable. هتظهر نافذة صغيرة.</li>
+                <li><strong style="color:var(--accent)">اختار مكان الـ Pivot Table:</strong> عندك خيارين: New Worksheet (ورقة جديدة - الأفضل) أو Existing Worksheet (في نفس الورقة - حدد المكان). اختار New Worksheet واضغط OK.</li>
+                <li><strong style="color:var(--accent)">PivotTable Fields:</strong> هيظهر لك شيت جديد فيه مربع فارغ (مكان الـ Pivot Table) وعلى اليمين لوحة PivotTable Fields فيها أسماء الأعمدة بتاعتك.</li>
+                <li><strong style="color:var(--accent)">اسحب الحقول للمناطق:</strong> اسحب الحقول من القائمة العلوية للمناطق الأربعة في الأسفل (Rows, Columns, Values, Filters). وده اللي هنشرحه بالتفصيل!</li>
+            </ol>
+        </div>
+
+        <div class="info-box">
+            <strong>اختصار سريع:</strong> بدل ما تروح للقائمة، تقدر تستخدم الاختصار <span style="color:var(--accent);font-family:'JetBrains Mono',monospace">Alt + N + V</span> لفتح نافذة إنشاء PivotTable مباشرة. أو في النسخ القديمة استخدم <span style="color:var(--accent);font-family:'JetBrains Mono',monospace">Alt + D + P</span> لفتح Classic PivotTable Wizard.
+        </div>
+
+        <div class="info-box success">
+            <strong>ميزة Recommended PivotTables:</strong> في Excel 2013 وأحدث، فيه زر "Recommended PivotTables" جنب زر PivotTable. لما تضغط عليه، Excel بيقترح عليك أشكال Pivot Tables جاهزة بناءً على بياناتك. ممتاز للمبتدئين!
+        </div>
+    </section>
+
+    <!-- Section 5: The Four Areas -->
+    <section class="section" id="four-areas">
+        <span class="section-label">&#128204; المناطق</span>
+        <h2>المناطق الأربعة في Pivot Table</h2>
+
+        <p>لوحة PivotTable Fields فيها 4 مناطق أساسية. فهم المناطق دي هو مفتاح إتقان Pivot Tables. كل منطقة ليها وظيفة محددة:</p>
+
+        <div class="features-grid">
+            <div class="feature-card" style="border-color:rgba(255,77,77,.3)">
+                <div class="icon">&#128205;</div>
+                <h4 style="color:var(--accent)">Rows (الصفوف)</h4>
+                <p>الحقول اللي بتظهر كصفوف على اليسار. عادة بتكون التصنيفات الرئيسية مثل: القسم، المنطقة، اسم المنتج، الشهر.</p>
+            </div>
+            <div class="feature-card" style="border-color:rgba(77,140,255,.3)">
+                <div class="icon">&#128202;</div>
+                <h4 style="color:var(--accent4)">Columns (الأعمدة)</h4>
+                <p>الحقول اللي بتظهر كأعمدة في الأعلى. بتستخدم للتصنيفات الفرعية لعمل Cross-Tab مثل: المنتج جنب المنطقة.</p>
+            </div>
+            <div class="feature-card" style="border-color:rgba(0,212,126,.3)">
+                <div class="icon">&#128176;</div>
+                <h4 style="color:var(--accent3)">Values (القيم)</h4>
+                <p>الأرقام اللي عايز تحسبها. هنا بتحط الحقول الرقمية وتختار نوع الحساب: SUM, COUNT, AVERAGE, MAX, MIN.</p>
+            </div>
+            <div class="feature-card" style="border-color:rgba(168,85,247,.3)">
+                <div class="icon">&#128270;</div>
+                <h4 style="color:var(--accent5)">Filters (الفلاتر)</h4>
+                <p>فلتر عام بيطبق على كل الـ Pivot Table. مثلاً فلتر بالسنة أو بالمنطقة - بيظهر فوق الجدول كقائمة منسدلة.</p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h4>كيف تختار المنطقة المناسبة؟</h4>
+            <ul>
+                <li><strong style="color:var(--accent)">حقول نصية (مثل الأسماء والتصنيفات):</strong> عادة بتروح في <strong>Rows</strong> أو <strong>Columns</strong></li>
+                <li><strong style="color:var(--accent3)">حقول رقمية (مثل المبيعات والتكلفة):</strong> عادة بتروح في <strong>Values</strong></li>
+                <li><strong style="color:var(--accent5)">حقول التصفية العامة:</strong> اللي عايز تفلتر بيها الجدول كله بتروح في <strong>Filters</strong></li>
+                <li><strong style="color:var(--accent4)">لو عندك تصنيفين:</strong> حط الرئيسي في Rows والفرعي في Columns عشان تعمل جدول متقاطع (Cross-Tab)</li>
+            </ul>
+        </div>
+
+        <div class="analogy-box">
+            <strong>تشبيه الـ Drag and Drop:</strong> فكر في المناطق الأربعة كأنها أدراج مكتب. عندك مجموعة ملفات (الحقول) وبتوزعها على الأدراج حسب احتياجك. في أي وقت تقدر تسحب ملف من درج وتحطه في درج تاني - الـ Pivot Table هتتحدث فوراً! ده اللي بيخلي Pivot Tables قوية جداً - المرونة في إعادة الترتيب.
+        </div>
+    </section>
+
+    <!-- Section 6: Practical Examples -->
+    <section class="section" id="examples">
+        <span class="section-label">&#128421; أمثلة</span>
+        <h2>أمثلة عملية</h2>
+
+        <p>هنطبق على البيانات اللي شفناها فوق. كل مثال هيوريك إزاي تسحب الحقول للمناطق المختلفة وإيه النتيجة:</p>
+
+        <h3>المثال الأول: مبيعات كل قسم</h3>
+        <p>عايزين نعرف إجمالي مبيعات كل قسم. نسحب:</p>
+        <ul>
+            <li><strong style="color:var(--accent)">Rows:</strong> القسم</li>
+            <li><strong style="color:var(--accent3)">Values:</strong> Sum of المبيعات</li>
+        </ul>
+
+        <div class="table-visual">
+            <table>
+                <tr><th>القسم</th><th>Sum of المبيعات</th></tr>
+                <tr><td>الدعم</td><td>22,000</td></tr>
+                <tr><td>التسويق</td><td>68,000</td></tr>
+                <tr><td>المبيعات</td><td class="highlight-cell">125,000</td></tr>
+                <tr><td><strong>Grand Total</strong></td><td class="highlight-green">215,000</td></tr>
+            </table>
+        </div>
+
+        <h3>المثال الثاني: مبيعات كل قسم في كل منطقة (Cross-Tab)</h3>
+        <p>عايزين نشوف المبيعات حسب القسم والمنطقة مع بعض. نسحب:</p>
+        <ul>
+            <li><strong style="color:var(--accent)">Rows:</strong> القسم</li>
+            <li><strong style="color:var(--accent4)">Columns:</strong> المنطقة</li>
+            <li><strong style="color:var(--accent3)">Values:</strong> Sum of المبيعات</li>
+        </ul>
+
+        <div class="table-visual">
+            <table>
+                <tr><th>القسم \ المنطقة</th><th>الإسكندرية</th><th>القاهرة</th><th>المنصورة</th><th>Grand Total</th></tr>
+                <tr><td>الدعم</td><td>-</td><td>12,000</td><td>10,000</td><td>22,000</td></tr>
+                <tr><td>التسويق</td><td class="highlight-blue">38,000</td><td>30,000</td><td>-</td><td>68,000</td></tr>
+                <tr><td>المبيعات</td><td>15,000</td><td class="highlight-cell">60,000</td><td>50,000</td><td>125,000</td></tr>
+                <tr><td><strong>Grand Total</strong></td><td class="highlight-orange">53,000</td><td class="highlight-orange">102,000</td><td class="highlight-orange">60,000</td><td class="highlight-green">215,000</td></tr>
+            </table>
+        </div>
+
+        <h3>المثال الثالث: عدد الموظفين في كل منطقة</h3>
+        <p>عايزين نعد كم موظف في كل منطقة. نسحب:</p>
+        <ul>
+            <li><strong style="color:var(--accent)">Rows:</strong> المنطقة</li>
+            <li><strong style="color:var(--accent3)">Values:</strong> Count of الموظف</li>
+        </ul>
+
+        <div class="table-visual">
+            <table>
+                <tr><th>المنطقة</th><th>Count of الموظف</th></tr>
+                <tr><td>الإسكندرية</td><td>3</td></tr>
+                <tr><td>القاهرة</td><td class="highlight-cell">4</td></tr>
+                <tr><td>المنصورة</td><td>3</td></tr>
+                <tr><td><strong>Grand Total</strong></td><td class="highlight-green">10</td></tr>
+            </table>
+        </div>
+
+        <div class="info-box">
+            <strong>ملاحظة:</strong> لما تسحب حقل نصي (زي الموظف) لمنطقة Values، Excel تلقائي بيعمل COUNT مش SUM. لكن لو سحبت حقل رقمي (زي المبيعات)، بيعمل SUM تلقائي. تقدر تغير نوع الحساب في أي وقت.
+        </div>
+    </section>
+
+    <!-- Section 7: Value Field Settings -->
+    <section class="section" id="value-settings">
+        <span class="section-label">&#9881; إعدادات</span>
+        <h2>تغيير نوع الحساب (Value Field Settings)</h2>
+
+        <p>مش لازم تكتفي بالـ SUM! تقدر تغير نوع الحساب لأي حاجة تحتاجها. اضغط كليك يمين على أي قيمة في الـ Pivot Table واختار <strong style="color:var(--accent)">Value Field Settings</strong>.</p>
+
+        <h3>أنواع الحسابات الأساسية (Summarize Values By)</h3>
+
+        <div class="content-card">
+            <h4>الحسابات المتاحة</h4>
+            <div class="table-visual">
+                <table>
+                    <tr><th>الحساب</th><th>الوظيفة</th><th>مثال</th></tr>
+                    <tr><td class="highlight-cell">SUM</td><td>مجموع القيم</td><td>إجمالي المبيعات = 215,000</td></tr>
+                    <tr><td class="highlight-blue">COUNT</td><td>عدد العناصر</td><td>عدد الموظفين = 10</td></tr>
+                    <tr><td class="highlight-green">AVERAGE</td><td>المتوسط</td><td>متوسط المبيعات = 21,500</td></tr>
+                    <tr><td class="highlight-orange">MAX</td><td>أكبر قيمة</td><td>أعلى مبيعات = 35,000</td></tr>
+                    <tr><td class="highlight-purple">MIN</td><td>أصغر قيمة</td><td>أقل مبيعات = 10,000</td></tr>
+                    <tr><td>PRODUCT</td><td>حاصل الضرب</td><td>نادر الاستخدام</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <h3>عرض القيم كنسب مئوية (Show Values As)</h3>
+
+        <p>الميزة دي قوية جداً! بدل ما تشوف أرقام مطلقة، تقدر تشوف نسب مئوية:</p>
+
+        <div class="content-card">
+            <h4>خيارات Show Values As</h4>
+            <ul>
+                <li><strong style="color:var(--accent)">% of Grand Total:</strong> نسبة من الإجمالي الكلي. مثال: مبيعات القاهرة = 47.4% من إجمالي المبيعات.</li>
+                <li><strong style="color:var(--accent4)">% of Column Total:</strong> نسبة من إجمالي العمود. مثال: مبيعات قسم المبيعات في القاهرة = 58.8% من مبيعات القاهرة.</li>
+                <li><strong style="color:var(--accent3)">% of Row Total:</strong> نسبة من إجمالي الصف. مثال: مبيعات قسم المبيعات في القاهرة = 48% من مبيعات قسم المبيعات.</li>
+                <li><strong style="color:var(--accent2)">Running Total:</strong> الإجمالي التراكمي - مفيد جداً لتتبع النمو عبر الزمن.</li>
+                <li><strong style="color:var(--accent5)">Difference From:</strong> الفرق عن قيمة معينة. مثال: فرق كل شهر عن الشهر اللي قبله.</li>
+                <li><strong style="color:var(--accent)">% Difference From:</strong> نسبة التغير. مثال: نسبة النمو الشهري.</li>
+            </ul>
+        </div>
+
+        <div class="info-box warning">
+            <strong>نصيحة:</strong> تقدر تضيف نفس الحقل أكتر من مرة في Values! مثلاً ضيف المبيعات مرتين: مرة كـ SUM ومرة كـ % of Grand Total. كده بتشوف الرقم والنسبة جنب بعض.
+        </div>
+    </section>
+
+    <!-- Section 8: Grouping -->
+    <section class="section" id="grouping">
+        <span class="section-label">&#128230; تجميع</span>
+        <h2>التجميع (Grouping)</h2>
+
+        <p>التجميع بيخليك تجمع البيانات في مجموعات أكبر. ده مفيد جداً خصوصاً مع التواريخ والأرقام. اضغط كليك يمين على أي عنصر في الصفوف واختار <strong style="color:var(--accent)">Group</strong>.</p>
+
+        <h3>تجميع التواريخ</h3>
+
+        <div class="content-card">
+            <h4>تجميع التواريخ حسب الشهر/الربع/السنة</h4>
+            <p>لو عندك عمود تواريخ وسحبته في Rows، Excel هيعرض كل تاريخ لوحده (ممكن يكون مئات التواريخ!). عشان تجمعهم:</p>
+            <ol class="steps-list">
+                <li>اضغط كليك يمين على أي تاريخ في الـ Pivot Table</li>
+                <li>اختار <strong style="color:var(--accent)">Group</strong></li>
+                <li>اختار مستوى التجميع: <strong>Months</strong> (شهور)، <strong>Quarters</strong> (أرباع سنة)، <strong>Years</strong> (سنوات). تقدر تختار أكتر من مستوى!</li>
+                <li>اضغط OK - التواريخ هتتجمع تلقائياً</li>
+            </ol>
+
+            <div class="info-box success">
+                <strong>مثال عملي:</strong> لو عندك بيانات مبيعات يومية من 2023 و 2024، بعد التجميع بالشهور هتشوف: يناير، فبراير، مارس... بدل مئات التواريخ الفردية. ولو اخترت Quarters كمان هتشوف: Q1, Q2, Q3, Q4.
+            </div>
+        </div>
+
+        <h3>تجميع الأرقام في نطاقات</h3>
+
+        <div class="content-card">
+            <h4>تجميع الأرقام</h4>
+            <p>لو عندك عمود رواتب مثلاً وعايز تجمعهم في فئات (0-5000, 5001-10000, إلخ):</p>
+            <ul>
+                <li>اسحب العمود الرقمي لـ Rows</li>
+                <li>كليك يمين واختار Group</li>
+                <li>حدد: <strong style="color:var(--accent)">Starting at</strong> (البداية)، <strong style="color:var(--accent3)">Ending at</strong> (النهاية)، <strong style="color:var(--accent4)">By</strong> (حجم كل مجموعة)</li>
+            </ul>
+
+            <div class="code-block">
+                <div class="code-header"><span>مثال: تجميع المبيعات</span></div>
+                <pre><span class="cm">// Starting at: 10000</span>
+<span class="cm">// Ending at:   35000</span>
+<span class="cm">// By:          5000</span>
+
+<span class="cm">// النتيجة:</span>
+<span class="tbl">10000-14999</span>  :  2 employees
+<span class="tbl">15000-19999</span>  :  2 employees
+<span class="tbl">20000-24999</span>  :  2 employees
+<span class="tbl">25000-29999</span>  :  2 employees
+<span class="tbl">30000-34999</span>  :  1 employee
+<span class="tbl">35000-39999</span>  :  1 employee</pre>
+            </div>
+        </div>
+
+        <h3>التجميع اليدوي</h3>
+        <p>تقدر كمان تجمع عناصر يدوياً. مثلاً عايز تجمع القاهرة والإسكندرية في مجموعة "الساحل" والمنصورة في "الدلتا":</p>
+        <ul>
+            <li>حدد العناصر اللي عايز تجمعها (اضغط Ctrl واختار كل واحدة)</li>
+            <li>كليك يمين واختار Group</li>
+            <li>غير اسم المجموعة من "Group1" للاسم اللي تحبه</li>
+        </ul>
+    </section>
+
+    <!-- Section 9: Filtering and Sorting -->
+    <section class="section" id="filter-sort">
+        <span class="section-label">&#128269; تصفية</span>
+        <h2>تصفية وترتيب في Pivot Tables</h2>
+
+        <p>Pivot Tables فيها أدوات تصفية وترتيب قوية جداً. تقدر تركز على البيانات اللي تهمك وتخفي الباقي:</p>
+
+        <h3>فلاتر الصفوف والأعمدة</h3>
+
+        <div class="content-card">
+            <h4>Row/Column Label Filters</h4>
+            <p>كل صف وعمود في Pivot Table عنده سهم صغير (dropdown). لما تضغط عليه:</p>
+            <ul>
+                <li><strong style="color:var(--accent)">Select/Deselect:</strong> اختار أو الغي اختيار عناصر معينة. مثلاً: عرض المبيعات والتسويق بس بدون الدعم.</li>
+                <li><strong style="color:var(--accent4)">Label Filters:</strong> فلترة بالنص. مثلاً: كل الأقسام اللي بتبدأ بحرف "م". فيه خيارات: Contains, Begins With, Ends With, Equals.</li>
+                <li><strong style="color:var(--accent3)">Value Filters:</strong> فلترة بالقيم. مثلاً: الأقسام اللي مبيعاتها أكبر من 50,000. فيه خيارات: Top 10, Above Average, Between.</li>
+            </ul>
+        </div>
+
+        <h3>Slicers - فلاتر بصرية</h3>
+
+        <div class="content-card">
+            <h4>إيه هي Slicers؟</h4>
+            <p>Slicers هي فلاتر بصرية جميلة بتظهر كأزرار. بدل القوائم المنسدلة، بتشوف كل الخيارات قدامك وتضغط على اللي عايزه:</p>
+            <ol class="steps-list">
+                <li>اضغط على الـ Pivot Table</li>
+                <li>روح لتاب <strong style="color:var(--accent)">PivotTable Analyze</strong> (أو Insert)</li>
+                <li>اضغط <strong style="color:var(--accent)">Insert Slicer</strong></li>
+                <li>اختار الحقول اللي عايز تعمل لها Slicer (مثلاً: القسم والمنطقة)</li>
+                <li>هتظهر مربعات بأزرار - اضغط على أي زر للفلترة! اضغط Ctrl لاختيار أكتر من واحد.</li>
+            </ol>
+
+            <div class="info-box success">
+                <strong>ميزة مهمة:</strong> Slicer واحد ممكن يتحكم في أكتر من Pivot Table! كليك يمين على الـ Slicer واختار "Report Connections" وحدد كل الـ Pivot Tables اللي عايزها تتأثر.
+            </div>
+        </div>
+
+        <h3>Timeline - فلتر التواريخ</h3>
+
+        <div class="content-card">
+            <h4>فلتر التواريخ البصري</h4>
+            <p>Timeline هو زي الـ Slicer بس مخصوص للتواريخ. بيعرض شريط زمني تقدر تختار منه فترة معينة:</p>
+            <ul>
+                <li>Insert Timeline من تاب PivotTable Analyze</li>
+                <li>اختار عمود التاريخ</li>
+                <li>هيظهر شريط زمني - تقدر تختار: أيام، شهور، أرباع سنة، أو سنوات</li>
+                <li>اضغط واسحب لاختيار الفترة اللي عايزها</li>
+            </ul>
+        </div>
+
+        <h3>الترتيب (Sorting)</h3>
+        <p>تقدر ترتب البيانات في Pivot Table بسهولة:</p>
+        <ul>
+            <li><strong style="color:var(--accent)">ترتيب أبجدي:</strong> كليك يمين على عنصر في الصفوف واختار Sort A to Z أو Z to A</li>
+            <li><strong style="color:var(--accent3)">ترتيب بالقيم:</strong> كليك يمين على أي رقم واختار Sort Largest to Smallest أو العكس</li>
+            <li><strong style="color:var(--accent4)">ترتيب مخصص:</strong> More Sort Options لتحديد ترتيب حسب حقل معين</li>
+        </ul>
+    </section>
+
+    <!-- Section 10: Calculated Fields -->
+    <section class="section" id="calculated">
+        <span class="section-label">&#128290; حقول محسوبة</span>
+        <h2>Calculated Fields</h2>
+
+        <p>أحياناً البيانات الموجودة مش كفاية وعايز تضيف حسابات جديدة مش موجودة في البيانات الأصلية. <strong style="color:var(--accent)">Calculated Fields</strong> بتخليك تضيف حقول محسوبة جديدة للـ Pivot Table.</p>
+
+        <h3>إزاي تضيف Calculated Field؟</h3>
+
+        <div class="content-card">
+            <h4>الخطوات</h4>
+            <ol class="steps-list">
+                <li>اضغط على الـ Pivot Table</li>
+                <li>روح لتاب <strong style="color:var(--accent)">PivotTable Analyze</strong></li>
+                <li>اضغط <strong style="color:var(--accent)">Fields, Items &amp; Sets</strong></li>
+                <li>اختار <strong style="color:var(--accent)">Calculated Field</strong></li>
+                <li>اكتب اسم الحقل الجديد والمعادلة</li>
+            </ol>
+        </div>
+
+        <h3>مثال 1: حساب الربح</h3>
+        <div class="code-block">
+            <div class="code-header"><span>Calculated Field: Profit</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="cm">// Name: الربح</span>
+<span class="cm">// Formula:</span>
+<span class="op">=</span> <span class="fn">المبيعات</span> <span class="op">-</span> <span class="fn">التكلفة</span>
+
+<span class="cm">// النتيجة: هيظهر عمود جديد "الربح" في الـ Pivot Table</span>
+<span class="cm">// أحمد: 25000 - 18000 = 7000</span>
+<span class="cm">// سارة: 18000 - 12000 = 6000</span></pre>
+        </div>
+
+        <h3>مثال 2: حساب الضريبة</h3>
+        <div class="code-block">
+            <div class="code-header"><span>Calculated Field: Tax</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="cm">// Name: الضريبة</span>
+<span class="cm">// Formula:</span>
+<span class="op">=</span> <span class="fn">المبيعات</span> <span class="op">*</span> <span class="num">0.14</span>
+
+<span class="cm">// النتيجة: ضريبة 14% على المبيعات</span>
+<span class="cm">// أحمد: 25000 * 0.14 = 3500</span>
+<span class="cm">// سارة: 18000 * 0.14 = 2520</span></pre>
+        </div>
+
+        <h3>مثال 3: نسبة الربح</h3>
+        <div class="code-block">
+            <div class="code-header"><span>Calculated Field: Profit Margin</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+            <pre><span class="cm">// Name: نسبة الربح</span>
+<span class="cm">// Formula:</span>
+<span class="op">=</span> (<span class="fn">المبيعات</span> <span class="op">-</span> <span class="fn">التكلفة</span>) <span class="op">/</span> <span class="fn">المبيعات</span>
+
+<span class="cm">// النتيجة: نسبة الربح لكل موظف</span>
+<span class="cm">// فورمات النتيجة كنسبة مئوية</span></pre>
+        </div>
+
+        <div class="info-box danger">
+            <strong>تحذير مهم:</strong> Calculated Fields بتحسب على مستوى كل صف في البيانات الأصلية ثم تعمل SUM. يعني لو حسبت نسبة الربح كـ Calculated Field، النتيجة في Grand Total هتكون مجموع النسب مش النسبة الصحيحة! في الحالة دي استخدم Show Values As بدل Calculated Field.
+        </div>
+    </section>
+
+    <!-- Section 11: What are Pivot Charts -->
+    <section class="section" id="what-chart">
+        <span class="section-label">&#128202; الرسوم</span>
+        <h2>إيه هي Pivot Charts؟</h2>
+
+        <p><strong style="color:var(--accent)">Pivot Chart</strong> هو رسم بياني متصل بـ Pivot Table. يعني بدل ما تقرأ الأرقام في جدول، بتشوفها كرسم بياني بصري. أهم حاجة إنه <strong>متصل</strong> بالـ Pivot Table - يعني أي تغيير في الجدول بيظهر تلقائي في الرسم والعكس!</p>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="icon">&#128279;</div>
+                <h4>متصل بالـ Pivot Table</h4>
+                <p>أي تغيير في الجدول (فلتر، ترتيب، إضافة حقول) بينعكس فوراً على الرسم البياني</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">&#127912;</div>
+                <h4>تفاعلي</h4>
+                <p>فيه أزرار فلترة على الرسم نفسه - تقدر تفلتر مباشرة من الرسم البياني!</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">&#128640;</div>
+                <h4>سريع الإنشاء</h4>
+                <p>ضغطة واحدة من الـ Pivot Table وبيتكون الرسم البياني تلقائياً</p>
+            </div>
+        </div>
+
+        <div class="analogy-box">
+            <strong>الفرق بين Chart عادي و Pivot Chart:</strong> الـ Chart العادي مرتبط ببيانات ثابتة في خلايا. لو غيرت البيانات، الـ Chart بيتحدث. لكن ما تقدرش تفلتر أو تغير طريقة التجميع من الـ Chart نفسه. أما Pivot Chart فهو ديناميكي - تقدر تضيف فلاتر، تغير الحقول، وتعيد التجميع كل ده من الرسم مباشرة!
+        </div>
+
+        <div class="info-box">
+            <strong>متى تستخدم Pivot Chart؟</strong> لما تحتاج تعرض بيانات ملخصة بصرياً وعايز المستخدم يقدر يتفاعل معاها (يفلتر، يغير). مثالي للـ Dashboards والعروض التقديمية التفاعلية.
+        </div>
+    </section>
+
+    <!-- Section 12: Creating Pivot Chart -->
+    <section class="section" id="create-chart">
+        <span class="section-label">&#128295; إنشاء</span>
+        <h2>إنشاء Pivot Chart</h2>
+
+        <p>فيه طريقتين لإنشاء Pivot Chart:</p>
+
+        <h3>الطريقة الأولى: من Pivot Table موجودة</h3>
+        <div class="content-card">
+            <h4>الخطوات</h4>
+            <ol class="steps-list">
+                <li>اضغط على أي خلية في الـ Pivot Table</li>
+                <li>روح لتاب <strong style="color:var(--accent)">PivotTable Analyze</strong></li>
+                <li>اضغط <strong style="color:var(--accent)">PivotChart</strong></li>
+                <li>اختار نوع الرسم (Column, Bar, Line, Pie, إلخ)</li>
+                <li>اضغط OK - الرسم هيظهر فوراً!</li>
+            </ol>
+        </div>
+
+        <h3>الطريقة الثانية: إنشاء Pivot Table و Chart مع بعض</h3>
+        <div class="content-card">
+            <h4>الخطوات</h4>
+            <ol class="steps-list">
+                <li>حدد البيانات الأصلية</li>
+                <li>روح لتاب <strong style="color:var(--accent)">Insert</strong></li>
+                <li>اضغط <strong style="color:var(--accent)">PivotChart</strong> (مش PivotTable)</li>
+                <li>هيتكون Pivot Table و Pivot Chart مع بعض في نفس الوقت</li>
+            </ol>
+        </div>
+
+        <h3>تنسيق الـ Pivot Chart</h3>
+        <div class="content-card">
+            <h4>خيارات التنسيق</h4>
+            <ul>
+                <li><strong style="color:var(--accent)">Chart Title:</strong> غير عنوان الرسم بالضغط عليه والكتابة</li>
+                <li><strong style="color:var(--accent4)">Chart Styles:</strong> تاب Design فيه أنماط جاهزة - اختار اللي يعجبك</li>
+                <li><strong style="color:var(--accent3)">Data Labels:</strong> أضف الأرقام على الأعمدة عشان تبان القيم</li>
+                <li><strong style="color:var(--accent2)">Legend:</strong> تحكم في مكان وشكل دليل الألوان (Legend)</li>
+                <li><strong style="color:var(--accent5)">Field Buttons:</strong> الأزرار اللي بتظهر على الرسم للفلترة - تقدر تخفيها من PivotChart Analyze &gt; Field Buttons</li>
+            </ul>
+        </div>
+
+        <div class="info-box warning">
+            <strong>ملاحظة:</strong> لو مسحت الـ Pivot Table، الـ Pivot Chart بيتحول لـ Chart عادي ثابت وبيفقد التفاعلية. عشان كده خلي الـ Pivot Table موجودة حتى لو مخفية في شيت تاني.
+        </div>
+    </section>
+
+    <!-- Section 13: Chart Types -->
+    <section class="section" id="chart-types">
+        <span class="section-label">&#127912; أنواع</span>
+        <h2>أنواع Charts المناسبة</h2>
+
+        <p>اختيار نوع الرسم البياني المناسب مهم جداً! كل نوع بيناسب نوع معين من البيانات:</p>
+
+        <div class="features-grid">
+            <div class="feature-card" style="border-color:rgba(255,77,77,.3)">
+                <div class="icon">&#128202;</div>
+                <h4 style="color:var(--accent)">Column Chart (أعمدة)</h4>
+                <p>الأفضل لمقارنة تصنيفات مع بعض. مثال: مبيعات كل قسم، أداء كل موظف. الأكثر استخداماً!</p>
+            </div>
+            <div class="feature-card" style="border-color:rgba(77,140,255,.3)">
+                <div class="icon">&#128202;</div>
+                <h4 style="color:var(--accent4)">Bar Chart (أشرطة أفقية)</h4>
+                <p>زي Column بس أفقي. الأفضل لما أسماء التصنيفات طويلة. مثال: مبيعات كل منطقة بالاسم الكامل.</p>
+            </div>
+            <div class="feature-card" style="border-color:rgba(0,212,126,.3)">
+                <div class="icon">&#128200;</div>
+                <h4 style="color:var(--accent3)">Line Chart (خطي)</h4>
+                <p>الأفضل لعرض الاتجاهات عبر الزمن. مثال: المبيعات الشهرية على مدار السنة - بتشوف هل في نمو ولا انخفاض.</p>
+            </div>
+            <div class="feature-card" style="border-color:rgba(255,140,0,.3)">
+                <div class="icon">&#127856;</div>
+                <h4 style="color:var(--accent2)">Pie Chart (دائري)</h4>
+                <p>لعرض النسب والحصص. مثال: توزيع المبيعات على الأقسام. قاعدة: لا تستخدمه لأكتر من 5-6 تصنيفات!</p>
+            </div>
+            <div class="feature-card" style="border-color:rgba(168,85,247,.3)">
+                <div class="icon">&#128200;</div>
+                <h4 style="color:var(--accent5)">Combo Chart (مدمج)</h4>
+                <p>يجمع نوعين من الرسوم. مثال: أعمدة للمبيعات وخط لنسبة الربح. يستخدم محورين Y مختلفين (Dual Axis).</p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h4>دليل اختيار نوع الرسم</h4>
+            <div class="table-visual">
+                <table>
+                    <tr><th>السؤال</th><th>نوع الرسم المناسب</th><th>مثال</th></tr>
+                    <tr><td>مقارنة بين تصنيفات؟</td><td class="highlight-cell">Column / Bar</td><td>مبيعات كل قسم</td></tr>
+                    <tr><td>اتجاه عبر الزمن؟</td><td class="highlight-green">Line</td><td>المبيعات الشهرية</td></tr>
+                    <tr><td>نسب وحصص؟</td><td class="highlight-orange">Pie / Donut</td><td>حصة كل منطقة</td></tr>
+                    <tr><td>مقارنة + اتجاه؟</td><td class="highlight-purple">Combo</td><td>مبيعات + نمو</td></tr>
+                    <tr><td>بيانات كتيرة؟</td><td class="highlight-blue">Column Clustered</td><td>مبيعات حسب القسم والمنطقة</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="info-box danger">
+            <strong>أخطاء شائعة في اختيار الرسم:</strong> لا تستخدم Pie Chart لأكتر من 6 تصنيفات (بيبقى مزدحم وصعب القراءة). لا تستخدم 3D Charts في العروض المهنية (بتشوه القيم). Line Chart مش مناسب لبيانات غير مرتبة زمنياً.
+        </div>
+    </section>
+
+    <!-- Section 14: Pro Tips -->
+    <section class="section" id="pro-tips">
+        <span class="section-label">&#128161; نصائح</span>
+        <h2>نصائح احترافية</h2>
+
+        <p>النصائح دي هتخليك محترف في استخدام Pivot Tables وتتفادى المشاكل الشائعة:</p>
+
+        <div class="content-card">
+            <h4>1. تحديث البيانات (Refresh)</h4>
+            <p>الـ Pivot Table <strong style="color:var(--accent)">ما بتتحدثش تلقائي</strong> لما تغير في البيانات الأصلية! لازم تعمل Refresh:</p>
+            <ul>
+                <li>كليك يمين على الـ Pivot Table واختار <strong style="color:var(--accent)">Refresh</strong></li>
+                <li>أو اضغط <span style="color:var(--accent4);font-family:'JetBrains Mono',monospace">Alt + F5</span> لتحديث الـ Pivot Table الحالية</li>
+                <li>أو <span style="color:var(--accent4);font-family:'JetBrains Mono',monospace">Ctrl + Alt + F5</span> لتحديث كل الـ Pivot Tables في الملف</li>
+            </ul>
+        </div>
+
+        <div class="content-card">
+            <h4>2. حذف العناصر القديمة</h4>
+            <p>لما تحذف بيانات من المصدر وتعمل Refresh، العناصر القديمة ممكن تفضل ظاهرة في القوائم المنسدلة (كـ ghost items). عشان تمسحها:</p>
+            <ul>
+                <li>كليك يمين على الـ Pivot Table</li>
+                <li>اختار <strong style="color:var(--accent)">PivotTable Options</strong></li>
+                <li>تاب <strong style="color:var(--accent4)">Data</strong></li>
+                <li>غير "Number of items to retain per field" لـ <strong style="color:var(--accent3)">None</strong></li>
+                <li>اعمل Refresh</li>
+            </ul>
+        </div>
+
+        <div class="content-card">
+            <h4>3. التنسيق من تاب Design</h4>
+            <p>تاب <strong style="color:var(--accent)">Design</strong> (بيظهر لما تضغط على الـ Pivot Table) فيه أنماط جاهزة حلوة:</p>
+            <ul>
+                <li><strong style="color:var(--accent4)">PivotTable Styles:</strong> أنماط ألوان جاهزة - اختار واحد يناسب التقرير بتاعك</li>
+                <li><strong style="color:var(--accent3)">Banded Rows/Columns:</strong> تلوين الصفوف بالتبادل عشان تبقى أسهل في القراءة</li>
+                <li><strong style="color:var(--accent2)">Row/Column Headers:</strong> تمييز رؤوس الصفوف والأعمدة</li>
+                <li><strong style="color:var(--accent)">Grand Totals:</strong> إظهار أو إخفاء الإجمالي للصفوف والأعمدة</li>
+                <li><strong style="color:var(--accent5)">Subtotals:</strong> إظهار أو إخفاء الإجماليات الفرعية</li>
+            </ul>
+        </div>
+
+        <div class="content-card">
+            <h4>4. اختصارات لوحة المفاتيح</h4>
+            <div class="table-visual">
+                <table>
+                    <tr><th>الاختصار</th><th>الوظيفة</th></tr>
+                    <tr><td class="highlight-cell">Alt + N + V</td><td>إنشاء PivotTable جديدة</td></tr>
+                    <tr><td class="highlight-blue">Alt + F5</td><td>تحديث PivotTable الحالية</td></tr>
+                    <tr><td class="highlight-green">Ctrl + Alt + F5</td><td>تحديث كل PivotTables</td></tr>
+                    <tr><td class="highlight-orange">Alt + D + P</td><td>فتح Classic PivotTable Wizard</td></tr>
+                    <tr><td class="highlight-purple">Alt + Shift + Right</td><td>تجميع العناصر المحددة</td></tr>
+                    <tr><td>Alt + Shift + Left</td><td>إلغاء التجميع</td></tr>
+                    <tr><td class="highlight-cell">Double-click cell</td><td>عرض البيانات التفصيلية (Drill Down)</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h4>5. ميزة Recommended PivotTables</h4>
+            <p>في تاب Insert، فيه زر <strong style="color:var(--accent)">Recommended PivotTables</strong>. لما تضغط عليه، Excel بيحلل بياناتك ويقترح أشكال Pivot Tables مناسبة. ممتاز لما تكون مش عارف تبدأ منين أو عايز أفكار لتحليل بياناتك!</p>
+        </div>
+
+        <div class="info-box success">
+            <strong>نصيحة ذهبية - Drill Down:</strong> لما تعمل Double-click على أي رقم في الـ Pivot Table، Excel بيفتح شيت جديد فيه كل الصفوف اللي كونت الرقم ده! مثلاً: لو ضغطت مرتين على مبيعات القاهرة (102,000)، هتشوف الـ 4 صفوف بتاعة موظفين القاهرة. ده اسمه Drill Down ومفيد جداً للتحقق من الأرقام.
+        </div>
+    </section>
+
+    <!-- Section 15: Exercises -->
+    <section class="section" id="exercises">
+        <span class="section-label">&#128170; تمارين</span>
+        <h2>تمارين عملية</h2>
+
+        <p>استخدم البيانات اللي في القسم الثالث (تحضير البيانات) لحل التمارين دي. حاول تحل كل تمرين لوحدك الأول قبل ما تشوف الحل!</p>
+
+        <!-- Exercise 1 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 1: إنشاء Pivot Table أساسية</h4>
+                <span class="exercise-badge easy">سهل</span>
+            </div>
+            <div class="exercise-body">
+                <p>أنشئ Pivot Table تعرض إجمالي المبيعات لكل قسم. ورتبها من الأعلى للأقل.</p>
+                <button class="hint-btn" onclick="toggleHint(this)">&#128161; تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> اسحب "القسم" لمنطقة Rows، و "المبيعات" لمنطقة Values. ثم كليك يمين على أي رقم واختار Sort Largest to Smallest.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">&#128275; الحل</button>
+                <div class="solution-content">
+                    <p>الخطوات: Select data &gt; Insert &gt; PivotTable &gt; OK</p>
+                    <p>Rows: القسم | Values: Sum of المبيعات</p>
+                    <div class="table-visual">
+                        <table>
+                            <tr><th>القسم</th><th>Sum of المبيعات</th></tr>
+                            <tr><td>المبيعات</td><td class="highlight-cell">125,000</td></tr>
+                            <tr><td>التسويق</td><td>68,000</td></tr>
+                            <tr><td>الدعم</td><td>22,000</td></tr>
+                            <tr><td><strong>Grand Total</strong></td><td class="highlight-green">215,000</td></tr>
+                        </table>
+                    </div>
+                    <p>قسم المبيعات هو الأعلى بـ 125,000</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 2 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 2: تحليل Cross-Tab</h4>
+                <span class="exercise-badge easy">سهل</span>
+            </div>
+            <div class="exercise-body">
+                <p>أنشئ Pivot Table تعرض متوسط المبيعات لكل قسم في كل منطقة. أي قسم في أي منطقة عنده أعلى متوسط؟</p>
+                <button class="hint-btn" onclick="toggleHint(this)">&#128161; تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> Rows: القسم | Columns: المنطقة | Values: Average of المبيعات. غير نوع الحساب من SUM لـ AVERAGE عن طريق Value Field Settings.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">&#128275; الحل</button>
+                <div class="solution-content">
+                    <div class="table-visual">
+                        <table>
+                            <tr><th>القسم \ المنطقة</th><th>الإسكندرية</th><th>القاهرة</th><th>المنصورة</th></tr>
+                            <tr><td>الدعم</td><td>-</td><td>12,000</td><td>10,000</td></tr>
+                            <tr><td>التسويق</td><td>19,000</td><td>30,000</td><td>-</td></tr>
+                            <tr><td>المبيعات</td><td>15,000</td><td class="highlight-cell">30,000</td><td>25,000</td></tr>
+                        </table>
+                    </div>
+                    <p>أعلى متوسط: قسم المبيعات في القاهرة وقسم التسويق في القاهرة بـ 30,000 لكل منهما.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 3 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 3: تجميع المبيعات في نطاقات</h4>
+                <span class="exercise-badge medium">متوسط</span>
+            </div>
+            <div class="exercise-body">
+                <p>أنشئ Pivot Table تجمع المبيعات في نطاقات (10000-15000, 15001-20000, 20001-25000, 25001-30000, 30001-35000) واحسب عدد الموظفين في كل نطاق.</p>
+                <button class="hint-btn" onclick="toggleHint(this)">&#128161; تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> اسحب "المبيعات" لـ Rows و"الموظف" لـ Values (هيعد تلقائي COUNT). ثم كليك يمين على أي رقم مبيعات واختار Group. حدد Starting at: 10000, Ending at: 35000, By: 5000.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">&#128275; الحل</button>
+                <div class="solution-content">
+                    <div class="table-visual">
+                        <table>
+                            <tr><th>نطاق المبيعات</th><th>عدد الموظفين</th></tr>
+                            <tr><td>10000-14999</td><td>2 (نور، خالد)</td></tr>
+                            <tr><td>15000-19999</td><td>2 (عمر، سارة)</td></tr>
+                            <tr><td>20000-24999</td><td>2 (محمد، منى)</td></tr>
+                            <tr><td>25000-29999</td><td>2 (أحمد، يوسف)</td></tr>
+                            <tr><td>30000-34999</td><td>1 (فاطمة)</td></tr>
+                            <tr><td>35000-39999</td><td class="highlight-cell">1 (ريم)</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 4 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 4: Calculated Field - الربح</h4>
+                <span class="exercise-badge medium">متوسط</span>
+            </div>
+            <div class="exercise-body">
+                <p>أضف Calculated Field اسمه "الربح" يحسب الفرق بين المبيعات والتكلفة. ثم أنشئ Pivot Table تعرض إجمالي الربح لكل قسم.</p>
+                <button class="hint-btn" onclick="toggleHint(this)">&#128161; تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> PivotTable Analyze &gt; Fields, Items &amp; Sets &gt; Calculated Field. الاسم: الربح. Formula: = المبيعات - التكلفة. ثم اسحب "القسم" لـ Rows.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">&#128275; الحل</button>
+                <div class="solution-content">
+                    <div class="code-block">
+                        <div class="code-header"><span>Calculated Field</span><button class="copy-btn" onclick="copyCode(this)">نسخ</button></div>
+                        <pre><span class="cm">// Name: الربح</span>
+<span class="cm">// Formula:</span>
+<span class="op">=</span> <span class="fn">المبيعات</span> <span class="op">-</span> <span class="fn">التكلفة</span></pre>
+                    </div>
+                    <div class="table-visual">
+                        <table>
+                            <tr><th>القسم</th><th>Sum of الربح</th></tr>
+                            <tr><td>الدعم</td><td>5,000</td></tr>
+                            <tr><td>التسويق</td><td>20,000</td></tr>
+                            <tr><td>المبيعات</td><td class="highlight-green">31,000</td></tr>
+                            <tr><td><strong>Grand Total</strong></td><td class="highlight-cell">56,000</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 5 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 5: إنشاء Pivot Chart</h4>
+                <span class="exercise-badge medium">متوسط</span>
+            </div>
+            <div class="exercise-body">
+                <p>أنشئ Pivot Chart من نوع Column Clustered يعرض المبيعات لكل قسم في كل منطقة. أضف Data Labels وغير الألوان.</p>
+                <button class="hint-btn" onclick="toggleHint(this)">&#128161; تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> أنشئ Pivot Table أولاً (Rows: القسم, Columns: المنطقة, Values: Sum of المبيعات). ثم PivotTable Analyze &gt; PivotChart &gt; Column Clustered. بعدها اضغط على الرسم &gt; Chart Design &gt; Add Chart Element &gt; Data Labels.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">&#128275; الحل</button>
+                <div class="solution-content">
+                    <p><strong>الخطوات:</strong></p>
+                    <ul>
+                        <li>أنشئ Pivot Table بالحقول المطلوبة</li>
+                        <li>PivotTable Analyze &gt; PivotChart &gt; Column Clustered</li>
+                        <li>Chart Design &gt; Add Chart Element &gt; Data Labels &gt; Outside End</li>
+                        <li>لتغيير الألوان: Chart Design &gt; Change Colors أو اضغط على أي عمود واختار Format Data Series</li>
+                    </ul>
+                    <p>الرسم هيعرض 3 مجموعات أعمدة (واحدة لكل منطقة) مع 3 أعمدة في كل مجموعة (واحد لكل قسم).</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 6 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 6: استخدام Slicers</h4>
+                <span class="exercise-badge medium">متوسط</span>
+            </div>
+            <div class="exercise-body">
+                <p>أضف Slicer للمنطقة و Slicer للقسم على الـ Pivot Table. استخدمهم لعرض مبيعات قسم المبيعات في القاهرة فقط.</p>
+                <button class="hint-btn" onclick="toggleHint(this)">&#128161; تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> اضغط على الـ Pivot Table &gt; PivotTable Analyze &gt; Insert Slicer &gt; اختار "المنطقة" و "القسم". بعدها اضغط "القاهرة" في Slicer المنطقة و "المبيعات" في Slicer القسم.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">&#128275; الحل</button>
+                <div class="solution-content">
+                    <p>بعد تطبيق الفلاتر، الـ Pivot Table هتعرض:</p>
+                    <div class="table-visual">
+                        <table>
+                            <tr><th>الموظف</th><th>Sum of المبيعات</th></tr>
+                            <tr><td>أحمد</td><td>25,000</td></tr>
+                            <tr><td>ريم</td><td>35,000</td></tr>
+                            <tr><td><strong>Grand Total</strong></td><td class="highlight-cell">60,000</td></tr>
+                        </table>
+                    </div>
+                    <p>يعني موظفين المبيعات في القاهرة هم أحمد وريم بإجمالي 60,000.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 7 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 7: النسب المئوية</h4>
+                <span class="exercise-badge hard">صعب</span>
+            </div>
+            <div class="exercise-body">
+                <p>أنشئ Pivot Table تعرض مبيعات كل قسم كنسبة مئوية من الإجمالي الكلي. ثم أضف عمود تاني يعرض نسبة كل قسم من إجمالي كل منطقة.</p>
+                <button class="hint-btn" onclick="toggleHint(this)">&#128161; تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> أضف "المبيعات" مرتين في Values. الأولى اتركها SUM. الثانية: كليك يمين &gt; Value Field Settings &gt; Show Values As &gt; % of Grand Total. للنسبة حسب المنطقة: % of Column Total.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">&#128275; الحل</button>
+                <div class="solution-content">
+                    <div class="table-visual">
+                        <table>
+                            <tr><th>القسم</th><th>المبيعات</th><th>% من الإجمالي</th></tr>
+                            <tr><td>الدعم</td><td>22,000</td><td>10.23%</td></tr>
+                            <tr><td>التسويق</td><td>68,000</td><td>31.63%</td></tr>
+                            <tr><td>المبيعات</td><td>125,000</td><td class="highlight-cell">58.14%</td></tr>
+                            <tr><td><strong>Grand Total</strong></td><td>215,000</td><td>100%</td></tr>
+                        </table>
+                    </div>
+                    <p>قسم المبيعات يمثل 58.14% من إجمالي المبيعات!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise 8 -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise(this)">
+                <h4>تمرين 8: سيناريو تحليل كامل</h4>
+                <span class="exercise-badge challenge">تحدي</span>
+            </div>
+            <div class="exercise-body">
+                <p>أنت محلل بيانات وطلب منك المدير تقرير شامل يتضمن:</p>
+                <ul style="padding-right:24px">
+                    <li>Pivot Table بإجمالي المبيعات والتكلفة والربح لكل قسم في كل منطقة</li>
+                    <li>Calculated Field للربح ونسبة الربح</li>
+                    <li>Column Chart يعرض المبيعات حسب القسم والمنطقة</li>
+                    <li>Pie Chart يعرض توزيع المبيعات على الأقسام</li>
+                    <li>Slicers للمنطقة والقسم</li>
+                </ul>
+                <button class="hint-btn" onclick="toggleHint(this)">&#128161; تلميح</button>
+                <div class="hint-content">
+                    <div class="info-box">
+                        <strong>تلميح:</strong> ابدأ بإنشاء Pivot Table واحدة بكل الحقول. أضف Calculated Fields للربح ونسبة الربح. ثم أنشئ PivotChart Column وحوله لـ Clustered. انسخ الـ Pivot Table وغير الرسم لـ Pie. أخيراً أضف Slicers واربطها بكل الـ Pivot Tables عن طريق Report Connections.
+                    </div>
+                </div>
+                <button class="solution-toggle" onclick="toggleSolution(this)">&#128275; الحل</button>
+                <div class="solution-content">
+                    <p><strong>خطوات الحل الكامل:</strong></p>
+                    <ol style="padding-right:24px">
+                        <li>أنشئ Pivot Table: Rows = القسم, Columns = المنطقة, Values = Sum المبيعات + Sum التكلفة</li>
+                        <li>أضف Calculated Field "الربح" = المبيعات - التكلفة</li>
+                        <li>أضف Calculated Field "نسبة الربح" = (المبيعات - التكلفة) / المبيعات</li>
+                        <li>فورمات نسبة الربح كـ Percentage</li>
+                        <li>أنشئ PivotChart &gt; Column Clustered للمبيعات</li>
+                        <li>أنشئ Pivot Table ثانية: Rows = القسم, Values = Sum المبيعات</li>
+                        <li>أنشئ PivotChart &gt; Pie للتوزيع</li>
+                        <li>Insert Slicer (المنطقة + القسم)</li>
+                        <li>كليك يمين على Slicer &gt; Report Connections &gt; اختار كل الـ Pivot Tables</li>
+                    </ol>
+                    <div class="table-visual">
+                        <table>
+                            <tr><th>القسم</th><th>المبيعات</th><th>التكلفة</th><th>الربح</th><th>نسبة الربح</th></tr>
+                            <tr><td>الدعم</td><td>22,000</td><td>17,000</td><td>5,000</td><td>22.7%</td></tr>
+                            <tr><td>التسويق</td><td>68,000</td><td>46,000</td><td>22,000</td><td class="highlight-green">32.4%</td></tr>
+                            <tr><td>المبيعات</td><td>125,000</td><td>86,000</td><td>39,000</td><td>31.2%</td></tr>
+                            <tr><td><strong>الإجمالي</strong></td><td class="highlight-cell">215,000</td><td>149,000</td><td>66,000</td><td>30.7%</td></tr>
+                        </table>
+                    </div>
+                    <p>قسم التسويق عنده أعلى نسبة ربح (32.4%) رغم إن قسم المبيعات عنده أعلى ربح مطلق (39,000). ده بيوضح أهمية النسب المئوية في التحليل!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Summary Section -->
+    <section class="section">
+        <div class="summary-box">
+            <h3>&#128218; ملخص اليوم السادس</h3>
+            <ul>
+                <li><strong style="color:var(--accent)">Pivot Table:</strong> أداة لتحويل البيانات الخام لملخصات - بدون أي معادلات!</li>
+                <li><strong style="color:var(--accent)">تحضير البيانات:</strong> لا صفوف/أعمدة فارغة، لا خلايا مدمجة، عناوين في الصف الأول، Ctrl+T للتحويل لجدول</li>
+                <li><strong style="color:var(--accent4)">المناطق الأربعة:</strong> Rows (صفوف)، Columns (أعمدة)، Values (قيم)، Filters (فلاتر)</li>
+                <li><strong style="color:var(--accent3)">أنواع الحساب:</strong> SUM, COUNT, AVERAGE, MAX, MIN - تقدر تغيرهم من Value Field Settings</li>
+                <li><strong style="color:var(--accent2)">Show Values As:</strong> % of Grand Total, % of Column/Row Total, Running Total, Difference From</li>
+                <li><strong style="color:var(--accent5)">التجميع:</strong> تواريخ (شهور/أرباع/سنوات)، أرقام (نطاقات)، يدوي</li>
+                <li><strong style="color:var(--accent4)">Slicers:</strong> فلاتر بصرية تفاعلية - ممكن تتحكم في أكتر من Pivot Table</li>
+                <li><strong style="color:var(--accent)">Calculated Fields:</strong> حقول محسوبة جديدة (الربح = المبيعات - التكلفة)</li>
+                <li><strong style="color:var(--accent3)">Pivot Charts:</strong> رسوم بيانية متصلة بالـ Pivot Table - تفاعلية وديناميكية</li>
+                <li><strong style="color:var(--accent2)">أنواع Charts:</strong> Column (مقارنة)، Line (اتجاهات)، Pie (نسب)، Combo (مدمج)</li>
+            </ul>
+        </div>
+
+        <div class="quote-box">
+            "Pivot Tables هي المهارة اللي بتحول محلل البيانات المبتدئ لمحترف. اتمرن كتير على بيانات مختلفة وجرب كل الخيارات - كل مرة هتكتشف حاجة جديدة. والأهم: في المقابلة، لما يسألوك عن Pivot Tables ابدأ بالمفهوم ثم اشرح المناطق الأربعة ثم اديهم مثال عملي!"
+        </div>
+    </section>
+
+</main>
+
+<a href="index.html" class="back-btn" title="العودة للخطة">&#8617;</a>
+
+<script>
+function toggleExercise(header) {
+    var body = header.nextElementSibling;
+    body.classList.toggle('show');
+}
+
+function toggleHint(btn) {
+    var hint = btn.nextElementSibling;
+    hint.classList.toggle('show');
+    if (hint.classList.contains('show')) {
+        btn.textContent = '\uD83D\uDE48 \u0625\u062E\u0641\u0627\u0621 \u0627\u0644\u062A\u0644\u0645\u064A\u062D';
+    } else {
+        btn.textContent = '\uD83D\uDCA1 \u062A\u0644\u0645\u064A\u062D';
+    }
+}
+
+function toggleSolution(btn) {
+    var sol = btn.nextElementSibling;
+    sol.classList.toggle('show');
+    if (sol.classList.contains('show')) {
+        btn.textContent = '\uD83D\uDD12 \u0625\u062E\u0641\u0627\u0621 \u0627\u0644\u062D\u0644';
+    } else {
+        btn.textContent = '\uD83D\uDD13 \u0627\u0644\u062D\u0644';
+    }
+}
+
+function copyCode(btn) {
+    var code = btn.closest('.code-block').querySelector('pre').textContent;
+    navigator.clipboard.writeText(code).then(function() {
+        btn.textContent = '\u062A\u0645 \u0627\u0644\u0646\u0633\u062E \u2713';
+        setTimeout(function() { btn.textContent = '\u0646\u0633\u062E'; }, 2000);
+    });
+}
+
+var sections = document.querySelectorAll('.section[id]');
+var navLinks = document.querySelectorAll('.sidebar-nav a');
+window.addEventListener('scroll', function() {
+    var current = '';
+    sections.forEach(function(section) {
+        if (pageYOffset >= section.offsetTop - 100) {
+            current = section.getAttribute('id');
+        }
+    });
+    navLinks.forEach(function(link) {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) {
+            link.classList.add('active');
+        }
+    });
+});
+</script>
+</body>
+</html>

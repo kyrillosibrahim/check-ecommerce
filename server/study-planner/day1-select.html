@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SELECT, WHERE, ORDER BY, DISTINCT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #06060f; --bg-card: #0d0d1f; --bg-card-alt: #111128; --bg-code: #0a0a1a;
+            --accent: #ff4d4d; --accent-glow: rgba(255,77,77,0.15); --accent2: #ff8c00;
+            --accent3: #00d47e; --accent4: #4d8cff; --accent5: #a855f7;
+            --text: #e8e8f0; --text-sec: #8888aa; --text-muted: #555577;
+            --border: #1a1a35; --border-light: #252550;
+        }
+        body { font-family:'Cairo',sans-serif; background:var(--bg); color:var(--text); line-height:1.8; overflow-x:hidden; }
+        body::before { content:''; position:fixed; inset:0; background:radial-gradient(ellipse at 20% 15%,rgba(77,140,255,0.07) 0%,transparent 50%),radial-gradient(ellipse at 80% 85%,rgba(168,85,247,0.06) 0%,transparent 50%); pointer-events:none; z-index:0; }
+
+        .sidebar { position:fixed; top:0; right:0; width:280px; height:100vh; background:var(--bg-card); border-left:1px solid var(--border); padding:30px 20px; overflow-y:auto; z-index:100; transition:transform .3s; }
+        .sidebar__title { font-size:.8rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:2px; margin-bottom:20px; font-weight:700; }
+        .sidebar__nav a { display:flex; align-items:center; gap:10px; padding:10px 14px; color:var(--text-sec); text-decoration:none; font-size:.85rem; font-weight:600; border-radius:10px; margin-bottom:4px; transition:all .2s; }
+        .sidebar__nav a:hover, .sidebar__nav a.active { background:rgba(77,140,255,0.12); color:var(--accent4); }
+        .sidebar__nav a .nav-num { width:24px; height:24px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:.7rem; font-weight:800; background:var(--border); color:var(--text-muted); flex-shrink:0; }
+        .sidebar__nav a:hover .nav-num, .sidebar__nav a.active .nav-num { background:var(--accent4); color:#fff; }
+        .sidebar__back { display:flex; align-items:center; gap:8px; color:var(--accent4); text-decoration:none; font-weight:700; font-size:.9rem; margin-bottom:25px; padding:10px 14px; border-radius:10px; transition:background .2s; }
+        .sidebar__back:hover { background:rgba(77,140,255,0.12); }
+
+        .menu-toggle { display:none; position:fixed; top:20px; right:20px; z-index:200; width:48px; height:48px; border-radius:12px; background:var(--bg-card); border:1px solid var(--border); color:var(--text); font-size:1.3rem; cursor:pointer; align-items:center; justify-content:center; }
+        @media(max-width:900px){ .sidebar{transform:translateX(100%);width:270px;} .sidebar--open{transform:translateX(0);} .menu-toggle{display:flex;} .main{margin-right:0!important;} }
+
+        .main { margin-right:280px; padding:40px 50px 80px; max-width:900px; position:relative; z-index:1; }
+        @media(max-width:1100px){ .main{padding:30px 25px 60px;} }
+
+        .hero { margin-bottom:50px; padding-bottom:40px; border-bottom:1px solid var(--border); }
+        .hero__badge { display:inline-flex; align-items:center; gap:8px; background:rgba(77,140,255,0.15); color:var(--accent4); padding:6px 16px; border-radius:8px; font-size:.8rem; font-weight:700; margin-bottom:16px; }
+        .hero__title { font-size:2.2rem; font-weight:900; line-height:1.3; margin-bottom:12px; background:linear-gradient(135deg,#fff,#ccc); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+        .hero__desc { color:var(--text-sec); font-size:1.05rem; font-weight:600; max-width:600px; }
+        .hero__meta { display:flex; gap:24px; margin-top:20px; flex-wrap:wrap; }
+        .hero__meta-item { display:flex; align-items:center; gap:8px; color:var(--text-muted); font-size:.85rem; font-weight:600; }
+
+        .section { margin-bottom:55px; scroll-margin-top:30px; }
+        .section__header { display:flex; align-items:center; gap:14px; margin-bottom:24px; }
+        .section__icon { width:46px; height:46px; border-radius:13px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; }
+        .section__icon--red { background:rgba(255,77,77,0.15); }
+        .section__icon--orange { background:rgba(255,140,0,0.15); }
+        .section__icon--green { background:rgba(0,212,126,0.15); }
+        .section__icon--blue { background:rgba(77,140,255,0.15); }
+        .section__icon--purple { background:rgba(168,85,247,0.15); }
+        .section__title { font-size:1.5rem; font-weight:800; }
+
+        .content-card { background:var(--bg-card); border:1px solid var(--border); border-radius:16px; padding:28px; margin-bottom:20px; }
+        .content-card__title { font-size:1.1rem; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:10px; }
+        .content-card p, .content-card li { color:var(--text-sec); font-size:.95rem; font-weight:600; margin-bottom:8px; }
+
+        .quote-box { background:var(--accent-glow); border-right:4px solid var(--accent); padding:18px 22px; border-radius:0 12px 12px 0; margin:20px 0; font-weight:700; font-size:1rem; color:var(--text); }
+        .quote-box--blue { background:rgba(77,140,255,0.1); border-right-color:var(--accent4); }
+        .quote-box--green { background:rgba(0,212,126,0.1); border-right-color:var(--accent3); }
+        .quote-box--orange { background:rgba(255,140,0,0.1); border-right-color:var(--accent2); }
+        .quote-box--purple { background:rgba(168,85,247,0.1); border-right-color:var(--accent5); }
+
+        .code-block { background:var(--bg-code); border:1px solid var(--border); border-radius:12px; margin:16px 0; overflow:hidden; }
+        .code-block__header { display:flex; align-items:center; justify-content:space-between; padding:10px 18px; background:var(--border); font-size:.78rem; font-weight:700; color:var(--text-muted); }
+        .code-block__dots { display:flex; gap:6px; }
+        .code-block__dot { width:10px; height:10px; border-radius:50%; }
+        .code-block__dot--red { background:#ff5f57; } .code-block__dot--yellow { background:#febc2e; } .code-block__dot--green { background:#28c840; }
+        .code-block__body { padding:18px 22px; font-family:'JetBrains Mono',monospace; font-size:.83rem; line-height:1.9; overflow-x:auto; direction:ltr; text-align:left; color:#c8c8e0; }
+
+        .kw { color:#ff79c6; font-weight:700; } .str { color:#f1fa8c; } .cm { color:#555577; font-style:italic; }
+        .num { color:#bd93f9; } .fn { color:#50fa7b; } .tp { color:#8be9fd; } .ac { color:#ff4d4d; } .or { color:#ff8c00; }
+
+        .styled-table { width:100%; border-collapse:collapse; margin:16px 0; font-size:.88rem; }
+        .styled-table thead { background:var(--border); }
+        .styled-table th { padding:14px 18px; text-align:right; font-weight:700; color:var(--text); font-size:.83rem; }
+        .styled-table td { padding:12px 18px; border-bottom:1px solid var(--border); color:var(--text-sec); font-weight:600; }
+        .styled-table tr:hover td { background:rgba(255,255,255,0.02); }
+        .styled-table .highlight-row td { background:rgba(77,140,255,0.08); }
+
+        .badge { display:inline-block; padding:3px 10px; border-radius:6px; font-size:.75rem; font-weight:700; }
+        .badge--red { background:rgba(255,77,77,0.15); color:var(--accent); }
+        .badge--green { background:rgba(0,212,126,0.15); color:var(--accent3); }
+        .badge--blue { background:rgba(77,140,255,0.15); color:var(--accent4); }
+        .badge--orange { background:rgba(255,140,0,0.15); color:var(--accent2); }
+        .badge--purple { background:rgba(168,85,247,0.15); color:var(--accent5); }
+
+        code.inline { background:var(--bg-code); padding:2px 8px; border-radius:5px; font-family:'JetBrains Mono',monospace; font-size:.82rem; color:var(--accent2); direction:ltr; display:inline-block; }
+
+        .info-box { border-radius:12px; padding:18px 22px; margin:16px 0; display:flex; align-items:flex-start; gap:12px; }
+        .info-box--warn { background:rgba(255,140,0,0.1); border:1px solid rgba(255,140,0,0.25); }
+        .info-box--success { background:rgba(0,212,126,0.1); border:1px solid rgba(0,212,126,0.25); }
+        .info-box--tip { background:rgba(77,140,255,0.1); border:1px solid rgba(77,140,255,0.25); }
+        .info-box__icon { font-size:1.3rem; flex-shrink:0; }
+        .info-box__text { font-size:.9rem; font-weight:600; }
+        .info-box--warn .info-box__text { color:var(--accent2); }
+        .info-box--success .info-box__text { color:var(--accent3); }
+        .info-box--tip .info-box__text { color:var(--accent4); }
+
+        .syntax-box { background:linear-gradient(135deg,rgba(77,140,255,0.08),rgba(168,85,247,0.08)); border:1px solid rgba(77,140,255,0.2); border-radius:14px; padding:24px; margin:20px 0; }
+        .syntax-box__title { font-weight:800; font-size:1rem; color:var(--accent4); margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+
+        .table-visual { background:var(--bg-code); border:1px solid var(--border); border-radius:14px; overflow:hidden; margin:16px 0; }
+        .table-visual__header { padding:12px 18px; font-weight:700; font-size:.9rem; display:flex; align-items:center; gap:8px; }
+        .table-visual__header--blue { background:rgba(77,140,255,0.12); color:var(--accent4); }
+        .table-visual__header--green { background:rgba(0,212,126,0.12); color:var(--accent3); }
+        .table-visual__header--orange { background:rgba(255,140,0,0.12); color:var(--accent2); }
+        .table-visual__header--purple { background:rgba(168,85,247,0.12); color:var(--accent5); }
+        .table-visual table { width:100%; border-collapse:collapse; }
+        .table-visual th { background:var(--border); padding:10px 16px; text-align:right; font-size:.8rem; font-weight:700; color:var(--accent4); font-family:'JetBrains Mono',monospace; }
+        .table-visual td { padding:10px 16px; border-bottom:1px solid var(--border); font-size:.85rem; color:var(--text-sec); font-weight:600; }
+        .table-visual .row-highlight td { background:rgba(0,212,126,0.08); color:var(--accent3); }
+        .table-visual .row-dim td { opacity:0.35; }
+        .table-visual__footer { padding:10px 18px; font-size:.8rem; color:var(--text-muted); font-weight:600; font-style:italic; }
+
+        .sub-title { font-size:1.15rem; font-weight:800; margin:30px 0 16px; color:var(--text); }
+
+        .operator-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; margin:16px 0; }
+        .operator-card { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:16px; text-align:center; transition:all .2s; }
+        .operator-card:hover { border-color:var(--border-light); transform:translateY(-2px); }
+        .operator-card__symbol { font-family:'JetBrains Mono',monospace; font-size:1.4rem; font-weight:800; margin-bottom:6px; }
+        .operator-card__name { color:var(--text-sec); font-size:.8rem; font-weight:700; }
+
+        .flow-box { display:flex; align-items:center; gap:12px; flex-wrap:wrap; justify-content:center; margin:20px 0; padding:20px; background:var(--bg-card); border:1px solid var(--border); border-radius:14px; }
+        .flow-step { padding:10px 20px; border-radius:10px; font-weight:700; font-size:.9rem; }
+        .flow-arrow { color:var(--text-muted); font-size:1.2rem; }
+
+        .practice-card { background:linear-gradient(135deg,rgba(0,212,126,0.06),rgba(77,140,255,0.06)); border:1px solid var(--accent3); border-radius:16px; padding:28px; margin:20px 0; }
+        .practice-card__title { font-size:1.1rem; font-weight:800; color:var(--accent3); margin-bottom:14px; display:flex; align-items:center; gap:10px; }
+        .practice-card__task { background:rgba(0,0,0,0.2); border-radius:10px; padding:14px 18px; margin-bottom:10px; font-size:.9rem; font-weight:600; color:var(--text-sec); display:flex; align-items:flex-start; gap:10px; }
+        .practice-card__task-num { background:var(--accent3); color:#fff; width:24px; height:24px; min-width:24px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:.75rem; font-weight:800; }
+
+        .summary-box { background:linear-gradient(135deg,rgba(77,140,255,0.08),rgba(168,85,247,0.08)); border:1px solid var(--border-light); border-radius:18px; padding:30px; margin:30px 0; }
+        .summary-box__title { font-size:1.2rem; font-weight:800; margin-bottom:18px; display:flex; align-items:center; gap:10px; }
+        .summary-list { list-style:none; display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+        @media(max-width:600px){ .summary-list{grid-template-columns:1fr;} .operator-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));} }
+        .summary-list li { display:flex; align-items:center; gap:10px; padding:10px 14px; background:rgba(255,255,255,0.03); border-radius:10px; font-size:.88rem; font-weight:600; color:var(--text-sec); }
+        .summary-list li .check { color:var(--accent3); font-weight:900; }
+        .summary-list li strong { color:var(--text); }
+
+        ::-webkit-scrollbar { width:6px; } ::-webkit-scrollbar-track { background:var(--bg); } ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+        html { scroll-behavior:smooth; }
+    </style>
+</head>
+<body>
+
+<button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('sidebar--open')">☰</button>
+
+<aside class="sidebar">
+    <a href="index.html" class="sidebar__back">→ العودة للخطة</a>
+    <div class="sidebar__title">محتويات الدرس</div>
+    <nav class="sidebar__nav" id="sidebarNav">
+        <a href="#sample-data"><span class="nav-num">1</span> البيانات التجريبية</a>
+        <a href="#select-basic"><span class="nav-num">2</span> SELECT الأساسي</a>
+        <a href="#select-columns"><span class="nav-num">3</span> اختيار أعمدة محددة</a>
+        <a href="#aliases"><span class="nav-num">4</span> الأسماء المستعارة Aliases</a>
+        <a href="#arithmetic"><span class="nav-num">5</span> العمليات الحسابية</a>
+        <a href="#concatenation"><span class="nav-num">6</span> دمج النصوص ||</a>
+        <a href="#where-intro"><span class="nav-num">7</span> WHERE - الأساسيات</a>
+        <a href="#where-operators"><span class="nav-num">8</span> عوامل المقارنة</a>
+        <a href="#where-and-or"><span class="nav-num">9</span> AND و OR و NOT</a>
+        <a href="#where-special"><span class="nav-num">10</span> BETWEEN, IN, LIKE</a>
+        <a href="#where-null"><span class="nav-num">11</span> IS NULL / IS NOT NULL</a>
+        <a href="#order-by"><span class="nav-num">12</span> ORDER BY - الترتيب</a>
+        <a href="#distinct"><span class="nav-num">13</span> DISTINCT - بدون تكرار</a>
+        <a href="#combine"><span class="nav-num">14</span> الدمج - كل حاجة مع بعض</a>
+        <a href="#execution-order"><span class="nav-num">15</span> ترتيب التنفيذ</a>
+        <a href="#practice"><span class="nav-num">16</span> تمارين عملية</a>
+        <a href="#summary"><span class="nav-num">17</span> الملخص</a>
+    </nav>
+</aside>
+
+<div class="main">
+
+    <div class="hero">
+        <div class="hero__badge">📅 اليوم الأول • 9:15 - 10:30 مساءً</div>
+        <h1 class="hero__title">SELECT, WHERE, ORDER BY, DISTINCT</h1>
+        <p class="hero__desc">هنتعلم إزاي نقرأ ونستعلم عن البيانات، نفلتر اللي عايزينه، نرتبه، ونشيل التكرار</p>
+        <div class="hero__meta">
+            <div class="hero__meta-item"><span>⏱</span> المدة: 75 دقيقة</div>
+            <div class="hero__meta-item"><span>📊</span> المستوى: مبتدئ</div>
+            <div class="hero__meta-item"><span>💻</span> 90% عملي</div>
+        </div>
+    </div>
+
+    <!-- ======== SECTION 1: Sample Data ======== -->
+    <div class="section" id="sample-data">
+        <div class="section__header">
+            <div class="section__icon section__icon--blue">📊</div>
+            <h2 class="section__title">البيانات اللي هنشتغل عليها</h2>
+        </div>
+
+        <div class="content-card">
+            <p>قبل ما نبدأ، لازم يكون عندنا بيانات نستعلم عنها. ده الجدول اللي هنشتغل عليه في كل الأمثلة:</p>
+        </div>
+
+        <div class="table-visual">
+            <div class="table-visual__header table-visual__header--blue">📋 جدول الموظفين - EMPLOYEES (10 صفوف)</div>
+            <table>
+                <thead><tr><th>EMP_ID</th><th>FIRST_NAME</th><th>LAST_NAME</th><th>EMAIL</th><th>SALARY</th><th>DEPT</th><th>HIRE_DATE</th><th>CITY</th></tr></thead>
+                <tbody>
+                    <tr><td>1001</td><td>أحمد</td><td>محمود</td><td>ahmed@mail.com</td><td>8,000</td><td>مبيعات</td><td>2023-01-15</td><td>القاهرة</td></tr>
+                    <tr><td>1002</td><td>سارة</td><td>علي</td><td>sara@mail.com</td><td>12,000</td><td>IT</td><td>2022-05-20</td><td>الإسكندرية</td></tr>
+                    <tr><td>1003</td><td>محمد</td><td>سعيد</td><td>mohamed@mail.com</td><td>7,000</td><td>مبيعات</td><td>2024-03-10</td><td>القاهرة</td></tr>
+                    <tr><td>1004</td><td>نورا</td><td>حسن</td><td>noura@mail.com</td><td>15,000</td><td>IT</td><td>2021-11-01</td><td>القاهرة</td></tr>
+                    <tr><td>1005</td><td>خالد</td><td>عمر</td><td>khaled@mail.com</td><td>6,500</td><td>تسويق</td><td>2024-01-05</td><td>الجيزة</td></tr>
+                    <tr><td>1006</td><td>ياسمين</td><td>فوزي</td><td>yasmin@mail.com</td><td>9,500</td><td>HR</td><td>2023-08-15</td><td>الإسكندرية</td></tr>
+                    <tr><td>1007</td><td>عمر</td><td>إبراهيم</td><td>omar@mail.com</td><td>11,000</td><td>IT</td><td>2022-12-01</td><td>القاهرة</td></tr>
+                    <tr><td>1008</td><td>فاطمة</td><td>خالد</td><td>fatma@mail.com</td><td>8,500</td><td>مبيعات</td><td>2023-06-20</td><td>المنصورة</td></tr>
+                    <tr><td>1009</td><td>علي</td><td>محمد</td><td>ali@mail.com</td><td>10,000</td><td>تسويق</td><td>2022-09-10</td><td>القاهرة</td></tr>
+                    <tr><td>1010</td><td>مريم</td><td>أحمد</td><td>mariam@mail.com</td><td>7,500</td><td>HR</td><td>2024-02-14</td><td>الجيزة</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="code-block">
+            <div class="code-block__header"><span>SQL - إنشاء البيانات التجريبية (انسخ وشغّل)</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+            <div class="code-block__body"><span class="kw">CREATE TABLE</span> <span class="fn">employees</span> (
+    <span class="tp">emp_id</span>      <span class="or">NUMBER</span>(<span class="num">6</span>) <span class="kw">PRIMARY KEY</span>,
+    <span class="tp">first_name</span>  <span class="or">VARCHAR2</span>(<span class="num">50</span>) <span class="kw">NOT NULL</span>,
+    <span class="tp">last_name</span>   <span class="or">VARCHAR2</span>(<span class="num">50</span>) <span class="kw">NOT NULL</span>,
+    <span class="tp">email</span>       <span class="or">VARCHAR2</span>(<span class="num">100</span>) <span class="kw">UNIQUE</span>,
+    <span class="tp">salary</span>      <span class="or">NUMBER</span>(<span class="num">8,2</span>),
+    <span class="tp">dept</span>        <span class="or">VARCHAR2</span>(<span class="num">50</span>),
+    <span class="tp">hire_date</span>   <span class="or">DATE</span>,
+    <span class="tp">city</span>        <span class="or">VARCHAR2</span>(<span class="num">50</span>)
+);
+
+<span class="kw">INSERT ALL</span>
+  <span class="kw">INTO</span> <span class="fn">employees</span> <span class="kw">VALUES</span>(<span class="num">1001</span>,<span class="str">'أحمد'</span>,<span class="str">'محمود'</span>,<span class="str">'ahmed@mail.com'</span>,<span class="num">8000</span>,<span class="str">'مبيعات'</span>,<span class="fn">TO_DATE</span>(<span class="str">'2023-01-15'</span>,<span class="str">'YYYY-MM-DD'</span>),<span class="str">'القاهرة'</span>)
+  <span class="kw">INTO</span> <span class="fn">employees</span> <span class="kw">VALUES</span>(<span class="num">1002</span>,<span class="str">'سارة'</span>,<span class="str">'علي'</span>,<span class="str">'sara@mail.com'</span>,<span class="num">12000</span>,<span class="str">'IT'</span>,<span class="fn">TO_DATE</span>(<span class="str">'2022-05-20'</span>,<span class="str">'YYYY-MM-DD'</span>),<span class="str">'الإسكندرية'</span>)
+  <span class="kw">INTO</span> <span class="fn">employees</span> <span class="kw">VALUES</span>(<span class="num">1003</span>,<span class="str">'محمد'</span>,<span class="str">'سعيد'</span>,<span class="str">'mohamed@mail.com'</span>,<span class="num">7000</span>,<span class="str">'مبيعات'</span>,<span class="fn">TO_DATE</span>(<span class="str">'2024-03-10'</span>,<span class="str">'YYYY-MM-DD'</span>),<span class="str">'القاهرة'</span>)
+  <span class="kw">INTO</span> <span class="fn">employees</span> <span class="kw">VALUES</span>(<span class="num">1004</span>,<span class="str">'نورا'</span>,<span class="str">'حسن'</span>,<span class="str">'noura@mail.com'</span>,<span class="num">15000</span>,<span class="str">'IT'</span>,<span class="fn">TO_DATE</span>(<span class="str">'2021-11-01'</span>,<span class="str">'YYYY-MM-DD'</span>),<span class="str">'القاهرة'</span>)
+  <span class="kw">INTO</span> <span class="fn">employees</span> <span class="kw">VALUES</span>(<span class="num">1005</span>,<span class="str">'خالد'</span>,<span class="str">'عمر'</span>,<span class="str">'khaled@mail.com'</span>,<span class="num">6500</span>,<span class="str">'تسويق'</span>,<span class="fn">TO_DATE</span>(<span class="str">'2024-01-05'</span>,<span class="str">'YYYY-MM-DD'</span>),<span class="str">'الجيزة'</span>)
+  <span class="kw">INTO</span> <span class="fn">employees</span> <span class="kw">VALUES</span>(<span class="num">1006</span>,<span class="str">'ياسمين'</span>,<span class="str">'فوزي'</span>,<span class="str">'yasmin@mail.com'</span>,<span class="num">9500</span>,<span class="str">'HR'</span>,<span class="fn">TO_DATE</span>(<span class="str">'2023-08-15'</span>,<span class="str">'YYYY-MM-DD'</span>),<span class="str">'الإسكندرية'</span>)
+  <span class="kw">INTO</span> <span class="fn">employees</span> <span class="kw">VALUES</span>(<span class="num">1007</span>,<span class="str">'عمر'</span>,<span class="str">'إبراهيم'</span>,<span class="str">'omar@mail.com'</span>,<span class="num">11000</span>,<span class="str">'IT'</span>,<span class="fn">TO_DATE</span>(<span class="str">'2022-12-01'</span>,<span class="str">'YYYY-MM-DD'</span>),<span class="str">'القاهرة'</span>)
+  <span class="kw">INTO</span> <span class="fn">employees</span> <span class="kw">VALUES</span>(<span class="num">1008</span>,<span class="str">'فاطمة'</span>,<span class="str">'خالد'</span>,<span class="str">'fatma@mail.com'</span>,<span class="num">8500</span>,<span class="str">'مبيعات'</span>,<span class="fn">TO_DATE</span>(<span class="str">'2023-06-20'</span>,<span class="str">'YYYY-MM-DD'</span>),<span class="str">'المنصورة'</span>)
+  <span class="kw">INTO</span> <span class="fn">employees</span> <span class="kw">VALUES</span>(<span class="num">1009</span>,<span class="str">'علي'</span>,<span class="str">'محمد'</span>,<span class="str">'ali@mail.com'</span>,<span class="num">10000</span>,<span class="str">'تسويق'</span>,<span class="fn">TO_DATE</span>(<span class="str">'2022-09-10'</span>,<span class="str">'YYYY-MM-DD'</span>),<span class="str">'القاهرة'</span>)
+  <span class="kw">INTO</span> <span class="fn">employees</span> <span class="kw">VALUES</span>(<span class="num">1010</span>,<span class="str">'مريم'</span>,<span class="str">'أحمد'</span>,<span class="str">'mariam@mail.com'</span>,<span class="num">7500</span>,<span class="str">'HR'</span>,<span class="fn">TO_DATE</span>(<span class="str">'2024-02-14'</span>,<span class="str">'YYYY-MM-DD'</span>),<span class="str">'الجيزة'</span>)
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="fn">DUAL</span>;
+
+<span class="kw">COMMIT</span>;</div>
+        </div>
+    </div>
+
+    <!-- ======== SECTION 2: SELECT Basic ======== -->
+    <div class="section" id="select-basic">
+        <div class="section__header">
+            <div class="section__icon section__icon--blue">🔍</div>
+            <h2 class="section__title">SELECT - الأمر الأساسي</h2>
+        </div>
+
+        <div class="quote-box quote-box--blue">
+            SELECT = "هاتلي" - بيطلب بيانات من جدول أو أكتر. هو أكتر أمر SQL هتستخدمه في حياتك!
+        </div>
+
+        <div class="syntax-box">
+            <div class="syntax-box__title">📐 الصيغة الأساسية</div>
+            <div class="code-block" style="margin:0;"><div class="code-block__header"><span>SQL Syntax</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="kw">SELECT</span> <span class="tp">column1</span>, <span class="tp">column2</span>, ...
+<span class="kw">FROM</span>   <span class="fn">table_name</span>;</div></div>
+        </div>
+
+        <h3 class="sub-title">هات كل حاجة - SELECT *</h3>
+        <div class="code-block"><div class="code-block__header"><span>SQL</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+            <div class="code-block__body"><span class="cm">-- هاتلي كل الأعمدة وكل الصفوف من جدول الموظفين</span>
+<span class="kw">SELECT</span> *
+<span class="kw">FROM</span>   <span class="fn">employees</span>;
+
+<span class="cm">-- النجمة * معناها "كل الأعمدة"</span>
+<span class="cm">-- النتيجة: الـ 10 صفوف كاملين بكل الأعمدة</span></div></div>
+
+        <div class="info-box info-box--warn">
+            <div class="info-box__icon">⚠️</div>
+            <div class="info-box__text"><strong>تحذير:</strong> في الشغل الحقيقي <strong>متستخدمش SELECT *</strong> على جداول كبيرة! لو الجدول فيه مليون صف هيطلعهم كلهم وده هيبطئ كل حاجة. حدد الأعمدة اللي محتاجها بس.</div>
+        </div>
+    </div>
+
+    <!-- ======== SECTION 3: SELECT Columns ======== -->
+    <div class="section" id="select-columns">
+        <div class="section__header">
+            <div class="section__icon section__icon--green">📋</div>
+            <h2 class="section__title">اختيار أعمدة محددة</h2>
+        </div>
+
+        <div class="code-block"><div class="code-block__header"><span>SQL - اختيار أعمدة</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+            <div class="code-block__body"><span class="cm">-- هاتلي الاسم والمرتب بس</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">salary</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>;</div></div>
+
+        <div class="table-visual">
+            <div class="table-visual__header table-visual__header--green">📋 النتيجة</div>
+            <table>
+                <thead><tr><th>FIRST_NAME</th><th>SALARY</th></tr></thead>
+                <tbody>
+                    <tr><td>أحمد</td><td>8,000</td></tr>
+                    <tr><td>سارة</td><td>12,000</td></tr>
+                    <tr><td>محمد</td><td>7,000</td></tr>
+                    <tr><td>نورا</td><td>15,000</td></tr>
+                    <tr><td>خالد</td><td>6,500</td></tr>
+                    <tr><td>ياسمين</td><td>9,500</td></tr>
+                    <tr><td>عمر</td><td>11,000</td></tr>
+                    <tr><td>فاطمة</td><td>8,500</td></tr>
+                    <tr><td>علي</td><td>10,000</td></tr>
+                    <tr><td>مريم</td><td>7,500</td></tr>
+                </tbody>
+            </table>
+            <div class="table-visual__footer">10 صفوف - عمودين بس (مش كل الأعمدة)</div>
+        </div>
+
+        <div class="code-block"><div class="code-block__header"><span>SQL - أمثلة تانية</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+            <div class="code-block__body"><span class="cm">-- هاتلي الاسم الأول والأخير والقسم</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">last_name</span>, <span class="tp">dept</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>;
+
+<span class="cm">-- هاتلي الإيميل والمدينة</span>
+<span class="kw">SELECT</span> <span class="tp">email</span>, <span class="tp">city</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>;</div></div>
+    </div>
+
+    <!-- ======== SECTION 4: Aliases ======== -->
+    <div class="section" id="aliases">
+        <div class="section__header">
+            <div class="section__icon section__icon--purple">🏷️</div>
+            <h2 class="section__title">الأسماء المستعارة (Aliases)</h2>
+        </div>
+
+        <div class="content-card">
+            <p>ممكن تغير اسم العمود اللي بيظهر في النتيجة باستخدام <code class="inline">AS</code> - مجرد اسم عرض مش بيغير الجدول نفسه.</p>
+        </div>
+
+        <div class="code-block"><div class="code-block__header"><span>SQL - Aliases</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+            <div class="code-block__body"><span class="cm">-- غيّر اسم العمود في النتيجة</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span> <span class="kw">AS</span> <span class="str">"الاسم"</span>,
+       <span class="tp">salary</span>     <span class="kw">AS</span> <span class="str">"المرتب"</span>,
+       <span class="tp">dept</span>       <span class="kw">AS</span> <span class="str">"القسم"</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>;
+
+<span class="cm">-- ممكن كمان من غير AS (اختصار)</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span> <span class="str">"الاسم"</span>, <span class="tp">salary</span> <span class="str">"المرتب"</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>;
+
+<span class="cm">-- لو الاسم المستعار كلمة واحدة إنجليزي ممكن من غير ""</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span> <span class="kw">AS</span> name, <span class="tp">salary</span> <span class="kw">AS</span> pay
+<span class="kw">FROM</span>   <span class="fn">employees</span>;</div></div>
+    </div>
+
+    <!-- ======== SECTION 5: Arithmetic ======== -->
+    <div class="section" id="arithmetic">
+        <div class="section__header">
+            <div class="section__icon section__icon--orange">🔢</div>
+            <h2 class="section__title">العمليات الحسابية في SELECT</h2>
+        </div>
+
+        <div class="code-block"><div class="code-block__header"><span>SQL - حسابات</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+            <div class="code-block__body"><span class="cm">-- المرتب السنوي (المرتب × 12)</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>,
+       <span class="tp">salary</span>,
+       <span class="tp">salary</span> * <span class="num">12</span> <span class="kw">AS</span> <span class="str">"المرتب السنوي"</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>;
+
+<span class="cm">-- المرتب بعد زيادة 10%</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>,
+       <span class="tp">salary</span>               <span class="kw">AS</span> <span class="str">"المرتب الحالي"</span>,
+       <span class="tp">salary</span> * <span class="num">1.10</span>         <span class="kw">AS</span> <span class="str">"بعد الزيادة"</span>,
+       <span class="tp">salary</span> * <span class="num">0.10</span>         <span class="kw">AS</span> <span class="str">"قيمة الزيادة"</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>;
+
+<span class="cm">-- المرتب بعد خصم الضرائب (14%)</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>,
+       <span class="tp">salary</span>               <span class="kw">AS</span> <span class="str">"قبل الضرائب"</span>,
+       <span class="tp">salary</span> * <span class="num">0.86</span>         <span class="kw">AS</span> <span class="str">"بعد الضرائب"</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>;</div></div>
+    </div>
+
+    <!-- ======== SECTION 6: Concatenation ======== -->
+    <div class="section" id="concatenation">
+        <div class="section__header">
+            <div class="section__icon section__icon--purple">🔗</div>
+            <h2 class="section__title">دمج النصوص - عامل ||</h2>
+        </div>
+
+        <div class="code-block"><div class="code-block__header"><span>SQL - دمج نصوص</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+            <div class="code-block__body"><span class="cm">-- دمج الاسم الأول والأخير</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span> || <span class="str">' '</span> || <span class="tp">last_name</span> <span class="kw">AS</span> <span class="str">"الاسم الكامل"</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>;
+
+<span class="cm">-- النتيجة: "أحمد محمود"، "سارة علي"، ...</span>
+
+<span class="cm">-- دمج مع نص ثابت</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span> || <span class="str">' يعمل في قسم '</span> || <span class="tp">dept</span> <span class="kw">AS</span> <span class="str">"معلومات"</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>;
+
+<span class="cm">-- النتيجة: "أحمد يعمل في قسم مبيعات"</span></div></div>
+    </div>
+
+    <!-- ======== SECTION 7: WHERE Intro ======== -->
+    <div class="section" id="where-intro">
+        <div class="section__header">
+            <div class="section__icon section__icon--red">🎯</div>
+            <h2 class="section__title">WHERE - فلترة البيانات</h2>
+        </div>
+
+        <div class="quote-box">
+            WHERE = "بس بشرط" - بيفلتر النتايج ويرجعلك الصفوف اللي بتحقق الشرط بس
+        </div>
+
+        <div class="syntax-box">
+            <div class="syntax-box__title">📐 الصيغة</div>
+            <div class="code-block" style="margin:0;"><div class="code-block__header"><span>SQL Syntax</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+                <div class="code-block__body"><span class="kw">SELECT</span> <span class="tp">columns</span>
+<span class="kw">FROM</span>   <span class="fn">table_name</span>
+<span class="kw">WHERE</span>  <span class="or">condition</span>;</div></div>
+        </div>
+
+        <div class="code-block"><div class="code-block__header"><span>SQL - أول WHERE</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+            <div class="code-block__body"><span class="cm">-- هاتلي الموظفين اللي في قسم IT بس</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">salary</span>, <span class="tp">dept</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">dept</span> = <span class="str">'IT'</span>;</div></div>
+
+        <div class="table-visual">
+            <div class="table-visual__header table-visual__header--green">📋 النتيجة: 3 صفوف بس (من أصل 10)</div>
+            <table>
+                <thead><tr><th>FIRST_NAME</th><th>SALARY</th><th>DEPT</th></tr></thead>
+                <tbody>
+                    <tr class="row-highlight"><td>سارة</td><td>12,000</td><td>IT</td></tr>
+                    <tr class="row-highlight"><td>نورا</td><td>15,000</td><td>IT</td></tr>
+                    <tr class="row-highlight"><td>عمر</td><td>11,000</td><td>IT</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="code-block"><div class="code-block__header"><span>SQL - أمثلة WHERE</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+            <div class="code-block__body"><span class="cm">-- هاتلي اللي مرتبهم أكبر من 10000</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">salary</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">salary</span> > <span class="num">10000</span>;
+
+<span class="cm">-- هاتلي اللي في القاهرة</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">city</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">city</span> = <span class="str">'القاهرة'</span>;
+
+<span class="cm">-- هاتلي موظف معين برقمه</span>
+<span class="kw">SELECT</span> *
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">emp_id</span> = <span class="num">1004</span>;</div></div>
+    </div>
+
+    <!-- ======== SECTION 8: Comparison Operators ======== -->
+    <div class="section" id="where-operators">
+        <div class="section__header">
+            <div class="section__icon section__icon--orange">⚖️</div>
+            <h2 class="section__title">عوامل المقارنة (Comparison Operators)</h2>
+        </div>
+
+        <div class="operator-grid">
+            <div class="operator-card"><div class="operator-card__symbol" style="color:var(--accent3)">=</div><div class="operator-card__name">يساوي</div></div>
+            <div class="operator-card"><div class="operator-card__symbol" style="color:var(--accent)">!= أو <></div><div class="operator-card__name">لا يساوي</div></div>
+            <div class="operator-card"><div class="operator-card__symbol" style="color:var(--accent4)">></div><div class="operator-card__name">أكبر من</div></div>
+            <div class="operator-card"><div class="operator-card__symbol" style="color:var(--accent4)"><</div><div class="operator-card__name">أصغر من</div></div>
+            <div class="operator-card"><div class="operator-card__symbol" style="color:var(--accent5)">>=</div><div class="operator-card__name">أكبر من أو يساوي</div></div>
+            <div class="operator-card"><div class="operator-card__symbol" style="color:var(--accent5)"><=</div><div class="operator-card__name">أصغر من أو يساوي</div></div>
+        </div>
+
+        <div class="code-block"><div class="code-block__header"><span>SQL - كل العوامل</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+            <div class="code-block__body"><span class="cm">-- يساوي: مرتب = 8000</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="fn">employees</span> <span class="kw">WHERE</span> <span class="tp">salary</span> = <span class="num">8000</span>;
+
+<span class="cm">-- لا يساوي: مش في قسم مبيعات</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="fn">employees</span> <span class="kw">WHERE</span> <span class="tp">dept</span> != <span class="str">'مبيعات'</span>;
+
+<span class="cm">-- أكبر من: مرتب أكبر من 9000</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="fn">employees</span> <span class="kw">WHERE</span> <span class="tp">salary</span> > <span class="num">9000</span>;
+
+<span class="cm">-- أصغر من أو يساوي: مرتب 8000 أو أقل</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="fn">employees</span> <span class="kw">WHERE</span> <span class="tp">salary</span> <= <span class="num">8000</span>;
+
+<span class="cm">-- مقارنة تواريخ: اتعين بعد 2023</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="fn">employees</span> <span class="kw">WHERE</span> <span class="tp">hire_date</span> > <span class="fn">TO_DATE</span>(<span class="str">'2023-01-01'</span>,<span class="str">'YYYY-MM-DD'</span>);</div></div>
+    </div>
+
+    <!-- ======== SECTION 9: AND / OR / NOT ======== -->
+    <div class="section" id="where-and-or">
+        <div class="section__header">
+            <div class="section__icon section__icon--purple">🔀</div>
+            <h2 class="section__title">AND و OR و NOT - دمج الشروط</h2>
+        </div>
+
+        <div class="content-card">
+            <table class="styled-table">
+                <thead><tr><th>العامل</th><th>المعنى</th><th>مثال</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="badge badge--green">AND</span></td><td>الشرطين لازم يتحققوا <strong>مع بعض</strong></td><td>في IT <strong>و</strong> مرتبه عالي</td></tr>
+                    <tr><td><span class="badge badge--blue">OR</span></td><td><strong>أي واحد</strong> من الشروط يكفي</td><td>في IT <strong>أو</strong> في HR</td></tr>
+                    <tr><td><span class="badge badge--red">NOT</span></td><td><strong>عكس</strong> الشرط</td><td><strong>مش</strong> في مبيعات</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="code-block"><div class="code-block__header"><span>SQL - AND, OR, NOT</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+            <div class="code-block__body"><span class="cm">-- AND: في IT ومرتبه أكبر من 12000</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">salary</span>, <span class="tp">dept</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">dept</span> = <span class="str">'IT'</span> <span class="kw">AND</span> <span class="tp">salary</span> > <span class="num">12000</span>;
+<span class="cm">-- النتيجة: نورا (15000)</span>
+
+<span class="cm">-- OR: في IT أو HR</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">dept</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">dept</span> = <span class="str">'IT'</span> <span class="kw">OR</span> <span class="tp">dept</span> = <span class="str">'HR'</span>;
+<span class="cm">-- النتيجة: سارة، نورا، عمر، ياسمين، مريم</span>
+
+<span class="cm">-- NOT: مش في المبيعات</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">dept</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="kw">NOT</span> <span class="tp">dept</span> = <span class="str">'مبيعات'</span>;
+
+<span class="cm">-- دمج AND و OR (استخدم أقواس!)</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">salary</span>, <span class="tp">dept</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  (<span class="tp">dept</span> = <span class="str">'IT'</span> <span class="kw">OR</span> <span class="tp">dept</span> = <span class="str">'HR'</span>) <span class="kw">AND</span> <span class="tp">salary</span> > <span class="num">9000</span>;
+<span class="cm">-- (في IT أو HR) و (مرتبه فوق 9000)</span></div></div>
+
+        <div class="info-box info-box--tip">
+            <div class="info-box__icon">💡</div>
+            <div class="info-box__text"><strong>نصيحة مهمة:</strong> لما تخلط AND مع OR استخدم <strong>أقواس ( )</strong> دايماً عشان Oracle يفهم الأولوية صح. AND بينفذ قبل OR لو مفيش أقواس!</div>
+        </div>
+    </div>
+
+    <!-- ======== SECTION 10: BETWEEN, IN, LIKE ======== -->
+    <div class="section" id="where-special">
+        <div class="section__header">
+            <div class="section__icon section__icon--green">🎰</div>
+            <h2 class="section__title">BETWEEN, IN, LIKE - عوامل خاصة</h2>
+        </div>
+
+        <h3 class="sub-title">1. BETWEEN - بين قيمتين</h3>
+        <div class="code-block"><div class="code-block__header"><span>SQL - BETWEEN</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+            <div class="code-block__body"><span class="cm">-- مرتب بين 7000 و 10000 (شامل الحدين)</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">salary</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">salary</span> <span class="kw">BETWEEN</span> <span class="num">7000</span> <span class="kw">AND</span> <span class="num">10000</span>;
+
+<span class="cm">-- نفس الحاجة بالظبط بس بصيغة تانية:</span>
+<span class="cm">-- WHERE salary >= 7000 AND salary <= 10000</span>
+
+<span class="cm">-- اتعين في سنة 2023</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">hire_date</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">hire_date</span> <span class="kw">BETWEEN</span> <span class="fn">TO_DATE</span>(<span class="str">'2023-01-01'</span>,<span class="str">'YYYY-MM-DD'</span>)
+                    <span class="kw">AND</span>     <span class="fn">TO_DATE</span>(<span class="str">'2023-12-31'</span>,<span class="str">'YYYY-MM-DD'</span>);</div></div>
+
+        <h3 class="sub-title">2. IN - ضمن قائمة</h3>
+        <div class="code-block"><div class="code-block__header"><span>SQL - IN</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+            <div class="code-block__body"><span class="cm">-- في أحد الأقسام دي</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">dept</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">dept</span> <span class="kw">IN</span> (<span class="str">'IT'</span>, <span class="str">'HR'</span>, <span class="str">'تسويق'</span>);
+
+<span class="cm">-- بدل ما تكتب: dept = 'IT' OR dept = 'HR' OR dept = 'تسويق'</span>
+<span class="cm">-- IN أقصر وأوضح ✅</span>
+
+<span class="cm">-- مش في أي قسم من دول</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">dept</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">dept</span> <span class="kw">NOT IN</span> (<span class="str">'IT'</span>, <span class="str">'HR'</span>);</div></div>
+
+        <h3 class="sub-title">3. LIKE - البحث بالنمط (Pattern)</h3>
+        <div class="content-card">
+            <div class="content-card__title">🔤 رموز LIKE</div>
+            <table class="styled-table">
+                <thead><tr><th>الرمز</th><th>المعنى</th><th>مثال</th><th>بيطابق</th></tr></thead>
+                <tbody>
+                    <tr><td><code class="inline">%</code></td><td>أي عدد من الحروف (حتى صفر)</td><td><code class="inline">'أ%'</code></td><td>أحمد، أمل، أ</td></tr>
+                    <tr><td><code class="inline">_</code></td><td>حرف واحد بالظبط</td><td><code class="inline">'_مر'</code></td><td>عمر (3 حروف بيبدأ بأي حرف)</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="code-block"><div class="code-block__header"><span>SQL - LIKE</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+            <div class="code-block__body"><span class="cm">-- الاسم بيبدأ بحرف "م"</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span> <span class="kw">FROM</span> <span class="fn">employees</span> <span class="kw">WHERE</span> <span class="tp">first_name</span> <span class="kw">LIKE</span> <span class="str">'م%'</span>;
+<span class="cm">-- النتيجة: محمد، مريم</span>
+
+<span class="cm">-- الإيميل فيه "mail"</span>
+<span class="kw">SELECT</span> <span class="tp">email</span> <span class="kw">FROM</span> <span class="fn">employees</span> <span class="kw">WHERE</span> <span class="tp">email</span> <span class="kw">LIKE</span> <span class="str">'%mail%'</span>;
+
+<span class="cm">-- الاسم 4 حروف بالظبط</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span> <span class="kw">FROM</span> <span class="fn">employees</span> <span class="kw">WHERE</span> <span class="tp">first_name</span> <span class="kw">LIKE</span> <span class="str">'____'</span>;
+<span class="cm">-- 4 underscores = 4 حروف</span>
+
+<span class="cm">-- الاسم بينتهي بـ "ة"</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span> <span class="kw">FROM</span> <span class="fn">employees</span> <span class="kw">WHERE</span> <span class="tp">first_name</span> <span class="kw">LIKE</span> <span class="str">'%ة'</span>;
+<span class="cm">-- النتيجة: فاطمة</span></div></div>
+    </div>
+
+    <!-- ======== SECTION 11: IS NULL ======== -->
+    <div class="section" id="where-null">
+        <div class="section__header">
+            <div class="section__icon section__icon--red">❓</div>
+            <h2 class="section__title">IS NULL / IS NOT NULL</h2>
+        </div>
+
+        <div class="quote-box">
+            NULL = "مفيش قيمة" - مش صفر ومش فاضي، يعني القيمة مجهولة أصلاً. مينفعش تقارنها بـ = لازم تستخدم IS NULL
+        </div>
+
+        <div class="code-block"><div class="code-block__header"><span>SQL - NULL</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+            <div class="code-block__body"><span class="cm">-- ❌ غلط! ده مش هيشتغل:</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="fn">employees</span> <span class="kw">WHERE</span> <span class="tp">phone</span> = <span class="kw">NULL</span>;  <span class="cm">-- ❌ WRONG</span>
+
+<span class="cm">-- ✅ صح! استخدم IS NULL:</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="fn">employees</span> <span class="kw">WHERE</span> <span class="tp">phone</span> <span class="kw">IS NULL</span>;
+
+<span class="cm">-- اللي عندهم تليفون</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="fn">employees</span> <span class="kw">WHERE</span> <span class="tp">phone</span> <span class="kw">IS NOT NULL</span>;</div></div>
+    </div>
+
+    <!-- ======== SECTION 12: ORDER BY ======== -->
+    <div class="section" id="order-by">
+        <div class="section__header">
+            <div class="section__icon section__icon--blue">🔃</div>
+            <h2 class="section__title">ORDER BY - ترتيب النتائج</h2>
+        </div>
+
+        <div class="quote-box quote-box--blue">
+            ORDER BY = "رتبهالي" - بيرتب النتايج تصاعدياً (ASC) أو تنازلياً (DESC). بدون ORDER BY الترتيب مش مضمون!
+        </div>
+
+        <div class="code-block"><div class="code-block__header"><span>SQL - ORDER BY</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+            <div class="code-block__body"><span class="cm">-- رتب حسب المرتب تصاعدياً (من الأقل للأعلى) - الافتراضي</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">salary</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">ORDER BY</span> <span class="tp">salary</span>;          <span class="cm">-- أو salary ASC</span>
+
+<span class="cm">-- رتب حسب المرتب تنازلياً (من الأعلى للأقل)</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">salary</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">ORDER BY</span> <span class="tp">salary</span> <span class="kw">DESC</span>;     <span class="cm">-- الأعلى مرتب الأول</span></div></div>
+
+        <div class="table-visual">
+            <div class="table-visual__header table-visual__header--blue">📋 النتيجة: ORDER BY salary DESC</div>
+            <table>
+                <thead><tr><th>FIRST_NAME</th><th>SALARY</th><th>#</th></tr></thead>
+                <tbody>
+                    <tr><td>نورا</td><td>15,000</td><td style="color:var(--accent3)">🥇</td></tr>
+                    <tr><td>سارة</td><td>12,000</td><td style="color:var(--text-muted)">🥈</td></tr>
+                    <tr><td>عمر</td><td>11,000</td><td style="color:var(--accent2)">🥉</td></tr>
+                    <tr><td>علي</td><td>10,000</td><td></td></tr>
+                    <tr><td>ياسمين</td><td>9,500</td><td></td></tr>
+                    <tr class="row-dim"><td>فاطمة</td><td>8,500</td><td></td></tr>
+                    <tr class="row-dim"><td>أحمد</td><td>8,000</td><td></td></tr>
+                    <tr class="row-dim"><td>مريم</td><td>7,500</td><td></td></tr>
+                    <tr class="row-dim"><td>محمد</td><td>7,000</td><td></td></tr>
+                    <tr class="row-dim"><td>خالد</td><td>6,500</td><td></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3 class="sub-title">ترتيب بأكتر من عمود</h3>
+        <div class="code-block"><div class="code-block__header"><span>SQL - ترتيب متعدد</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+            <div class="code-block__body"><span class="cm">-- رتب حسب القسم، وجوا كل قسم حسب المرتب تنازلياً</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">dept</span>, <span class="tp">salary</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">ORDER BY</span> <span class="tp">dept</span> <span class="kw">ASC</span>, <span class="tp">salary</span> <span class="kw">DESC</span>;
+<span class="cm">-- الأقسام أبجدياً، وجوا كل قسم الأعلى مرتب الأول</span>
+
+<span class="cm">-- ترتيب حسب تاريخ التعيين (الأحدث الأول)</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">hire_date</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">ORDER BY</span> <span class="tp">hire_date</span> <span class="kw">DESC</span>;
+
+<span class="cm">-- ترتيب حسب رقم العمود (مش الاسم)</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">salary</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">ORDER BY</span> <span class="num">2</span> <span class="kw">DESC</span>;   <span class="cm">-- العمود التاني = salary</span></div></div>
+    </div>
+
+    <!-- ======== SECTION 13: DISTINCT ======== -->
+    <div class="section" id="distinct">
+        <div class="section__header">
+            <div class="section__icon section__icon--purple">🎯</div>
+            <h2 class="section__title">DISTINCT - إزالة التكرار</h2>
+        </div>
+
+        <div class="quote-box quote-box--purple">
+            DISTINCT = "بدون تكرار" - بيشيل الصفوف المكررة من النتيجة ويرجع القيم الفريدة بس
+        </div>
+
+        <div class="code-block"><div class="code-block__header"><span>SQL - بدون DISTINCT</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+            <div class="code-block__body"><span class="cm">-- بدون DISTINCT: هيظهر تكرار</span>
+<span class="kw">SELECT</span> <span class="tp">dept</span> <span class="kw">FROM</span> <span class="fn">employees</span>;
+<span class="cm">-- مبيعات، IT، مبيعات، IT، تسويق، HR، IT، مبيعات، تسويق، HR</span>
+<span class="cm">-- ↑ الأقسام متكررة! 10 صفوف</span></div></div>
+
+        <div class="code-block"><div class="code-block__header"><span>SQL - مع DISTINCT</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+            <div class="code-block__body"><span class="cm">-- مع DISTINCT: كل قسم مرة واحدة بس</span>
+<span class="kw">SELECT DISTINCT</span> <span class="tp">dept</span> <span class="kw">FROM</span> <span class="fn">employees</span>;
+<span class="cm">-- مبيعات، IT، تسويق، HR</span>
+<span class="cm">-- ↑ 4 صفوف بس! بدون تكرار ✅</span></div></div>
+
+        <div class="table-visual">
+            <div class="table-visual__header table-visual__header--purple">📋 المقارنة</div>
+            <table>
+                <thead><tr><th>بدون DISTINCT (10 صفوف)</th><th>مع DISTINCT (4 صفوف)</th></tr></thead>
+                <tbody>
+                    <tr><td>مبيعات</td><td rowspan="3" style="vertical-align:middle;color:var(--accent3);font-weight:700;">مبيعات ✓</td></tr>
+                    <tr><td>مبيعات</td></tr>
+                    <tr><td>مبيعات</td></tr>
+                    <tr><td>IT</td><td rowspan="3" style="vertical-align:middle;color:var(--accent3);font-weight:700;">IT ✓</td></tr>
+                    <tr><td>IT</td></tr>
+                    <tr><td>IT</td></tr>
+                    <tr><td>تسويق</td><td rowspan="2" style="vertical-align:middle;color:var(--accent3);font-weight:700;">تسويق ✓</td></tr>
+                    <tr><td>تسويق</td></tr>
+                    <tr><td>HR</td><td rowspan="2" style="vertical-align:middle;color:var(--accent3);font-weight:700;">HR ✓</td></tr>
+                    <tr><td>HR</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="code-block"><div class="code-block__header"><span>SQL - أمثلة DISTINCT</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+            <div class="code-block__body"><span class="cm">-- المدن الموجودة</span>
+<span class="kw">SELECT DISTINCT</span> <span class="tp">city</span> <span class="kw">FROM</span> <span class="fn">employees</span>;
+<span class="cm">-- القاهرة، الإسكندرية، الجيزة، المنصورة</span>
+
+<span class="cm">-- DISTINCT على أكتر من عمود (التوليفة الفريدة)</span>
+<span class="kw">SELECT DISTINCT</span> <span class="tp">dept</span>, <span class="tp">city</span> <span class="kw">FROM</span> <span class="fn">employees</span>;
+<span class="cm">-- (مبيعات، القاهرة)، (مبيعات، المنصورة)، (IT، القاهرة)، ...</span>
+
+<span class="cm">-- كم مدينة عندنا؟</span>
+<span class="kw">SELECT</span> <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> <span class="tp">city</span>) <span class="kw">AS</span> <span class="str">"عدد المدن"</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>;
+<span class="cm">-- النتيجة: 4</span></div></div>
+    </div>
+
+    <!-- ======== SECTION 14: Combine All ======== -->
+    <div class="section" id="combine">
+        <div class="section__header">
+            <div class="section__icon section__icon--green">🎨</div>
+            <h2 class="section__title">دمج كل حاجة مع بعض</h2>
+        </div>
+
+        <div class="code-block"><div class="code-block__header"><span>SQL - أمثلة مركبة</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+            <div class="code-block__body"><span class="cm">-- 🔥 أعلى 3 مرتبات في IT</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">salary</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">dept</span> = <span class="str">'IT'</span>
+<span class="kw">ORDER BY</span> <span class="tp">salary</span> <span class="kw">DESC</span>
+<span class="kw">FETCH FIRST</span> <span class="num">3</span> <span class="kw">ROWS ONLY</span>;
+
+<span class="cm">-- 🔥 الموظفين في القاهرة بمرتب بين 7000 و 12000 مرتبين بالاسم</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">salary</span>, <span class="tp">dept</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">city</span> = <span class="str">'القاهرة'</span>
+  <span class="kw">AND</span>  <span class="tp">salary</span> <span class="kw">BETWEEN</span> <span class="num">7000</span> <span class="kw">AND</span> <span class="num">12000</span>
+<span class="kw">ORDER BY</span> <span class="tp">first_name</span>;
+
+<span class="cm">-- 🔥 الأقسام الموجودة في الإسكندرية (بدون تكرار)</span>
+<span class="kw">SELECT DISTINCT</span> <span class="tp">dept</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">city</span> = <span class="str">'الإسكندرية'</span>;
+
+<span class="cm">-- 🔥 كل الموظفين ماعدا مبيعات، الأعلى مرتب الأول</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span> || <span class="str">' '</span> || <span class="tp">last_name</span> <span class="kw">AS</span> <span class="str">"الاسم"</span>,
+       <span class="tp">salary</span> <span class="kw">AS</span> <span class="str">"المرتب"</span>,
+       <span class="tp">salary</span> * <span class="num">12</span> <span class="kw">AS</span> <span class="str">"السنوي"</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">dept</span> <span class="kw">NOT IN</span> (<span class="str">'مبيعات'</span>)
+<span class="kw">ORDER BY</span> <span class="tp">salary</span> <span class="kw">DESC</span>;</div></div>
+    </div>
+
+    <!-- ======== SECTION 15: Execution Order ======== -->
+    <div class="section" id="execution-order">
+        <div class="section__header">
+            <div class="section__icon section__icon--orange">🔄</div>
+            <h2 class="section__title">ترتيب التنفيذ في Oracle</h2>
+        </div>
+
+        <div class="content-card">
+            <p>ده الترتيب اللي Oracle بينفذ بيه الأمر (مش الترتيب اللي بتكتبه!):</p>
+        </div>
+
+        <div class="flow-box">
+            <div class="flow-step" style="background:rgba(255,77,77,0.15);color:var(--accent);">1️⃣ FROM</div>
+            <div class="flow-arrow">←</div>
+            <div class="flow-step" style="background:rgba(255,140,0,0.15);color:var(--accent2);">2️⃣ WHERE</div>
+            <div class="flow-arrow">←</div>
+            <div class="flow-step" style="background:rgba(77,140,255,0.15);color:var(--accent4);">3️⃣ SELECT</div>
+            <div class="flow-arrow">←</div>
+            <div class="flow-step" style="background:rgba(168,85,247,0.15);color:var(--accent5);">4️⃣ DISTINCT</div>
+            <div class="flow-arrow">←</div>
+            <div class="flow-step" style="background:rgba(0,212,126,0.15);color:var(--accent3);">5️⃣ ORDER BY</div>
+        </div>
+
+        <div class="content-card">
+            <table class="styled-table">
+                <thead><tr><th>الترتيب</th><th>الأمر</th><th>بيعمل إيه</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="badge badge--red">1</span></td><td>FROM</td><td>بيحدد الجدول</td></tr>
+                    <tr><td><span class="badge badge--orange">2</span></td><td>WHERE</td><td>بيفلتر الصفوف</td></tr>
+                    <tr><td><span class="badge badge--blue">3</span></td><td>SELECT</td><td>بيختار الأعمدة</td></tr>
+                    <tr><td><span class="badge badge--purple">4</span></td><td>DISTINCT</td><td>بيشيل التكرار</td></tr>
+                    <tr><td><span class="badge badge--green">5</span></td><td>ORDER BY</td><td>بيرتب النتيجة النهائية</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="info-box info-box--tip">
+            <div class="info-box__icon">💡</div>
+            <div class="info-box__text"><strong>عشان كده مينفعش تستخدم Alias بتاع SELECT في WHERE!</strong> لأن WHERE بتتنفذ قبل SELECT. بس ممكن تستخدمه في ORDER BY لأنه بيتنفذ بعد SELECT.</div>
+        </div>
+    </div>
+
+    <!-- ======== SECTION 16: Practice ======== -->
+    <div class="section" id="practice">
+        <div class="section__header">
+            <div class="section__icon section__icon--green">🏋️</div>
+            <h2 class="section__title">تمارين عملية</h2>
+        </div>
+
+        <div class="practice-card">
+            <div class="practice-card__title">🎯 حل التمارين دي على جدول employees</div>
+            <div class="practice-card__task"><div class="practice-card__task-num">1</div>هاتلي أسماء الموظفين اللي مرتبهم أكبر من 9000 مرتبين من الأعلى للأقل</div>
+            <div class="practice-card__task"><div class="practice-card__task-num">2</div>هاتلي الموظفين في القاهرة أو الجيزة</div>
+            <div class="practice-card__task"><div class="practice-card__task-num">3</div>هاتل�� الأقسام الموجودة (بدون تكرار) مرتبة أبجدياً</div>
+            <div class="practice-card__task"><div class="practice-card__task-num">4</div>هاتلي الموظفين في IT اللي مرتبهم بين 10000 و 15000</div>
+            <div class="practice-card__task"><div class="practice-card__task-num">5</div>هاتلي الاسم الكامل والمرتب السنوي لكل موظف اسمه بيبدأ بـ "م"</div>
+        </div>
+
+        <div class="code-block"><div class="code-block__header"><span>SQL - الحلول</span><div class="code-block__dots"><span class="code-block__dot code-block__dot--red"></span><span class="code-block__dot code-block__dot--yellow"></span><span class="code-block__dot code-block__dot--green"></span></div></div>
+            <div class="code-block__body"><span class="cm">-- التمرين 1</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">salary</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">salary</span> > <span class="num">9000</span>
+<span class="kw">ORDER BY</span> <span class="tp">salary</span> <span class="kw">DESC</span>;
+
+<span class="cm">-- التمرين 2</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">city</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">city</span> <span class="kw">IN</span> (<span class="str">'القاهرة'</span>, <span class="str">'الجيزة'</span>);
+
+<span class="cm">-- التمرين 3</span>
+<span class="kw">SELECT DISTINCT</span> <span class="tp">dept</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">ORDER BY</span> <span class="tp">dept</span>;
+
+<span class="cm">-- التمرين 4</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span>, <span class="tp">salary</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">dept</span> = <span class="str">'IT'</span>
+  <span class="kw">AND</span>  <span class="tp">salary</span> <span class="kw">BETWEEN</span> <span class="num">10000</span> <span class="kw">AND</span> <span class="num">15000</span>;
+
+<span class="cm">-- التمرين 5</span>
+<span class="kw">SELECT</span> <span class="tp">first_name</span> || <span class="str">' '</span> || <span class="tp">last_name</span> <span class="kw">AS</span> <span class="str">"الاسم الكامل"</span>,
+       <span class="tp">salary</span> * <span class="num">12</span> <span class="kw">AS</span> <span class="str">"المرتب السنوي"</span>
+<span class="kw">FROM</span>   <span class="fn">employees</span>
+<span class="kw">WHERE</span>  <span class="tp">first_name</span> <span class="kw">LIKE</span> <span class="str">'م%'</span>;</div></div>
+    </div>
+
+    <!-- ======== SECTION 17: Summary ======== -->
+    <div class="section" id="summary">
+        <div class="summary-box">
+            <div class="summary-box__title">📌 ملخص الدرس</div>
+            <ul class="summary-list">
+                <li><span class="check">✓</span> <strong>SELECT *</strong> = كل الأعمدة</li>
+                <li><span class="check">✓</span> <strong>SELECT col</strong> = أعمدة محددة</li>
+                <li><span class="check">✓</span> <strong>AS</strong> = اسم مستعار</li>
+                <li><span class="check">✓</span> <strong>||</strong> = دمج نصوص</li>
+                <li><span class="check">✓</span> <strong>WHERE =</strong> يساوي</li>
+                <li><span class="check">✓</span> <strong>WHERE > <</strong> أكبر / أصغر</li>
+                <li><span class="check">✓</span> <strong>AND</strong> = الشرطين مع بعض</li>
+                <li><span class="check">✓</span> <strong>OR</strong> = أي شرط يكفي</li>
+                <li><span class="check">✓</span> <strong>NOT</strong> = عكس الشرط</li>
+                <li><span class="check">✓</span> <strong>BETWEEN</strong> = بين قيمتين</li>
+                <li><span class="check">✓</span> <strong>IN</strong> = ضمن قائمة</li>
+                <li><span class="check">✓</span> <strong>LIKE %</strong> = بحث بنمط</li>
+                <li><span class="check">✓</span> <strong>IS NULL</strong> = قيمة فارغة</li>
+                <li><span class="check">✓</span> <strong>ORDER BY</strong> = ترتيب</li>
+                <li><span class="check">✓</span> <strong>DESC / ASC</strong> = تنازلي / تصاعدي</li>
+                <li><span class="check">✓</span> <strong>DISTINCT</strong> = بدون تكرار</li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+<script>
+const sections=document.querySelectorAll('.section');const navLinks=document.querySelectorAll('.sidebar__nav a');
+function updateActiveNav(){let c='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-100)c=s.getAttribute('id');});navLinks.forEach(l=>{l.classList.remove('active');if(l.getAttribute('href')==='#'+c)l.classList.add('active');});}
+window.addEventListener('scroll',updateActiveNav);updateActiveNav();
+navLinks.forEach(l=>{l.addEventListener('click',()=>{document.querySelector('.sidebar').classList.remove('sidebar--open');});});
+</script>
+
+</body>
+</html>
