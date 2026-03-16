@@ -227,14 +227,14 @@
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
   animation: cartDropdownIn 0.2s ease;
   overflow: hidden;
-  min-height: 350px;
-  max-height: 65vh;
+  min-height: 420px;
+  max-height: 70vh;
 }
 
 /* ── Right column: All categories list ── */
 .mega-menu-categories {
-  width: 220px;
-  min-width: 220px;
+  width: 250px;
+  min-width: 250px;
   border-inline-start: 1px solid var(--sz-border-color);
   background: var(--sz-bg-secondary);
   overflow-y: auto;
@@ -253,8 +253,8 @@
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  padding: 0.65rem 1rem;
-  font-size: 0.82rem;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.88rem;
   font-weight: 500;
   color: var(--sz-text-primary);
   text-decoration: none;
@@ -294,7 +294,7 @@
 /* ── Middle column: Subcategories ── */
 .mega-menu-subcategories {
   flex: 1;
-  padding: 1.25rem 1.5rem;
+  padding: 1.5rem 2rem;
   overflow-y: auto;
   min-width: 0;
 }
@@ -310,14 +310,15 @@
 
 .mega-menu-sub-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.5rem;
 }
 
 .mega-menu-sub-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0.5rem;
+  padding: 0.75rem;
   border-radius: 5px;
   text-decoration: none;
   cursor: pointer;
@@ -331,8 +332,9 @@
 }
 
 .mega-menu-sub-img, .mega-menu-sub-img-placeholder {
-  width: 80px;
-  height: 64px;
+  width: 90px;
+  height: 75px;
+  border-radius: 8px;
 }
 
 .mega-menu-sub-img {
@@ -358,9 +360,9 @@
 
 /* ── Left column: Famous Brands ── */
 .mega-menu-brands {
-  width: 240px;
-  min-width: 200px;
-  padding: 1.25rem 1rem;
+  width: 280px;
+  min-width: 240px;
+  padding: 1.5rem 1.25rem;
   border-inline-end: 1px solid var(--sz-border-color);
   overflow-y: auto;
 }
@@ -368,14 +370,14 @@
 .mega-menu-brand-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0.25rem;
+  gap: 0.5rem;
 }
 
 .mega-menu-brand-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0.5rem 0.25rem;
+  padding: 0.6rem;
   border-radius: 5px;
   text-decoration: none;
   cursor: pointer;
@@ -391,8 +393,8 @@
 }
 
 .mega-menu-brand-img, .mega-menu-brand-img-placeholder {
-  width: 70px;
-  height: 70px;
+  width: 80px;
+  height: 80px;
   border: 1px solid var(--sz-border-color);
   background: #fff;
   padding: 5px;
