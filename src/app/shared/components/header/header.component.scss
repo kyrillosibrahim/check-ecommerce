@@ -282,12 +282,12 @@
     border-inline-end-color:var(--sz-bg-card);
 
     i:first-child {
-      color: var(--sz-accent);
+      color: var(--sz-bg-card);
     }
 
     .bi-chevron-left {
       transform: translateX(-3px);
-      color: var(--sz-accent);
+      color: var(--sz-bg-card);
     }
   }
 }
@@ -478,10 +478,15 @@
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 1060;
+  z-index: 1092;
   background: var(--sz-bg-card);
   overflow-y: auto;
   animation: slideDown 0.25s ease;
+  padding-top: 60px;
+}
+
+.search-overlay-backdrop {
+  z-index: 1091 !important;
 }
 
 @keyframes fadeIn {
@@ -1023,4 +1028,66 @@
 .suggestion-arrow {
   color: var(--sz-text-secondary);
   font-size: 0.85rem;
+}
+
+/* ── Mobile Bottom Navigation Bar ── */
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1090;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: var(--sz-bg-card);
+  border-top: 1px solid var(--sz-border-color);
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
+  padding: 0.35rem 0;
+  padding-bottom: calc(0.35rem + env(safe-area-inset-bottom, 0px));
+}
+
+.mobile-bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  flex: 1;
+  padding: 0.3rem 0;
+  color: var(--sz-text-secondary);
+  text-decoration: none;
+  font-size: 0.65rem;
+  font-weight: 600;
+  transition: color 0.2s;
+  cursor: pointer;
+
+  i {
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  &.active, &:hover {
+    color: var(--sz-accent);
+  }
+}
+
+.mobile-bottom-nav-icon-wrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.mobile-bottom-nav-badge {
+  position: absolute;
+  top: -6px;
+  inset-inline-end: -8px;
+  font-size: 0.5rem;
+  padding: 0.1rem 0.3rem;
+  border-radius: 10px;
+  background: var(--sz-accent);
+  color: #fff;
+  line-height: 1;
+  font-weight: 700;
+  min-width: 14px;
+  text-align: center;
 }

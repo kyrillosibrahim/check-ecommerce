@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, ChangeDetectorRef, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, ChangeDetectorRef, OnInit, OnDestroy, HostListener, ElementRef } from '@angular/core';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -244,6 +244,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
     event.preventDefault();
     event.stopPropagation();
     this.cartService.removeFromCart(productId);
+  }
+
+  // ── Mobile menu ──
+  private elRef = inject(ElementRef);
+
+  closeMobileMenu(): void {
+    const navbarCollapse = this.elRef.nativeElement.querySelector('#navbarMain');
+    if (navbarCollapse?.classList.contains('show')) {
+      const bsCollapse = (window as any).bootstrap?.Collapse?.getInstance(navbarCollapse)
+        || new (window as any).bootstrap.Collapse(navbarCollapse);
+      bsCollapse.hide();
+    }
   }
 
   logout(): void {

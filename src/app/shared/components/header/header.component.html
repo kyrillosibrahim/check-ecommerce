@@ -295,28 +295,15 @@
     <div class="collapse navbar-collapse" id="navbarMain" style="flex-grow: 0;">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-lg-none">
         <li class="nav-item">
-          <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ 'nav.home' | translate }}</a>
+          <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu()">{{ 'nav.home' | translate }}</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/products" routerLinkActive="active">{{ 'nav.products' | translate }}</a>
+          <a class="nav-link" routerLink="/products" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.products' | translate }}</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/offers" routerLinkActive="active">{{ 'nav.offers' | translate }}</a>
+          <a class="nav-link" routerLink="/offers" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.offers' | translate }}</a>
         </li>
       </ul>
-
-      <!-- Mobile: search inside collapse -->
-      <form class="d-lg-none my-2" (submit)="onSearch(); $event.preventDefault()">
-        <div class="input-group input-group-sm">
-          <input type="text" class="form-control" [placeholder]="'nav.search_placeholder' | translate"
-                 [(ngModel)]="searchTerm" name="searchMobile"
-                 (focus)="openSearchOverlay()"
-                 style="background-color: var(--sz-bg-secondary); border-color: var(--sz-border-color); color: var(--sz-text-primary);">
-          <button class="btn btn-outline-secondary" type="submit">
-            <i class="bi bi-search"></i>
-          </button>
-        </div>
-      </form>
 
       <!-- Mobile: language + auth inside collapse -->
       <div class="d-lg-none d-flex align-items-center gap-3 my-2 py-2" style="border-top: 1px solid var(--sz-border-color);">
@@ -324,14 +311,14 @@
           <i class="bi bi-translate" style="font-size: 1rem;"></i>
         </button>
         @if (authService.isLoggedIn$ | async) {
-          <a class="btn btn-sm btn-outline-secondary" routerLink="/profile">
+          <a class="btn btn-sm btn-outline-secondary" routerLink="/profile" (click)="closeMobileMenu()">
             <i class="bi bi-person-gear me-1"></i>حسابي
           </a>
-          <a class="btn btn-sm btn-outline-danger" (click)="logout()">
+          <a class="btn btn-sm btn-outline-danger" (click)="logout(); closeMobileMenu()">
             <i class="bi bi-box-arrow-right me-1"></i>{{ 'nav.logout' | translate }}
           </a>
         } @else {
-          <a class="btn btn-sm btn-primary cursor-pointer" (click)="authDrawerService.open()">
+          <a class="btn btn-sm btn-primary cursor-pointer" (click)="authDrawerService.open(); closeMobileMenu()">
             <i class="bi bi-box-arrow-in-right me-1"></i>{{ 'nav.login' | translate }}
           </a>
         }
@@ -547,3 +534,44 @@
   <!-- Desktop backdrop (click to close) -->
   <div class="search-overlay-backdrop d-none d-lg-block" (click)="closeSearchOverlay()"></div>
 }
+
+<!-- ═══════ Mobile Bottom Navigation Bar ═══════ -->
+<nav class="mobile-bottom-nav d-lg-none">
+  <a class="mobile-bottom-nav-item" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+    <i class="bi bi-house-door"></i>
+    <span>الرئيسية</span>
+  </a>
+  <a class="mobile-bottom-nav-item" routerLink="/offers" routerLinkActive="active">
+    <i class="bi bi-percent"></i>
+    <span>العروض</span>
+  </a>
+  <a class="mobile-bottom-nav-item" routerLink="/cart" routerLinkActive="active">
+    <span class="mobile-bottom-nav-icon-wrapper">
+      <i class="bi bi-cart3"></i>
+      @if (cartService.cartCount$ | async; as count) {
+        <span class="mobile-bottom-nav-badge">{{ count }}</span>
+      }
+    </span>
+    <span>السلة</span>
+  </a>
+  <a class="mobile-bottom-nav-item" routerLink="/wishlist" routerLinkActive="active">
+    <span class="mobile-bottom-nav-icon-wrapper">
+      <i class="bi bi-heart"></i>
+      @if (wishlistService.wishlistCount$ | async; as count) {
+        <span class="mobile-bottom-nav-badge">{{ count }}</span>
+      }
+    </span>
+    <span>المفضلة</span>
+  </a>
+  @if (authService.isLoggedIn$ | async) {
+    <a class="mobile-bottom-nav-item" routerLink="/profile" routerLinkActive="active">
+      <i class="bi bi-person"></i>
+      <span>حسابي</span>
+    </a>
+  } @else {
+    <a class="mobile-bottom-nav-item" (click)="authDrawerService.open()">
+      <i class="bi bi-box-arrow-in-right"></i>
+      <span>دخول</span>
+    </a>
+  }
+</nav>

@@ -83,6 +83,12 @@ body {
   overflow-x: clip;
 }
 
+@media (max-width: 991.98px) {
+  body {
+    padding-bottom: 60px;
+  }
+}
+
 input[type="password"] {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
 }
