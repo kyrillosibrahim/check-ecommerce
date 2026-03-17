@@ -1187,7 +1187,7 @@
 }
 
 /* ── Mobile Bottom Navigation Bar ── */
-$nav-bar-color: #3a3a5c;
+$nav-bar-color: var(--sz-accent-hover);
 
 .mobile-bottom-nav {
   position: fixed;
