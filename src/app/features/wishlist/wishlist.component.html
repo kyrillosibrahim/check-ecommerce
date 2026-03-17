@@ -16,7 +16,7 @@
     <div class="row g-2 g-md-4 row-cols-lg-5">
       @for (product of products; track product.id) {
         <div class="col-6 col-md-4 col-lg">
-          <div class="card card-hover h-100 shadow-sm" style="background-color: var(--sz-bg-card); border: 1px solid var(--sz-border-color);">
+          <div class="card card-hover h-100 shadow-sm" style="border: 1px solid var(--sz-border-color);">
             <!-- Image -->
             <a [routerLink]="['/product', product.id]">
               <img [src]="(product.images || [])[0]" [alt]="product.title" class="card-img-top" style="height: 220px; object-fit: contain; background-color: white;">
