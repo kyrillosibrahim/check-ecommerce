@@ -589,41 +589,42 @@
 
 <!-- ═══════ Mobile Bottom Navigation Bar ═══════ -->
 <nav class="mobile-bottom-nav d-lg-none">
+  <div class="mobile-nav-indicator" [style.left]="navIndicatorLeft"></div>
   <a class="mobile-bottom-nav-item" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-    <i class="bi bi-house-door"></i>
-    <span>الرئيسية</span>
+    <span class="mobile-nav-icon"><i class="bi bi-house-door-fill"></i></span>
+    <span class="mobile-nav-label">الرئيسية</span>
   </a>
   <a class="mobile-bottom-nav-item" routerLink="/offers" routerLinkActive="active">
-    <i class="bi bi-percent"></i>
-    <span>العروض</span>
+    <span class="mobile-nav-icon"><i class="bi bi-percent"></i></span>
+    <span class="mobile-nav-label">العروض</span>
   </a>
   <a class="mobile-bottom-nav-item" routerLink="/cart" routerLinkActive="active">
-    <span class="mobile-bottom-nav-icon-wrapper">
+    <span class="mobile-nav-icon">
       <i class="bi bi-cart3"></i>
       @if (cartService.cartCount$ | async; as count) {
         <span class="mobile-bottom-nav-badge">{{ count }}</span>
       }
     </span>
-    <span>السلة</span>
+    <span class="mobile-nav-label">السلة</span>
   </a>
   <a class="mobile-bottom-nav-item" routerLink="/wishlist" routerLinkActive="active">
-    <span class="mobile-bottom-nav-icon-wrapper">
-      <i class="bi bi-heart"></i>
+    <span class="mobile-nav-icon">
+      <i class="bi bi-heart-fill"></i>
       @if (wishlistService.wishlistCount$ | async; as count) {
         <span class="mobile-bottom-nav-badge">{{ count }}</span>
       }
     </span>
-    <span>المفضلة</span>
+    <span class="mobile-nav-label">المفضلة</span>
   </a>
   @if (authService.isLoggedIn$ | async) {
     <a class="mobile-bottom-nav-item" routerLink="/profile" routerLinkActive="active">
-      <i class="bi bi-person"></i>
-      <span>حسابي</span>
+      <span class="mobile-nav-icon"><i class="bi bi-person-fill"></i></span>
+      <span class="mobile-nav-label">حسابي</span>
     </a>
   } @else {
     <a class="mobile-bottom-nav-item" (click)="authDrawerService.open()">
-      <i class="bi bi-box-arrow-in-right"></i>
-      <span>دخول</span>
+      <span class="mobile-nav-icon"><i class="bi bi-box-arrow-in-right"></i></span>
+      <span class="mobile-nav-label">دخول</span>
     </a>
   }
 </nav>

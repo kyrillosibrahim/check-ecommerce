@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject, ChangeDetectorRef, OnInit, OnDestroy, HostListener } from '@angular/core';
-import { RouterLink, RouterLinkActive, Router } from '@angular/router';
+import { RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, switchMap } from 'rxjs/operators';
 import { CartService } from '../../../core/services/cart.service';
 import { WishlistService } from '../../../core/services/wishlist.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -48,6 +48,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   showCartDropdown = false;
   showProfileDropdown = false;
   showMobileDrawer = false;
+  activeNavIndex = 0;
 
   // Mega-menu hover state
   hoveredCategory: ICategory | null = null;
@@ -69,6 +70,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private searchSub?: Subscription;
 
   ngOnInit(): void {
+    this.updateActiveNav(this.router.url);
+    this.router.events.pipe(
+      filter((e): e is NavigationEnd => e instanceof NavigationEnd)
+    ).subscribe(e => {
+      this.updateActiveNav(e.urlAfterRedirects);
+      this.cdr.markForCheck();
+    });
+
     this.brandService.getAll().subscribe(allBrands => {
       this.allBrands = allBrands;
       this.settingsService.getSettings().subscribe(settings => {
@@ -263,5 +272,21 @@ export class HeaderComponent implements OnInit, OnDestroy {
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/']);
+  }
+
+  get navIndicatorLeft(): string {
+    if (this.activeNavIndex < 0) return '-100%';
+    const isRtl = this.translationService.currentLang() === 'ar';
+    const idx = isRtl ? (4 - this.activeNavIndex) : this.activeNavIndex;
+    return (idx * 20 + 10) + '%';
+  }
+
+  private updateActiveNav(url: string): void {
+    if (url === '/' || url === '') this.activeNavIndex = 0;
+    else if (url.startsWith('/offers')) this.activeNavIndex = 1;
+    else if (url.startsWith('/cart')) this.activeNavIndex = 2;
+    else if (url.startsWith('/wishlist')) this.activeNavIndex = 3;
+    else if (url.startsWith('/profile')) this.activeNavIndex = 4;
+    else this.activeNavIndex = -1;
   }
 }
