@@ -1,22 +1,19 @@
-<div class="row g-4">
-  @for (category of categories; track category.id) {
-    <div class="col-6 col-md-4">
-      <a [routerLink]="['/products']" [queryParams]="{ category: category.slug }"
-         class="text-decoration-none">
-        <div class="card card-hover shadow-sm overflow-hidden category-card"
-             style="background-color: var(--sz-bg-card); border: 1px solid var(--sz-border-color);">
-          @if (category.image) {
-            <img [src]="category.image" [alt]="category.name" class="card-img-top category-img">
-          } @else {
-            <div class="category-img-placeholder">
-              <i class="bi bi-grid fs-1"></i>
-            </div>
-          }
-          <div class="card-body text-center">
-            <h5 class="fw-bold mb-1" style="color: var(--sz-text-primary);">{{ category.name }}</h5>
+<div class="swiper" #swiperRef>
+  <div class="swiper-wrapper">
+    @for (category of categories; track category.id) {
+      <div class="swiper-slide">
+        <a [routerLink]="['/products']" [queryParams]="{ category: category.slug }"
+           class="category-slide-link">
+          <div class="category-circle">
+            @if (category.image) {
+              <img [src]="category.image" [alt]="category.name">
+            } @else {
+              <i class="bi bi-grid"></i>
+            }
           </div>
-        </div>
-      </a>
-    </div>
-  }
+          <p class="category-name">{{ category.name }}</p>
+        </a>
+      </div>
+    }
+  </div>
 </div>
