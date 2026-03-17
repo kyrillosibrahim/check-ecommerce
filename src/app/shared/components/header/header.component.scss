@@ -107,7 +107,7 @@
 
 .header-action-label {
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: 500;
   white-space: nowrap;
 }
 
@@ -320,7 +320,6 @@
 .mega-menu-sub-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 0.5rem;
 }
 
 .mega-menu-sub-card {

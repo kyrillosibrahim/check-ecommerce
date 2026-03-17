@@ -32,6 +32,7 @@
   --sz-hero-overlay: rgba(0, 0, 0, 0.4);
   --sz-skeleton-base: #dee2e6;
   --sz-skeleton-shine: #f1f3f5;
+  --sz-skeleton-shine: #f1f3f5;
 }
 
 [data-bs-theme="dark"] {
@@ -147,7 +148,7 @@ a {
   &::after {
     content: '';
     display: block;
-    width: 60px;
+    width: 80px;
     height: 3px;
     background-color: var(--sz-accent);
     margin-top: 0.5rem;
@@ -230,13 +231,13 @@ a {
   }
 
   .btn-primary {
-    background-color: var(--sz-accent);
-    border: 1.5px solid var(--sz-accent);
+    background-color: #bb9066;
+    border: 1.5px solid #bb9066;
     color: #fff;
 
     &:hover, &:focus {
-      background-color: var(--sz-accent-hover);
-      border-color: var(--sz-accent-hover);
+      background-color: #a67d55;
+      border-color: #a67d55;
       color: #fff;
     }
   }
@@ -263,6 +264,12 @@ a {
 
   .accordion-button {
     color: #1a1a2e;
+    background-color: #fff !important;
+    box-shadow: none !important;
+
+    &:not(.collapsed) {
+      background-color: #fff !important;
+    }
   }
 
   small.text-secondary {
