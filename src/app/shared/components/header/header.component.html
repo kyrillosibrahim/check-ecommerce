@@ -389,7 +389,7 @@
           <div class="categories-bar-item-wrapper"
                (mouseenter)="onCategoryHover(cat)">
             <a class="categories-bar-item"
-               [class.active]="hoveredCategory?.id === cat.id"
+               [class.active]="hoveredCategory !== null && hoveredCategory.id === cat.id"
                (click)="searchByCategory(cat)">{{ cat.name }}</a>
           </div>
         }
@@ -407,7 +407,7 @@
           <div class="mega-menu-categories">
             @for (cat of categories; track cat.id) {
               <a class="mega-menu-cat-item"
-                 [class.active]="hoveredCategory?.id === cat.id"
+                 [class.active]="hoveredCategory !== null && hoveredCategory.id === cat.id"
                  (mouseenter)="onCategoryHover(cat)"
                  (click)="searchByCategory(cat)">
                 @if (cat.icon) {
