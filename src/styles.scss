@@ -18,17 +18,17 @@
 /* ---------- Theme Variables ---------- */
 :root,
 [data-bs-theme="light"] {
-  --sz-bg-primary: #ffffff;
+  --sz-bg-primary: #efeade;
   --sz-bg-secondary: #f1f3f5;
-  --sz-bg-card: #ffffff;
+  --sz-bg-card: #efeade;
   --sz-text-primary: #1a1a2e;
   --sz-text-secondary: #495057;
   --sz-text-muted: #6c757d;
   --sz-border-color: #b0b7bf;
   --sz-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
   --sz-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.15);
-  --sz-accent: #101b3a;
-  --sz-accent-hover: #101b3a;
+  --sz-accent: #827e62;
+  --sz-accent-hover: #827e62;
   --sz-hero-overlay: rgba(0, 0, 0, 0.4);
   --sz-skeleton-base: #dee2e6;
   --sz-skeleton-shine: #f1f3f5;

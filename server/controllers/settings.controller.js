@@ -4,7 +4,7 @@ const Product = require('../models/Product');
 
 const DEFAULT_SETTINGS = {
   _id: 'global', logo: '',
-  colors: { primaryLight: '#101b3a', primaryDark: '#101b3a', secondaryLight: '#1bbc9b', secondaryDark: '#20c9a6' },
+  colors: { primaryLight: '#827e62', primaryDark: '#827e62', secondaryLight: '#1bbc9b', secondaryDark: '#20c9a6' },
   social: { facebook: '', instagram: '', whatsapp: '', phone: '' },
   bestSellingProducts: [], bestSellingBrands: [],
 };
