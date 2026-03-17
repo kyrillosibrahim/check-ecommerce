@@ -178,7 +178,7 @@
     <!-- FAQ Section -->
     <section class="mt-3 pt-3" style="border-top: 1px solid var(--sz-border-color);">
       <h3 class="section-title">{{ 'faq.title' | translate }}</h3>
-      <div class="accordion" id="faqAccordion">
+      <div class="accordion bgw" id="faqAccordion">
         <!-- Product-Specific FAQs -->
         @if (product.faq) {
           @for (item of product.faq; track $index; let i = $index) {

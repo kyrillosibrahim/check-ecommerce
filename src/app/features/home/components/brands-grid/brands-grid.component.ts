@@ -27,7 +27,7 @@ export class BrandsGridComponent implements AfterViewInit {
   private initSwiper() {
     new Swiper(this.swiperRef.nativeElement, {
       modules: [Autoplay],
-      slidesPerView: 2,
+      slidesPerView: 3,
       slidesPerGroup: 1,
       spaceBetween: 0,
       loop: true,

@@ -128,15 +128,20 @@
 
   &:not(.collapsed) {
     color: #000 !important;
-    background-color: var(--sz-bg-secondary) !important;
+  background-color: var(--sz-bg-secondary) !important;
   }
 }
 
 .faq-answer {
   color: var(--sz-text-secondary);
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   line-height: 1.7;
   word-spacing: 3px;
   padding: 1rem;
-  background-color: var(--sz-bg-card);
+  background-color: var(--sz-skeleton-shine) !important;
+}
+.bgw{
+  background-color:#bb9066 !important;
+  padding: 15px;
+  border-radius: 5px;
 }
