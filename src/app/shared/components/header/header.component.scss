@@ -173,7 +173,7 @@
 }
 
 .categories-bar-scroll {
-  padding: 0px 2%;
+  padding: 0px 6%;
   display: flex;
   align-items: center;
   gap: 0;
@@ -228,7 +228,7 @@
 }
 
 .mega-menu-content {
-  width: 94%;
+  width: 86%;
   display: flex;
   direction: rtl;
   background: var(--sz-bg-card);
@@ -242,7 +242,7 @@
 
 /* ── Right column: All categories list ── */
 .mega-menu-categories {
-  width: 300px;
+  width: 350px;
   min-width: 250px;
   border-inline-start: 1px solid var(--sz-border-color);
   background: var(--sz-bg-secondary);
@@ -303,7 +303,7 @@
 /* ── Middle column: Subcategories ── */
 .mega-menu-subcategories {
   flex: 1;
-  padding: 1.5rem 2rem;
+  padding: 1.5rem 1rem;
   overflow-y: auto;
   min-width: 0;
 }
@@ -319,7 +319,7 @@
 
 .mega-menu-sub-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
 }
 
 .mega-menu-sub-card {
@@ -333,7 +333,7 @@
   color: var(--sz-text-primary);
 
   &:hover {
-    transform: translateY(-2px);
+    transform: translateY(-1px);
   }
 }
 
@@ -366,7 +366,7 @@
 
 /* ── Left column: Famous Brands ── */
 .mega-menu-brands {
-  width: 550px;
+  width: 360px;
   min-width: 240px;
   padding: 1.5rem 1.25rem;
   border-inline-end: 1px solid var(--sz-border-color);
