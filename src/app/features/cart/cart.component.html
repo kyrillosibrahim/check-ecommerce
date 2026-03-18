@@ -1,7 +1,9 @@
 <div class="container section-padding">
   <h2 class="section-title">{{ 'cart.title' | translate }}</h2>
 
-  @if ((cartService.cart$ | async)?.length === 0) {
+  @if (cartService.loading()) {
+    <app-skeleton-loader type="list" [count]="3" />
+  } @else if ((cartService.cart$ | async)?.length === 0) {
     <div class="empty-state">
       <i class="bi bi-cart-x d-block"></i>
       <h3>{{ 'cart.empty' | translate }}</h3>

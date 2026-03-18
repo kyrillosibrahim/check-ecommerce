@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, ChangeDetectorRef, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -35,6 +35,7 @@ export class CheckoutComponent {
 
   orderPlaced = false;
   orderId = '';
+  countdown = signal(10);
 
   governorates: IGovernorateApi[] = [];
   selectedGovernorate: IGovernorateApi | null = null;
@@ -214,8 +215,17 @@ export class CheckoutComponent {
     // Launch fireworks
     this.launchFireworks();
 
-    // Redirect after 8 seconds
-    setTimeout(() => this.router.navigate(['/']), 8000);
+    // Countdown and redirect
+    this.countdown.set(10);
+    const interval = setInterval(() => {
+      const val = this.countdown() - 1;
+      this.countdown.set(val);
+      this.cdr.markForCheck();
+      if (val <= 0) {
+        clearInterval(interval);
+        this.router.navigate(['/']);
+      }
+    }, 1000);
   }
 
   private launchFireworks(): void {

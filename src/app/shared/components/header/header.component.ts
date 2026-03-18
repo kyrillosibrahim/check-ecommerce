@@ -49,6 +49,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   showProfileDropdown = false;
   showMobileDrawer = false;
   activeNavIndex = 0;
+  hideBottomNav = false;
 
   // Mega-menu hover state
   hoveredCategory: ICategory | null = null;
@@ -282,6 +283,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   private updateActiveNav(url: string): void {
+    this.hideBottomNav = url.startsWith('/checkout');
     if (url === '/' || url === '') this.activeNavIndex = 0;
     else if (url.startsWith('/offers')) this.activeNavIndex = 1;
     else if (url.startsWith('/cart')) this.activeNavIndex = 2;

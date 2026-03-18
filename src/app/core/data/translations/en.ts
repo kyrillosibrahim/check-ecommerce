@@ -102,6 +102,9 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'product.out_of_stock': 'Out of Stock',
   'product.add_to_wishlist': 'Add to wishlist',
   'product.coming_soon': 'Coming Soon',
+  'product.quick_view': 'Quick View',
+  'product.view_product': 'View Product',
+  'product.close': 'Close',
 
   // ── Product Details ──
   'details.not_found': 'Product Not Found',

@@ -588,6 +588,7 @@
 }
 
 <!-- ═══════ Mobile Bottom Navigation Bar ═══════ -->
+@if (!hideBottomNav) {
 <nav class="mobile-bottom-nav d-lg-none">
   <div class="mobile-nav-indicator" [style.left]="navIndicatorLeft"></div>
   <a class="mobile-bottom-nav-item" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
@@ -628,3 +629,4 @@
     </a>
   }
 </nav>
+}

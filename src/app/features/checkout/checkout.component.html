@@ -10,7 +10,11 @@
       <p class="text-secondary mb-2">{{ 'checkout.success_thanks' | translate }}</p>
       <p class="text-secondary mb-4">{{ 'checkout.success_order_id' | translate }} <strong>{{ orderId }}</strong></p>
 
-      <p class="text-secondary small">{{ 'checkout.success_redirect' | translate }}</p>
+      <p class="text-secondary small">
+        {{ translationService.isArabic() ? 'سيتم تحويلك إلى الصفحة الرئيسية خلال' : 'You will be redirected to the home page in' }}
+        {{ countdown() }}
+        {{ translationService.isArabic() ? 'ثوانٍ...' : 'seconds...' }}
+      </p>
       <a routerLink="/" class="btn btn-primary mt-3">
         <i class="bi bi-house me-2"></i>{{ 'checkout.back_home' | translate }}
       </a>

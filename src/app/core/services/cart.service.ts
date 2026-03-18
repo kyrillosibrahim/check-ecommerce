@@ -106,11 +106,13 @@ export class CartService {
   });
 
   private cartLoaded = false;
+  loading = signal(true);
 
   /** Load cart items from getcart API */
   loadCart(): void {
     if (this.cartLoaded) return;
     this.cartLoaded = true;
+    this.loading.set(true);
     this.http.get<any[]>(`${SERVER_URL}/api/cart/getcart`).subscribe({
       next: (items) => {
         const mapped: ICartItem[] = items.map(item => ({
@@ -118,8 +120,12 @@ export class CartService {
           quantity: item.quantity,
         }));
         this.cartSubject.next(mapped);
+        this.loading.set(false);
       },
-      error: (err) => console.error('Failed to load cart:', err),
+      error: (err) => {
+        console.error('Failed to load cart:', err);
+        this.loading.set(false);
+      },
     });
   }
 

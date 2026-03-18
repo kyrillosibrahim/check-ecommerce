@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { IProduct } from '../../../core/models/product.model';
 import { TranslationService } from '../../../core/services/translation.service';
 import { CartService } from '../../../core/services/cart.service';
@@ -19,6 +19,7 @@ import Swal from 'sweetalert2';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductCardComponent {
+  private router = inject(Router);
   translationService = inject(TranslationService);
   cartService = inject(CartService);
   private wishlistService = inject(WishlistService);
@@ -27,6 +28,7 @@ export class ProductCardComponent {
   @Output() addToWishlist = new EventEmitter<IProduct>();
 
   private addedToCartLocal = false;
+  showQuickView = false;
 
   get isInCart(): boolean {
     return this.addedToCartLocal || this.product.inCart || this.cartService.isInCart(this.product.id);
@@ -59,6 +61,22 @@ export class ProductCardComponent {
   }
 
   readonly starsArray = [1, 2, 3, 4, 5];
+
+  navigateToProduct(): void {
+    this.router.navigate(['/product', this.product.id]);
+  }
+
+  openQuickView(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.showQuickView = true;
+    document.body.style.overflow = 'hidden';
+  }
+
+  closeQuickView(): void {
+    this.showQuickView = false;
+    document.body.style.overflow = '';
+  }
 
   onAddToCart(): void {
     this.addedToCartLocal = true;

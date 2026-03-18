@@ -102,6 +102,9 @@ export const AR_TRANSLATIONS: Record<string, string> = {
   'product.out_of_stock': 'نفذ من المخزون',
   'product.add_to_wishlist': 'أضف إلى المفضلة',
   'product.coming_soon': 'قريبًا',
+  'product.quick_view': 'عرض سريع',
+  'product.view_product': 'عرض المنتج',
+  'product.close': 'إغلاق',
 
   // ── Product Details ──
   'details.not_found': 'المنتج غير موجود',

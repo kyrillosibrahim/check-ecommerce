@@ -21,7 +21,7 @@ export class App implements OnInit {
   private router = inject(Router);
 
   /** Pages where the footer should be hidden on mobile */
-  private noFooterRoutes = ['/profile', '/wishlist', '/cart', '/offers'];
+  private noFooterRoutes = ['/profile', '/wishlist', '/cart', '/offers', '/checkout'];
   hideFooterOnMobile = signal(false);
 
   ngOnInit(): void {

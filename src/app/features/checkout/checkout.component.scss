@@ -1,6 +1,9 @@
 :host {
   display: block;
   padding-inline: 30px;
+    @media (max-width: 576px) {
+    padding-inline: 0px;
+  }
 }
 
 .success-container {

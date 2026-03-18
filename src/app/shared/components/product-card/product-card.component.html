@@ -1,8 +1,14 @@
-<div class="card card-hover h-100 shadow-sm position-relative" style=" border-color: var(--sz-border-color);">
+<div class="card card-hover h-100 shadow-sm position-relative card-clickable" style="border-color: var(--sz-border-color);" (click)="navigateToProduct()">
   <!-- Image -->
-  <a [routerLink]="['/product', product.id]">
+  <div class="product-img-wrapper position-relative" (click)="$event.stopPropagation()">
     <img [src]="product.images[0]" [alt]="product.title" class="card-img-top product-img" loading="lazy" width="300" height="220">
-  </a>
+    <!-- Quick View Eye Icon Overlay -->
+    <div class="quick-view-overlay">
+      <button class="quick-view-btn" (click)="openQuickView($event)" [title]="'product.quick_view' | translate">
+        <i class="bi bi-eye"></i>
+      </button>
+    </div>
+  </div>
 
   <div class="card-body d-flex flex-column">
     <!-- Category -->
@@ -11,9 +17,7 @@
     </small>
 
     <!-- Title -->
-    <a [routerLink]="['/product', product.id]" class="text-decoration-none" style="color: var(--sz-text-primary);">
-      <h6 class="card-title mb-1 fw-semibold product-title">{{ product.title | localize:product.titleAr }}</h6>
-    </a>
+    <h6 class="card-title mb-1 fw-semibold product-title" style="color: var(--sz-text-primary);">{{ product.title | localize:product.titleAr }}</h6>
 
     <!-- Product Form Badge -->
     @if (product.productForm) {
@@ -58,7 +62,7 @@
   <!-- Footer: Wishlist + Add to cart -->
   <div class="card-footer bg-transparent border-0 pt-0 pb-3 px-3">
     @if (product.comingSoon) {
-      <button class="btn btn-warning btn-sm w-100" (click)="onComingSoon()">
+      <button class="btn btn-warning btn-sm w-100" (click)="$event.stopPropagation(); onComingSoon()">
         <i class="bi bi-clock me-1"></i>{{ 'product.coming_soon' | translate }}
       </button>
     } @else if (product.stock > 0) {
@@ -79,7 +83,7 @@
             <i class="bi bi-check-lg me-1"></i>{{ 'details.added' | translate }}
           </button>
         } @else {
-          <button class="btn btn-primary btn-sm flex-grow-1" (click)="onAddToCart()">
+          <button class="btn btn-primary btn-sm flex-grow-1" (click)="$event.stopPropagation(); onAddToCart()">
             <i class="bi bi-cart-plus me-1"></i>{{ 'product.add_to_cart' | translate }}
           </button>
         }
@@ -91,3 +95,111 @@
     }
   </div>
 </div>
+
+<!-- Quick View Modal -->
+@if (showQuickView) {
+  <div class="quick-view-modal-backdrop" (click)="closeQuickView()">
+    <div class="quick-view-modal" (click)="$event.stopPropagation()">
+      <!-- Close Button -->
+      <button class="quick-view-close" (click)="closeQuickView()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+
+      <div class="quick-view-content">
+        <!-- Image -->
+        <div class="quick-view-image">
+          <img [src]="product.images[0]" [alt]="product.title" />
+        </div>
+
+        <!-- Details -->
+        <div class="quick-view-details">
+          <h4 class="fw-bold mb-2">{{ product.title | localize:product.titleAr }}</h4>
+
+          <!-- Rating -->
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <div class="star-rating">
+              @for (star of starsArray; track star) {
+                <i class="bi" [class.bi-star-fill]="star <= product.rating" [class.bi-star-half]="star > product.rating && star - 0.5 <= product.rating" [class.bi-star]="star > product.rating && star - 0.5 > product.rating"></i>
+              }
+            </div>
+            <small class="text-secondary">({{ product.ratingsCount }} {{ 'details.reviews' | translate }})</small>
+          </div>
+
+          <!-- Price -->
+          @if (!product.comingSoon) {
+            <div class="mb-3">
+              @if (hasDiscount) {
+                <span class="price-original fs-6 me-2">{{ product.price | egpCurrency }}</span>
+                <span class="price-current fs-4">{{ product | discountPrice | egpCurrency }}</span>
+                <span class="badge bg-danger ms-2">{{ 'details.off' | translate }} -{{ product.discountPercentage }}%</span>
+              } @else {
+                <span class="price-current fs-4">{{ product.price | egpCurrency }}</span>
+              }
+            </div>
+          }
+
+          <!-- Description -->
+          @if (product.description || product.descriptionAr) {
+            <p class="text-secondary mb-3 quick-view-desc">{{ product.description | localize:product.descriptionAr }}</p>
+          }
+
+          <!-- Stock -->
+          <div class="mb-3">
+            @if (product.comingSoon) {
+              <span class="text-warning fw-semibold">
+                <i class="bi bi-clock me-1"></i>{{ 'product.coming_soon' | translate }}
+              </span>
+            } @else if (product.stock > 0) {
+              <span class="text-success fw-semibold">
+                <i class="bi bi-check-circle me-1"></i>{{ 'details.in_stock' | translate }} ({{ product.stock }} {{ 'details.available' | translate }})
+              </span>
+            } @else {
+              <span class="text-danger fw-semibold">
+                <i class="bi bi-x-circle me-1"></i>{{ 'product.out_of_stock' | translate }}
+              </span>
+            }
+          </div>
+
+          <!-- Actions -->
+          @if (product.comingSoon) {
+            <button class="btn btn-warning w-100" (click)="onComingSoon()">
+              <i class="bi bi-clock me-2"></i>{{ 'product.coming_soon' | translate }}
+            </button>
+          } @else if (product.stock > 0) {
+            <div class="d-flex gap-2">
+              <button class="btn btn-sm"
+                      [class.btn-danger]="isInWishlist"
+                      [class.btn-outline-danger]="!isInWishlist"
+                      [disabled]="isWishlistProcessing"
+                      (click)="toggleWishlist($event)">
+                @if (isWishlistProcessing) {
+                  <span class="spinner-border spinner-border-sm"></span>
+                } @else {
+                  <i class="bi" [class.bi-heart-fill]="isInWishlist" [class.bi-heart]="!isInWishlist"></i>
+                }
+              </button>
+              @if (isInCart) {
+                <button class="btn btn-secondary flex-grow-1" disabled>
+                  <i class="bi bi-check-lg me-2"></i>{{ 'details.added' | translate }}
+                </button>
+              } @else {
+                <button class="btn btn-primary flex-grow-1" (click)="onAddToCart()">
+                  <i class="bi bi-cart-plus me-2"></i>{{ 'details.add_to_cart' | translate }}
+                </button>
+              }
+            </div>
+          } @else {
+            <button class="btn btn-secondary w-100" disabled>
+              <i class="bi bi-x-circle me-1"></i>{{ 'product.out_of_stock' | translate }}
+            </button>
+          }
+
+          <!-- View Full Details Link -->
+          <a [routerLink]="['/product', product.id]" class="btn btn-outline-secondary w-100 mt-3" (click)="closeQuickView()">
+            <i class="bi bi-box-arrow-up-right me-2"></i>{{ 'product.view_product' | translate }}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+}

@@ -338,9 +338,10 @@
 }
 
 .mega-menu-sub-img, .mega-menu-sub-img-placeholder {
-  width: 90px;
-  height: 75px;
-  border-radius: 8px;
+    height: 75px;
+    border-radius: 8px;
+    padding: 5px;
+    background-color: white;
 }
 
 .mega-menu-sub-img {

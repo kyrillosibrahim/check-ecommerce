@@ -4,6 +4,7 @@ import { AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CartService } from '../../core/services/cart.service';
 import { CartItemComponent } from './components/cart-item/cart-item.component';
+import { SkeletonLoaderComponent } from '../../shared/components/skeleton-loader/skeleton-loader.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslationService } from '../../core/services/translation.service';
 import { EgpCurrencyPipe } from '../../shared/pipes/egp-currency.pipe';
@@ -11,7 +12,7 @@ import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-cart',
-  imports: [RouterLink, AsyncPipe, EgpCurrencyPipe, CartItemComponent, TranslatePipe, FormsModule],
+  imports: [RouterLink, AsyncPipe, EgpCurrencyPipe, CartItemComponent, SkeletonLoaderComponent, TranslatePipe, FormsModule],
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

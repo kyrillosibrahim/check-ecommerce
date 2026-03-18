@@ -2,6 +2,9 @@
   display: block;
   font-size: 0.78rem;
   padding-inline: 30px;
+  @media (max-width: 576px) {
+    padding-inline: 0px;
+  }
 }
 
 .card-body {

@@ -13,6 +13,10 @@
   overflow: hidden;
 }
 
+.card-clickable {
+  cursor: pointer;
+}
+
 .product-title {
   font-size: 0.78rem;
   display: -webkit-box;
@@ -76,6 +80,157 @@
   width: fit-content;
 }
 
+// ── Quick View Eye Icon ──
+.product-img-wrapper {
+  overflow: hidden;
+}
+
+.quick-view-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.product-img-wrapper:hover .quick-view-overlay {
+  opacity: 1;
+}
+
+.quick-view-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: #fff;
+  color: #333;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+  &:hover {
+    transform: scale(1.1);
+    background: var(--sz-accent, #6a8f6b);
+    color: #fff;
+  }
+}
+
+// ── Quick View Modal ──
+.quick-view-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeIn 0.25s ease;
+}
+
+.quick-view-modal {
+  background: #fff;
+  border-radius: 12px;
+  max-width: 850px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideUp 0.3s ease;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.quick-view-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.08);
+  color: #333;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.15);
+  }
+}
+
+[dir='rtl'] .quick-view-close {
+  right: auto;
+  left: 12px;
+}
+
+.quick-view-content {
+  display: flex;
+  gap: 0;
+}
+
+.quick-view-image {
+  flex: 0 0 50%;
+  max-width: 50%;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 12px 0 0 12px;
+    background: #f8f8f8;
+  }
+}
+
+[dir='rtl'] .quick-view-image img {
+  border-radius: 0 12px 12px 0;
+}
+
+.quick-view-details {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.quick-view-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.7;
+  font-size: 0.9rem;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 // ── Mobile ──
 @media (max-width: 576px) {
   .product-img {
@@ -122,7 +277,10 @@
     .btn {
       font-size: 0.65rem;
       padding: 0.25rem 0.4rem;
+        @media (max-width: 576px) {
+      padding: 0.25rem 0.1rem !important;
     }
+  }
   }
 
   .wishlist-btn {
@@ -130,5 +288,33 @@
     min-width: 30px;
     height: 30px;
     font-size: 0.8rem;
+  }
+
+  .quick-view-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+
+  .quick-view-content {
+    flex-direction: column;
+  }
+
+  .quick-view-image {
+    flex: none;
+    max-width: 100%;
+
+    img {
+      border-radius: 12px 12px 0 0;
+      max-height: 250px;
+    }
+  }
+
+  .quick-view-details {
+    padding: 1.2rem;
+  }
+
+  .quick-view-modal {
+    max-height: 95vh;
   }
 }
