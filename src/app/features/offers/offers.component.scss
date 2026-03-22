@@ -129,7 +129,7 @@
 
 @media (max-width: 576px) {
   .discount-marquee__set img {
-    height: 35px;
+    height: 35px !important;
     margin-right: 20px;
   }
 }
