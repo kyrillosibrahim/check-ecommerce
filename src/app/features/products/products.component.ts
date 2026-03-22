@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ProductService } from '../../core/services/product.service';
 import { CartService } from '../../core/services/cart.service';
 import { WishlistService } from '../../core/services/wishlist.service';
@@ -25,6 +25,7 @@ const ITEMS_PER_PAGE = 36;
 export class ProductsComponent implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private productService = inject(ProductService);
   private cartService = inject(CartService);
   private wishlistService = inject(WishlistService);
@@ -90,18 +91,21 @@ export class ProductsComponent implements OnInit {
   }
 
   onCategoryChange(category: string): void {
-    this.selectedCategory = category;
-    this.selectedSubcategory = '';
     this.selectedFilterTags = [];
-    this.currentPage = 1;
     this.closeFilterDrawer();
-    this.fetchFromServer();
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { category: category || null, subcategory: null },
+      queryParamsHandling: 'merge',
+    });
   }
 
   onSubcategoryChange(subcategory: string): void {
-    this.selectedSubcategory = subcategory;
-    this.currentPage = 1;
-    this.fetchFromServer();
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { subcategory: subcategory || null },
+      queryParamsHandling: 'merge',
+    });
   }
 
   onFilterTagsChange(tags: string[]): void {
