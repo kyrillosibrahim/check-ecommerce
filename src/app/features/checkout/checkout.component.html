@@ -11,9 +11,7 @@
       <p class="text-secondary mb-4">{{ 'checkout.success_order_id' | translate }} <strong>{{ orderId }}</strong></p>
 
       <p class="text-secondary small">
-        {{ translationService.isArabic() ? 'سيتم تحويلك إلى الصفحة الرئيسية خلال' : 'You will be redirected to the home page in' }}
-        {{ countdown() }}
-        {{ translationService.isArabic() ? 'ثوانٍ...' : 'seconds...' }}
+        {{ 'checkout.redirect_prefix' | translate }} {{ countdown() }} {{ 'checkout.redirect_suffix' | translate }}
       </p>
       <a routerLink="/" class="btn btn-primary mt-3">
         <i class="bi bi-house me-2"></i>{{ 'checkout.back_home' | translate }}
@@ -184,7 +182,7 @@
             @if (cartService.promoApplied()) {
               <div class="d-flex justify-content-between mb-2">
                 <span class="text-secondary">
-                  {{ translationService.isArabic() ? 'خصم الكود' : 'Promo discount' }}
+                  {{ 'cart.promo_discount' | translate }}
                   <span class="badge bg-success ms-1" style="font-size: 0.65rem;">{{ cartService.promoCode() }}</span>
                 </span>
                 <span class="text-danger">-{{ cartService.PROMO_DISCOUNT | egpCurrency }}</span>

@@ -34,20 +34,8 @@
   <div class="offers-content container">
     <!-- Header -->
     <div class="offers-header">
-      <h1 class="offers-heading">
-        @if (translationService.isArabic()) {
-          العروض والخصومات
-        } @else {
-          Offers & Discounts
-        }
-      </h1>
-      <p class="offers-subtitle">
-        @if (translationService.isArabic()) {
-          اكتشف أفضل العروض والخصومات على منتجاتنا
-        } @else {
-          Discover the best deals and discounts on our products
-        }
-      </p>
+      <h1 class="offers-heading">{{ 'offers.title' | translate }}</h1>
+      <p class="offers-subtitle">{{ 'offers.subtitle' | translate }}</p>
       <div class="heading-line"></div>
     </div>
 
@@ -65,10 +53,10 @@
             <div class="carousel-item" [class.active]="i === 0">
               @if (banner.link) {
                 <a [routerLink]="banner.link">
-                  <img [src]="banner.image" class="d-block w-100 offers-banner-img" alt="عرض">
+                  <img [src]="banner.image" class="d-block w-100 offers-banner-img" [alt]="'offers.banner_alt' | translate">
                 </a>
               } @else {
-                <img [src]="banner.image" class="d-block w-100 offers-banner-img" alt="عرض">
+                <img [src]="banner.image" class="d-block w-100 offers-banner-img" [alt]="'offers.banner_alt' | translate">
               }
             </div>
           }
@@ -91,27 +79,9 @@
     } @else if (products.length === 0 && !selectedCategory) {
       <div class="empty-state">
         <i class="bi bi-tags d-block"></i>
-        <h3>
-          @if (translationService.isArabic()) {
-            لا توجد عروض حاليًا
-          } @else {
-            No offers available
-          }
-        </h3>
-        <p>
-          @if (translationService.isArabic()) {
-            تابعنا للحصول على أحدث العروض
-          } @else {
-            Stay tuned for the latest deals
-          }
-        </p>
-        <a routerLink="/products" class="btn btn-primary btn-sm">
-          @if (translationService.isArabic()) {
-            تصفح المنتجات
-          } @else {
-            Browse Products
-          }
-        </a>
+        <h3>{{ 'offers.no_offers' | translate }}</h3>
+        <p>{{ 'offers.no_offers_desc' | translate }}</p>
+        <a routerLink="/products" class="btn btn-primary btn-sm">{{ 'offers.browse_products' | translate }}</a>
       </div>
     } @else {
       <!-- Filter Bar -->
@@ -145,20 +115,8 @@
       @if (products.length === 0) {
         <div class="empty-state">
           <i class="bi bi-funnel d-block"></i>
-          <h3>
-            @if (translationService.isArabic()) {
-              لا توجد عروض في هذا القسم
-            } @else {
-              No offers in this category
-            }
-          </h3>
-          <p>
-            @if (translationService.isArabic()) {
-              جرب اختيار قسم آخر
-            } @else {
-              Try selecting a different category
-            }
-          </p>
+          <h3>{{ 'offers.no_offers_category' | translate }}</h3>
+          <p>{{ 'offers.no_offers_category_desc' | translate }}</p>
         </div>
       } @else {
         <div class="row g-2 g-md-3 row-cols-lg-5">

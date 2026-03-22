@@ -16,6 +16,15 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'nav.view_history': 'View History',
   'nav.browse_categories': 'Browse Categories',
   'nav.popular_brands': 'Popular Brands',
+  'nav.view_all_results': 'View all search results',
+  'nav.brand_label': 'Brand',
+  'nav.no_results': 'No results for',
+  'nav.my_account': 'My Account',
+  'nav.cart_header': 'Shopping Cart',
+  'nav.total': 'Total',
+  'nav.view_cart': 'View Cart',
+  'nav.subcategories': 'Subcategories',
+  'nav.famous_brands': 'Famous Brands',
 
   // ── Footer ──
   'footer.description':
@@ -140,6 +149,12 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'cart.proceed_checkout': 'Proceed to Checkout',
   'cart.continue_shopping': 'Continue Shopping',
   'cart.clear_all': 'Clear All',
+  'cart.promo_label': 'Have a code?',
+  'cart.promo_placeholder': 'Enter code',
+  'cart.promo_apply': 'Apply',
+  'cart.promo_error': 'Invalid code',
+  'cart.promo_success': 'Code applied successfully',
+  'cart.promo_discount': 'Promo discount',
 
   // ── Wishlist Page ──
   'wishlist.title': 'My Wishlist',
@@ -178,6 +193,8 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'checkout.change_address': 'Change Address',
   'checkout.add_new_address': 'Add New Address',
   'checkout.use_saved': 'Use Saved Address',
+  'checkout.redirect_prefix': 'You will be redirected to the home page in',
+  'checkout.redirect_suffix': 'seconds...',
 
   // ── Checkout Validation ──
   'validation.full_name_required': 'Full name is required',
@@ -254,6 +271,16 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'faq.delivery_time_answer': 'Delivery within Cairo and Giza takes 1-2 business days, and for all other governorates 2-3 business days.',
   'faq.payment_methods': 'What are the available payment methods?',
   'faq.payment_methods_answer': 'You can pay cash on delivery, or via bank transfer through InstaPay or any e-wallet like Vodafone Cash.',
+
+  // ── Offers Page ──
+  'offers.title': 'Offers & Discounts',
+  'offers.subtitle': 'Discover the best deals and discounts on our products',
+  'offers.banner_alt': 'Offer',
+  'offers.no_offers': 'No offers available',
+  'offers.no_offers_desc': 'Stay tuned for the latest deals',
+  'offers.browse_products': 'Browse Products',
+  'offers.no_offers_category': 'No offers in this category',
+  'offers.no_offers_category_desc': 'Try selecting a different category',
 
   // ── Offers Filter ──
   'offers.filter_all': 'All',

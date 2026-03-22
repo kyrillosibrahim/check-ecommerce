@@ -49,21 +49,21 @@
         <div class="card shadow-sm mb-3" style=" border-color: var(--sz-border-color);">
           <div class="card-body">
             <label class="fw-bold mb-2 d-block" style="font-size: 1.15rem;">
-              {{ translationService.isArabic() ? 'عندك كود؟' : 'Have a code?' }}
+              {{ 'cart.promo_label' | translate }}
             </label>
             @if (!promoApplied()) {
               <div class="input-group">
                 <input type="text" class="form-control" [(ngModel)]="promoCodeInput"
-                       [placeholder]="translationService.isArabic() ? 'ادخل الكود' : 'Enter code'"
+                       [placeholder]="'cart.promo_placeholder' | translate"
                        (keyup.enter)="applyPromo()"
                        style="background-color: var(--sz-bg-secondary); border-color: var(--sz-border-color); color: var(--sz-text-primary);">
                 <button class="btn btn-primary" (click)="applyPromo()" [disabled]="!promoCodeInput.trim()">
-                  {{ translationService.isArabic() ? 'تطبيق' : 'Apply' }}
+                  {{ 'cart.promo_apply' | translate }}
                 </button>
               </div>
               @if (promoError()) {
                 <small class="text-danger mt-1 d-block">
-                  {{ translationService.isArabic() ? 'كود غير صحيح' : 'Invalid code' }}
+                  {{ 'cart.promo_error' | translate }}
                 </small>
               }
             } @else {
@@ -72,7 +72,7 @@
                   <i class="bi bi-check-circle-fill text-success me-1"></i>
                   <span class="fw-semibold" style="color: var(--sz-text-primary);">km298</span>
                   <small class="text-success d-block mt-1">
-                    {{ translationService.isArabic() ? 'كود صحيح — تم تفعيل الكود على الفاتورة' : 'Code applied successfully' }}
+                    {{ 'cart.promo_success' | translate }}
                   </small>
                 </div>
                 <button class="btn btn-link text-danger p-0" (click)="removePromo()">
@@ -99,7 +99,7 @@
             @if (promoApplied()) {
               <div class="d-flex justify-content-between mb-3">
                 <span class="text-secondary fs-6">
-                  {{ translationService.isArabic() ? 'خصم الكود' : 'Promo discount' }}
+                  {{ 'cart.promo_discount' | translate }}
                   <span class="badge bg-success ms-1" style="font-size: 0.7rem;">km298</span>
                 </span>
                 <span class="text-danger fs-6">-{{ PROMO_DISCOUNT | egpCurrency }}</span>

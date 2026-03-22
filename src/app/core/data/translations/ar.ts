@@ -16,6 +16,15 @@ export const AR_TRANSLATIONS: Record<string, string> = {
   'nav.view_history': 'عرض السجل',
   'nav.browse_categories': 'تصفح الأقسام',
   'nav.popular_brands': 'علامات تجارية مشهورة',
+  'nav.view_all_results': 'عرض كل نتائج البحث',
+  'nav.brand_label': 'العلامة التجارية',
+  'nav.no_results': 'لا توجد نتائج لـ',
+  'nav.my_account': 'حسابي',
+  'nav.cart_header': 'سلة التسوق',
+  'nav.total': 'الإجمالي',
+  'nav.view_cart': 'عرض السلة',
+  'nav.subcategories': 'الأقسام الفرعية',
+  'nav.famous_brands': 'أشهر الماركات',
 
   // ── Footer ──
   'footer.description':
@@ -140,6 +149,12 @@ export const AR_TRANSLATIONS: Record<string, string> = {
   'cart.proceed_checkout': 'المتابعة للدفع',
   'cart.continue_shopping': 'متابعة التسوق',
   'cart.clear_all': 'حذف الكل',
+  'cart.promo_label': 'عندك كود؟',
+  'cart.promo_placeholder': 'ادخل الكود',
+  'cart.promo_apply': 'تطبيق',
+  'cart.promo_error': 'كود غير صحيح',
+  'cart.promo_success': 'كود صحيح — تم تفعيل الكود على الفاتورة',
+  'cart.promo_discount': 'خصم الكود',
 
   // ── Wishlist Page ──
   'wishlist.title': 'قائمة المفضلة',
@@ -178,6 +193,8 @@ export const AR_TRANSLATIONS: Record<string, string> = {
   'checkout.change_address': 'تغيير العنوان',
   'checkout.add_new_address': 'إضافة عنوان جديد',
   'checkout.use_saved': 'استخدام العنوان المحفوظ',
+  'checkout.redirect_prefix': 'سيتم تحويلك إلى الصفحة الرئيسية خلال',
+  'checkout.redirect_suffix': 'ثوانٍ...',
 
   // ── Checkout Validation ──
   'validation.full_name_required': 'الاسم بالكامل مطلوب',
@@ -253,6 +270,16 @@ export const AR_TRANSLATIONS: Record<string, string> = {
   'faq.delivery_time_answer': 'تتراوح مدة التوصيل داخل القاهرة والجيزة من 1 إلى 2 يوم عمل، ولجميع المحافظات من 2 إلى 3 أيام عمل.',
   'faq.payment_methods': 'ما هي طرق الدفع المتاحة؟',
   'faq.payment_methods_answer': 'يمكن الدفع عند الاستلام، أو عن طريق التحويل البنكي عبر تطبيق إنستاباي أو أي محفظة إلكترونية مثل فودافون كاش.',
+
+  // ── Offers Page ──
+  'offers.title': 'العروض والخصومات',
+  'offers.subtitle': 'اكتشف أفضل العروض والخصومات على منتجاتنا',
+  'offers.banner_alt': 'عرض',
+  'offers.no_offers': 'لا توجد عروض حاليًا',
+  'offers.no_offers_desc': 'تابعنا للحصول على أحدث العروض',
+  'offers.browse_products': 'تصفح المنتجات',
+  'offers.no_offers_category': 'لا توجد عروض في هذا القسم',
+  'offers.no_offers_category_desc': 'جرب اختيار قسم آخر',
 
   // ── Offers Filter ──
   'offers.filter_all': 'الكل',
