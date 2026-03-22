@@ -96,7 +96,7 @@
   border: 1px solid var(--sz-border-color, #dee2e6);
   background: var(--sz-bg-secondary, #f8f9fa);
   color: var(--sz-text-primary, #212529);
-  border-radius: 20px;
+  border-radius: 5px;
   padding: 0.3rem 0.75rem;
   font-size: 0.8rem;
   transition: all 0.2s;
@@ -123,7 +123,7 @@
 .sort-chip {
   padding: 0.3rem 0.75rem;
   border: 1px solid var(--sz-border-color, #dee2e6);
-  border-radius: 20px;
+  border-radius: 5px;
   background: var(--sz-bg-secondary, #f8f9fa);
   color: var(--sz-text-primary, #212529);
   font-size: 0.78rem;
