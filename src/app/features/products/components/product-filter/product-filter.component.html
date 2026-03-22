@@ -2,7 +2,7 @@
 @if (!hideCategories) {
   @if (!selectedCategory) {
     <!-- Main categories -->
-    <div class="categories-grid mb-4" [class.opacity-0]="categories.length === 0">
+    <div class="categories-grid mb-2" [class.opacity-0]="categories.length === 0">
       <button class="category-card" [class.active]="!selectedCategory" (click)="categoryChange.emit('')">
         <div class="category-img-wrapper">
           <i class="bi bi-grid-3x3-gap-fill category-icon-placeholder"></i>
