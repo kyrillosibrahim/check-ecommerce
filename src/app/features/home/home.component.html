@@ -10,10 +10,10 @@
           <div class="col-12">
             @if (banner.link) {
               <a [href]="banner.link">
-                <img [src]="banner.image" [alt]="'بنر ' + banner.id" class="w-100 rounded-3 shadow-sm" loading="lazy" />
+                <img [src]="banner.image" [alt]="'بنر ' + banner.id" class="w-100 rounded-1 shadow-sm" loading="lazy" />
               </a>
             } @else {
-              <img [src]="banner.image" [alt]="'بنر ' + banner.id" class="w-100 rounded-3 shadow-sm" loading="lazy" />
+              <img [src]="banner.image" [alt]="'بنر ' + banner.id" class="w-100 rounded-2 shadow-sm" loading="lazy" />
             }
           </div>
         }

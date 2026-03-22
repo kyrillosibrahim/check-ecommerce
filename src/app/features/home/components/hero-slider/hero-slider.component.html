@@ -1,11 +1,11 @@
 <div class="container mt-3" style="padding: 1% 3%;">
   @if (loading() && banners().length === 0) {
     <!-- Skeleton Loading -->
-    <div class="skeleton-slider rounded-3 overflow-hidden">
+    <div class="skeleton-slider rounded-1 overflow-hidden">
       <div class="skeleton-shimmer"></div>
     </div>
   } @else if (banners().length > 0) {
-    <div id="heroCarousel" class="carousel slide rounded-3 overflow-hidden" data-bs-ride="carousel" data-bs-interval="3500">
+    <div id="heroCarousel" class="carousel slide rounded-1 overflow-hidden" data-bs-ride="carousel" data-bs-interval="3500">
       <!-- Indicators -->
       <div class="carousel-indicators">
         @for (banner of banners(); track banner.id; let i = $index) {
