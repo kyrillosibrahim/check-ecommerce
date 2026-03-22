@@ -74,7 +74,10 @@ export class ProductsComponent implements OnInit {
       description: 'تصفح جميع المنتجات المتاحة بأفضل الأسعار. فلاتر متقدمة للبحث حسب القسم والعلامة التجارية.',
       path: '/products',
     });
-    this.categoryService.getAll().subscribe(c => this.categories = c);
+    this.categoryService.getAll().subscribe(c => {
+      this.categories = c;
+      this.cdr.markForCheck();
+    });
 
     this.route.queryParams.subscribe(params => {
       this.selectedCategory = params['category'] || '';
