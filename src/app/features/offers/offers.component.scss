@@ -92,7 +92,7 @@
   width: 100%;
   padding: 0.5rem 0;
   direction: ltr;
-  background-color: #koko !important;
+  background-color: #ffffff !important;
 }
 
 .discount-marquee__track {
@@ -179,9 +179,16 @@
 
 .chips-scroll {
   display: flex;
-  flex-wrap: wrap;
   gap: 0.5rem;
+  overflow-x: auto;
+  flex: 1;
   padding-bottom: 4px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .filter-chip {
