@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter } from '@angular/core';
-import { ICategory } from '../../../../core/models/category.model';
+import { ICategory, ISubcategory } from '../../../../core/models/category.model';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 @Component({
@@ -12,6 +12,7 @@ import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 export class ProductFilterComponent {
   @Input() categories: ICategory[] = [];
   @Input() selectedCategory = '';
+  @Input() selectedSubcategory = '';
   @Input() sortBy = 'default';
   @Input() searchTerm = '';
   @Input() selectedFilterTags: string[] = [];
@@ -20,14 +21,22 @@ export class ProductFilterComponent {
   @Input() hideSort = false;
 
   @Output() categoryChange = new EventEmitter<string>();
+  @Output() subcategoryChange = new EventEmitter<string>();
   @Output() sortChange = new EventEmitter<string>();
   @Output() searchChange = new EventEmitter<string>();
   @Output() filterTagsChange = new EventEmitter<string[]>();
 
+  get activeCategory(): ICategory | undefined {
+    return this.categories.find(c => c.slug === this.selectedCategory);
+  }
+
+  get subcategories(): ISubcategory[] {
+    return this.activeCategory?.subcategories || [];
+  }
+
   get availableFilterTags(): string[] {
     if (!this.selectedCategory) return [];
-    const cat = this.categories.find(c => c.slug === this.selectedCategory);
-    return cat?.filterTags || [];
+    return this.activeCategory?.filterTags || [];
   }
 
   toggleFilterTag(tag: string): void {

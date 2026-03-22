@@ -1,25 +1,51 @@
-<!-- Category Images Grid -->
+<!-- Category / Subcategory Grid -->
 @if (!hideCategories && categories.length > 0) {
-  <div class="categories-grid mb-4">
-    <button class="category-card" [class.active]="!selectedCategory" (click)="categoryChange.emit('')">
-      <div class="category-img-wrapper">
-        <i class="bi bi-grid-3x3-gap-fill category-icon-placeholder"></i>
-      </div>
-      <span class="category-name">{{ 'filter.all_categories' | translate }}</span>
-    </button>
-    @for (cat of categories; track cat.id) {
-      <button class="category-card" [class.active]="selectedCategory === cat.slug" (click)="categoryChange.emit(cat.slug)">
+  @if (!selectedCategory) {
+    <!-- Main categories -->
+    <div class="categories-grid mb-4">
+      <button class="category-card" [class.active]="!selectedCategory" (click)="categoryChange.emit('')">
         <div class="category-img-wrapper">
-          @if (cat.image) {
-            <img [src]="cat.image" [alt]="cat.name" class="category-img" loading="lazy">
-          } @else {
-            <i class="bi bi-box category-icon-placeholder"></i>
+          <i class="bi bi-grid-3x3-gap-fill category-icon-placeholder"></i>
+        </div>
+        <span class="category-name">{{ 'filter.all_categories' | translate }}</span>
+      </button>
+      @for (cat of categories; track cat.id) {
+        <button class="category-card" [class.active]="selectedCategory === cat.slug" (click)="categoryChange.emit(cat.slug)">
+          <div class="category-img-wrapper">
+            @if (cat.image) {
+              <img [src]="cat.image" [alt]="cat.name" class="category-img" loading="lazy">
+            } @else {
+              <i class="bi bi-box category-icon-placeholder"></i>
+            }
+          </div>
+          <span class="category-name">{{ cat.name }}</span>
+        </button>
+      }
+    </div>
+  } @else {
+    <!-- Back button + subcategories -->
+    <div class="mb-4">
+      <button class="btn btn-sm btn-outline-secondary mb-3" (click)="categoryChange.emit(''); subcategoryChange.emit('')">
+        <i class="bi bi-arrow-right me-1"></i>{{ activeCategory?.name }}
+      </button>
+      @if (subcategories.length > 0) {
+        <div class="categories-grid">
+          @for (sub of subcategories; track sub.id) {
+            <button class="category-card" [class.active]="selectedSubcategory === sub.slug" (click)="subcategoryChange.emit(sub.slug)">
+              <div class="category-img-wrapper">
+                @if (sub.image) {
+                  <img [src]="sub.image" [alt]="sub.name" class="category-img" loading="lazy">
+                } @else {
+                  <i class="bi bi-box category-icon-placeholder"></i>
+                }
+              </div>
+              <span class="category-name">{{ sub.name }}</span>
+            </button>
           }
         </div>
-        <span class="category-name">{{ cat.name }}</span>
-      </button>
-    }
-  </div>
+      }
+    </div>
+  }
 }
 
 @if (!hideSort) {

@@ -45,6 +45,16 @@ export class OffersComponent implements OnInit {
 
   availableCategories: string[] = [];
 
+  private readonly baseDiscountImages = [
+    { src: '/assets/offers/10-removebg-preview.png', alt: '10% خصم' },
+    { src: '/assets/offers/20-removebg-preview.png', alt: '20% خصم' },
+    { src: '/assets/offers/30-removebg-preview.png', alt: '30% خصم' },
+    { src: '/assets/offers/40-removebg-preview.png', alt: '40% خصم' },
+    { src: '/assets/offers/images-removebg-preview_LE_upscale_prime_light_ai_100_remove_background_general_clip_to_object_off.png', alt: 'تخفيضات' },
+  ];
+
+  readonly marqueeSet = Array.from({ length: 20 }, () => this.baseDiscountImages).flat();
+
   ngOnInit(): void {
     this.seoService.setPageMeta({
       title: 'العروض والخصومات',

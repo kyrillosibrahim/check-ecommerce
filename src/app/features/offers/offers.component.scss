@@ -86,6 +86,61 @@
   border-radius: 4px;
 }
 
+// ── Discount Marquee ──
+.discount-marquee {
+  overflow: hidden;
+  width: 100%;
+  padding: 0.5rem 0;
+  direction: ltr;
+  background-color: #koko !important;
+}
+
+.discount-marquee__track {
+  display: flex;
+  flex-direction: row;
+  width: max-content;
+  animation: discountScroll 500s linear infinite;
+  will-change: transform;
+
+}
+
+.discount-marquee__set {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-shrink: 0;
+
+  img {
+    height: 50px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    flex-shrink: 0;
+    margin-right: 40px;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.12));
+    pointer-events: none;
+  }
+}
+
+@keyframes discountScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@media (max-width: 576px) {
+  .discount-marquee__set img {
+    height: 55px;
+    margin-right: 25px;
+  }
+}
+
+@media (max-width: 576px) {
+  .discount-marquee__set img {
+    height: 55px;
+    margin-inline-end: 25px;
+  }
+}
+
 // ── Empty state ──
 .empty-state {
   text-align: center;
@@ -124,16 +179,9 @@
 
 .chips-scroll {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
-  overflow-x: auto;
-  flex: 1;
   padding-bottom: 4px;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
 }
 
 .filter-chip {

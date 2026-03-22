@@ -5,14 +5,17 @@
   <app-product-filter
     [categories]="categories"
     [selectedCategory]="selectedCategory"
+    [selectedSubcategory]="selectedSubcategory"
     [hideSort]="true"
-    (categoryChange)="onCategoryChange($event)" />
+    (categoryChange)="onCategoryChange($event)"
+    (subcategoryChange)="onSubcategoryChange($event)" />
 
   <!-- Sort + Tags (desktop only, inline) -->
   <div class="d-none d-lg-block">
     <app-product-filter
       [categories]="categories"
       [selectedCategory]="selectedCategory"
+      [selectedSubcategory]="selectedSubcategory"
       [sortBy]="sortBy"
       [searchTerm]="searchTerm"
       [selectedFilterTags]="selectedFilterTags"
@@ -50,6 +53,7 @@
       <app-product-filter
         [categories]="categories"
         [selectedCategory]="selectedCategory"
+        [selectedSubcategory]="selectedSubcategory"
         [sortBy]="sortBy"
         [searchTerm]="searchTerm"
         [selectedFilterTags]="selectedFilterTags"

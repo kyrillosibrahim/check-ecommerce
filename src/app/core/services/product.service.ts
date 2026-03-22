@@ -137,6 +137,7 @@ export class ProductService {
   searchProducts(filters: {
     search?: string;
     category?: string;
+    subcategory?: string;
     brand?: string;
     featured?: boolean;
     limit?: number;
@@ -147,6 +148,7 @@ export class ProductService {
     let params = new HttpParams();
     if (filters.search) params = params.set('search', filters.search);
     if (filters.category) params = params.set('category', filters.category);
+    if (filters.subcategory) params = params.set('subcategory', filters.subcategory);
     if (filters.brand) params = params.set('brand', filters.brand);
     if (filters.featured) params = params.set('featured', 'true');
     if (filters.limit) params = params.set('limit', filters.limit.toString());

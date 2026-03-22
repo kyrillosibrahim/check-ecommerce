@@ -14,6 +14,22 @@
     [fadeDistance]="2"
     [saturation]="2" />
 
+  <!-- Infinite Discount Marquee -->
+  <div class="discount-marquee">
+    <div class="discount-marquee__track">
+      <div class="discount-marquee__set">
+        @for (img of marqueeSet; track $index) {
+          <img [src]="img.src" [alt]="img.alt">
+        }
+      </div>
+      <div class="discount-marquee__set" aria-hidden="true">
+        @for (img of marqueeSet; track $index) {
+          <img [src]="img.src" [alt]="img.alt">
+        }
+      </div>
+    </div>
+  </div>
+
   <!-- Content -->
   <div class="offers-content container">
     <!-- Header -->
@@ -100,27 +116,25 @@
     } @else {
       <!-- Filter Bar -->
       <div class="offers-filter-bar">
-        <div class="filter-chips-row">
-          <div class="chips-scroll">
-            <button class="filter-chip" [class.active]="selectedCategory === ''" (click)="onCategorySelect('')">
-              {{ 'offers.filter_all' | translate }}
-              <span class="chip-count">{{ totalProducts }}</span>
+        <!-- Sort chips -->
+        <div class="chips-scroll mb-2">
+          <button class="filter-chip" [class.active]="sortBy === 'default'" (click)="onSortChange('default')">{{ 'offers.sort_default' | translate }}</button>
+          <button class="filter-chip" [class.active]="sortBy === 'discount-high'" (click)="onSortChange('discount-high')">{{ 'offers.sort_discount_high' | translate }}</button>
+          <button class="filter-chip" [class.active]="sortBy === 'discount-low'" (click)="onSortChange('discount-low')">{{ 'offers.sort_discount_low' | translate }}</button>
+          <button class="filter-chip" [class.active]="sortBy === 'price-low'" (click)="onSortChange('price-low')">{{ 'offers.sort_price_low' | translate }}</button>
+          <button class="filter-chip" [class.active]="sortBy === 'price-high'" (click)="onSortChange('price-high')">{{ 'offers.sort_price_high' | translate }}</button>
+        </div>
+        <!-- Category chips -->
+        <div class="chips-scroll mb-2">
+          <button class="filter-chip" [class.active]="selectedCategory === ''" (click)="onCategorySelect('')">
+            {{ 'offers.filter_all' | translate }}
+            <span class="chip-count">{{ totalProducts }}</span>
+          </button>
+          @for (cat of availableCategories; track cat) {
+            <button class="filter-chip" [class.active]="selectedCategory === cat" (click)="onCategorySelect(cat)">
+              {{ formatCategoryName(cat) }}
             </button>
-            @for (cat of availableCategories; track cat) {
-              <button class="filter-chip" [class.active]="selectedCategory === cat" (click)="onCategorySelect(cat)">
-                {{ formatCategoryName(cat) }}
-              </button>
-            }
-          </div>
-          <div class="sort-wrapper">
-            <select class="sort-select" [ngModel]="sortBy" (ngModelChange)="onSortChange($event)">
-              <option value="default">{{ 'offers.sort_default' | translate }}</option>
-              <option value="discount-high">{{ 'offers.sort_discount_high' | translate }}</option>
-              <option value="discount-low">{{ 'offers.sort_discount_low' | translate }}</option>
-              <option value="price-low">{{ 'offers.sort_price_low' | translate }}</option>
-              <option value="price-high">{{ 'offers.sort_price_high' | translate }}</option>
-            </select>
-          </div>
+          }
         </div>
         <div class="results-count">
           {{ showingStart }}-{{ showingEnd }} / {{ totalProducts }} {{ 'offers.results_count' | translate }}

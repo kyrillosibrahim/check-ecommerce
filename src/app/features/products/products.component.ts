@@ -35,6 +35,7 @@ export class ProductsComponent implements OnInit {
   categories: ICategory[] = [];
 
   selectedCategory = '';
+  selectedSubcategory = '';
   selectedBrand = '';
   sortBy = 'default';
   searchTerm = '';
@@ -77,6 +78,7 @@ export class ProductsComponent implements OnInit {
 
     this.route.queryParams.subscribe(params => {
       this.selectedCategory = params['category'] || '';
+      this.selectedSubcategory = params['subcategory'] || '';
       this.selectedBrand = params['brand'] || '';
       this.searchTerm = params['search'] || '';
       this.currentPage = 1;
@@ -86,9 +88,16 @@ export class ProductsComponent implements OnInit {
 
   onCategoryChange(category: string): void {
     this.selectedCategory = category;
+    this.selectedSubcategory = '';
     this.selectedFilterTags = [];
     this.currentPage = 1;
     this.closeFilterDrawer();
+    this.fetchFromServer();
+  }
+
+  onSubcategoryChange(subcategory: string): void {
+    this.selectedSubcategory = subcategory;
+    this.currentPage = 1;
     this.fetchFromServer();
   }
 
@@ -140,6 +149,7 @@ export class ProductsComponent implements OnInit {
     this.productService.searchProducts({
       search: this.searchTerm || undefined,
       category: this.selectedCategory || undefined,
+      subcategory: this.selectedSubcategory || undefined,
       brand: this.selectedBrand || undefined,
       filterTags: this.selectedFilterTags.length ? this.selectedFilterTags : undefined,
       page: this.currentPage,
