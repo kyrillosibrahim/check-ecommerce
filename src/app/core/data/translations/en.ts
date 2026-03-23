@@ -23,6 +23,7 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'nav.cart_header': 'Shopping Cart',
   'nav.total': 'Total',
   'nav.view_cart': 'View Cart',
+  'nav.cart_empty': 'No products in cart',
   'nav.subcategories': 'Subcategories',
   'nav.famous_brands': 'Famous Brands',
 

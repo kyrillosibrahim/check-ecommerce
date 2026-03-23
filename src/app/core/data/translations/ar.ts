@@ -23,6 +23,7 @@ export const AR_TRANSLATIONS: Record<string, string> = {
   'nav.cart_header': 'سلة التسوق',
   'nav.total': 'الإجمالي',
   'nav.view_cart': 'عرض السلة',
+  'nav.cart_empty': 'لا توجد منتجات في السلة',
   'nav.subcategories': 'الأقسام الفرعية',
   'nav.famous_brands': 'أشهر الماركات',
 

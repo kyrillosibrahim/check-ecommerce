@@ -9,7 +9,11 @@
     "menu": "Menu",
     "language": "Language",
     "english": "الانجليزية",
-    "arabic": "Arabic"
+    "arabic": "Arabic",
+    "cart_header": "Cart",
+    "view_cart": "View Cart",
+    "total": "Total",
+    "cart_empty": "No products in cart"
   },
   "categories": {
     "vitamins": "Vitamins",

@@ -9,7 +9,11 @@
     "menu": "القائمة",
     "language": "اللغة",
     "english": "English",
-    "arabic": "العربية"
+    "arabic": "العربية",
+    "cart_header": "السلة",
+    "view_cart": "عرض السلة",
+    "total": "الإجمالي",
+    "cart_empty": "لا توجد منتجات في السلة"
   },
   "categories": {
     "vitamins": "الفيتامينات",
