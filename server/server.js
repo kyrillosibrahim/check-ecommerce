@@ -20,6 +20,16 @@ const expenseRoutes = require('./routes/expense.routes');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// --- Security HTTP Headers ---
+app.use((_req, res, next) => {
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  res.setHeader('Content-Security-Policy', "frame-ancestors 'self'");
+  next();
+});
+
 // --- Middleware ---
 app.use(cors());
 app.use(express.json());
