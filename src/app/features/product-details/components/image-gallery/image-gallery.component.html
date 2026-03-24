@@ -1,7 +1,24 @@
 <div class="gallery">
   <!-- Main Image -->
-  <div class="main-image-wrapper">
-    <img [src]="selectedImage" [alt]="productTitle" class="main-image" />
+  <div
+    class="main-image-wrapper"
+    #mainWrapper
+    [class.zoomed]="isZoomed()"
+    (wheel)="onWheel($event)"
+    (mousedown)="onMouseDown($event)"
+    (dblclick)="onDoubleClick()"
+  >
+    <img
+      [src]="selectedImage"
+      [alt]="productTitle"
+      class="main-image"
+      [style.transform]="'scale(' + zoomScale() + ') translate(' + translateX() + 'px, ' + translateY() + 'px)'"
+      [style.cursor]="isZoomed() ? 'grab' : 'zoom-in'"
+      draggable="false"
+    />
+    @if (zoomScale() > 1) {
+      <div class="zoom-reset-hint">دبل كليك للرجوع</div>
+    }
   </div>
 
   <!-- Thumbnails -->

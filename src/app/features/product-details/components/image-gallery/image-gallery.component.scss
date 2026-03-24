@@ -11,8 +11,18 @@
 .main-image-wrapper {
   border-radius: 12px;
   overflow: hidden;
-  background-color:white;
+  background-color: white;
   border: 1px solid var(--sz-border-color);
+  position: relative;
+  user-select: none;
+
+  &.zoomed {
+    cursor: grab;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
 }
 
 .main-image {
@@ -20,7 +30,22 @@
   max-height: 380px;
   object-fit: contain;
   display: block;
-  transition: opacity 0.2s ease;
+  transition: transform 0.15s ease;
+  transform-origin: center center;
+}
+
+.zoom-reset-hint {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 3px 10px;
+  border-radius: 20px;
+  pointer-events: none;
+  white-space: nowrap;
 }
 
 .thumbnails {
