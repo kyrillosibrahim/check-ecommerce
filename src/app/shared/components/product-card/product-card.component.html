@@ -26,15 +26,6 @@
       </span>
     }
 
-    <!-- Rating -->
-    <div class="d-flex align-items-center gap-1 mb-2">
-      <div class="star-rating">
-        @for (star of starsArray; track star) {
-          <i class="bi" [class.bi-star-fill]="star <= product.rating" [class.bi-star-half]="star > product.rating && star - 0.5 <= product.rating" [class.bi-star]="star > product.rating && star - 0.5 > product.rating"></i>
-        }
-      </div>
-      <small class="text-secondary">({{ product.ratingsCount }})</small>
-    </div>
 
     <!-- Offers TextLoop -->
     @if (product.offers?.length) {
@@ -115,15 +106,6 @@
         <div class="quick-view-details">
           <h4 class="fw-bold mb-2">{{ product.title | localize:product.titleAr }}</h4>
 
-          <!-- Rating -->
-          <div class="d-flex align-items-center gap-2 mb-3">
-            <div class="star-rating">
-              @for (star of starsArray; track star) {
-                <i class="bi" [class.bi-star-fill]="star <= product.rating" [class.bi-star-half]="star > product.rating && star - 0.5 <= product.rating" [class.bi-star]="star > product.rating && star - 0.5 > product.rating"></i>
-              }
-            </div>
-            <small class="text-secondary">({{ product.ratingsCount }} {{ 'details.reviews' | translate }})</small>
-          </div>
 
           <!-- Price -->
           @if (!product.comingSoon) {
