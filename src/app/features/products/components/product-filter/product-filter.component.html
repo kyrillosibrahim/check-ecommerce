@@ -73,7 +73,6 @@
     </div>
   } @else {
     <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
-      <label class="form-label small fw-semibold mb-0 text-nowrap">{{ 'filter.sort_by' | translate }}</label>
       <div class="sort-chips">
         <button class="sort-chip" [class.active]="sortBy === 'default'" (click)="sortChange.emit('default')">
           {{ 'filter.sort_default' | translate }}
