@@ -71,26 +71,6 @@
         </button>
       </div>
     </div>
-  } @else {
-    <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
-      <div class="sort-chips">
-        <button class="sort-chip" [class.active]="sortBy === 'default'" (click)="sortChange.emit('default')">
-          {{ 'filter.sort_default' | translate }}
-        </button>
-        <button class="sort-chip" [class.active]="sortBy === 'price-low'" (click)="sortChange.emit('price-low')">
-          {{ 'filter.sort_price_low' | translate }}
-        </button>
-        <button class="sort-chip" [class.active]="sortBy === 'price-high'" (click)="sortChange.emit('price-high')">
-          {{ 'filter.sort_price_high' | translate }}
-        </button>
-        <button class="sort-chip" [class.active]="sortBy === 'name-az'" (click)="sortChange.emit('name-az')">
-          {{ 'filter.sort_name_az' | translate }}
-        </button>
-        <button class="sort-chip" [class.active]="sortBy === 'rating'" (click)="sortChange.emit('rating')">
-          {{ 'filter.sort_rating' | translate }}
-        </button>
-      </div>
-    </div>
   }
 
   <!-- Filter Tags -->
