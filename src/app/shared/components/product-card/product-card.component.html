@@ -33,21 +33,19 @@
     }
 
     <!-- Price -->
-    @if (!product.comingSoon) {
-      <div class="mt-auto">
-        @if (hasDiscount) {
-          <div class="d-flex align-items-start justify-content-between">
-            <span class="price-current">{{ product | discountPrice | egpCurrency }}</span>
-            <div class="text-end">
-              <span class="price-original d-block">{{ product.price | egpCurrency }}</span>
-              <span class="badge bg-danger discount-badge-sm">%{{ product.discountPercentage }}-</span>
-            </div>
+    <div class="mt-auto">
+      @if (hasDiscount) {
+        <div class="d-flex align-items-start justify-content-between">
+          <span class="price-current">{{ product | discountPrice | egpCurrency }}</span>
+          <div class="text-end">
+            <span class="price-original d-block">{{ product.price | egpCurrency }}</span>
+            <span class="badge bg-danger discount-badge-sm">%{{ product.discountPercentage }}-</span>
           </div>
-        } @else {
-          <span class="price-current">{{ product.price | egpCurrency }}</span>
-        }
-      </div>
-    }
+        </div>
+      } @else {
+        <span class="price-current">{{ product.price | egpCurrency }}</span>
+      }
+    </div>
   </div>
 
   <!-- Footer: Wishlist + Add to cart -->
@@ -108,17 +106,15 @@
 
 
           <!-- Price -->
-          @if (!product.comingSoon) {
-            <div class="mb-3">
-              @if (hasDiscount) {
-                <span class="price-original fs-6 me-2">{{ product.price | egpCurrency }}</span>
-                <span class="price-current fs-4">{{ product | discountPrice | egpCurrency }}</span>
-                <span class="badge bg-danger ms-2">{{ 'details.off' | translate }} -{{ product.discountPercentage }}%</span>
-              } @else {
-                <span class="price-current fs-4">{{ product.price | egpCurrency }}</span>
-              }
-            </div>
-          }
+          <div class="mb-3">
+            @if (hasDiscount) {
+              <span class="price-original fs-6 me-2">{{ product.price | egpCurrency }}</span>
+              <span class="price-current fs-4">{{ product | discountPrice | egpCurrency }}</span>
+              <span class="badge bg-danger ms-2">{{ 'details.off' | translate }} -{{ product.discountPercentage }}%</span>
+            } @else {
+              <span class="price-current fs-4">{{ product.price | egpCurrency }}</span>
+            }
+          </div>
 
           <!-- Description -->
           @if (product.description || product.descriptionAr) {
