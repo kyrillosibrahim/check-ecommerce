@@ -115,9 +115,10 @@ async function createProduct(req, res, next) {
 
 async function getAllProducts(req, res, next) {
   try {
-    const { category, search, brand, featured, limit, filterTags: filterTagsParam, hasDiscount, page } = req.query;
+    const { category, subcategory, search, brand, featured, limit, filterTags: filterTagsParam, hasDiscount, page } = req.query;
     const query = {};
     if (category) query.$or = [{ category }, { categoryFolder: category }];
+    if (subcategory) query.subcategory = subcategory;
     if (brand) query.brand = brand;
     if (featured === 'true') query.isFeatured = true;
     if (hasDiscount === 'true') query.discountPercentage = { $gt: 0 };
