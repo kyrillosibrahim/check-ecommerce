@@ -25,7 +25,7 @@
   } @else {
     <!-- Back button + subcategories -->
     <div class="mb-4">
-      <button class="btn btn-sm btn-outline-secondary mb-3" (click)="categoryChange.emit(''); subcategoryChange.emit('')">
+      <button class="btn btn-sm btn-outline-secondary mb-3" (click)="goBack()">
         <i class="bi bi-arrow-right me-1"></i>{{ activeCategory?.name }}
       </button>
       @if (subcategories.length > 0) {

@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, inject } from '@angular/core';
+import { Location } from '@angular/common';
 import { ICategory, ISubcategory } from '../../../../core/models/category.model';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
@@ -10,6 +11,7 @@ import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductFilterComponent {
+  private location = inject(Location);
   @Input() categories: ICategory[] = [];
   @Input() selectedCategory = '';
   @Input() selectedSubcategory = '';
@@ -37,6 +39,10 @@ export class ProductFilterComponent {
   get availableFilterTags(): string[] {
     if (!this.selectedCategory) return [];
     return this.activeCategory?.filterTags || [];
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 
   toggleFilterTag(tag: string): void {
