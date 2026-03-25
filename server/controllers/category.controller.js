@@ -34,11 +34,11 @@ async function getDetailedCategories(_req, res, next) {
 
 async function createCategory(req, res, next) {
   try {
-    const { name } = req.body;
+    const { name, imageUrl } = req.body;
     if (!name?.trim()) return res.status(400).json({ error: 'Category name is required.' });
     const slug = generateSlug(name.trim());
     if (await Category.findOne({ slug })) return res.status(409).json({ error: 'Category already exists.' });
-    const image = req.file ? '/uploads/categories/' + req.file.filename : '';
+    const image = req.file ? '/uploads/categories/' + req.file.filename : (imageUrl || '');
     const newCat = await Category.create({ id: await getNextId(), name: name.trim(), slug, image, subcategories: [], famousBrands: [], filterTags: [] });
     const obj = newCat.toObject(); delete obj._id; delete obj.__v; res.status(201).json(obj);
   } catch (err) { next(err); }
@@ -55,8 +55,10 @@ async function updateCategory(req, res, next) {
     if (!cat) return res.status(404).json({ error: 'Category not found.' });
     cat.name = name.trim(); cat.slug = slug;
     if (req.file) {
-      if (cat.image) { const oldPath = path.join(__dirname, '..', cat.image); await fse.remove(oldPath).catch(() => {}); }
+      if (cat.image && !cat.image.startsWith('http')) { const oldPath = path.join(__dirname, '..', cat.image); await fse.remove(oldPath).catch(() => {}); }
       cat.image = '/uploads/categories/' + req.file.filename;
+    } else if (req.body.imageUrl) {
+      cat.image = req.body.imageUrl;
     }
     if (famousBrands !== undefined) { const p = typeof famousBrands === 'string' ? JSON.parse(famousBrands) : famousBrands; cat.famousBrands = Array.isArray(p) ? p.map(Number) : []; }
     if (filterTags !== undefined) { const p = typeof filterTags === 'string' ? JSON.parse(filterTags) : filterTags; cat.filterTags = Array.isArray(p) ? p : []; }
@@ -69,8 +71,8 @@ async function deleteCategory(req, res, next) {
     const id = parseInt(req.params.id, 10);
     const cat = await Category.findOneAndDelete({ id });
     if (!cat) return res.status(404).json({ error: 'Category not found.' });
-    if (cat.image) await fse.remove(path.join(__dirname, '..', cat.image)).catch(() => {});
-    for (const sub of (cat.subcategories || [])) { if (sub.image) await fse.remove(path.join(__dirname, '..', sub.image)).catch(() => {}); }
+    if (cat.image && !cat.image.startsWith('http')) await fse.remove(path.join(__dirname, '..', cat.image)).catch(() => {});
+    for (const sub of (cat.subcategories || [])) { if (sub.image && !sub.image.startsWith('http')) await fse.remove(path.join(__dirname, '..', sub.image)).catch(() => {}); }
     res.json({ message: 'Category deleted successfully.' });
   } catch (err) { next(err); }
 }
@@ -84,7 +86,7 @@ async function addSubcategory(req, res, next) {
     if (!cat) return res.status(404).json({ error: 'Category not found.' });
     const slug = generateSlug(name.trim());
     if ((cat.subcategories || []).find(s => s.slug === slug)) return res.status(409).json({ error: 'Subcategory already exists.' });
-    const image = req.file ? '/uploads/categories/' + req.file.filename : '';
+    const image = req.file ? '/uploads/categories/' + req.file.filename : (req.body.imageUrl || '');
     cat.subcategories.push({ id: getNextSubId(cat.subcategories), name: name.trim(), slug, image });
     await cat.save(); const obj = cat.toObject(); delete obj._id; delete obj.__v; res.status(201).json(obj);
   } catch (err) { next(err); }
@@ -102,7 +104,13 @@ async function updateSubcategory(req, res, next) {
     const slug = generateSlug(name.trim());
     if (cat.subcategories.find(s => s.slug === slug && s.id !== subId)) return res.status(409).json({ error: 'Subcategory already exists.' });
     cat.subcategories[subIndex].name = name.trim(); cat.subcategories[subIndex].slug = slug;
-    if (req.file) { if (cat.subcategories[subIndex].image) await fse.remove(path.join(__dirname, '..', cat.subcategories[subIndex].image)).catch(() => {}); cat.subcategories[subIndex].image = '/uploads/categories/' + req.file.filename; }
+    if (req.file) {
+      const oldImg = cat.subcategories[subIndex].image;
+      if (oldImg && !oldImg.startsWith('http')) await fse.remove(path.join(__dirname, '..', oldImg)).catch(() => {});
+      cat.subcategories[subIndex].image = '/uploads/categories/' + req.file.filename;
+    } else if (req.body.imageUrl) {
+      cat.subcategories[subIndex].image = req.body.imageUrl;
+    }
     await cat.save(); const obj = cat.toObject(); delete obj._id; delete obj.__v; res.json(obj);
   } catch (err) { next(err); }
 }
@@ -114,7 +122,8 @@ async function deleteSubcategory(req, res, next) {
     if (!cat) return res.status(404).json({ error: 'Category not found.' });
     const subIndex = (cat.subcategories || []).findIndex(s => s.id === subId);
     if (subIndex === -1) return res.status(404).json({ error: 'Subcategory not found.' });
-    if (cat.subcategories[subIndex].image) await fse.remove(path.join(__dirname, '..', cat.subcategories[subIndex].image)).catch(() => {});
+    const imgToDelete = cat.subcategories[subIndex].image;
+    if (imgToDelete && !imgToDelete.startsWith('http')) await fse.remove(path.join(__dirname, '..', imgToDelete)).catch(() => {});
     cat.subcategories.splice(subIndex, 1); await cat.save();
     const obj = cat.toObject(); delete obj._id; delete obj.__v; res.json(obj);
   } catch (err) { next(err); }
