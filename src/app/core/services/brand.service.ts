@@ -19,7 +19,7 @@ export class BrandService {
       this.allBrands$ = this.http.get<IBrand[]>(`${SERVER_URL}/api/brands`).pipe(
         map(brands => brands.map(b => ({
           ...b,
-          image: b.image ? `${SERVER_URL}/uploads/${b.image}` : ''
+          image: b.image ? (b.image.startsWith('http') ? b.image : `${SERVER_URL}/uploads/${b.image}`) : ''
         }))),
         tap(brands => this.brandsSubject.next(brands)),
         shareReplay(1)
