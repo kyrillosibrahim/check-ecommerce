@@ -11,11 +11,11 @@ async function getAllBrands(_req, res, next) {
 
 async function createBrand(req, res, next) {
   try {
-    const { name, link } = req.body;
+    const { name, link, imageUrl: bodyImageUrl } = req.body;
     if (!name?.trim()) return res.status(400).json({ error: 'Brand name is required.' });
     const slug = generateSlug(name.trim());
     if (await Brand.findOne({ slug })) return res.status(409).json({ error: 'Brand already exists.' });
-    let imageUrl = '';
+    let imageUrl = bodyImageUrl || '';
     if (req.file) {
       imageUrl = await uploadFile(req.file.path, 'brands');
     }
@@ -28,7 +28,7 @@ async function createBrand(req, res, next) {
 async function updateBrand(req, res, next) {
   try {
     const id = parseInt(req.params.id, 10);
-    const { name, link } = req.body;
+    const { name, link, imageUrl: bodyImageUrl } = req.body;
     if (!name?.trim()) return res.status(400).json({ error: 'Brand name is required.' });
     const brand = await Brand.findOne({ id });
     if (!brand) return res.status(404).json({ error: 'Brand not found.' });
@@ -37,6 +37,8 @@ async function updateBrand(req, res, next) {
     if (req.file) {
       await deleteFile(brand.image).catch(() => {});
       brand.image = await uploadFile(req.file.path, 'brands');
+    } else if (bodyImageUrl) {
+      brand.image = bodyImageUrl;
     }
     brand.name = name.trim(); brand.slug = slug;
     if (link !== undefined) brand.link = (link || '').trim();
