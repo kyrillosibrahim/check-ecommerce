@@ -128,5 +128,14 @@ connectDB().then(() => {
   app.listen(PORT, () => {
     console.log(`\n  Product Server running at http://localhost:${PORT}`);
     console.log(`  Uploads dir: ${path.join(__dirname, 'uploads')}\n`);
+
+    // Keep Render free tier alive by pinging every 14 minutes
+    if (process.env.RENDER_EXTERNAL_URL) {
+      const pingUrl = `${process.env.RENDER_EXTERNAL_URL}/api/health`;
+      setInterval(() => {
+        fetch(pingUrl).catch(() => {});
+      }, 14 * 60 * 1000);
+      console.log(`  Keep-alive ping active: ${pingUrl}`);
+    }
   });
 });
