@@ -123,11 +123,22 @@ app.use((err, _req, res, _next) => {
   res.status(status).json({ error: err.message || 'Internal server error.' });
 });
 
+// --- Seed governorates if collection is empty ---
+async function seedGovernorates() {
+  const Governorate = require('./models/Governorate');
+  const count = await Governorate.countDocuments();
+  if (count === 0) {
+    const data = require('./data/governorates.json');
+    await Governorate.insertMany(data);
+    console.log(`  Seeded ${data.length} governorates`);
+  }
+}
+
 // --- Start ---
-connectDB().then(() => {
+connectDB().then(async () => {
+  await seedGovernorates();
   app.listen(PORT, () => {
     console.log(`\n  Product Server running at http://localhost:${PORT}`);
     console.log(`  Uploads dir: ${path.join(__dirname, 'uploads')}\n`);
-
   });
 });

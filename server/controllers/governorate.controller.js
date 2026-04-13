@@ -15,8 +15,11 @@ async function updateGovernorate(req, res, next) {
   try {
     const govId = parseInt(req.params.id, 10); const { shippingCost } = req.body;
     if (shippingCost == null || isNaN(Number(shippingCost))) return res.status(400).json({ message: 'shippingCost is required' });
-    const gov = await Governorate.findOneAndUpdate({ id: govId }, { shippingCost: Number(shippingCost) }, { new: true, projection: { __v: 0 } });
-    if (!gov) return res.status(404).json({ message: 'Governorate not found' });
+    const gov = await Governorate.findOneAndUpdate(
+      { id: govId },
+      { $set: { shippingCost: Number(shippingCost) } },
+      { new: true, upsert: true, setDefaultsOnInsert: true, projection: { __v: 0 } }
+    );
     const o = gov.toObject(); delete o._id; res.json(o);
   } catch (err) { next(err); }
 }
