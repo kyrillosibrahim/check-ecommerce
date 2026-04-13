@@ -63,7 +63,12 @@
   justify-content: center;
   gap: 8px;
   margin-top: 14px;
+
+  @media (max-width: 767.98px) {
+    display: none;
+  }
 }
+
 .carousel-indicator {
   height: 8px;
   width: 8px;

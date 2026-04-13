@@ -29,12 +29,17 @@
     padding: 5px !important;
     border-radius: 50% !important;
 }
-.carousel-control-next-icon,
-.carousel-control-prev-icon{
-      @media (max-width: 768px) {
-    width: 1.5rem !important;
-    height: 1.5rem !important;
+.carousel-control-next,
+.carousel-control-prev {
+  @media (max-width: 768px) {
+    display: none !important;
+  }
+}
 
+.carousel-indicators {
+  @media (max-width: 768px) {
+    // display: none !important;
+        margin-bottom: 0rem;
   }
 }
 .hei{

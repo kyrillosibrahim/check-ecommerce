@@ -24,8 +24,7 @@
 .sidebar-inner {
   position: sticky;
   top: 120px;
-  max-height: calc(100vh - 140px);
-  overflow-y: auto;
+  overflow-y: visible;
   background: #fff;
   border: 1px solid var(--sz-border-color, #dee2e6);
   border-radius: 12px;
