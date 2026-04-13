@@ -124,10 +124,18 @@
 }
 
 .header-logo {
-  height: 45px;
+  height: 60px;
   object-fit: contain;
-}
 
+}
+.zz{
+  min-height: 70px;
+}
+@media (max-width: 991.98px) {
+  .header-logo {
+    height: 45px;
+  }
+}
 .logo-spinner {
   width: 45px;
   height: 45px;
