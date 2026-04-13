@@ -1,0 +1,83 @@
+@if (quickViewService.product$ | async; as product) {
+  <div class="quick-view-modal-backdrop" (click)="onBackdropClick($event)">
+    <div class="quick-view-modal">
+      <button class="quick-view-close" (click)="close()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+
+      <div class="quick-view-content">
+        <!-- Image -->
+        <div class="quick-view-image">
+          <img [src]="getImage(product)" [alt]="product.title" />
+        </div>
+
+        <!-- Details -->
+        <div class="quick-view-details">
+          <h5 class="fw-bold mb-2">{{ product.title | localize:product.titleAr }}</h5>
+
+          <p class="text-muted quick-view-desc mb-3">
+            {{ product.description | localize:product.descriptionAr }}
+          </p>
+
+          <!-- Price -->
+          <div class="mb-3">
+            @if (hasDiscount(product)) {
+              <div class="d-flex align-items-center gap-2">
+                <span class="fw-bold fs-5" style="color: var(--sz-accent);">{{ product | discountPrice | egpCurrency }}</span>
+                <span class="text-decoration-line-through text-muted">{{ product.price | egpCurrency }}</span>
+                <span class="badge bg-danger">%{{ product.discountPercentage }}-</span>
+              </div>
+            } @else {
+              <span class="fw-bold fs-5" style="color: var(--sz-accent);">{{ product.price | egpCurrency }}</span>
+            }
+          </div>
+
+          <!-- Stock -->
+          @if (product.stock > 0 && !product.comingSoon) {
+            <small class="text-success mb-3 d-block">
+              <i class="bi bi-check-circle me-1"></i>{{ 'product.in_stock' | translate }}
+            </small>
+          } @else if (product.comingSoon) {
+            <small class="text-warning mb-3 d-block">
+              <i class="bi bi-clock me-1"></i>{{ 'product.coming_soon' | translate }}
+            </small>
+          } @else {
+            <small class="text-danger mb-3 d-block">
+              <i class="bi bi-x-circle me-1"></i>{{ 'product.out_of_stock' | translate }}
+            </small>
+          }
+
+          <!-- Actions -->
+          <div class="d-flex gap-2 mb-3">
+            @if (!product.comingSoon && product.stock > 0) {
+              <button class="wishlist-btn btn btn-sm"
+                      [class.active]="isInWishlist(product)"
+                      [disabled]="isWishlistProcessing(product)"
+                      (click)="toggleWishlist(product)">
+                @if (isWishlistProcessing(product)) {
+                  <span class="spinner-border spinner-border-sm"></span>
+                } @else {
+                  <i class="bi" [class.bi-heart-fill]="isInWishlist(product)" [class.bi-heart]="!isInWishlist(product)"></i>
+                }
+              </button>
+              @if (isInCart(product)) {
+                <button class="btn btn-secondary btn-sm flex-grow-1" disabled>
+                  <i class="bi bi-check-lg me-1"></i>{{ 'details.added' | translate }}
+                </button>
+              } @else {
+                <button class="btn btn-primary btn-sm flex-grow-1" (click)="addToCart(product)">
+                  <i class="bi bi-cart-plus me-1"></i>{{ 'product.add_to_cart' | translate }}
+                </button>
+              }
+            }
+          </div>
+
+          <!-- View Details Link -->
+          <button class="btn btn-outline-secondary btn-sm w-100" (click)="navigateToProduct(product)">
+            <i class="bi bi-box-arrow-up-right me-1"></i>{{ 'product.view_product' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

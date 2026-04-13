@@ -150,9 +150,10 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   private buildDescriptionHtml(product: IProduct): void {
-    const html = this.translationService.isArabic()
+    let html = this.translationService.isArabic()
       ? (product.descriptionHtmlAr || product.descriptionHtml || '')
       : (product.descriptionHtml || product.descriptionHtmlAr || '');
+    html = html.replace(/&nbsp;/g, ' ');
     this.descriptionHtml = html ? this.sanitizer.bypassSecurityTrustHtml(html) : '';
   }
 

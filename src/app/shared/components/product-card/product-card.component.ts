@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { IProduct } from '../../../core/models/product.model';
 import { TranslationService } from '../../../core/services/translation.service';
 import { CartService } from '../../../core/services/cart.service';
 import { WishlistService } from '../../../core/services/wishlist.service';
+import { QuickViewService } from '../../../core/services/quick-view.service';
 import { DiscountPricePipe } from '../../pipes/discount-price.pipe';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { LocalizePipe } from '../../pipes/localize.pipe';
@@ -13,7 +14,7 @@ import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-product-card',
-  imports: [RouterLink, EgpCurrencyPipe, DiscountPricePipe, TranslatePipe, LocalizePipe, TextLoopComponent],
+  imports: [EgpCurrencyPipe, DiscountPricePipe, TranslatePipe, LocalizePipe, TextLoopComponent],
   templateUrl: './product-card.component.html',
   styleUrl: './product-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,12 +24,12 @@ export class ProductCardComponent {
   translationService = inject(TranslationService);
   cartService = inject(CartService);
   private wishlistService = inject(WishlistService);
+  private quickViewService = inject(QuickViewService);
   @Input({ required: true }) product!: IProduct;
   @Output() addToCart = new EventEmitter<IProduct>();
   @Output() addToWishlist = new EventEmitter<IProduct>();
 
   private addedToCartLocal = false;
-  showQuickView = false;
 
   get isInCart(): boolean {
     return this.addedToCartLocal || this.product.inCart || this.cartService.isInCart(this.product.id);
@@ -69,13 +70,7 @@ export class ProductCardComponent {
   openQuickView(event: Event): void {
     event.preventDefault();
     event.stopPropagation();
-    this.showQuickView = true;
-    document.body.style.overflow = 'hidden';
-  }
-
-  closeQuickView(): void {
-    this.showQuickView = false;
-    document.body.style.overflow = '';
+    this.quickViewService.open(this.product);
   }
 
   onAddToCart(): void {

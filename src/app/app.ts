@@ -6,11 +6,12 @@ import { HeaderComponent } from './shared/components/header/header.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
 import { FloatingActionsComponent } from './shared/components/floating-actions/floating-actions.component';
 import { AuthDrawerComponent } from './shared/components/auth-drawer/auth-drawer.component';
+import { QuickViewModalComponent } from './shared/components/quick-view-modal/quick-view-modal.component';
 import { SiteSettingsService } from './core/services/settings.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, HeaderComponent, FooterComponent, FloatingActionsComponent, AuthDrawerComponent],
+  imports: [RouterOutlet, HeaderComponent, FooterComponent, FloatingActionsComponent, AuthDrawerComponent, QuickViewModalComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

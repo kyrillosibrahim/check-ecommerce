@@ -21,7 +21,8 @@
   line-height: 2;
   color: var(--sz-text-secondary);
   font-size: 0.9rem;
-    unicode-bidi: isolate;
+  unicode-bidi: isolate;
+  white-space: normal;
   :host ::ng-deep & {
     h1, h2, h3, h4, h5, h6 {
       color: var(--sz-text-primary);
@@ -44,6 +45,45 @@
 
     strong, b {
       color: var(--sz-text-primary);
+    }
+
+    .accordion-item {
+      background-color: var(--sz-bg-card);
+      border: 1px solid var(--sz-border-color) !important;
+      border-radius: 12px !important;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+
+    .accordion-button {
+      background-color: var(--sz-bg-card) !important;
+      color: #000 !important;
+      font-weight: 600;
+      font-size: 0.82rem;
+      box-shadow: none !important;
+      border: none !important;
+
+      &::after {
+        filter: var(--sz-accordion-arrow-filter, none);
+      }
+
+      &:not(.collapsed) {
+        background-color: var(--sz-bg-secondary) !important;
+      }
+    }
+
+    .accordion-body {
+      color: var(--sz-text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.7;
+      padding: 1rem;
+      background-color: var(--sz-skeleton-shine) !important;
+    }
+
+    .accordion {
+      background-color: #bb9066 !important;
+      padding: 15px;
+      border-radius: 5px;
     }
   }
 }
@@ -108,40 +148,44 @@
 
 // FAQ Section
 .faq-item {
-  background-color: var(--sz-bg-card);
-  border: 1px solid var(--sz-border-color) !important;
-  border-radius: 12px !important;
-  margin-bottom: 10px;
+  background-color: #fff;
+  border: 2px solid #222 !important;
+  border-radius: 10px !important;
+  margin-bottom: 12px;
   overflow: hidden;
+  box-shadow: 3px 3px 0 #222;
 }
 
 .faq-button {
-  background-color: var(--sz-bg-card) !important;
-  color: #000 !important;
+  background-color: #fff !important;
+  color: #222 !important;
   font-weight: 600;
-  font-size: 0.82rem;
+  font-size: 0.9rem;
   box-shadow: none !important;
+  padding: 1rem 1.25rem;
 
   &::after {
-    filter: var(--sz-accordion-arrow-filter, none);
+    filter: none;
   }
 
   &:not(.collapsed) {
-    color: #000 !important;
-  background-color: var(--sz-bg-secondary) !important;
+    color: #222 !important;
+    background-color: #f8f8f8 !important;
   }
 }
 
 .faq-answer {
-  color: var(--sz-text-secondary);
+  color: #555;
   font-size: 0.9rem;
-  line-height: 1.7;
+  line-height: 1.8;
   word-spacing: 3px;
-  padding: 1rem;
-  background-color: var(--sz-skeleton-shine) !important;
+  padding: 1rem 1.25rem;
+  background-color: #f8f8f8 !important;
+  border-top: 1px solid #eee;
 }
-.bgw{
-  background-color:#bb9066 !important;
-  padding: 15px;
-  border-radius: 5px;
+
+.bgw {
+  background-color: transparent !important;
+  padding: 0;
+  border-radius: 0;
 }

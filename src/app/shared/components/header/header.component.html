@@ -50,7 +50,7 @@
 </div>
 
 <!-- ═══════ Main Navbar ═══════ -->
-<nav class="navbar navbar-expand-lg sticky-top" style="background-color: var(--sz-bg-card); border-bottom: 1px solid var(--sz-border-color);">
+<nav class="navbar navbar-expand-lg sticky-top" style="background-color: var(--sz-bg-card); border-bottom: 1px solid var(--sz-border-color); padding: 0px;">
   <div class="container">
     <!-- Brand -->
     <a class="navbar-brand fw-bold ms-lg-5" routerLink="/">
@@ -59,7 +59,7 @@
           <div class="spinner-border spinner-border-sm" role="status" style="color: var(--sz-accent);"></div>
         </div>
       }
-      <img [src]="logoUrl" alt="" class="header-logo" [style.display]="logoLoaded ? '' : 'none'"
+      <img [src]="logoUrl" alt="" class="header-logo" style="filter: sepia(1); height: 60px;" [style.display]="logoLoaded ? '' : 'none'"
            (load)="logoLoaded = true">
     </a>
 
