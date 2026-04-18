@@ -106,7 +106,7 @@
       } @else {
         <div class="row g-3 row-cols-2 row-cols-md-3 row-cols-lg-5">
           @for (product of products; track product.id) {
-            <div class="col">
+            <div class="col" style="padding: 0px 5px !important;">
               <app-product-card
                 [product]="product"
                 (addToCart)="onAddToCart($event)"
