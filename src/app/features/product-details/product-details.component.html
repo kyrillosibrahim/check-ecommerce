@@ -40,14 +40,14 @@
         }
 
         <!-- Rating -->
-        <div class="d-flex align-items-center gap-2 mb-1">
+        <!-- <div class="d-flex align-items-center gap-2 mb-1">
           <div class="star-rating">
             @for (star of starsArray; track star) {
               <i class="bi" [class.bi-star-fill]="star <= product.rating" [class.bi-star-half]="star > product.rating && star - 0.5 <= product.rating" [class.bi-star]="star > product.rating && star - 0.5 > product.rating"></i>
             }
           </div>
           <span class="text-secondary small">{{ product.rating }} ({{ product.ratingsCount }} {{ 'details.reviews' | translate }})</span>
-        </div>
+        </div> -->
 
         <!-- Price -->
         @if (!product.comingSoon) {

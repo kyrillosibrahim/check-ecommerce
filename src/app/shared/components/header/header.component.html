@@ -40,11 +40,11 @@
           <span>العربية</span>
         }
       </button>
-      <button class="top-bar-btn" (click)="themeService.toggleTheme()">
+      <!-- <button class="top-bar-btn" (click)="themeService.toggleTheme()">
         @if (themeService.theme$ | async; as theme) {
           <i class="bi" [class.bi-moon-fill]="theme === 'light'" [class.bi-sun-fill]="theme === 'dark'"></i>
         }
-      </button>
+      </button> -->
     </div>
   </div>
 </div>
@@ -185,11 +185,11 @@
       <button class="btn btn-link nav-icon p-0" (click)="openSearchOverlay()">
         <i class="bi bi-search" style="font-size: 1.3rem;"></i>
       </button>
-      <button class="btn btn-link nav-icon p-0" (click)="themeService.toggleTheme()">
+      <!-- <button class="btn btn-link nav-icon p-0" (click)="themeService.toggleTheme()">
         @if (themeService.theme$ | async; as theme) {
           <i class="bi" [class.bi-moon-fill]="theme === 'light'" [class.bi-sun-fill]="theme === 'dark'" style="font-size: 1.3rem;"></i>
         }
-      </button>
+      </button> -->
       <a routerLink="/wishlist" class="btn btn-link nav-icon p-0 position-relative">
         <i class="bi bi-heart" style="font-size: 1.3rem;"></i>
         @if ((wishlistService.wishlistCount$ | async) ?? 0; as count) {

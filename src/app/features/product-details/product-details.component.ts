@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, signal, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser, NgStyle } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ProductService } from '../../core/services/product.service';
@@ -22,7 +22,7 @@ import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-product-details',
-  imports: [EgpCurrencyPipe, RouterLink, ImageGalleryComponent, RelatedProductsComponent, SkeletonLoaderComponent, CarouselModule, DiscountPricePipe, TranslatePipe, LocalizePipe, TestimonialsMarqueeComponent, TextLoopComponent],
+  imports: [EgpCurrencyPipe, RouterLink, ImageGalleryComponent, RelatedProductsComponent, SkeletonLoaderComponent, CarouselModule, DiscountPricePipe, TranslatePipe, LocalizePipe, TestimonialsMarqueeComponent, TextLoopComponent, NgStyle],
   templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
