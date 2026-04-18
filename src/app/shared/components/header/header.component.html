@@ -202,7 +202,7 @@
         <i class="bi bi-cart3" style="font-size: 1.3rem;"></i>
         @if ((cartService.cartCount$ | async) ?? 0; as count) {
           @if (count > 0) {
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary" style="font-size: 0.65rem;">{{ count }}</span>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">{{ count }}</span>
           }
         }
       </a>
@@ -262,7 +262,7 @@
           <i class="bi bi-cart3 cart-icon-lg"></i>
           @if ((cartService.cartCount$ | async) ?? 0; as count) {
             @if (count > 0) {
-              <span class="header-badge bg-primary">{{ count }}</span>
+              <span class="header-badge bg-danger">{{ count }}</span>
             }
           }
         </a>
@@ -319,7 +319,7 @@
       <div class="mobile-drawer-header">
         <a routerLink="/" (click)="closeMobileMenu()">
           @if (logoLoaded) {
-            <img [src]="logoUrl" alt="" class="mobile-drawer-logo">
+            <img [src]="logoUrl" style="filter: sepia(1); " alt="" class="mobile-drawer-logo">
           }
         </a>
         <button class="btn btn-link mobile-drawer-close" (click)="closeMobileMenu()">

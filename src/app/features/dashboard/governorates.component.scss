@@ -27,7 +27,7 @@
     transition: background-color 0.15s;
 
     &:hover {
-      background-color: rgba(var(--bs-primary-rgb), 0.04);
+      background-color: rgba(var(--bs-danger-rgb), 0.04);
     }
 
     td {

@@ -38,8 +38,8 @@
   z-index: 1;
 
   &:hover {
-    background: var(--bs-primary, #0d6efd);
+    background: var(--bs-danger, #dc3545);
     color: #fff;
-    border-color: var(--bs-primary, #0d6efd);
+    border-color: var(--bs-danger, #ff0019);
   }
 }
