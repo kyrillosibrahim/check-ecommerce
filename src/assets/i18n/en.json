@@ -13,7 +13,15 @@
     "cart_header": "Cart",
     "view_cart": "View Cart",
     "total": "Total",
-    "cart_empty": "No products in cart"
+    "cart_empty": "No products in cart",
+    "brands": "Brands"
+  },
+  "brands": {
+    "title": "Brands",
+    "subtitle": "Browse each category and discover the most popular brands available",
+    "search_placeholder": "Search for a brand...",
+    "view_category": "View Category",
+    "empty": "No brands available right now"
   },
   "categories": {
     "vitamins": "Vitamins",
@@ -46,6 +54,8 @@
     "select_governorate": "Select Governorate",
     "city": "City",
     "select_city": "Select City",
+    "district": "District / Area",
+    "select_district": "Select District",
     "address": "Detailed Address",
     "shipping_cost_label": "Shipping Cost",
     "place_order": "Place Order",
@@ -64,7 +74,25 @@
     "default_address": "Default",
     "change_address": "Change Address",
     "add_new_address": "Add New Address",
-    "use_saved": "Use Saved Address"
+    "use_saved": "Use Saved Address",
+    "shipping_address": "Shipping Address",
+    "home_delivery": "Home Delivery",
+    "change_address_btn": "Change Address",
+    "shipping_company": "Shipping Company",
+    "jt_express": "J&T Express",
+    "delivery_cost_prefix": "Delivery for",
+    "expected_delivery": "Expected delivery between",
+    "order_before_prefix": "Order within",
+    "hours": "h",
+    "minutes": "m",
+    "seconds": "s",
+    "payment_method": "Payment Method",
+    "cod": "Cash on Delivery",
+    "cod_desc": "You can pay in cash on delivery with a fee",
+    "instapay": "Instapay Transfer",
+    "instapay_desc": "Pay via Instapay or any digital wallet",
+    "notes": "Notes",
+    "notes_placeholder": "Add any note about your order or shipping here"
   },
   "validation": {
     "full_name_required": "Full name is required",

@@ -1,4 +1,4 @@
-<div class="container section-padding">
+<div class="container section-padding mincointeiner">
   @if (orderPlaced) {
     <!-- Success State -->
     <div class="text-center py-5 success-container">
@@ -21,63 +21,64 @@
     <h2 class="section-title">{{ 'checkout.title' | translate }}</h2>
 
     <div class="row g-4">
-      <div class="col-lg-5">
-        <!-- Saved Address Card -->
-        @if (savedAddress && !showForm) {
-          <div class="card shadow-sm mb-3 saved-address-card" style="background-color: var(--sz-bg-card);">
-            <div class="card-body p-3">
-              <div class="d-flex justify-content-between align-items-start mb-2">
-                <h6 class="fw-bold mb-0 fs-6"><i class="bi bi-geo-alt-fill me-2" style="color: var(--sz-accent);"></i>{{ 'checkout.saved_address' | translate }}</h6>
-                <span class="badge bg-success-subtle text-success small"><i class="bi bi-check-circle me-1"></i>{{ 'checkout.default_address' | translate }}</span>
-              </div>
-              <div class="saved-address-details small">
-                <div class="d-flex align-items-center gap-2 mb-1">
-                  <i class="bi bi-person text-secondary"></i>
-                  <span class="fw-semibold">{{ savedAddress.fullName }}</span>
-                </div>
-                <div class="d-flex align-items-center gap-2 mb-1">
-                  <i class="bi bi-phone text-secondary"></i>
-                  <span>{{ savedAddress.phone }}</span>
-                </div>
-                <div class="d-flex align-items-center gap-2 mb-1">
-                  <i class="bi bi-pin-map text-secondary"></i>
-                  <span>{{ savedAddress.governorate | localize:savedGovAr }} - {{ savedAddress.city | localize:savedCityAr }}</span>
-                </div>
-                <div class="d-flex align-items-center gap-2">
-                  <i class="bi bi-house text-secondary"></i>
-                  <span>{{ savedAddress.address }}</span>
-                </div>
+      <div class="col-lg-5" style="background-color: white; border-radius: 5px; padding-bottom: 20px;">
+        <!-- ═══ Shipping Address Section ═══ -->
+        <div class="sz-section mb-4" style="padding-top:15px ;">
+          <h6 class="sz-section-title">
+            <i class="bi bi-geo-alt-fill"></i>
+            {{ 'checkout.shipping_address' | translate }}
+          </h6>
+
+          <!-- Saved Address Card -->
+          @if (savedAddress && !showForm) {
+            <div class="sz-option-card selected">
+              <div class="sz-option-head">
+                <span class="sz-radio checked"></span>
+                <span class="sz-option-title">{{ 'checkout.home_delivery' | translate }}</span>
               </div>
 
-              <!-- Shipping cost for saved address -->
-              @if (shippingCost > 0) {
-                <div class="alert alert-info mb-0 mt-2 py-1 px-2 d-flex align-items-center gap-2 small">
-                  <i class="bi bi-truck"></i>
-                  <span>{{ 'checkout.shipping_cost_label' | translate }}: <strong>{{ shippingCost | egpCurrency }}</strong></span>
+              <div class="sz-option-body">
+                <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
+                  <button class="sz-chip-btn" (click)="editAddress()">
+                    <i class="bi bi-pencil-square"></i>
+                    {{ 'checkout.change_address_btn' | translate }}
+                  </button>
+                  <button class="sz-chip-btn add" (click)="editAddress()">
+                    <i class="bi bi-plus-lg"></i>
+                    {{ 'checkout.add_new_address' | translate }}
+                  </button>
                 </div>
-              }
-
-              <div class="d-flex gap-2 mt-3">
-                <button class="btn btn-outline-primary btn-sm" (click)="editAddress()">
-                  <i class="bi bi-plus-circle me-1"></i>{{ 'checkout.add_new_address' | translate }}
-                </button>
+                <div class="saved-address-details small">
+                  <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="fw-semibold">{{ savedAddress.fullName }}</span>
+                  </div>
+                  <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                    <span>{{ savedAddress.address }}</span>
+                    <span>,</span>
+                    @if (savedAddress.district) {
+                      <span>{{ savedAddress.district | localize:savedDistrictAr }}</span>
+                      <span>,</span>
+                    }
+                    <span>{{ savedAddress.city | localize:savedCityAr }}</span>
+                    <span>,</span>
+                    <span>{{ savedAddress.governorate | localize:savedGovAr }}</span>
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <span>{{ savedAddress.phone }}</span>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          }
 
-          <!-- Place order button when using saved address -->
-          <button class="btn btn-primary w-100" (click)="onSubmit()"
-                  [disabled]="checkoutForm.invalid">
-            <i class="bi bi-check-circle me-2"></i>{{ 'checkout.place_order' | translate }}
-          </button>
-        }
-
-        <!-- Checkout Form -->
-        @if (showForm) {
-          <div class="card shadow-sm" style="background-color: var(--sz-bg-card);">
-            <div class="card-body p-3">
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="fw-bold mb-0"><i class="bi bi-geo-alt me-2"></i>{{ 'checkout.shipping_info' | translate }}</h6>
+          <!-- Checkout Form -->
+          @if (showForm) {
+            <div class="sz-option-card selected">
+              <div class="sz-option-head d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="sz-radio checked"></span>
+                  <span class="sz-option-title">{{ 'checkout.home_delivery' | translate }}</span>
+                </div>
                 @if (savedAddress) {
                   <button class="btn btn-outline-secondary btn-sm" (click)="useSavedAddress()">
                     <i class="bi bi-arrow-counterclockwise me-1"></i>{{ 'checkout.use_saved' | translate }}
@@ -85,15 +86,14 @@
                 }
               </div>
 
-              <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit()">
-                <div class="row g-3">
+              <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit()" class="sz-option-body">
+                <div class="row g-2">
                   <!-- Governorate -->
                   <div class="col-md-6">
                     <label class="form-label">{{ 'checkout.governorate' | translate }}</label>
                     <select class="form-select" formControlName="governorate"
                             (change)="onGovernorateChange()"
-                            [class.is-invalid]="f['governorate'].touched && f['governorate'].invalid"
-                            style="background-color: var(--sz-bg-secondary); border-color: var(--sz-border-color); color: var(--sz-text-primary);">
+                            [class.is-invalid]="f['governorate'].touched && f['governorate'].invalid">
                       <option value="">{{ 'checkout.select_governorate' | translate }}</option>
                       @for (gov of governorates; track gov.id) {
                         <option [value]="gov.governorate_name_en">{{ gov.governorate_name_en | localize:gov.governorate_name_ar }}</option>
@@ -108,8 +108,8 @@
                   <div class="col-md-6">
                     <label class="form-label">{{ 'checkout.city' | translate }}</label>
                     <select class="form-select" formControlName="city"
-                            [class.is-invalid]="f['city'].touched && f['city'].invalid"
-                            style="background-color: var(--sz-bg-secondary); border-color: var(--sz-border-color); color: var(--sz-text-primary);">
+                            (change)="onCityChange()"
+                            [class.is-invalid]="f['city'].touched && f['city'].invalid">
                       <option value="">{{ 'checkout.select_city' | translate }}</option>
                       @for (city of cities; track city.id) {
                         <option [value]="city.city_name_en">{{ city.city_name_en | localize:city.city_name_ar }}</option>
@@ -120,89 +120,209 @@
                     }
                   </div>
 
-                  <!-- Shipping Cost Badge -->
-                  @if (shippingCost > 0) {
-                    <div class="col-md-6 d-flex align-items-end">
-                      <div class="alert alert-info w-100 mb-0 py-2 d-flex align-items-center gap-2">
-                        <i class="bi bi-truck"></i>
-                        <span>{{ 'checkout.shipping_cost_label' | translate }}: <strong>{{ shippingCost | egpCurrency }}</strong></span>
-                      </div>
+                  <!-- District (only if available) -->
+                  @if (districts.length > 0) {
+                    <div class="col-md-6">
+                      <label class="form-label">{{ 'checkout.district' | translate }}</label>
+                      <select class="form-select" formControlName="district">
+                        <option value="">{{ 'checkout.select_district' | translate }}</option>
+                        @for (d of districts; track d.id) {
+                          <option [value]="d.district_name_en">{{ d.district_name_en | localize:d.district_name_ar }}</option>
+                        }
+                      </select>
                     </div>
                   }
 
                   <!-- Address -->
                   <div class="col-12">
                     <label class="form-label">{{ 'checkout.address' | translate }}</label>
-                    <textarea class="form-control" formControlName="address" rows="3"
-                              [class.is-invalid]="f['address'].touched && f['address'].invalid"
-                              style="background-color: var(--sz-bg-secondary); border-color: var(--sz-border-color); color: var(--sz-text-primary);"></textarea>
+                    <textarea class="form-control" formControlName="address" rows="2"
+                              [class.is-invalid]="f['address'].touched && f['address'].invalid"></textarea>
                     @if (f['address'].touched && f['address'].errors?.['required']) {
                       <div class="invalid-feedback">{{ 'validation.address_required' | translate }}</div>
                     }
                   </div>
                 </div>
-
-                <button type="submit" class="btn btn-primary w-100 mt-3"
-                        [disabled]="checkoutForm.invalid">
-                  <i class="bi bi-check-circle me-2"></i>{{ 'checkout.place_order' | translate }}
-                </button>
               </form>
             </div>
+          }
+        </div>
+
+        <!-- ═══ Shipping Company Section ═══ -->
+        <div class="sz-section mb-4">
+          <h6 class="sz-section-title">
+            <i class="bi bi-truck"></i>
+            {{ 'checkout.shipping_company' | translate }}
+          </h6>
+
+          <div class="sz-option-card selected">
+            <div class="sz-option-head">
+              <span class="sz-radio checked"></span>
+              <span class="sz-option-title">{{ 'checkout.jt_express' | translate }}</span>
+            </div>
+            <div class="sz-option-body">
+              <div class="sz-option-sub">
+                {{ 'checkout.delivery_cost_prefix' | translate }} {{ shippingCost | egpCurrency }}
+              </div>
+              @if (deliveryFromLabel()) {
+                <div class="sz-option-sub">
+                  {{ 'checkout.expected_delivery' | translate }} {{ deliveryFromLabel() }} - {{ deliveryToLabel() }}
+                </div>
+              }
+              <div class="sz-cutoff">
+                {{ 'checkout.order_before_prefix' | translate }}
+                {{ pad(cutoffHours()) }} {{ 'checkout.hours' | translate }}
+                {{ pad(cutoffMinutes()) }} {{ 'checkout.minutes' | translate }}
+                {{ pad(cutoffSeconds()) }} {{ 'checkout.seconds' | translate }}
+              </div>
+            </div>
           </div>
-        }
+        </div>
+
+        <!-- ═══ Payment Method Section ═══ -->
+        <div class="sz-section mb-4">
+          <h6 class="sz-section-title">
+            <i class="bi bi-credit-card-2-front"></i>
+            {{ 'checkout.payment_method' | translate }}
+          </h6>
+
+          <div class="sz-option-card" [class.selected]="paymentMethod() === 'cod'"
+               (click)="selectPayment('cod')">
+            <div class="sz-option-head">
+              <span class="sz-radio" [class.checked]="paymentMethod() === 'cod'"></span>
+              <span class="sz-option-title">{{ 'checkout.cod' | translate }}</span>
+            </div>
+            <div class="sz-option-body">
+              <div class="sz-option-sub">{{ 'checkout.cod_desc' | translate }}</div>
+            </div>
+          </div>
+
+          <div class="sz-option-card mt-2" [class.selected]="paymentMethod() === 'instapay'"
+               (click)="selectPayment('instapay')">
+            <div class="sz-option-head">
+              <span class="sz-radio" [class.checked]="paymentMethod() === 'instapay'"></span>
+              <span class="sz-option-title">{{ 'checkout.instapay' | translate }}</span>
+            </div>
+            <div class="sz-option-body">
+              <div class="sz-option-sub">{{ 'checkout.instapay_desc' | translate }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ Notes Section ═══ -->
+        <div class="sz-section mb-4">
+          <h6 class="sz-section-title">
+            <i class="bi bi-journal-text"></i>
+            {{ 'checkout.notes' | translate }}
+          </h6>
+          <textarea class="form-control sz-notes" rows="3"
+                    [(ngModel)]="notes" [ngModelOptions]="{ standalone: true }"
+                    [placeholder]="'checkout.notes_placeholder' | translate"></textarea>
+        </div>
+
+        <!-- Place Order Button -->
+        <button class="btn btn-primary w-100" (click)="onSubmit()"
+                [disabled]="checkoutForm.invalid">
+          <i class="bi bi-check-circle me-2"></i>{{ 'checkout.place_order' | translate }}
+        </button>
       </div>
 
       <!-- Order Summary -->
       <div class="col-lg-7">
-        <div class="card shadow-sm" >
+        <div class="card shadow-sm mb-3">
           <div class="card-body p-3">
             <h6 class="fw-bold mb-3 fs-6">{{ 'checkout.order_summary' | translate }}</h6>
 
             @for (item of (cartService.cart$ | async) ?? []; track item.product.id) {
-              <div class="d-flex align-items-center gap-3 mb-3">
-                <img [src]="item.product.images[0]" [alt]="item.product.title" class="rounded"
-                     style="width: 50px; height: 50px; object-fit: cover;">
-                <div class="flex-grow-1">
-                  <span class="fw-semibold d-block">{{ item.product.title | localize:item.product.titleAr }}</span>
-                  <small class="text-secondary">x{{ item.quantity }}</small>
+              <div class="sz-summary-item">
+                <div class="sz-summary-info">
+                  <div class="sz-summary-title">{{ item.product.title | localize:item.product.titleAr }}</div>
+                  <div class="sz-summary-line">
+                    <span class="sz-summary-label">{{ 'cart.quantity' | translate }}:</span>
+                    <span>{{ item.quantity }}</span>
+                  </div>
+                  <div class="sz-summary-line">
+                    <span class="sz-summary-label">{{ 'cart.price' | translate }}:</span>
+                    @if (item.product.discountPercentage > 0) {
+                      <span class="sz-price-original">{{ item.product.price | egpCurrency }}</span>
+                    }
+                    <span>{{ (item.product.price * (1 - item.product.discountPercentage / 100)) | egpCurrency }}</span>
+                  </div>
+                  <div class="sz-summary-line">
+                    <span class="sz-summary-label">{{ 'cart.total' | translate }}:</span>
+                    @if (item.product.discountPercentage > 0) {
+                      <span class="sz-price-original">{{ (item.product.price * item.quantity) | egpCurrency }}</span>
+                    }
+                    <span>{{ (item.product.price * (1 - item.product.discountPercentage / 100) * item.quantity) | egpCurrency }}</span>
+                  </div>
                 </div>
+                <img [src]="item.product.images[0]" [alt]="item.product.title" class="sz-summary-image">
               </div>
             }
 
             <hr style="border-color: var(--sz-border-color);">
 
+            <!-- Items count + subtotal -->
             <div class="d-flex justify-content-between mb-2">
-              <span class="text-secondary">{{ 'checkout.subtotal' | translate }}</span>
+              <span class="text-secondary">{{ cartService.cartCount$ | async }} {{ 'checkout.items_count' | translate }} :</span>
               <span>{{ cartService.cartSubtotal$ | async | egpCurrency }}</span>
             </div>
-            <div class="d-flex justify-content-between mb-2">
-              <span class="text-secondary">{{ 'checkout.discount' | translate }}</span>
-              <span class="text-danger">-{{ cartService.cartDiscount$ | async | egpCurrency }}</span>
-            </div>
-            @if (cartService.promoApplied()) {
-              <div class="d-flex justify-content-between mb-2">
-                <span class="text-secondary">
-                  {{ 'cart.promo_discount' | translate }}
-                  <span class="badge bg-success ms-1" style="font-size: 0.65rem;">{{ cartService.promoCode() }}</span>
-                </span>
-                <span class="text-danger">-{{ cartService.PROMO_DISCOUNT | egpCurrency }}</span>
+
+            <!-- Product discounts -->
+            @if (((cartService.cartDiscount$ | async) ?? 0) > 0) {
+              <div class="sz-discount-row sz-discount-row-red mb-2">
+                <span class="sz-discount-badge sz-discount-red">{{ 'checkout.discounts' | translate }}</span>
+                <span class="sz-discount-value text-danger fw-semibold">-{{ cartService.cartDiscount$ | async | egpCurrency }}</span>
               </div>
             }
+
+            <!-- Promo discount -->
+            @if (cartService.promoApplied()) {
+              <div class="sz-discount-row sz-discount-row-gray mb-2">
+                <span class="sz-discount-badge sz-discount-gray">
+                  {{ 'checkout.qty_discount' | translate }}
+                  <span class="badge bg-success ms-1" style="font-size: 0.6rem;">{{ cartService.promoCode() }}</span>
+                </span>
+                <span class="sz-discount-value fw-semibold">-{{ cartService.PROMO_DISCOUNT | egpCurrency }}</span>
+              </div>
+            }
+
+            <!-- Shipping -->
             <div class="d-flex justify-content-between mb-2">
-              <span class="text-secondary">{{ 'checkout.shipping' | translate }}</span>
+              <span class="text-secondary">{{ 'checkout.shipping_fees' | translate }} :</span>
               @if (shippingCost > 0) {
                 <span>{{ shippingCost | egpCurrency }}</span>
               } @else {
                 <span class="text-secondary">--</span>
               }
             </div>
+
             <hr style="border-color: var(--sz-border-color);">
+
             <div class="d-flex justify-content-between">
-              <span class="fw-bold fs-6">{{ 'checkout.total' | translate }}</span>
+              <span class="fw-bold fs-6">{{ 'checkout.total' | translate }} :</span>
               <span class="fw-bold fs-6" style="color: var(--sz-accent);">
                 {{ ((cartService.cartTotal$ | async) ?? 0) + shippingCost - (cartService.promoApplied() ? cartService.PROMO_DISCOUNT : 0) | egpCurrency }}
               </span>
             </div>
+          </div>
+        </div>
+
+        <!-- Trust Section -->
+        <div class="sz-trust-card">
+          <div class="sz-trust-header">
+            <span>{{ 'checkout.trust_title' | translate }}</span>
+          </div>
+          <div class="sz-trust-body" style="background-color: white;">
+            @for (item of trustItems; track item.icon) {
+              <div class="sz-trust-item">
+                <img [src]="item.icon" class="sz-trust-icon" alt="">
+                <div class="sz-trust-text">
+                  <div class="sz-trust-item-title">{{ item.titleKey | translate }}</div>
+                  <div class="sz-trust-item-desc">{{ item.descKey | translate }}</div>
+                </div>
+              </div>
+            }
           </div>
         </div>
       </div>

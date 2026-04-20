@@ -56,12 +56,12 @@
   50% { transform: scale(1.1); }
 }
 
-// Card headings — between h5 (1.25rem) and h6 (1rem)
+// Card headings
 .card h6.fs-6 {
   font-size: 1.1rem !important;
 }
 
-// Compact font sizes
+// Compact form sizes
 .form-label {
   font-size: 0.85rem;
 }
@@ -69,21 +69,294 @@
 .form-control,
 .form-select {
   font-size: 0.85rem;
+  background-color: var(--sz-bg-secondary);
+  border-color: var(--sz-border-color);
+  color: var(--sz-text-primary);
 }
 
-// Saved Address Card
-.saved-address-card {
-  border-inline-start: 4px solid var(--sz-accent) !important;
-  animation: fadeInUp 0.4s ease-out;
+// ═══ Sections (shipping, company, payment, notes) ═══
+.sz-section {
+  background: transparent;
+}
 
-  .saved-address-details {
-    padding: 0.75rem 1rem;
-    background-color: var(--sz-bg-secondary);
-    border-radius: 0.5rem;
+.sz-section-title {
+  font-size: 0.95rem;
+  color: var(--sz-text-primary);
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 
-    i {
-      width: 20px;
-      text-align: center;
-    }
+  i {
+    color: var(--sz-accent);
+    font-size: 1rem;
+  }
+}
+
+// Option card (unified style for address, shipping company, payment method)
+.sz-option-card {
+  border: 1.5px solid var(--sz-border-color);
+  border-radius: 10px;
+  background-color: var(--sz-bg-card);
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    border-color: var(--sz-accent);
+  }
+
+  &.selected {
+    border-color: var(--sz-accent);
+    box-shadow: 0 0 0 1px var(--sz-accent);
+  }
+}
+
+.sz-option-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.sz-option-title {
+  color: var(--sz-text-primary);
+  font-size: 0.9rem;
+}
+
+.sz-option-body {
+  padding-inline-start: 1.4rem;
+  font-size: 0.82rem;
+  color: var(--sz-text-secondary, #6c757d);
+
+  .sz-option-sub {
+    margin-bottom: 0.25rem;
+  }
+}
+
+.sz-cutoff {
+  color: var(--sz-accent);
+  font-weight: 600;
+  font-size: 0.82rem;
+  margin-top: 0.3rem;
+}
+
+// Radio indicator
+.sz-radio {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--sz-accent);
+  position: relative;
+  display: inline-block;
+
+  &.checked::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    border-radius: 50%;
+    background-color: var(--sz-accent);
+  }
+}
+
+// Chip buttons (edit / add new address)
+.sz-chip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: var(--sz-bg-secondary);
+  color: var(--sz-text-primary);
+  border: 1px solid var(--sz-border-color);
+  border-radius: 8px;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  i {
+    color: var(--sz-accent);
+  }
+
+  &:hover {
+    background-color: var(--sz-bg-card);
+    border-color: var(--sz-accent);
+  }
+
+  &.add i {
+    color: #198754;
+  }
+}
+
+// Notes textarea
+.sz-notes {
+  resize: vertical;
+  min-height: 90px;
+}
+
+.saved-address-details {
+  padding-top: 0.25rem;
+
+  i {
+    width: 20px;
+    text-align: center;
+  }
+}
+
+// ═══ Summary Item ═══
+.sz-summary-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid var(--sz-border-color);
+  border-radius: 10px;
+  margin-bottom: 0.75rem;
+  background-color: var(--sz-bg-card);
+}
+
+.sz-summary-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.sz-summary-title {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--sz-text-primary);
+  margin-bottom: 0.35rem;
+}
+
+.sz-summary-line {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+  color: var(--sz-text-secondary, #6c757d);
+}
+
+.sz-summary-label {
+  color: var(--sz-text-secondary, #6c757d);
+}
+
+.sz-price-original {
+  text-decoration: line-through;
+  color: #9aa0a6;
+  font-size: 0.78rem;
+}
+
+.sz-summary-image {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+// ═══ Discount Rows ═══
+.sz-discount-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 6px;
+  overflow: hidden;
+  padding: 0;
+
+  &.sz-discount-row-red {
+    background-color: rgba(220, 53, 69, 0.18);
+  }
+
+  &.sz-discount-row-gray {
+    background-color: rgba(108, 117, 125, 0.25);
+  }
+}
+
+.sz-discount-value {
+  padding-inline-end: 0.9rem;
+  font-size: 0.85rem;
+}
+
+.sz-discount-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 1.1rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  min-width: 110px;
+  justify-content: center;
+
+  &.sz-discount-red {
+    background-color: #dc3545;
+  }
+
+  &.sz-discount-gray {
+    background-color: #2c2c2c;
+  }
+}
+
+// ═══ Trust Section ═══
+.sz-trust-card {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--sz-border-color);
+  background: var(--sz-bg-card);
+}
+
+.sz-trust-header {
+  background: linear-gradient(135deg, #f5c842 0%, #e8a800 100%);
+  color: #1a1a1a;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 0.75rem 1.25rem;
+}
+
+.sz-trust-body {
+  padding: 0.5rem 1rem;
+}
+
+.sz-trust-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--sz-border-color);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.sz-trust-icon {
+  width: 25px;
+  height: 40px;
+  object-fit: contain;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.sz-trust-text {
+  flex: 1;
+}
+
+.sz-trust-item-title {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--sz-accent);
+  margin-bottom: 0.2rem;
+}
+
+.sz-trust-item-desc {
+  font-size: 0.8rem;
+  color: var(--sz-text-secondary, #6c757d);
+  line-height: 1.4;
+}
+.mincointeiner{
+  padding-inline: 150px  !important;
+      @media (max-width: 576px) {
+    padding-inline: 20px !important;
   }
 }

@@ -76,7 +76,7 @@
       <div class="page-loader">
         <div class="spinner"></div>
       </div>
-    } @else if (products.length === 0 && !selectedCategory) {
+    } @else if (products.length === 0 && !selectedCategory && activeFilterCount === 0) {
       <div class="empty-state">
         <i class="bi bi-tags d-block"></i>
         <h3>{{ 'offers.no_offers' | translate }}</h3>
@@ -84,58 +84,243 @@
         <a routerLink="/products" class="btn btn-primary btn-sm">{{ 'offers.browse_products' | translate }}</a>
       </div>
     } @else {
-      <!-- Filter Bar -->
-      <div class="offers-filter-bar">
-        <!-- Sort chips -->
-        <div class="chips-scroll mb-2">
-          <button class="filter-chip" [class.active]="sortBy === 'default'" (click)="onSortChange('default')">{{ 'offers.sort_default' | translate }}</button>
-          <button class="filter-chip" [class.active]="sortBy === 'discount-high'" (click)="onSortChange('discount-high')">{{ 'offers.sort_discount_high' | translate }}</button>
-          <button class="filter-chip" [class.active]="sortBy === 'discount-low'" (click)="onSortChange('discount-low')">{{ 'offers.sort_discount_low' | translate }}</button>
-          <button class="filter-chip" [class.active]="sortBy === 'price-low'" (click)="onSortChange('price-low')">{{ 'offers.sort_price_low' | translate }}</button>
-          <button class="filter-chip" [class.active]="sortBy === 'price-high'" (click)="onSortChange('price-high')">{{ 'offers.sort_price_high' | translate }}</button>
-        </div>
-        <!-- Category chips -->
-        <div class="chips-scroll mb-2">
-          <button class="filter-chip" [class.active]="selectedCategory === ''" (click)="onCategorySelect('')">
-            {{ 'offers.filter_all' | translate }}
-            <span class="chip-count">{{ totalProducts }}</span>
-          </button>
-          @for (cat of availableCategories; track cat) {
-            <button class="filter-chip" [class.active]="selectedCategory === cat" (click)="onCategorySelect(cat)">
-              {{ formatCategoryName(cat) }}
-            </button>
+      <!-- Mobile filter button -->
+      <div class="d-lg-none mb-3">
+        <button class="btn btn-filter-mobile" (click)="openFilterDrawer()">
+          <i class="bi bi-funnel"></i>
+          فلتر
+          @if (activeFilterCount > 0) {
+            <span class="filter-badge">{{ activeFilterCount }}</span>
           }
+        </button>
+      </div>
+
+      <!-- Mobile filter drawer backdrop -->
+      @if (showFilterDrawer) {
+        <div class="filter-drawer-backdrop" (click)="closeFilterDrawer()"></div>
+      }
+
+      <!-- Mobile filter drawer -->
+      <div class="filter-drawer" [class.open]="showFilterDrawer">
+        <div class="filter-drawer-header">
+          <h5 class="m-0 fw-bold">فلتر</h5>
+          <button class="filter-drawer-close" (click)="closeFilterDrawer()">
+            <i class="bi bi-x-lg"></i>
+          </button>
         </div>
-        <div class="results-count">
-          {{ showingStart }}-{{ showingEnd }} / {{ totalProducts }} {{ 'offers.results_count' | translate }}
+        <div class="filter-drawer-body">
+          @if (activeFilters.length > 0) {
+            <div class="sidebar-active-chips" style="border-radius:0; border-top:none; border-inline:none;">
+              @for (filter of activeFilters; track filter.value) {
+                <span class="active-filter-chip">
+                  {{ filter.label }}
+                  <button class="chip-remove" (click)="removeFilter(filter)">
+                    <i class="bi bi-x"></i>
+                  </button>
+                </span>
+              }
+              <button class="btn btn-sm btn-link text-decoration-none clear-all-btn p-0" (click)="clearAllFilters()">
+                مسح الكل
+              </button>
+            </div>
+          }
+          <ng-container *ngTemplateOutlet="sidebarContent"></ng-container>
         </div>
       </div>
 
-      <!-- Products Grid -->
-      @if (products.length === 0) {
-        <div class="empty-state">
-          <i class="bi bi-funnel d-block"></i>
-          <h3>{{ 'offers.no_offers_category' | translate }}</h3>
-          <p>{{ 'offers.no_offers_category_desc' | translate }}</p>
-        </div>
-      } @else {
-        <div class="row g-2 g-md-3 row-cols-lg-5">
-          @for (product of products; track product.id) {
-            <div class="col-6 col-md-4 col-lg">
-              <app-product-card
-                [product]="product"
-                (addToCart)="onAddToCart($event)"
-                (addToWishlist)="onAddToWishlist($event)" />
+      <!-- Main layout: sidebar + product grid -->
+      <div class="products-layout">
+        <!-- Sidebar (desktop only) -->
+        <aside class="filter-sidebar d-none d-lg-block">
+          <div class="sidebar-inner">
+            <div class="sidebar-sections-scroll">
+              <ng-container *ngTemplateOutlet="sidebarContent"></ng-container>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Product grid area -->
+        <div class="products-main">
+          <!-- Active filter chips -->
+          @if (activeFilters.length > 0) {
+            <div class="active-filters-bar mb-2">
+              <div class="d-flex flex-wrap align-items-center gap-2">
+                @for (filter of activeFilters; track filter.value) {
+                  <span class="active-filter-chip">
+                    {{ filter.label }}
+                    <button class="chip-remove" (click)="removeFilter(filter)">
+                      <i class="bi bi-x"></i>
+                    </button>
+                  </span>
+                }
+                <button class="btn btn-sm btn-link text-decoration-none clear-all-btn p-0" (click)="clearAllFilters()">
+                  مسح الكل
+                </button>
+              </div>
             </div>
           }
-        </div>
 
-        <!-- Pagination -->
-        <app-pagination
-          [currentPage]="currentPage"
-          [totalPages]="totalPages"
-          (pageChange)="onPageChange($event)" />
-      }
+          <!-- Results count -->
+          <p class="text-secondary mb-2">
+            {{ showingStart }}-{{ showingEnd }} / {{ totalProducts }} {{ 'offers.results_count' | translate }}
+          </p>
+
+          <!-- Products grid -->
+          @if (products.length === 0) {
+            <div class="empty-state">
+              <i class="bi bi-funnel d-block"></i>
+              <h3>{{ 'offers.no_offers_category' | translate }}</h3>
+              <p>{{ 'offers.no_offers_category_desc' | translate }}</p>
+            </div>
+          } @else {
+            <div class="row g-2 g-md-3 row-cols-lg-5">
+              @for (product of products; track product.id) {
+                <div class="col-6 col-md-4 col-lg">
+                  <app-product-card
+                    [product]="product"
+                    (addToCart)="onAddToCart($event)"
+                    (addToWishlist)="onAddToWishlist($event)" />
+                </div>
+              }
+            </div>
+
+            <!-- Pagination -->
+            <app-pagination
+              [currentPage]="currentPage"
+              [totalPages]="totalPages"
+              (pageChange)="onPageChange($event)" />
+          }
+        </div>
+      </div>
     }
   </div>
 </section>
+
+<!-- Sidebar content template (shared between desktop sidebar and mobile drawer) -->
+<ng-template #sidebarContent>
+  <!-- Sort section -->
+  <div class="sidebar-section">
+    <button class="sidebar-section-header" (click)="toggleSection('sort')">
+      <span><i class="bi bi-sort-down ms-1"></i> الترتيب</span>
+      <i class="bi" [class.bi-chevron-up]="sidebarSections['sort']" [class.bi-chevron-down]="!sidebarSections['sort']"></i>
+    </button>
+    @if (sidebarSections['sort']) {
+      <div class="sidebar-section-body">
+        <label class="sidebar-radio-item">
+          <input type="radio" name="sort-offers" [checked]="sortBy === 'default'" (change)="onSortChange('default')">
+          <span>{{ 'offers.sort_default' | translate }}</span>
+        </label>
+        <label class="sidebar-radio-item">
+          <input type="radio" name="sort-offers" [checked]="sortBy === 'discount-high'" (change)="onSortChange('discount-high')">
+          <span>{{ 'offers.sort_discount_high' | translate }}</span>
+        </label>
+        <label class="sidebar-radio-item">
+          <input type="radio" name="sort-offers" [checked]="sortBy === 'discount-low'" (change)="onSortChange('discount-low')">
+          <span>{{ 'offers.sort_discount_low' | translate }}</span>
+        </label>
+        <label class="sidebar-radio-item">
+          <input type="radio" name="sort-offers" [checked]="sortBy === 'price-low'" (change)="onSortChange('price-low')">
+          <span>{{ 'offers.sort_price_low' | translate }}</span>
+        </label>
+        <label class="sidebar-radio-item">
+          <input type="radio" name="sort-offers" [checked]="sortBy === 'price-high'" (change)="onSortChange('price-high')">
+          <span>{{ 'offers.sort_price_high' | translate }}</span>
+        </label>
+      </div>
+    }
+  </div>
+
+  <!-- Category section -->
+  @if (categoryCounts.length > 0 && !selectedCategory) {
+    <div class="sidebar-section">
+      <button class="sidebar-section-header" (click)="toggleSection('category')">
+        <span><i class="bi bi-grid ms-1"></i> القسم</span>
+        <i class="bi" [class.bi-chevron-up]="sidebarSections['category']" [class.bi-chevron-down]="!sidebarSections['category']"></i>
+      </button>
+      @if (sidebarSections['category']) {
+        <div class="sidebar-section-body">
+          @for (cat of categoryCounts; track cat.slug) {
+            <label class="sidebar-radio-item">
+              <input type="radio" name="cat-offers" [checked]="selectedCategory === cat.slug" (change)="onCategorySelect(cat.slug)">
+              <span>{{ cat.name }}</span>
+              <span class="filter-count">({{ cat.count }})</span>
+            </label>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Price range section -->
+  <div class="sidebar-section">
+    <button class="sidebar-section-header" (click)="toggleSection('price')">
+      <span><i class="bi bi-currency-dollar ms-1"></i> السعر</span>
+      <i class="bi" [class.bi-chevron-up]="sidebarSections['price']" [class.bi-chevron-down]="!sidebarSections['price']"></i>
+    </button>
+    @if (sidebarSections['price']) {
+      <div class="sidebar-section-body">
+        @for (range of priceRanges; track range.label) {
+          <label class="sidebar-checkbox-item">
+            <input type="checkbox" [checked]="isPriceRangeSelected(range)" (change)="togglePriceRange(range)">
+            <span>{{ range.label }}</span>
+            <span class="filter-count">({{ range.count }})</span>
+          </label>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Availability section -->
+  <div class="sidebar-section">
+    <button class="sidebar-section-header" (click)="toggleSection('availability')">
+      <span><i class="bi bi-box-seam ms-1"></i> التوفر</span>
+      <i class="bi" [class.bi-chevron-up]="sidebarSections['availability']" [class.bi-chevron-down]="!sidebarSections['availability']"></i>
+    </button>
+    @if (sidebarSections['availability']) {
+      <div class="sidebar-section-body">
+        @for (av of availabilityFilters; track av.value) {
+          <label class="sidebar-checkbox-item">
+            <input type="checkbox" [checked]="isAvailabilitySelected(av.value)" (change)="toggleAvailability(av.value)">
+            <span>{{ av.label }}</span>
+            <span class="filter-count">({{ av.count }})</span>
+          </label>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Brand section -->
+  @if (brandList.length > 0) {
+    <div class="sidebar-section">
+      <button class="sidebar-section-header" (click)="toggleSection('brand')">
+        <span><i class="bi bi-award ms-1"></i> العلامة التجارية</span>
+        <i class="bi" [class.bi-chevron-up]="sidebarSections['brand']" [class.bi-chevron-down]="!sidebarSections['brand']"></i>
+      </button>
+      @if (sidebarSections['brand']) {
+        <div class="sidebar-section-body">
+          <div class="brand-search-wrapper mb-2">
+            <input
+              type="text"
+              class="form-control form-control-sm brand-search-input"
+              placeholder="ابحث عن علامة تجارية..."
+              [value]="brandSearchTerm"
+              (input)="onBrandSearch($any($event.target).value)">
+            <i class="bi bi-search brand-search-icon"></i>
+          </div>
+          <div class="brand-list-scroll">
+            @for (brand of filteredBrandList; track brand.name) {
+              <label class="sidebar-checkbox-item">
+                <input type="checkbox" [checked]="isBrandSelected(brand.name)" (change)="toggleBrand(brand.name)">
+                <span>{{ brand.name }}</span>
+                <span class="filter-count">({{ brand.count }})</span>
+              </label>
+            }
+            @if (filteredBrandList.length === 0) {
+              <p class="text-muted small text-center my-2">لا توجد نتائج</p>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</ng-template>

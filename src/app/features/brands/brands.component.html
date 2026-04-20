@@ -1,0 +1,69 @@
+<section class="brands-page">
+  <div class="container">
+    <!-- Header -->
+    <div class="brands-header">
+      <h1 class="brands-heading">{{ 'brands.title' | translate }}</h1>
+      <p class="brands-subtitle">{{ 'brands.subtitle' | translate }}</p>
+      <div class="heading-line"></div>
+
+      <div class="brands-search">
+        <i class="bi bi-search"></i>
+        <input
+          type="text"
+          [placeholder]="'brands.search_placeholder' | translate"
+          [value]="searchTerm"
+          (input)="onSearchInput($any($event.target).value)">
+      </div>
+    </div>
+
+    <!-- Loading state -->
+    @if (isLoading()) {
+      <div class="brands-loading">
+        <div class="spinner-border" role="status" style="color: var(--sz-accent);"></div>
+      </div>
+    } @else {
+      <!-- Categories with their brands -->
+      @for (cat of categories(); track trackCat($index, cat)) {
+        @if (filteredBrands(cat.famousBrands).length > 0) {
+          <article class="brand-section" [id]="'cat-' + cat.id">
+            <header class="brand-section-header">
+              <div class="brand-section-title">
+                @if (cat.icon) {
+                  <span class="cat-icon"><i class="bi" [class]="cat.icon"></i></span>
+                }
+                <h2>{{ cat.name }}</h2>
+              </div>
+              <a class="brand-section-link" (click)="goToCategory(cat)">
+                {{ 'brands.view_category' | translate }}
+                <i class="bi bi-arrow-left"></i>
+              </a>
+            </header>
+
+            <div class="brand-grid">
+              @for (brand of filteredBrands(cat.famousBrands); track trackBrand($index, brand)) {
+                <a class="brand-card" (click)="goToBrand(brand)" [title]="brand.name">
+                  @if (brand.image) {
+                    <img [src]="brand.image" [alt]="brand.name" loading="lazy">
+                  } @else {
+                    <div class="brand-img-placeholder">
+                      <i class="bi bi-award"></i>
+                    </div>
+                  }
+                  <span class="brand-name">{{ brand.name }}</span>
+                </a>
+              }
+            </div>
+          </article>
+        }
+      }
+
+      <!-- Empty state -->
+      @if (categories().length === 0) {
+        <div class="brands-empty">
+          <i class="bi bi-award"></i>
+          <p>{{ 'brands.empty' | translate }}</p>
+        </div>
+      }
+    }
+  </div>
+</section>

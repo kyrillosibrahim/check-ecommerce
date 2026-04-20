@@ -15,6 +15,9 @@ export interface IOrder {
   total: number;
   shippingCost: number;
   shippingAddress: IAddress;
+  shippingCompany?: string;
+  paymentMethod?: 'cod' | 'instapay';
+  notes?: string;
   date: string;
   status: 'pending' | 'processing' | 'shipped' | 'delivered';
 }
@@ -24,5 +27,6 @@ export interface IAddress {
   phone: string;
   governorate: string;
   city: string;
+  district?: string;
   address: string;
 }

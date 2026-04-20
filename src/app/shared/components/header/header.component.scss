@@ -215,6 +215,20 @@
   }
 }
 
+.categories-bar-brands {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  border-radius: 6px;
+  margin-inline-end: 0.5rem;
+  padding: 0.25rem 0.8rem;
+
+  &:hover, &.active {
+    background: #fff;
+    color: var(--sz-accent-hover);
+    border-bottom-color: transparent;
+  }
+}
+
 /* ── Mega Menu ─── */
 .mega-menu-drop {
   position: absolute;
@@ -693,7 +707,7 @@
   color: #fff;
   padding: 0.4rem 1rem;
   border-radius: 5px;
-  font-size: 1rem;
+  font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;

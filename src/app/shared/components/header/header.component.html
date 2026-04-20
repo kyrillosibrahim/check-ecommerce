@@ -122,7 +122,6 @@
                 <div class="overlay-section">
                   <div class="overlay-section-header">
                     <h6>{{ 'nav.recently_viewed' | translate }}</h6>
-                    <a class="overlay-link" routerLink="/products" (click)="closeSearchOverlay()">{{ 'nav.view_history' | translate }}</a>
                   </div>
                   <div class="recently-viewed-scroll" #rvDesktop
                        (mousedown)="onDragStart($event, rvDesktop)"
@@ -345,6 +344,11 @@
           </a>
         </li>
         <li>
+          <a routerLink="/brands" routerLinkActive="active" (click)="closeMobileMenu()">
+            <i class="bi bi-award"></i>{{ 'nav.brands' | translate }}
+          </a>
+        </li>
+        <li>
           <a routerLink="/cart" routerLinkActive="active" (click)="closeMobileMenu()">
             <i class="bi bi-cart3"></i>{{ 'nav.cart' | translate }}
           </a>
@@ -392,6 +396,14 @@
        (mouseleave)="onCategoryLeave()">
     <div class="container">
       <div class="categories-bar-scroll">
+        <div class="categories-bar-item-wrapper"
+             (mouseenter)="onCategoryLeave()">
+          <a class="categories-bar-item categories-bar-brands"
+             routerLink="/brands"
+             routerLinkActive="active">
+            <i class="bi bi-award-fill me-1"></i>{{ 'nav.brands' | translate }}
+          </a>
+        </div>
         @for (cat of categories; track cat.id) {
           <div class="categories-bar-item-wrapper"
                (mouseenter)="onCategoryHover(cat)">
@@ -535,7 +547,6 @@
             <div class="overlay-section">
               <div class="overlay-section-header">
                 <h6>{{ 'nav.recently_viewed' | translate }}</h6>
-                <a class="overlay-link" routerLink="/products" (click)="closeSearchOverlay()">{{ 'nav.view_history' | translate }}</a>
               </div>
               <div class="recently-viewed-scroll" #rvMobile
                    (mousedown)="onDragStart($event, rvMobile)"

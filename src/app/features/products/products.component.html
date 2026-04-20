@@ -1,5 +1,5 @@
 <div class="container section-padding">
-  <h2 class="section-title">{{ 'products.title' | translate }}</h2>
+  <h2 class="section-title">{{ pageTitle || ('products.title' | translate) }}</h2>
 
   <!-- Categories (always visible) -->
   <app-product-filter

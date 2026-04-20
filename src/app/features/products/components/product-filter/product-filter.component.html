@@ -23,13 +23,16 @@
       }
     </div>
   } @else {
-    <!-- Back button + subcategories -->
+    <!-- Subcategories -->
     <div class="mb-4">
-      <button class="btn btn-sm btn-outline-secondary mb-3" (click)="goBack()">
-        <i class="bi bi-arrow-right me-1"></i>{{ activeCategory?.name }}
-      </button>
       @if (subcategories.length > 0) {
         <div class="categories-grid">
+          <button class="category-card" [class.active]="!selectedSubcategory" (click)="subcategoryChange.emit('')">
+            <div class="category-img-wrapper">
+              <i class="bi bi-grid-3x3-gap-fill category-icon-placeholder"></i>
+            </div>
+            <span class="category-name">{{ 'filter.all_products' | translate }}</span>
+          </button>
           @for (sub of subcategories; track sub.id) {
             <button class="category-card" [class.active]="selectedSubcategory === sub.slug" (click)="subcategoryChange.emit(sub.slug)">
               <div class="category-img-wrapper">

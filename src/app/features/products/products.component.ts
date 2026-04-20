@@ -134,6 +134,16 @@ export class ProductsComponent implements OnInit {
     return cat?.filterTags || [];
   }
 
+  get pageTitle(): string {
+    const cat = this.categories.find(c => c.slug === this.selectedCategory);
+    if (!cat) return '';
+    if (this.selectedSubcategory && cat.subcategories) {
+      const sub = cat.subcategories.find(s => s.slug === this.selectedSubcategory);
+      if (sub?.name) return `${cat.name} - ${sub.name}`;
+    }
+    return cat.name;
+  }
+
   openFilterDrawer(): void {
     this.showFilterDrawer = true;
     this.cdr.markForCheck();

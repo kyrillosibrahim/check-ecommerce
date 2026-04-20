@@ -13,7 +13,15 @@
     "cart_header": "السلة",
     "view_cart": "عرض السلة",
     "total": "الإجمالي",
-    "cart_empty": "لا توجد منتجات في السلة"
+    "cart_empty": "لا توجد منتجات في السلة",
+    "brands": "العلامات التجارية"
+  },
+  "brands": {
+    "title": "العلامات التجارية",
+    "subtitle": "تصفح كل قسم وتعرف على أشهر العلامات التجارية المتوفرة فيه",
+    "search_placeholder": "ابحث عن علامة تجارية...",
+    "view_category": "عرض القسم",
+    "empty": "لا توجد علامات تجارية متاحة حالياً"
   },
   "categories": {
     "vitamins": "الفيتامينات",
@@ -46,6 +54,8 @@
     "select_governorate": "اختر المحافظة",
     "city": "المدينة",
     "select_city": "اختر المدينة",
+    "district": "الحي / المنطقة",
+    "select_district": "اختر الحي",
     "address": "العنوان بالتفصيل",
     "shipping_cost_label": "تكلفة الشحن",
     "place_order": "تأكيد الطلب",
@@ -64,7 +74,25 @@
     "default_address": "العنوان الافتراضي",
     "change_address": "تغيير العنوان",
     "add_new_address": "إضافة عنوان جديد",
-    "use_saved": "استخدام العنوان المحفوظ"
+    "use_saved": "استخدام العنوان المحفوظ",
+    "shipping_address": "عنوان الشحن",
+    "home_delivery": "توصيل للمنزل",
+    "change_address_btn": "تغيير العنوان",
+    "shipping_company": "شركة الشحن",
+    "jt_express": "J&T Express",
+    "delivery_cost_prefix": "توصيل بـ",
+    "expected_delivery": "وقت التوصيل المتوقع بين",
+    "order_before_prefix": "اذا قمت بالطلب قبل",
+    "hours": "ساعة",
+    "minutes": "دقيقة",
+    "seconds": "ثانية",
+    "payment_method": "طريقة الدفع والسداد",
+    "cod": "الدفع عند الاستلام",
+    "cod_desc": "يمكنك الدفع نقدا عند الاستلام برسوم",
+    "instapay": "تحويل انستاباي",
+    "instapay_desc": "يمكنك الدفع عن طريق انستاباي أو أى محفظة",
+    "notes": "ملاحظة",
+    "notes_placeholder": "هنا يمكنك إضافة أى ملاحظة بخصوص الطلب أو الشحن"
   },
   "validation": {
     "full_name_required": "الاسم بالكامل مطلوب",

@@ -19,6 +19,11 @@ export const routes: Routes = [
     title: 'Check - العروض والخصومات'
   },
   {
+    path: 'brands',
+    loadComponent: () => import('./features/brands/brands.component').then(c => c.BrandsComponent),
+    title: 'Check - العلامات التجارية'
+  },
+  {
     path: 'product/:id',
     loadComponent: () => import('./features/product-details/product-details.component').then(c => c.ProductDetailsComponent),
     title: 'Check - تفاصيل المنتج'
