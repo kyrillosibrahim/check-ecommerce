@@ -3,6 +3,13 @@ export interface IGovernorateApi {
   governorate_name_en: string;
   governorate_name_ar: string;
   shippingCost: number;
+  extraShippingCost?: number;
+}
+
+export interface IDistrictApi {
+  id: number;
+  district_name_en: string;
+  district_name_ar: string;
 }
 
 export interface ICityApi {
@@ -10,4 +17,5 @@ export interface ICityApi {
   governorate_id: number;
   city_name_en: string;
   city_name_ar: string;
+  districts?: IDistrictApi[];
 }

@@ -13,11 +13,16 @@ async function getCitiesByGovernorate(req, res, next) {
 
 async function updateGovernorate(req, res, next) {
   try {
-    const govId = parseInt(req.params.id, 10); const { shippingCost } = req.body;
+    const govId = parseInt(req.params.id, 10);
+    const { shippingCost, extraShippingCost } = req.body;
     if (shippingCost == null || isNaN(Number(shippingCost))) return res.status(400).json({ message: 'shippingCost is required' });
+    const update = { shippingCost: Number(shippingCost) };
+    if (extraShippingCost != null && !isNaN(Number(extraShippingCost))) {
+      update.extraShippingCost = Number(extraShippingCost);
+    }
     const gov = await Governorate.findOneAndUpdate(
       { id: govId },
-      { $set: { shippingCost: Number(shippingCost) } },
+      { $set: update },
       { new: true, upsert: true, setDefaultsOnInsert: true, projection: { __v: 0 } }
     );
     const o = gov.toObject(); delete o._id; res.json(o);

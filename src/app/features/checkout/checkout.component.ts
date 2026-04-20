@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, inject, ChangeDetectorRef, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, ChangeDetectorRef, signal, OnDestroy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AsyncPipe } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
@@ -10,20 +10,34 @@ import { AuthService } from '../../core/services/auth.service';
 import { GovernorateService } from '../../core/services/governorate.service';
 import { API_CONFIG } from '../../core/config/api.config';
 import { IOrder, IAddress } from '../../core/models/user.model';
-import { IGovernorateApi, ICityApi } from '../../core/models/governorate.model';
+import { IGovernorateApi, ICityApi, IDistrictApi } from '../../core/models/governorate.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { LocalizePipe } from '../../shared/pipes/localize.pipe';
 import { TranslationService } from '../../core/services/translation.service';
 import { EgpCurrencyPipe } from '../../shared/pipes/egp-currency.pipe';
 
+const FAR_GOVERNORATES_EN = [
+  'Red Sea',
+  'Aswan',
+  'Luxor',
+  'Matrouh',
+  'New Valley',
+  'North Sinai',
+  'South Sinai',
+  'Asyut',
+  'Sohag',
+  'Qena',
+  'Minya',
+];
+
 @Component({
   selector: 'app-checkout',
-  imports: [ReactiveFormsModule, AsyncPipe, EgpCurrencyPipe, RouterLink, TranslatePipe, LocalizePipe],
+  imports: [ReactiveFormsModule, FormsModule, AsyncPipe, EgpCurrencyPipe, RouterLink, TranslatePipe, LocalizePipe],
   templateUrl: './checkout.component.html',
   styleUrl: './checkout.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CheckoutComponent {
+export class CheckoutComponent implements OnDestroy {
   translationService = inject(TranslationService);
   private fb = inject(FormBuilder);
   private router = inject(Router);
@@ -40,22 +54,67 @@ export class CheckoutComponent {
   governorates: IGovernorateApi[] = [];
   selectedGovernorate: IGovernorateApi | null = null;
   cities: ICityApi[] = [];
+  districts: IDistrictApi[] = [];
   shippingCost = 0;
+  private currentItemsCount = 0;
+  private cartCountSub?: { unsubscribe(): void };
 
   savedAddress: IAddress | null = null;
   savedGovAr = '';
   savedCityAr = '';
+  savedDistrictAr = '';
   showForm = false;
+
+  paymentMethod = signal<'cod' | 'instapay'>('cod');
+  notes = '';
+
+  readonly trustItems = [
+    { icon: 'assets/iconsd/148879f265.png',  titleKey: 'checkout.trust_original_title',  descKey: 'checkout.trust_original_desc' },
+    { icon: 'assets/iconsd/2806135749.png',  titleKey: 'checkout.trust_packaging_title', descKey: 'checkout.trust_packaging_desc' },
+    { icon: 'assets/iconsd/434e05ab7e.png',  titleKey: 'checkout.trust_support_title',   descKey: 'checkout.trust_support_desc' },
+    { icon: 'assets/iconsd/675e62576b.webp', titleKey: 'checkout.trust_cod_title',        descKey: 'checkout.trust_cod_desc' },
+    { icon: 'assets/iconsd/ff1b3550-fdc5-43b0-8430-22fe2af59834_LE_upscale_prime_light_ai_100_remove_background_general_clip_to_object_off.png', titleKey: 'checkout.trust_return_title', descKey: 'checkout.trust_return_desc' },
+    { icon: 'assets/iconsd/privacy.png',     titleKey: 'checkout.trust_sameday_title',   descKey: 'checkout.trust_sameday_desc' },
+  ];
+
+  deliveryFromLabel = signal('');
+  deliveryToLabel = signal('');
+  cutoffHours = signal(0);
+  cutoffMinutes = signal(0);
+  cutoffSeconds = signal(0);
+  private cutoffTimer: ReturnType<typeof setInterval> | null = null;
 
   checkoutForm: FormGroup = this.fb.group({
     governorate: ['', [Validators.required]],
     city: ['', [Validators.required]],
+    district: [''],
     address: ['', [Validators.required]],
   });
 
   constructor() {
     this.cartService.loadCart();
     this.loadGovernorates();
+    this.startCutoffTimer();
+    this.cartCountSub = this.cartService.cartCount$.subscribe(count => {
+      this.currentItemsCount = count;
+      this.shippingCost = this.computeShipping();
+      this.cdr.markForCheck();
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.cutoffTimer) {
+      clearInterval(this.cutoffTimer);
+    }
+    this.cartCountSub?.unsubscribe();
+  }
+
+  private computeShipping(): number {
+    if (!this.selectedGovernorate) return 0;
+    const base = this.selectedGovernorate.shippingCost || 0;
+    const extra = this.selectedGovernorate.extraShippingCost || 0;
+    const tiers = Math.floor(this.currentItemsCount / 5);
+    return base + tiers * extra;
   }
 
   private loadGovernorates(): void {
@@ -90,13 +149,22 @@ export class CheckoutComponent {
     ) || null;
 
     if (this.selectedGovernorate) {
-      this.shippingCost = this.selectedGovernorate.shippingCost;
+      this.shippingCost = this.computeShipping();
       this.savedGovAr = this.selectedGovernorate.governorate_name_ar;
+      this.updateDeliveryRange();
       this.governorateService.getCities(this.selectedGovernorate.id).subscribe(cities => {
         this.cities = cities;
         this.checkoutForm.patchValue({ city: addr.city });
         const matchedCity = cities.find(c => c.city_name_en === addr.city);
         this.savedCityAr = matchedCity?.city_name_ar || addr.city;
+        this.districts = matchedCity?.districts || [];
+        if (addr.district) {
+          this.checkoutForm.patchValue({ district: addr.district });
+          const matchedDistrict = this.districts.find(d => d.district_name_en === addr.district);
+          this.savedDistrictAr = matchedDistrict?.district_name_ar || addr.district;
+        } else {
+          this.savedDistrictAr = '';
+        }
         this.cdr.markForCheck();
       });
     }
@@ -113,6 +181,10 @@ export class CheckoutComponent {
     }
   }
 
+  selectPayment(method: 'cod' | 'instapay'): void {
+    this.paymentMethod.set(method);
+  }
+
   get f() {
     return this.checkoutForm.controls;
   }
@@ -124,7 +196,8 @@ export class CheckoutComponent {
     ) || null;
 
     if (this.selectedGovernorate) {
-      this.shippingCost = this.selectedGovernorate.shippingCost;
+      this.shippingCost = this.computeShipping();
+      this.updateDeliveryRange();
       this.governorateService.getCities(this.selectedGovernorate.id).subscribe(cities => {
         this.cities = cities;
         this.cdr.markForCheck();
@@ -132,9 +205,70 @@ export class CheckoutComponent {
     } else {
       this.cities = [];
       this.shippingCost = 0;
+      this.deliveryFromLabel.set('');
+      this.deliveryToLabel.set('');
     }
 
+    this.districts = [];
     this.checkoutForm.get('city')!.setValue('');
+    this.checkoutForm.get('district')!.setValue('');
+  }
+
+  onCityChange(): void {
+    const cityName = this.checkoutForm.get('city')!.value;
+    const city = this.cities.find(c => c.city_name_en === cityName);
+    this.districts = city?.districts || [];
+    this.checkoutForm.get('district')!.setValue('');
+    this.cdr.markForCheck();
+  }
+
+  private isFarGovernorate(): boolean {
+    if (!this.selectedGovernorate) return false;
+    return FAR_GOVERNORATES_EN.includes(this.selectedGovernorate.governorate_name_en);
+  }
+
+  private updateDeliveryRange(): void {
+    const far = this.isFarGovernorate();
+    const fromOffset = far ? 2 : 1;
+    const toOffset = far ? 3 : 2;
+    const now = new Date();
+    const from = new Date(now);
+    from.setDate(now.getDate() + fromOffset);
+    const to = new Date(now);
+    to.setDate(now.getDate() + toOffset);
+    this.deliveryFromLabel.set(this.formatDate(from));
+    this.deliveryToLabel.set(this.formatDate(to));
+  }
+
+  private formatDate(d: Date): string {
+    const lang = this.translationService.currentLang();
+    const locale = lang === 'ar' ? 'ar-EG' : 'en-GB';
+    return d.toLocaleDateString(locale, { day: 'numeric', month: 'long' });
+  }
+
+  private startCutoffTimer(): void {
+    const tick = () => {
+      const now = new Date();
+      const cutoff = new Date(now);
+      cutoff.setHours(18, 0, 0, 0);
+      if (now >= cutoff) {
+        cutoff.setDate(cutoff.getDate() + 1);
+      }
+      const diff = Math.max(0, cutoff.getTime() - now.getTime());
+      const h = Math.floor(diff / 3_600_000);
+      const m = Math.floor((diff % 3_600_000) / 60_000);
+      const s = Math.floor((diff % 60_000) / 1000);
+      this.cutoffHours.set(h);
+      this.cutoffMinutes.set(m);
+      this.cutoffSeconds.set(s);
+      this.cdr.markForCheck();
+    };
+    tick();
+    this.cutoffTimer = setInterval(tick, 1000);
+  }
+
+  pad(n: number): string {
+    return n.toString().padStart(2, '0');
   }
 
   async onSubmit(): Promise<void> {
@@ -167,6 +301,9 @@ export class CheckoutComponent {
     };
 
     const promoDiscount = this.cartService.promoApplied() ? this.cartService.PROMO_DISCOUNT : 0;
+    const shippingCompany = 'J&T Express';
+    const paymentMethod = this.paymentMethod();
+    const notes = this.notes?.trim() || '';
 
     const order: IOrder = {
       id: this.orderId,
@@ -174,6 +311,9 @@ export class CheckoutComponent {
       total: cartTotal + this.shippingCost - promoDiscount,
       shippingCost: this.shippingCost,
       shippingAddress,
+      shippingCompany,
+      paymentMethod,
+      notes,
       date: new Date().toISOString(),
       status: 'pending'
     };
@@ -190,6 +330,10 @@ export class CheckoutComponent {
       discount: cartDiscount,
       promoCode: this.cartService.promoApplied() ? this.cartService.promoCode() : null,
       promoDiscount: promoDiscount,
+      shippingCompany,
+      paymentMethod,
+      paymentStatus: 'unpaid',
+      notes,
       items: cartItems.map(item => ({
         productId: item.product.id,
         title: item.product.title,
