@@ -244,3 +244,43 @@
     }
   }
 </div>
+
+<!-- Sticky Bottom Bar -->
+@if (product && showStickyBar() && !product.comingSoon && product.stock > 0) {
+  <div class="sticky-buy-bar">
+    <div class="container sticky-buy-bar__inner">
+      <img [src]="product.images[0]" [alt]="product.title" class="sticky-buy-bar__image">
+      <div class="sticky-buy-bar__info">
+        <span class="sticky-buy-bar__title">{{ product.title | localize:product.titleAr }}</span>
+        <div class="sticky-buy-bar__price-row">
+          @if (hasDiscount) {
+            <span class="sticky-buy-bar__price-original">{{ product.price | egpCurrency }}</span>
+            <span class="sticky-buy-bar__price">{{ product | discountPrice | egpCurrency }}</span>
+          } @else {
+            <span class="sticky-buy-bar__price">{{ product.price | egpCurrency }}</span>
+          }
+        </div>
+      </div>
+      <div class="sticky-buy-bar__qty">
+        <button class="sticky-buy-bar__qty-btn" (click)="decrementQty()" [disabled]="quantity <= 1">
+          <i class="bi bi-dash"></i>
+        </button>
+        <span class="sticky-buy-bar__qty-value">{{ quantity }}</span>
+        <button class="sticky-buy-bar__qty-btn" (click)="incrementQty()" [disabled]="quantity >= product.stock">
+          <i class="bi bi-plus"></i>
+        </button>
+      </div>
+      @if (product.inCart || cartService.isInCart(product.id)) {
+        <button class="sticky-buy-bar__add sticky-buy-bar__add--added" disabled>
+          <i class="bi bi-check-lg"></i>
+          <span class="sticky-buy-bar__add-label">{{ 'details.added' | translate }}</span>
+        </button>
+      } @else {
+        <button class="sticky-buy-bar__add" (click)="addToCart()">
+          <i class="bi bi-cart-plus"></i>
+          <span class="sticky-buy-bar__add-label">{{ 'product.add_to_cart' | translate }}</span>
+        </button>
+      }
+    </div>
+  </div>
+}

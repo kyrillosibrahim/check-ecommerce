@@ -188,3 +188,9 @@
   }
 
 }
+
+@media (max-width: 768px) {
+  .wishlist-btn {
+    display: none !important;
+  }
+}

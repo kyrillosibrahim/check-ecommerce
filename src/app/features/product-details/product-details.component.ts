@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, signal, PLATFORM_ID } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, signal, PLATFORM_ID, HostListener } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -43,6 +43,7 @@ export class ProductDetailsComponent implements OnInit {
   quantity = 1;
   isLoading = signal(true);
   descriptionHtml: SafeHtml = '';
+  showStickyBar = signal(false);
 
   readonly starsArray = [1, 2, 3, 4, 5];
 
@@ -75,6 +76,15 @@ export class ProductDetailsComponent implements OnInit {
         this.cdr.markForCheck();
       });
     });
+  }
+
+  @HostListener('window:scroll')
+  onScroll(): void {
+    if (!this.isBrowser) return;
+    const shouldShow = window.scrollY > 600;
+    if (shouldShow !== this.showStickyBar()) {
+      this.showStickyBar.set(shouldShow);
+    }
   }
 
   incrementQty(): void {
