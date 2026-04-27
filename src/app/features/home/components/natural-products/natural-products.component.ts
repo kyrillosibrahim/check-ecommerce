@@ -8,6 +8,8 @@ export interface INaturalProductItem {
   link: string;
 }
 
+const VIDEO_EXT_RE = /\.(mp4|webm|ogg|mov|m4v)(\?|$)/i;
+
 @Component({
   selector: 'app-natural-products',
   imports: [],
@@ -21,6 +23,12 @@ export class NaturalProductsComponent implements AfterViewInit, OnChanges {
 
   private platformId = inject(PLATFORM_ID);
   private swiper?: Swiper;
+
+  isVideo(url: string): boolean {
+    if (!url) return false;
+    if (url.includes('/video/upload/')) return true;
+    return VIDEO_EXT_RE.test(url);
+  }
 
   ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId) && this.items.length > 0) {

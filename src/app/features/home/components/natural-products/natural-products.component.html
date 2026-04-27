@@ -5,11 +5,19 @@
         <div class="swiper-slide">
           @if (item.link) {
             <a [href]="item.link" target="_blank" rel="noopener" class="np-card">
-              <video [src]="item.video" autoplay muted loop playsinline preload="metadata"></video>
+              @if (isVideo(item.video)) {
+                <video [src]="item.video" autoplay muted loop playsinline preload="metadata"></video>
+              } @else {
+                <img [src]="item.video" alt="" loading="lazy" draggable="false">
+              }
             </a>
           } @else {
             <div class="np-card">
-              <video [src]="item.video" autoplay muted loop playsinline preload="metadata"></video>
+              @if (isVideo(item.video)) {
+                <video [src]="item.video" autoplay muted loop playsinline preload="metadata"></video>
+              } @else {
+                <img [src]="item.video" alt="" loading="lazy" draggable="false">
+              }
             </div>
           }
         </div>
