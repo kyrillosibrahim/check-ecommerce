@@ -54,6 +54,23 @@ export class NaturalProductsComponent implements AfterViewInit, OnChanges {
         992: { slidesPerView: 4, spaceBetween: 16 },
         1200: { slidesPerView: 5, spaceBetween: 16 },
       },
+      on: {
+        afterInit: () => this.playAllVideos(),
+        slideChangeTransitionEnd: () => this.playAllVideos(),
+      },
+    });
+    setTimeout(() => this.playAllVideos(), 200);
+  }
+
+  private playAllVideos(): void {
+    const videos = this.swiperRef.nativeElement.querySelectorAll('video');
+    videos.forEach(v => {
+      v.muted = true;
+      v.playsInline = true;
+      const result = v.play();
+      if (result && typeof result.catch === 'function') {
+        result.catch(() => { /* autoplay policy — ignore */ });
+      }
     });
   }
 }
