@@ -27,6 +27,21 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'nav.subcategories': 'Subcategories',
   'nav.famous_brands': 'Famous Brands',
   'nav.brands': 'Brands',
+  'nav.wholesale_offers': 'Wholesale Offers',
+
+  // ── Wholesale offers page ──
+  'wholesale.subtitle': 'Browse special wholesale prices on selected products',
+  'wholesale.filters': 'Filters',
+  'wholesale.products': 'products',
+  'wholesale.search': 'Search',
+  'wholesale.search_placeholder': 'Search wholesale offers...',
+  'wholesale.price_range': 'Wholesale Price',
+  'wholesale.availability': 'Availability',
+  'wholesale.brand': 'Brand',
+  'wholesale.brand_search': 'Search brand...',
+  'wholesale.no_brands': 'No brands available',
+  'wholesale.empty': 'No wholesale offers match your filters',
+  'wholesale.clear_filters': 'Clear filters',
 
   // ── Brands page ──
   'brands.title': 'Brands',

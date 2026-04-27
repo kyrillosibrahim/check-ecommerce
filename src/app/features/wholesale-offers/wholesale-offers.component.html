@@ -1,0 +1,160 @@
+<section class="wholesale-page">
+  <div class="container py-4">
+
+    <!-- Page header -->
+    <div class="page-header mb-4">
+      <h1 class="page-title">
+        <i class="bi bi-cart-plus me-2"></i>{{ 'nav.wholesale_offers' | translate }}
+      </h1>
+      <p class="page-subtitle">{{ 'wholesale.subtitle' | translate }}</p>
+    </div>
+
+    <!-- Mobile filter button -->
+    <div class="d-flex d-lg-none justify-content-between align-items-center mb-3 gap-2">
+      <button class="btn btn-outline-primary btn-sm" (click)="openFilterDrawer()">
+        <i class="bi bi-funnel me-1"></i>{{ 'wholesale.filters' | translate }}
+        @if (activeFilterCount > 0) {
+          <span class="badge bg-primary ms-1">{{ activeFilterCount }}</span>
+        }
+      </button>
+      <small class="text-secondary">{{ filtered.length }} {{ 'wholesale.products' | translate }}</small>
+    </div>
+
+    <div class="row g-4">
+      <!-- Sidebar filters (desktop) -->
+      <aside class="col-lg-3 d-none d-lg-block">
+        <ng-container *ngTemplateOutlet="filtersTpl"></ng-container>
+      </aside>
+
+      <!-- Main content -->
+      <div class="col-lg-9">
+        <!-- Top toolbar -->
+        <div class="toolbar d-flex flex-wrap align-items-center gap-2 mb-3">
+          <div class="search-box flex-grow-1">
+            <i class="bi bi-search"></i>
+            <input type="text" class="form-control" [(ngModel)]="searchTerm"
+                   (input)="applyFilters()"
+                   [placeholder]="'wholesale.search_placeholder' | translate">
+          </div>
+          <small class="text-secondary d-none d-lg-inline-block ms-auto">
+            {{ filtered.length }} {{ 'wholesale.products' | translate }}
+          </small>
+          @if (activeFilterCount > 0) {
+            <button class="btn btn-outline-secondary btn-sm" (click)="resetFilters()">
+              <i class="bi bi-x-lg me-1"></i>{{ 'wholesale.clear_filters' | translate }}
+            </button>
+          }
+        </div>
+
+        <!-- Products grid -->
+        @if (isLoading()) {
+          <div class="row g-3">
+            @for (i of [1,2,3,4,5,6,7,8]; track i) {
+              <div class="col-6 col-md-4 col-lg-3">
+                <app-skeleton-loader />
+              </div>
+            }
+          </div>
+        } @else if (filtered.length === 0) {
+          <div class="empty-state text-center py-5">
+            <i class="bi bi-inbox display-4 text-secondary mb-3 d-block"></i>
+            <h5 class="text-secondary">{{ 'wholesale.empty' | translate }}</h5>
+            @if (activeFilterCount > 0) {
+              <button class="btn btn-primary mt-3" (click)="resetFilters()">
+                {{ 'wholesale.clear_filters' | translate }}
+              </button>
+            }
+          </div>
+        } @else {
+          <div class="row g-3">
+            @for (product of filtered; track product.id) {
+              <div class="col-6 col-md-4 col-lg-3">
+                <app-product-card
+                  [product]="product"
+                  priceMode="wholesale"
+                  (addToCart)="onAddToCart($event)" />
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile filter drawer -->
+  @if (showFilterDrawer) {
+    <div class="filter-drawer-backdrop d-lg-none" (click)="closeFilterDrawer()"></div>
+    <aside class="filter-drawer d-lg-none">
+      <div class="filter-drawer-header">
+        <h6 class="mb-0 fw-bold">{{ 'wholesale.filters' | translate }}</h6>
+        <button class="btn-close-custom" (click)="closeFilterDrawer()" aria-label="إغلاق">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="filter-drawer-body">
+        <ng-container *ngTemplateOutlet="filtersTpl"></ng-container>
+      </div>
+    </aside>
+  }
+</section>
+
+<!-- Reusable filters template -->
+<ng-template #filtersTpl>
+  <div class="filter-card">
+    <h6 class="filter-section-title">{{ 'wholesale.search' | translate }}</h6>
+    <input type="text" class="form-control form-control-sm mb-3" [(ngModel)]="searchTerm"
+           (input)="applyFilters()"
+           [placeholder]="'wholesale.search_placeholder' | translate">
+
+    <h6 class="filter-section-title">{{ 'wholesale.price_range' | translate }}</h6>
+    <ul class="filter-list mb-3">
+      @for (range of priceRanges; track range.label) {
+        <li>
+          <label class="filter-check">
+            <input type="checkbox" [checked]="isPriceRangeSelected(range)"
+                   (change)="togglePriceRange(range)">
+            <span>{{ range.label }}</span>
+          </label>
+        </li>
+      }
+    </ul>
+
+    <h6 class="filter-section-title">{{ 'wholesale.availability' | translate }}</h6>
+    <ul class="filter-list mb-3">
+      @for (av of availabilityFilters; track av.value) {
+        <li>
+          <label class="filter-check">
+            <input type="checkbox" [checked]="selectedAvailability.includes(av.value)"
+                   (change)="toggleAvailability(av.value)">
+            <span>{{ av.label }}</span>
+          </label>
+        </li>
+      }
+    </ul>
+
+    <h6 class="filter-section-title">{{ 'wholesale.brand' | translate }}</h6>
+    @if (brandList.length > 5) {
+      <input type="text" class="form-control form-control-sm mb-2" [(ngModel)]="brandSearchTerm"
+             [placeholder]="'wholesale.brand_search' | translate">
+    }
+    <ul class="filter-list filter-list-scroll">
+      @for (b of filteredBrandList; track b.name) {
+        <li>
+          <label class="filter-check">
+            <input type="checkbox" [checked]="selectedBrands.includes(b.name)"
+                   (change)="toggleBrand(b.name)">
+            <span>{{ b.name }} <small class="text-secondary">({{ b.count }})</small></span>
+          </label>
+        </li>
+      } @empty {
+        <li class="text-secondary small">{{ 'wholesale.no_brands' | translate }}</li>
+      }
+    </ul>
+
+    @if (activeFilterCount > 0) {
+      <button class="btn btn-outline-secondary btn-sm w-100 mt-3" (click)="resetFilters()">
+        <i class="bi bi-x-lg me-1"></i>{{ 'wholesale.clear_filters' | translate }}
+      </button>
+    }
+  </div>
+</ng-template>

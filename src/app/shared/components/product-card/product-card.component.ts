@@ -26,6 +26,7 @@ export class ProductCardComponent {
   private wishlistService = inject(WishlistService);
   private quickViewService = inject(QuickViewService);
   @Input({ required: true }) product!: IProduct;
+  @Input() priceMode: 'retail' | 'wholesale' = 'retail';
   @Output() addToCart = new EventEmitter<IProduct>();
   @Output() addToWishlist = new EventEmitter<IProduct>();
 

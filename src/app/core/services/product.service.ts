@@ -19,7 +19,9 @@ export class ProductService {
     this.loaded = true;
     this.http.get<any[]>(`${SERVER_URL}/api/products`).subscribe({
       next: (serverProducts) => {
-        const mapped = serverProducts.map(p => this.mapServerProduct(p));
+        const mapped = serverProducts
+          .map(p => this.mapServerProduct(p))
+          .filter(p => !p.isWholesaleOffer);
         this.productsSubject.next(mapped);
       },
       error: (err) => {
@@ -27,6 +29,23 @@ export class ProductService {
         this.loaded = false;
       }
     });
+  }
+
+  /** Wholesale offers — fetched separately from main products cache */
+  getWholesaleOffers(filters?: { search?: string; brand?: string }): Observable<IProduct[]> {
+    let params = new HttpParams().set('isWholesaleOffer', 'true');
+    if (filters?.search) params = params.set('search', filters.search);
+    if (filters?.brand) params = params.set('brand', filters.brand);
+
+    return this.http.get<any>(`${SERVER_URL}/api/products`, { params }).pipe(
+      map(res => {
+        const list = Array.isArray(res) ? res : (res.products || res.data || []);
+        return list
+          .map((p: any) => this.mapServerProduct(p))
+          .filter((p: IProduct) => p.isWholesaleOffer);
+      }),
+      catchError(() => of([] as IProduct[]))
+    );
   }
 
   mapServerProduct(sp: any): IProduct {
@@ -72,6 +91,7 @@ export class ProductService {
       cartQuantity: sp.cartQuantity || 0,
       inFavorite: sp.inFavorite || false,
       offers: sp.offers || [],
+      isWholesaleOffer: sp.isWholesaleOffer || false,
     };
   }
 
@@ -159,11 +179,11 @@ export class ProductService {
     return this.http.get<any>(`${SERVER_URL}/api/products`, { params }).pipe(
       map(res => {
         const products = Array.isArray(res) ? res : (res.products || res.data || []);
-        const total = Array.isArray(res) ? products.length : (res.total ?? res.count ?? products.length);
-        return {
-          products: products.map((p: any) => this.mapServerProduct(p)),
-          total,
-        };
+        const mapped = products
+          .map((p: any) => this.mapServerProduct(p))
+          .filter((p: IProduct) => !p.isWholesaleOffer);
+        const total = Array.isArray(res) ? mapped.length : (res.total ?? res.count ?? mapped.length);
+        return { products: mapped, total };
       }),
       catchError(() => of({ products: [], total: 0 }))
     );

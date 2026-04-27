@@ -27,6 +27,21 @@ export const AR_TRANSLATIONS: Record<string, string> = {
   'nav.subcategories': 'الأقسام الفرعية',
   'nav.famous_brands': 'أشهر الماركات',
   'nav.brands': 'العلامات التجارية',
+  'nav.wholesale_offers': 'عروض الجملة',
+
+  // ── Wholesale offers page ──
+  'wholesale.subtitle': 'تصفح أسعار الجملة الخاصة على منتجات مختارة',
+  'wholesale.filters': 'الفلاتر',
+  'wholesale.products': 'منتج',
+  'wholesale.search': 'البحث',
+  'wholesale.search_placeholder': 'ابحث في عروض الجملة...',
+  'wholesale.price_range': 'سعر الجملة',
+  'wholesale.availability': 'التوفر',
+  'wholesale.brand': 'العلامة التجارية',
+  'wholesale.brand_search': 'ابحث عن علامة...',
+  'wholesale.no_brands': 'لا توجد علامات متاحة',
+  'wholesale.empty': 'لا توجد عروض جملة تطابق الفلاتر',
+  'wholesale.clear_filters': 'مسح الفلاتر',
 
   // ── Brands page ──
   'brands.title': 'العلامات التجارية',

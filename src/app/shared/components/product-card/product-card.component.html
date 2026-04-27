@@ -34,7 +34,12 @@
 
     <!-- Price -->
     <div class="mt-auto">
-      @if (hasDiscount) {
+      @if (priceMode === 'wholesale') {
+        <div class="d-flex align-items-start justify-content-between">
+          <span class="price-current">{{ (product.wholesalePrice || product.price) | egpCurrency }}</span>
+          <span class="badge wholesale-badge-sm">{{ 'nav.wholesale_offers' | translate }}</span>
+        </div>
+      } @else if (hasDiscount) {
         <div class="d-flex align-items-start justify-content-between">
           <span class="price-current">{{ product | discountPrice | egpCurrency }}</span>
           <div class="text-end">

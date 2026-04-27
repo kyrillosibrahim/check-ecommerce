@@ -37,6 +37,16 @@
   direction: ltr;
 }
 
+.wholesale-badge-sm {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: var(--sz-accent, #0d6efd);
+  color: #fff;
+  white-space: nowrap;
+}
+
 .wishlist-btn {
   width: 36px;
   min-width: 36px;

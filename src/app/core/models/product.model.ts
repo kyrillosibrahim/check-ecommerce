@@ -45,6 +45,9 @@ export interface IProduct {
   // Special offers
   offers?: { text: string; textAr?: string; image?: string }[];
 
+  // Wholesale offers section flag
+  isWholesaleOffer?: boolean;
+
   // SEO fields
   metaTitle?: string;
   metaDescription?: string;

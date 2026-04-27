@@ -344,6 +344,11 @@
           </a>
         </li>
         <li>
+          <a routerLink="/wholesale-offers" routerLinkActive="active" (click)="closeMobileMenu()">
+            <i class="bi bi-cart-plus"></i>{{ 'nav.wholesale_offers' | translate }}
+          </a>
+        </li>
+        <li>
           <a routerLink="/brands" routerLinkActive="active" (click)="closeMobileMenu()">
             <i class="bi bi-award"></i>{{ 'nav.brands' | translate }}
           </a>
@@ -402,6 +407,14 @@
              routerLink="/brands"
              routerLinkActive="active">
             <i class="bi bi-award-fill me-1"></i>{{ 'nav.brands' | translate }}
+          </a>
+        </div>
+        <div class="categories-bar-item-wrapper"
+             (mouseenter)="onCategoryLeave()">
+          <a class="categories-bar-item categories-bar-brands"
+             routerLink="/wholesale-offers"
+             routerLinkActive="active">
+            <i class="bi bi-cart-plus me-1"></i>{{ 'nav.wholesale_offers' | translate }}
           </a>
         </div>
         @for (cat of categories; track cat.id) {
