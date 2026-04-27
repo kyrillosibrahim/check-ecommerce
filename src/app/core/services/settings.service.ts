@@ -21,6 +21,7 @@ export interface ISiteSettings {
   };
   bestSellingProducts: any[];
   bestSellingBrands: number[];
+  naturalProducts?: { video: string; link: string }[];
 }
 
 @Injectable({ providedIn: 'root' })

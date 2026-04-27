@@ -15,12 +15,13 @@ import { HeroSliderComponent } from './components/hero-slider/hero-slider.compon
 import { FeaturedProductsComponent } from './components/featured-products/featured-products.component';
 import { CategoriesGridComponent } from './components/categories-grid/categories-grid.component';
 import { BrandsGridComponent } from './components/brands-grid/brands-grid.component';
+import { NaturalProductsComponent, INaturalProductItem } from './components/natural-products/natural-products.component';
 import { SkeletonLoaderComponent } from '../../shared/components/skeleton-loader/skeleton-loader.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-home',
-  imports: [HeroSliderComponent, FeaturedProductsComponent, CategoriesGridComponent, BrandsGridComponent, SkeletonLoaderComponent, TranslatePipe],
+  imports: [HeroSliderComponent, FeaturedProductsComponent, CategoriesGridComponent, BrandsGridComponent, NaturalProductsComponent, SkeletonLoaderComponent, TranslatePipe],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -39,6 +40,7 @@ export class HomeComponent implements OnInit {
   bestSellingProducts: IProduct[] = [];
   categories: ICategory[] = [];
   brands: IBrand[] = [];
+  naturalProducts: INaturalProductItem[] = [];
   homeBanners: IBanner[] = [];
   belowSliderBanners: IBanner[] = [];
   isLoadingBanners = signal(true);
@@ -77,6 +79,7 @@ export class HomeComponent implements OnInit {
           (p: any) => this.productService.mapServerProduct(p)
         );
       }
+      this.naturalProducts = (settings.naturalProducts || []).filter(i => i?.video);
       this.isLoadingProducts.set(false);
       this.cdr.markForCheck();
     });

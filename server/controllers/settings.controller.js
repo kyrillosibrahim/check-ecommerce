@@ -6,7 +6,7 @@ const DEFAULT_SETTINGS = {
   _id: 'global', logo: '',
   colors: { primaryLight: '#827e62', primaryDark: '#827e62', secondaryLight: '#1bbc9b', secondaryDark: '#20c9a6' },
   social: { facebook: '', instagram: '', whatsapp: '', phone: '' },
-  bestSellingProducts: [], bestSellingBrands: [],
+  bestSellingProducts: [], bestSellingBrands: [], naturalProducts: [],
 };
 
 async function getSettingsDoc() {
@@ -77,7 +77,14 @@ exports.updateSettings = async (req, res) => {
     if (body.bestSellingProducts !== undefined) { const p = typeof body.bestSellingProducts === 'string' ? JSON.parse(body.bestSellingProducts) : body.bestSellingProducts; settings.bestSellingProducts = Array.isArray(p) ? p : []; }
     if (body.bestSellingBrands !== undefined) { const p = typeof body.bestSellingBrands === 'string' ? JSON.parse(body.bestSellingBrands) : body.bestSellingBrands; settings.bestSellingBrands = Array.isArray(p) ? p : []; }
 
-    settings.markModified('colors'); settings.markModified('social');
+    if (body.naturalProducts !== undefined) {
+      const arr = typeof body.naturalProducts === 'string' ? JSON.parse(body.naturalProducts) : body.naturalProducts;
+      settings.naturalProducts = Array.isArray(arr)
+        ? arr.filter(i => i && typeof i === 'object').map(i => ({ video: String(i.video || ''), link: String(i.link || '') }))
+        : [];
+    }
+
+    settings.markModified('colors'); settings.markModified('social'); settings.markModified('naturalProducts');
     await settings.save();
     const obj = settings.toObject(); delete obj._id; delete obj.__v;
     res.json(obj);

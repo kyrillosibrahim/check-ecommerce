@@ -1,0 +1,19 @@
+@if (items.length > 0) {
+  <div class="swiper" #swiperRef>
+    <div class="swiper-wrapper">
+      @for (item of items; track $index) {
+        <div class="swiper-slide">
+          @if (item.link) {
+            <a [href]="item.link" target="_blank" rel="noopener" class="np-card">
+              <video [src]="item.video" autoplay muted loop playsinline preload="metadata"></video>
+            </a>
+          } @else {
+            <div class="np-card">
+              <video [src]="item.video" autoplay muted loop playsinline preload="metadata"></video>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+}

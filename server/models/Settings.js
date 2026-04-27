@@ -18,6 +18,11 @@ const settingsSchema = new mongoose.Schema({
   },
   bestSellingProducts: [String],
   bestSellingBrands: [Number],
+  naturalProducts: [{
+    _id: false,
+    video: { type: String, default: '' },
+    link: { type: String, default: '' },
+  }],
 });
 
 module.exports = mongoose.model('Settings', settingsSchema);
