@@ -26,6 +26,7 @@ const productSchema = new mongoose.Schema({
   ratingsCount: Number,
   isFeatured: Boolean,
   comingSoon: Boolean,
+  isWholesaleOffer: { type: Boolean, default: false },
   tags: [String],
   filterTags: [String],
   productForm: mongoose.Schema.Types.Mixed,
