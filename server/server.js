@@ -16,6 +16,7 @@ const merchantRoutes = require('./routes/merchant.routes');
 const settingsRoutes = require('./routes/settings.routes');
 const priceComparisonRoutes = require('./routes/price-comparison.routes');
 const expenseRoutes = require('./routes/expense.routes');
+const wholesaleOfferRoutes = require('./routes/wholesale-offer.routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -110,6 +111,7 @@ app.use('/api/merchants', merchantRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/price-comparisons', priceComparisonRoutes);
 app.use('/api/expenses', expenseRoutes);
+app.use('/api/wholesale-offers', wholesaleOfferRoutes);
 
 // --- Health check ---
 app.get('/api/health', (_req, res) => {

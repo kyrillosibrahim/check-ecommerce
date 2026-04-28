@@ -13,4 +13,5 @@ export const API_CONFIG = {
   get governoratesUrl() { return `${this.baseUrl}/api/governorates`; },
   get ordersUrl() { return `${this.baseUrl}/api/orders`; },
   get settingsUrl() { return `${this.baseUrl}/api/settings`; },
+  get wholesaleOffersUrl() { return `${this.baseUrl}/api/wholesale-offers`; },
 };

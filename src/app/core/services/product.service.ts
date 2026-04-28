@@ -19,9 +19,7 @@ export class ProductService {
     this.loaded = true;
     this.http.get<any[]>(`${SERVER_URL}/api/products`).subscribe({
       next: (serverProducts) => {
-        const mapped = serverProducts
-          .map(p => this.mapServerProduct(p))
-          .filter(p => !p.isWholesaleOffer);
+        const mapped = serverProducts.map(p => this.mapServerProduct(p));
         this.productsSubject.next(mapped);
       },
       error: (err) => {
@@ -29,23 +27,6 @@ export class ProductService {
         this.loaded = false;
       }
     });
-  }
-
-  /** Wholesale offers — fetched separately from main products cache */
-  getWholesaleOffers(filters?: { search?: string; brand?: string }): Observable<IProduct[]> {
-    let params = new HttpParams().set('isWholesaleOffer', 'true');
-    if (filters?.search) params = params.set('search', filters.search);
-    if (filters?.brand) params = params.set('brand', filters.brand);
-
-    return this.http.get<any>(`${SERVER_URL}/api/products`, { params }).pipe(
-      map(res => {
-        const list = Array.isArray(res) ? res : (res.products || res.data || []);
-        return list
-          .map((p: any) => this.mapServerProduct(p))
-          .filter((p: IProduct) => p.isWholesaleOffer);
-      }),
-      catchError(() => of([] as IProduct[]))
-    );
   }
 
   mapServerProduct(sp: any): IProduct {
@@ -179,9 +160,7 @@ export class ProductService {
     return this.http.get<any>(`${SERVER_URL}/api/products`, { params }).pipe(
       map(res => {
         const products = Array.isArray(res) ? res : (res.products || res.data || []);
-        const mapped = products
-          .map((p: any) => this.mapServerProduct(p))
-          .filter((p: IProduct) => !p.isWholesaleOffer);
+        const mapped = products.map((p: any) => this.mapServerProduct(p));
         const total = Array.isArray(res) ? mapped.length : (res.total ?? res.count ?? mapped.length);
         return { products: mapped, total };
       }),

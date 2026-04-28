@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgTemplateOutlet } from '@angular/common';
-import { ProductService } from '../../core/services/product.service';
+import { WholesaleOfferService } from '../../core/services/wholesale-offer.service';
 import { CartService } from '../../core/services/cart.service';
 import { IProduct } from '../../core/models/product.model';
 import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
@@ -22,7 +22,7 @@ interface PriceRange {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WholesaleOffersComponent implements OnInit {
-  private productService = inject(ProductService);
+  private wholesaleService = inject(WholesaleOfferService);
   private cartService = inject(CartService);
   private cdr = inject(ChangeDetectorRef);
 
@@ -58,7 +58,7 @@ export class WholesaleOffersComponent implements OnInit {
 
   private fetch(): void {
     this.isLoading.set(true);
-    this.productService.getWholesaleOffers().subscribe({
+    this.wholesaleService.getAll().subscribe({
       next: (products) => {
         this.allProducts = products;
         this.applyFilters();

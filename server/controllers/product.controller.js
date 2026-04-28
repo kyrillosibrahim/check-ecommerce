@@ -116,7 +116,7 @@ async function createProduct(req, res, next) {
 
 async function getAllProducts(req, res, next) {
   try {
-    const { category, subcategory, search, brand, featured, limit, filterTags: filterTagsParam, hasDiscount, page, isWholesaleOffer } = req.query;
+    const { category, subcategory, search, brand, featured, limit, filterTags: filterTagsParam, hasDiscount, page } = req.query;
     const query = {};
     if (category) query.$or = [{ category }, { categoryFolder: category }];
     if (subcategory) query.subcategory = subcategory;
@@ -124,13 +124,9 @@ async function getAllProducts(req, res, next) {
     if (featured === 'true') query.isFeatured = true;
     if (hasDiscount === 'true') query.discountPercentage = { $gt: 0 };
     if (filterTagsParam) { const tags = filterTagsParam.split(','); query.filterTags = { $in: tags }; }
-    // Wholesale offers segregation: by default exclude wholesale offers from regular product lists.
-    // Pass ?isWholesaleOffer=true to fetch only wholesale offers.
-    if (isWholesaleOffer === 'true') {
-      query.isWholesaleOffer = true;
-    } else {
-      query.$and = (query.$and || []).concat([{ $or: [{ isWholesaleOffer: { $ne: true } }, { isWholesaleOffer: { $exists: false } }] }]);
-    }
+    // Exclude any legacy products that were saved with isWholesaleOffer:true before
+    // wholesale offers got moved to their own collection.
+    query.$and = (query.$and || []).concat([{ $or: [{ isWholesaleOffer: { $ne: true } }, { isWholesaleOffer: { $exists: false } }] }]);
     if (search) {
       const term = search.toLowerCase();
       query.$and = [{ $or: [{ title: { $regex: search, $options: 'i' } }, { titleAr: { $regex: search, $options: 'i' } }, { brand: { $regex: search, $options: 'i' } }, { tags: { $elemMatch: { $regex: term, $options: 'i' } } }, { category: { $regex: search, $options: 'i' } }] }];
