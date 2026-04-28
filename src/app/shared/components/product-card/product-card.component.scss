@@ -204,3 +204,21 @@
     display: none !important;
   }
 }
+
+/* Smooth swap when the wholesale slideshow rotates */
+.product-img-fade {
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Wholesale "discount on bulk purchase" message */
+.wholesale-discount-msg {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #1bbc9b, #17a689);
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  line-height: 1.3;
+}

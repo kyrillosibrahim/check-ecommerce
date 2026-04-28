@@ -17,6 +17,8 @@ export class WholesaleOfferService {
   }
 
   private mapToProduct(o: any): IProduct {
+    const naturalImages: string[] = o.normalImages || [];
+    const fallbackImages: string[] = naturalImages.length ? naturalImages : (o.mainImages || []);
     return {
       id: o.id || `wholesale-${o.slug || ''}`,
       title: o.title || '',
@@ -32,9 +34,9 @@ export class WholesaleOfferService {
       stock: 999,
       categoryId: 0,
       category: 'wholesale',
-      images: o.mainImages || [],
+      images: fallbackImages,
       swiperImages: o.swiperImages || [],
-      naturalImages: o.normalImages || [],
+      naturalImages,
       brand: '',
       isFeatured: false,
       tags: [],
@@ -45,6 +47,7 @@ export class WholesaleOfferService {
       originalPrice: o.originalPrice,
       discountedPrice: o.discountedPrice,
       merchantProfitPercent: o.merchantProfitPercentage,
+      minWholesaleQuantity: o.minWholesaleQuantity || 0,
       slug: o.slug,
       inCart: false,
       cartQuantity: 0,

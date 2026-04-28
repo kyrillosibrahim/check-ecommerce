@@ -14,6 +14,7 @@ const wholesaleOfferSchema = new mongoose.Schema({
   discountedPrice: Number,
   discountPercentage: Number,
   merchantProfitPercentage: Number,
+  minWholesaleQuantity: { type: Number, default: 0 },
   faq: [mongoose.Schema.Types.Mixed],
   offers: [mongoose.Schema.Types.Mixed],
   mainImages: [String],

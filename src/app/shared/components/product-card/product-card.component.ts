@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, Output, EventEmitter, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { IProduct } from '../../../core/models/product.model';
 import { TranslationService } from '../../../core/services/translation.service';
@@ -19,8 +19,9 @@ import Swal from 'sweetalert2';
   styleUrl: './product-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductCardComponent {
+export class ProductCardComponent implements OnDestroy {
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
   translationService = inject(TranslationService);
   cartService = inject(CartService);
   private wishlistService = inject(WishlistService);
@@ -31,6 +32,52 @@ export class ProductCardComponent {
   @Output() addToWishlist = new EventEmitter<IProduct>();
 
   private addedToCartLocal = false;
+  currentImageIdx = 0;
+  private rotateInterval?: ReturnType<typeof setInterval>;
+
+  get isWholesale(): boolean {
+    return this.priceMode === 'wholesale';
+  }
+
+  /** Picks which image array drives the slideshow on hover. */
+  private get slideshowImages(): string[] {
+    return this.product.naturalImages?.length
+      ? this.product.naturalImages
+      : this.product.images || [];
+  }
+
+  /** What to display in the card image slot. */
+  get displayImage(): string {
+    const imgs = this.slideshowImages;
+    if (this.isWholesale && imgs.length) {
+      return imgs[this.currentImageIdx % imgs.length];
+    }
+    return this.product.images?.[0] || '';
+  }
+
+  onMouseEnter(): void {
+    if (!this.isWholesale) return;
+    const imgs = this.slideshowImages;
+    if (imgs.length < 2) return;
+    if (this.rotateInterval) return;
+    this.rotateInterval = setInterval(() => {
+      this.currentImageIdx = (this.currentImageIdx + 1) % imgs.length;
+      this.cdr.markForCheck();
+    }, 2000);
+  }
+
+  onMouseLeave(): void {
+    if (this.rotateInterval) {
+      clearInterval(this.rotateInterval);
+      this.rotateInterval = undefined;
+    }
+    this.currentImageIdx = 0;
+    this.cdr.markForCheck();
+  }
+
+  ngOnDestroy(): void {
+    if (this.rotateInterval) clearInterval(this.rotateInterval);
+  }
 
   get isInCart(): boolean {
     return this.addedToCartLocal || this.product.inCart || this.cartService.isInCart(this.product.id);
@@ -65,6 +112,11 @@ export class ProductCardComponent {
   readonly starsArray = [1, 2, 3, 4, 5];
 
   navigateToProduct(): void {
+    if (this.isWholesale) {
+      // Wholesale offers don't have a public detail page — open the quick-view instead.
+      this.quickViewService.open(this.product);
+      return;
+    }
     this.router.navigate(['/product', this.product.id]);
   }
 

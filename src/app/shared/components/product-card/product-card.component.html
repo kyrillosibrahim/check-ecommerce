@@ -1,7 +1,11 @@
-<div class="card card-hover h-100 shadow-sm position-relative card-clickable" style="border-color: var(--sz-border-color);" (click)="navigateToProduct()">
+<div class="card card-hover h-100 shadow-sm position-relative card-clickable"
+     style="border-color: var(--sz-border-color);"
+     (click)="navigateToProduct()"
+     (mouseenter)="onMouseEnter()"
+     (mouseleave)="onMouseLeave()">
   <!-- Image -->
   <div class="product-img-wrapper position-relative" (click)="$event.stopPropagation()">
-    <img [src]="product.images[0]" [alt]="product.title" class="card-img-top product-img" loading="lazy" width="300" height="220">
+    <img [src]="displayImage" [alt]="product.title" class="card-img-top product-img product-img-fade" loading="lazy" width="300" height="220">
     <!-- Quick View Eye Icon Overlay -->
     <div class="quick-view-overlay">
       <button class="quick-view-btn" (click)="openQuickView($event)" [title]="'product.quick_view' | translate">
@@ -39,6 +43,12 @@
           <span class="price-current">{{ (product.wholesalePrice || product.price) | egpCurrency }}</span>
           <span class="badge wholesale-badge-sm">{{ 'nav.wholesale_offers' | translate }}</span>
         </div>
+        @if (product.minWholesaleQuantity && product.minWholesaleQuantity > 0) {
+          <div class="wholesale-discount-msg mt-2">
+            <i class="bi bi-tag-fill me-1"></i>
+            خصم على المنتج عند شراء {{ product.minWholesaleQuantity }} قطعة
+          </div>
+        }
       } @else if (hasDiscount) {
         <div class="d-flex align-items-start justify-content-between">
           <span class="price-current">{{ product | discountPrice | egpCurrency }}</span>

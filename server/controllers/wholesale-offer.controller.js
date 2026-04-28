@@ -85,6 +85,7 @@ async function createOffer(req, res, next) {
       discountedPrice: discounted,
       discountPercentage,
       merchantProfitPercentage,
+      minWholesaleQuantity: parseInt(body.minWholesaleQuantity) || 0,
       faq: (parseSafe(body.faq) || []).map(f => ({ q: f.q || f.qAr || '', a: f.a || f.aAr || '', qAr: f.qAr || f.q || '', aAr: f.aAr || f.a || '' })),
       offers: parseSafe(body.offers) || [],
       mainImages,

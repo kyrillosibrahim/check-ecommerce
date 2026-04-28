@@ -21,7 +21,20 @@
 
           <!-- Price -->
           <div class="mb-3">
-            @if (hasDiscount(product)) {
+            @if (product.isWholesaleOffer) {
+              <div class="d-flex align-items-center gap-2">
+                <span class="fw-bold fs-5" style="color: var(--sz-accent);">{{ (product.wholesalePrice || product.price) | egpCurrency }}</span>
+                @if (product.originalPrice && product.originalPrice > (product.wholesalePrice || 0)) {
+                  <span class="text-decoration-line-through text-muted">{{ product.originalPrice | egpCurrency }}</span>
+                }
+              </div>
+              @if (product.minWholesaleQuantity && product.minWholesaleQuantity > 0) {
+                <div class="wholesale-discount-msg mt-2">
+                  <i class="bi bi-tag-fill me-1"></i>
+                  خصم على المنتج عند شراء {{ product.minWholesaleQuantity }} قطعة
+                </div>
+              }
+            } @else if (hasDiscount(product)) {
               <div class="d-flex align-items-center gap-2">
                 <span class="fw-bold fs-5" style="color: var(--sz-accent);">{{ product | discountPrice | egpCurrency }}</span>
                 <span class="text-decoration-line-through text-muted">{{ product.price | egpCurrency }}</span>
@@ -72,10 +85,12 @@
             }
           </div>
 
-          <!-- View Details Link -->
-          <button class="btn btn-outline-secondary btn-sm w-100" (click)="navigateToProduct(product)">
-            <i class="bi bi-box-arrow-up-right me-1"></i>{{ 'product.view_product' | translate }}
-          </button>
+          <!-- View Details Link (hidden for wholesale offers — they have no public detail page) -->
+          @if (!product.isWholesaleOffer) {
+            <button class="btn btn-outline-secondary btn-sm w-100" (click)="navigateToProduct(product)">
+              <i class="bi bi-box-arrow-up-right me-1"></i>{{ 'product.view_product' | translate }}
+            </button>
+          }
         </div>
       </div>
     </div>

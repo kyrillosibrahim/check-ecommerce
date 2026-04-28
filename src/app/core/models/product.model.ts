@@ -32,6 +32,7 @@ export interface IProduct {
   originalPrice?: number;
   discountedPrice?: number;
   merchantProfitPercent?: number;
+  minWholesaleQuantity?: number;
   swiperImages?: string[];
   slug?: string;
 
