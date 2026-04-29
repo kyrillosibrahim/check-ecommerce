@@ -73,6 +73,8 @@ export class ProductService {
       inFavorite: sp.inFavorite || false,
       offers: sp.offers || [],
       isWholesaleOffer: sp.isWholesaleOffer || false,
+      offerPiecesCount: sp.offerPiecesCount,
+      offerPrice: sp.offerPrice,
     };
   }
 

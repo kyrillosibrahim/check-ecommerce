@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, Output, EventEmitter, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { IProduct } from '../../../core/models/product.model';
 import { TranslationService } from '../../../core/services/translation.service';
@@ -19,7 +19,7 @@ import Swal from 'sweetalert2';
   styleUrl: './product-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductCardComponent implements OnDestroy {
+export class ProductCardComponent {
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
   translationService = inject(TranslationService);
@@ -33,50 +33,42 @@ export class ProductCardComponent implements OnDestroy {
 
   private addedToCartLocal = false;
   currentImageIdx = 0;
-  private rotateInterval?: ReturnType<typeof setInterval>;
 
   get isWholesale(): boolean {
     return this.priceMode === 'wholesale';
   }
 
-  /** Picks which image array drives the slideshow on hover. */
-  private get slideshowImages(): string[] {
-    return this.product.naturalImages?.length
-      ? this.product.naturalImages
-      : this.product.images || [];
+  /** Main images array used by the swiper. */
+  private get swiperImages(): string[] {
+    return this.product.images || [];
+  }
+
+  /** True when the card has more than one main image (controls arrow visibility). */
+  get hasMultipleImages(): boolean {
+    return this.swiperImages.length > 1;
   }
 
   /** What to display in the card image slot. */
   get displayImage(): string {
-    const imgs = this.slideshowImages;
-    if (this.isWholesale && imgs.length) {
-      return imgs[this.currentImageIdx % imgs.length];
-    }
-    return this.product.images?.[0] || '';
+    const imgs = this.swiperImages;
+    if (!imgs.length) return '';
+    return imgs[this.currentImageIdx % imgs.length];
   }
 
-  onMouseEnter(): void {
-    if (!this.isWholesale) return;
-    const imgs = this.slideshowImages;
-    if (imgs.length < 2) return;
-    if (this.rotateInterval) return;
-    this.rotateInterval = setInterval(() => {
-      this.currentImageIdx = (this.currentImageIdx + 1) % imgs.length;
-      this.cdr.markForCheck();
-    }, 2000);
-  }
-
-  onMouseLeave(): void {
-    if (this.rotateInterval) {
-      clearInterval(this.rotateInterval);
-      this.rotateInterval = undefined;
-    }
-    this.currentImageIdx = 0;
+  prevImage(event: Event): void {
+    event.stopPropagation();
+    const len = this.swiperImages.length;
+    if (len < 2) return;
+    this.currentImageIdx = (this.currentImageIdx - 1 + len) % len;
     this.cdr.markForCheck();
   }
 
-  ngOnDestroy(): void {
-    if (this.rotateInterval) clearInterval(this.rotateInterval);
+  nextImage(event: Event): void {
+    event.stopPropagation();
+    const len = this.swiperImages.length;
+    if (len < 2) return;
+    this.currentImageIdx = (this.currentImageIdx + 1) % len;
+    this.cdr.markForCheck();
   }
 
   get isInCart(): boolean {

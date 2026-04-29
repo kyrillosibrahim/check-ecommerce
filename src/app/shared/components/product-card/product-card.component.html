@@ -1,17 +1,35 @@
 <div class="card card-hover h-100 shadow-sm position-relative card-clickable"
      style="border-color: var(--sz-border-color);"
-     (click)="navigateToProduct()"
-     (mouseenter)="onMouseEnter()"
-     (mouseleave)="onMouseLeave()">
+     (click)="navigateToProduct()">
   <!-- Image -->
   <div class="product-img-wrapper position-relative" (click)="$event.stopPropagation()">
     <img [src]="displayImage" [alt]="product.title" class="card-img-top product-img product-img-fade" loading="lazy" width="300" height="220">
+    <!-- Image swiper arrows (when more than one main image) -->
+    @if (hasMultipleImages) {
+      <button type="button" class="img-nav-btn img-nav-prev" (click)="prevImage($event)" aria-label="Previous image">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+      <button type="button" class="img-nav-btn img-nav-next" (click)="nextImage($event)" aria-label="Next image">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+      <div class="img-nav-dots">
+        @for (img of product.images; track $index) {
+          <span class="img-nav-dot" [class.active]="$index === (currentImageIdx % product.images.length)"></span>
+        }
+      </div>
+    }
     <!-- Quick View Eye Icon Overlay -->
     <div class="quick-view-overlay">
       <button class="quick-view-btn" (click)="openQuickView($event)" [title]="'product.quick_view' | translate">
         <i class="bi bi-eye"></i>
       </button>
     </div>
+    <!-- Wholesale bundle offer strip -->
+    @if (product.offerPiecesCount && product.offerPiecesCount > 0 && product.offerPrice && product.offerPrice > 0) {
+      <div class="wholesale-offer-strip">
+        اشترى {{ product.offerPiecesCount }} واحصل عليهم بسعر {{ product.offerPrice }} ج.م
+      </div>
+    }
   </div>
 
   <div class="card-body d-flex flex-column">

@@ -8,35 +8,27 @@ type Theme = 'light' | 'dark';
 export class ThemeService {
   private readonly STORAGE_KEY = 'sz-theme';
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
-  private themeSubject = new BehaviorSubject<Theme>(this.loadTheme());
+  private themeSubject = new BehaviorSubject<Theme>('light');
 
   theme$ = this.themeSubject.asObservable();
 
   constructor() {
     if (this.isBrowser) {
-      this.applyTheme(this.themeSubject.getValue());
+      // Clear any previously persisted dark preference and force light mode.
+      localStorage.removeItem(this.STORAGE_KEY);
+      this.applyTheme('light');
     }
   }
 
   toggleTheme(): void {
-    const next: Theme = this.themeSubject.getValue() === 'light' ? 'dark' : 'light';
-    this.themeSubject.next(next);
-    if (this.isBrowser) {
-      this.applyTheme(next);
-      localStorage.setItem(this.STORAGE_KEY, next);
-    }
+    // Dark mode is disabled — keep the site in light mode.
   }
 
   isDark(): boolean {
-    return this.themeSubject.getValue() === 'dark';
+    return false;
   }
 
-  private applyTheme(theme: Theme): void {
-    document.documentElement.setAttribute('data-bs-theme', theme);
-  }
-
-  private loadTheme(): Theme {
-    if (!this.isBrowser) return 'light';
-    return (localStorage.getItem(this.STORAGE_KEY) as Theme) || 'light';
+  private applyTheme(_theme: Theme): void {
+    document.documentElement.setAttribute('data-bs-theme', 'light');
   }
 }

@@ -210,6 +210,102 @@
   transition: opacity 0.3s ease-in-out;
 }
 
+/* ── Image swiper navigation arrows ── */
+.img-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.85);
+  color: #333;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 3;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+  transition: background 0.2s ease, transform 0.2s ease, color 0.2s ease;
+
+  &:hover {
+    background: var(--sz-accent, #6a8f6b);
+    color: #fff;
+    transform: translateY(-50%) scale(1.08);
+  }
+}
+
+.img-nav-prev { left: 6px; }
+.img-nav-next { right: 6px; }
+
+.img-nav-dots {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 6px;
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.img-nav-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  transition: background 0.2s ease, transform 0.2s ease;
+
+  &.active {
+    background: var(--sz-accent, #6a8f6b);
+    transform: scale(1.25);
+  }
+}
+
+/* When the wholesale bundle strip is rendered, lift the dots above it. */
+.product-img-wrapper:has(.wholesale-offer-strip) .img-nav-dots {
+  bottom: 36px;
+}
+
+@media (max-width: 576px) {
+  .img-nav-btn {
+    width: 26px;
+    height: 26px;
+    font-size: 0.85rem;
+  }
+  .img-nav-prev { left: 4px; }
+  .img-nav-next { right: 4px; }
+  .img-nav-dot { width: 5px; height: 5px; }
+}
+
+/* Wholesale bundle offer strip — red banner overlaying the bottom of the product image */
+.wholesale-offer-strip {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #e74c3c;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 6px 8px;
+  line-height: 1.3;
+  z-index: 2;
+  pointer-events: none;
+}
+
+@media (max-width: 576px) {
+  .wholesale-offer-strip {
+    font-size: 0.65rem;
+    padding: 4px 6px;
+  }
+}
+
 /* Wholesale "discount on bulk purchase" message */
 .wholesale-discount-msg {
   display: inline-flex;

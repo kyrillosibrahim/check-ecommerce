@@ -48,6 +48,8 @@ export class WholesaleOfferService {
       discountedPrice: o.discountedPrice,
       merchantProfitPercent: o.merchantProfitPercentage,
       minWholesaleQuantity: o.minWholesaleQuantity || 0,
+      offerPiecesCount: o.offerPiecesCount || 0,
+      offerPrice: o.offerPrice || 0,
       slug: o.slug,
       inCart: false,
       cartQuantity: 0,

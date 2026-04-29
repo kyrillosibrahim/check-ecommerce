@@ -49,6 +49,10 @@ export interface IProduct {
   // Wholesale offers section flag
   isWholesaleOffer?: boolean;
 
+  // Wholesale "bundle" offer: buy N pieces at this special bundle price
+  offerPiecesCount?: number;
+  offerPrice?: number;
+
   // SEO fields
   metaTitle?: string;
   metaDescription?: string;
