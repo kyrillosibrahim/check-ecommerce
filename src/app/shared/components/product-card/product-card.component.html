@@ -3,7 +3,9 @@
      (click)="navigateToProduct()">
   <!-- Image -->
   <div class="product-img-wrapper position-relative" (click)="$event.stopPropagation()">
-    <img [src]="displayImage" [alt]="product.title" class="card-img-top product-img product-img-fade" loading="lazy" width="300" height="220">
+    @if (displayImage) {
+      <img [ngSrc]="displayImage" [alt]="product.title" class="card-img-top product-img product-img-fade" width="300" height="220" loading="lazy">
+    }
     <!-- Image swiper arrows (when more than one main image) -->
     @if (hasMultipleImages) {
       <button type="button" class="img-nav-btn img-nav-prev" (click)="prevImage($event)" aria-label="Previous image">

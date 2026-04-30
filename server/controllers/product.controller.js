@@ -116,11 +116,12 @@ async function createProduct(req, res, next) {
 
 async function getAllProducts(req, res, next) {
   try {
-    const { category, subcategory, search, brand, featured, limit, filterTags: filterTagsParam, hasDiscount, page } = req.query;
+    const { category, subcategory, search, brand, merchant, featured, limit, filterTags: filterTagsParam, hasDiscount, page } = req.query;
     const query = {};
     if (category) query.$or = [{ category }, { categoryFolder: category }];
     if (subcategory) query.subcategory = subcategory;
     if (brand) query.brand = brand;
+    if (merchant) query.merchant = merchant;
     if (featured === 'true') query.isFeatured = true;
     if (hasDiscount === 'true') query.discountPercentage = { $gt: 0 };
     if (filterTagsParam) { const tags = filterTagsParam.split(','); query.filterTags = { $in: tags }; }
@@ -132,7 +133,7 @@ async function getAllProducts(req, res, next) {
       query.$and = [{ $or: [{ title: { $regex: search, $options: 'i' } }, { titleAr: { $regex: search, $options: 'i' } }, { brand: { $regex: search, $options: 'i' } }, { tags: { $elemMatch: { $regex: term, $options: 'i' } } }, { category: { $regex: search, $options: 'i' } }] }];
     }
 
-    let products = await Product.find(query, { __v: 0 });
+    let products = await Product.find(query, { __v: 0 }).sort({ createdAt: -1, _id: -1 });
 
     const { readCart } = require('./cart.controller');
     const cart = await readCart();

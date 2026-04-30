@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ProductService } from '../../core/services/product.service';
 import { CartService } from '../../core/services/cart.service';
 import { WishlistService } from '../../core/services/wishlist.service';
@@ -28,6 +29,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 })
 export class HomeComponent implements OnInit {
   private cdr = inject(ChangeDetectorRef);
+  private destroyRef = inject(DestroyRef);
   private productService = inject(ProductService);
   private cartService = inject(CartService);
   private wishlistService = inject(WishlistService);
@@ -54,26 +56,26 @@ export class HomeComponent implements OnInit {
       description: 'Check - متجرك الإلكتروني للتسوق أونلاين. اكتشف أفضل المنتجات بأفضل الأسعار مع شحن سريع لجميع محافظات مصر.',
       path: '/',
     });
-    this.bannerService.getByPage('home').subscribe(b => {
+    this.bannerService.getByPage('home').pipe(takeUntilDestroyed(this.destroyRef)).subscribe(b => {
       this.homeBanners = b;
       this.isLoadingBanners.set(false);
       this.cdr.markForCheck();
     });
-    this.bannerService.getByPage('home-below').subscribe(b => {
+    this.bannerService.getByPage('home-below').pipe(takeUntilDestroyed(this.destroyRef)).subscribe(b => {
       this.belowSliderBanners = b;
       this.cdr.markForCheck();
     });
-    this.categoryService.getAll().subscribe(c => {
+    this.categoryService.getAll().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(c => {
       this.categories = c;
       this.isLoading.set(false);
       this.cdr.markForCheck();
     });
-    this.brandService.getAll().subscribe(b => {
+    this.brandService.getAll().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(b => {
       this.brands = b;
       this.isLoadingBrands.set(false);
       this.cdr.markForCheck();
     });
-    this.settingsService.getSettings().subscribe(settings => {
+    this.settingsService.getSettings().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(settings => {
       if (settings.bestSellingProducts?.length) {
         this.bestSellingProducts = settings.bestSellingProducts.map(
           (p: any) => this.productService.mapServerProduct(p)

@@ -7,7 +7,8 @@
     "build": "ng build",
     "serve:ssr": "node dist/e-commerce/server/server.mjs",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "optimize:images": "node scripts/optimize-images.mjs"
   },
   "prettier": {
     "printWidth": 100,

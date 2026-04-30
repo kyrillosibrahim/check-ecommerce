@@ -30,7 +30,7 @@ export const appConfig: ApplicationConfig = {
     }),
     {
       provide: IMAGE_CONFIG,
-      useValue: { disableImageSizeWarning: true, disableImageLazyLoadWarning: true }
+      useValue: { disableImageSizeWarning: false, disableImageLazyLoadWarning: false }
     }
   ]
 };

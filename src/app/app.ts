@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { isPlatformBrowser } from '@angular/common';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -20,6 +21,7 @@ export class App implements OnInit {
   private settingsService = inject(SiteSettingsService);
   private platformId = inject(PLATFORM_ID);
   private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
 
   /** Pages where the footer should be hidden on mobile */
   private noFooterRoutes = ['/profile', '/wishlist', '/cart', '/offers', '/checkout'];
@@ -27,14 +29,17 @@ export class App implements OnInit {
 
   ngOnInit(): void {
     this.router.events.pipe(
-      filter((e): e is NavigationEnd => e instanceof NavigationEnd)
+      filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(e => {
       const url = e.urlAfterRedirects.split('?')[0];
       this.hideFooterOnMobile.set(this.noFooterRoutes.includes(url));
     });
     if (!isPlatformBrowser(this.platformId)) return;
 
-    this.settingsService.getSettings().subscribe(settings => {
+    this.settingsService.getSettings().pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(settings => {
       const root = document.documentElement;
       const { colors } = settings;
 
@@ -53,6 +58,7 @@ export class App implements OnInit {
       this.applyThemeColors(document.documentElement);
     });
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
+    this.destroyRef.onDestroy(() => observer.disconnect());
   }
 
   private applyThemeColors(root: HTMLElement): void {
