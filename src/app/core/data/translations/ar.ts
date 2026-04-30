@@ -180,6 +180,15 @@ export const AR_TRANSLATIONS: Record<string, string> = {
   'cart.promo_error': 'كود غير صحيح',
   'cart.promo_success': 'كود صحيح — تم تفعيل الكود على الفاتورة',
   'cart.promo_discount': 'خصم الكود',
+  'cart.shipped_from': 'طلب يشحن من مخزن',
+  'cart.delete_products': 'حذف المنتجات',
+  'cart.show_less': 'عرض أقل',
+  'cart.show_more': 'عرض أكثر',
+  'cart.add_to_wishlist': 'اضافة الى المفضلة',
+  'cart.in_wishlist': 'في المفضلة',
+  'cart.proceed_purchase': 'إتمام الشراء',
+  'cart.original': '100% أصلي',
+  'cart.seller': 'البائع',
 
   // ── Wishlist Page ──
   'wishlist.title': 'قائمة المفضلة',

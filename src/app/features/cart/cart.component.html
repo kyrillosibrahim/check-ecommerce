@@ -1,5 +1,16 @@
-<div class="container section-padding">
-  <h2 class="section-title">{{ 'cart.title' | translate }}</h2>
+<!-- ═══════ Mobile Zahra-style Top Bar ═══════ -->
+<div class="zahra-mobile-topbar d-md-none">
+  <div class="zahra-topbar-side">
+    <button type="button" class="zahra-topbar-icon" aria-label="notifications">
+      <i class="bi bi-bell"></i>
+    </button>
+  </div>
+  <h1 class="zahra-topbar-title">{{ 'nav.cart_header' | translate }}</h1>
+  <div class="zahra-topbar-side"></div>
+</div>
+
+<div class="container section-padding cart-container">
+  <h2 class="section-title d-none d-md-block">{{ 'cart.title' | translate }}</h2>
 
   @if (cartService.loading()) {
     <app-skeleton-loader type="list" [count]="3" />
@@ -13,10 +24,38 @@
       </a>
     </div>
   } @else {
+    <!-- ═══════ Mobile Order Header (Zahra style) ═══════ -->
+    <div class="zahra-order-header d-md-none">
+      <div class="zahra-order-row">
+        <div class="zahra-order-from">
+          <span>{{ 'cart.shipped_from' | translate }} Zahra EG</span>
+          <span class="zahra-order-logo">
+            <i class="bi bi-flower2"></i>
+          </span>
+        </div>
+        <div class="zahra-order-total">
+          @if (promoApplied()) {
+            <span>{{ (cartService.cartTotal$ | async)! - PROMO_DISCOUNT | egpCurrency }}</span>
+          } @else {
+            <span>{{ cartService.cartTotal$ | async | egpCurrency }}</span>
+          }
+        </div>
+      </div>
+      <div class="zahra-order-actions">
+        <button class="zahra-show-toggle" type="button">
+          <i class="bi bi-chevron-up"></i>
+          <span>{{ 'cart.show_less' | translate }}</span>
+        </button>
+        <button class="zahra-delete-products" (click)="clearAll()">
+          {{ 'cart.delete_products' | translate }}
+        </button>
+      </div>
+    </div>
+
     <div class="row g-4">
       <!-- Cart Items -->
       <div class="col-lg-8">
-        <div class="card shadow-sm" style="border-color: var(--sz-border-color); background-color: #fff;">
+        <div class="card shadow-sm desktop-cart-card" style="border-color: var(--sz-border-color); background-color: #fff;">
           <div class="card-body p-0">
             <!-- Table header (desktop) -->
             <div class="d-none d-md-flex px-4 py-3 fw-semibold table-header"
@@ -35,7 +74,7 @@
                 (remove)="cartService.removeFromCart($event)" />
             }
           </div>
-          <div class="px-4 py-3 d-flex justify-content-end" style="border-top: 1px solid var(--sz-border-color);">
+          <div class="px-4 py-3 d-none d-md-flex justify-content-end" style="border-top: 1px solid var(--sz-border-color);">
             <button class="btn btn-outline-danger btn-sm" (click)="clearAll()" style="background-color: red; color: white;">
               <i class="bi bi-trash3 me-1"></i>{{ 'cart.clear_all' | translate }}
             </button>
@@ -43,8 +82,8 @@
         </div>
       </div>
 
-      <!-- Order Summary -->
-      <div class="col-lg-4" style="align-self: start; position: sticky; top: 100px;">
+      <!-- Order Summary (desktop) -->
+      <div class="col-lg-4 d-none d-md-block" style="align-self: start; position: sticky; top: 100px;">
         <!-- Promo Code Card -->
         <div class="card shadow-sm mb-3" style="border-color: var(--sz-border-color); background-color: #fff;">
           <div class="card-body">
@@ -129,6 +168,20 @@
             </a>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- ═══════ Mobile sticky bottom bar ═══════ -->
+    <div class="zahra-checkout-bar d-md-none">
+      <a routerLink="/checkout" class="zahra-checkout-btn">
+        {{ 'cart.proceed_purchase' | translate }}
+      </a>
+      <div class="zahra-checkout-total">
+        @if (promoApplied()) {
+          <span>{{ (cartService.cartTotal$ | async)! - PROMO_DISCOUNT | egpCurrency }}</span>
+        } @else {
+          <span>{{ cartService.cartTotal$ | async | egpCurrency }}</span>
+        }
       </div>
     </div>
   }

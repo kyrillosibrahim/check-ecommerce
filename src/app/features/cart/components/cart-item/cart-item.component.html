@@ -39,36 +39,48 @@
   </div>
 </div>
 
-<!-- Mobile Layout -->
-<div class="d-flex d-md-none align-items-start gap-3 px-3 py-3 mobile-cart-item"
-     style="border-bottom: 1px solid var(--sz-border-color);">
-  <a [routerLink]="['/product', item.product.id]" class="flex-shrink-0">
-    <img [src]="item.product.images[0]" [alt]="item.product.title" class="cart-item-img-mobile rounded">
+<!-- Mobile Layout (Zahra style) -->
+<div class="d-md-none zahra-cart-card">
+  <a [routerLink]="['/product', item.product.id]" class="text-decoration-none zahra-title-link">
+    <h6 class="zahra-title">{{ item.product.title | localize:item.product.titleAr }}</h6>
   </a>
-  <div class="flex-grow-1 min-w-0">
-    <div class="d-flex justify-content-between align-items-start mb-1">
-      <a [routerLink]="['/product', item.product.id]" class="text-decoration-none flex-grow-1 min-w-0" style="color: var(--sz-text-primary);">
-        <h6 class="mb-0 fw-semibold text-truncate-2">{{ item.product.title | localize:item.product.titleAr }}</h6>
-      </a>
-      <button class="btn btn-link text-danger p-0 ms-2 flex-shrink-0" (click)="remove.emit(item.product.id)">
-        <i class="bi bi-trash" style="font-size: 0.85rem;"></i>
+
+  <div class="zahra-row">
+    <div class="zahra-info">
+      <div class="zahra-seller">
+        <span class="seller-label">{{ 'cart.seller' | translate }} :</span>
+        <span class="seller-name">{{ item.product.brand }}</span>
+      </div>
+      <span class="zahra-original-badge">{{ 'cart.original' | translate }}</span>
+    </div>
+    <a [routerLink]="['/product', item.product.id]" class="flex-shrink-0">
+      <img [src]="item.product.images[0]" [alt]="item.product.title" class="zahra-img">
+    </a>
+  </div>
+
+  <div class="zahra-price-row">
+    <span class="zahra-line-total">{{ lineTotal | egpCurrency }}</span>
+    <div class="zahra-qty">
+      <button class="qty-btn" (click)="decrement()" [disabled]="item.quantity <= 1">
+        <i class="bi bi-dash"></i>
+      </button>
+      <span class="qty-value">{{ item.quantity }}</span>
+      <button class="qty-btn" (click)="increment()" [disabled]="item.quantity >= item.product.stock">
+        <i class="bi bi-plus"></i>
       </button>
     </div>
-    <small class="text-secondary d-block mb-2">{{ item.product.brand }}</small>
-    <div class="d-flex align-items-center justify-content-between">
-      <div class="input-group input-group-sm" style="width: 110px;">
-        <button class="btn btn-outline-secondary btn-sm" (click)="decrement()" [disabled]="item.quantity <= 1">
-          <i class="bi bi-dash"></i>
-        </button>
-        <span class="input-group-text text-center flex-grow-1 justify-content-center"
-              style="background-color: var(--sz-bg-secondary); border-color: var(--sz-border-color); font-size: 0.75rem;">
-          {{ item.quantity }}
-        </span>
-        <button class="btn btn-outline-secondary btn-sm" (click)="increment()" [disabled]="item.quantity >= item.product.stock">
-          <i class="bi bi-plus"></i>
-        </button>
-      </div>
-      <span class="fw-bold" style="color: var(--sz-accent); font-size: 0.82rem;">{{ lineTotal | egpCurrency }}</span>
-    </div>
+    <span class="zahra-unit-price">{{ item.product | discountPrice | egpCurrency }}</span>
+  </div>
+
+  <div class="zahra-actions">
+    <button class="zahra-action zahra-wishlist" (click)="toggleWishlist()" [class.active]="isInWishlist">
+      <i class="bi" [class.bi-heart]="!isInWishlist" [class.bi-heart-fill]="isInWishlist"></i>
+      <span>{{ (isInWishlist ? 'cart.in_wishlist' : 'cart.add_to_wishlist') | translate }}</span>
+    </button>
+    <span class="zahra-divider"></span>
+    <button class="zahra-action zahra-remove" (click)="remove.emit(item.product.id)">
+      <span>{{ 'cart.remove' | translate }}</span>
+      <i class="bi bi-trash"></i>
+    </button>
   </div>
 </div>

@@ -24,3 +24,211 @@
   background-color: rgba(25, 135, 84, 0.08);
   border: 1px solid rgba(25, 135, 84, 0.25);
 }
+
+/* ═════════ Mobile Zahra-style ═════════ */
+@media (max-width: 767.98px) {
+  :host {
+    background: #f5f5f5;
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  .cart-container {
+    padding-inline: 0;
+    padding-top: 0;
+  }
+
+  .desktop-cart-card {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .desktop-cart-card .card-body {
+    background: transparent;
+  }
+}
+
+/* ── Sticky top bar ── */
+.zahra-mobile-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1050;
+  background: var(--sz-accent, #d62f2f);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.zahra-topbar-side {
+  width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.zahra-topbar-icon {
+  color: #fff;
+  font-size: 1.2rem;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.zahra-topbar-title {
+  flex: 1;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+  color: #fff;
+}
+
+/* ── Order header card (top of list) ── */
+.zahra-order-header {
+  background: #fff;
+  border: 1px solid #efe2e2;
+  border-radius: 10px;
+  margin: 12px;
+  padding: 12px 14px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.zahra-order-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.zahra-order-from {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--sz-accent, #d62f2f);
+  font-weight: 600;
+  font-size: 0.85rem;
+
+  .zahra-order-logo {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid var(--sz-accent, #d62f2f);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--sz-accent, #d62f2f);
+    font-size: 0.85rem;
+  }
+}
+
+.zahra-order-total {
+  color: var(--sz-accent, #d62f2f);
+  font-weight: 700;
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+.zahra-order-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.zahra-show-toggle {
+  background: #e7eefb;
+  color: #2563eb;
+  border: none;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  i {
+    background: #2563eb;
+    color: #fff;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+  }
+}
+
+.zahra-delete-products {
+  background: var(--sz-accent, #d62f2f);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 18px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  flex: 1;
+  max-width: 60%;
+}
+
+/* ── Sticky bottom checkout bar ── */
+.zahra-checkout-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-top: 1px solid #e6e6e6;
+  padding: 10px 14px;
+  z-index: 1040;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.zahra-checkout-btn {
+  background: #2e2e2e;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 9px 18px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    color: #fff;
+  }
+}
+
+.zahra-checkout-total {
+  color: var(--sz-accent, #d62f2f);
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin-inline-end: 8px;
+}
+
+/* Hide topbar on desktop */
+@media (min-width: 768px) {
+  .zahra-mobile-topbar,
+  .zahra-order-header,
+  .zahra-checkout-bar {
+    display: none !important;
+  }
+}

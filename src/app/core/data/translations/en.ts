@@ -180,6 +180,15 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'cart.promo_error': 'Invalid code',
   'cart.promo_success': 'Code applied successfully',
   'cart.promo_discount': 'Promo discount',
+  'cart.shipped_from': 'Order shipped from',
+  'cart.delete_products': 'Delete products',
+  'cart.show_less': 'Show less',
+  'cart.show_more': 'Show more',
+  'cart.add_to_wishlist': 'Add to wishlist',
+  'cart.in_wishlist': 'In wishlist',
+  'cart.proceed_purchase': 'Checkout',
+  'cart.original': '100% Original',
+  'cart.seller': 'Seller',
 
   // ── Wishlist Page ──
   'wishlist.title': 'My Wishlist',
