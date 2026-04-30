@@ -181,6 +181,7 @@ export const AR_TRANSLATIONS: Record<string, string> = {
   'cart.promo_success': 'كود صحيح — تم تفعيل الكود على الفاتورة',
   'cart.promo_discount': 'خصم الكود',
   'cart.shipped_from': 'طلب يشحن من مخزن',
+  'cart.shop_name': 'Check Store',
   'cart.delete_products': 'حذف المنتجات',
   'cart.show_less': 'عرض أقل',
   'cart.show_more': 'عرض أكثر',

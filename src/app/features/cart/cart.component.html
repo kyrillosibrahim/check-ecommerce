@@ -28,7 +28,7 @@
     <div class="zahra-order-header d-md-none">
       <div class="zahra-order-row">
         <div class="zahra-order-from">
-          <span>{{ 'cart.shipped_from' | translate }} Zahra EG</span>
+          <span>{{ 'cart.shipped_from' | translate }} {{ 'cart.shop_name' | translate }}</span>
           <span class="zahra-order-logo">
             <i class="bi bi-flower2"></i>
           </span>
@@ -42,9 +42,9 @@
         </div>
       </div>
       <div class="zahra-order-actions">
-        <button class="zahra-show-toggle" type="button">
-          <i class="bi bi-chevron-up"></i>
-          <span>{{ 'cart.show_less' | translate }}</span>
+        <button class="zahra-show-toggle" type="button" (click)="toggleItemsCollapsed()">
+          <i class="bi" [class.bi-chevron-up]="!itemsCollapsed()" [class.bi-chevron-down]="itemsCollapsed()"></i>
+          <span>{{ (itemsCollapsed() ? 'cart.show_more' : 'cart.show_less') | translate }}</span>
         </button>
         <button class="zahra-delete-products" (click)="clearAll()">
           {{ 'cart.delete_products' | translate }}
@@ -54,7 +54,7 @@
 
     <div class="row g-4">
       <!-- Cart Items -->
-      <div class="col-lg-8">
+      <div class="col-lg-8" [class.cart-items-collapsed-mobile]="itemsCollapsed()">
         <div class="card shadow-sm desktop-cart-card" style="border-color: var(--sz-border-color); background-color: #fff;">
           <div class="card-body p-0">
             <!-- Table header (desktop) -->

@@ -23,6 +23,11 @@ export class CartComponent {
 
   promoCodeInput = '';
   promoError = signal(false);
+  itemsCollapsed = signal(false);
+
+  toggleItemsCollapsed(): void {
+    this.itemsCollapsed.update(v => !v);
+  }
 
   get promoApplied() { return this.cartService.promoApplied; }
   get PROMO_DISCOUNT() { return this.cartService.PROMO_DISCOUNT; }

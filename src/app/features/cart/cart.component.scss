@@ -30,7 +30,12 @@
   :host {
     background: #f5f5f5;
     min-height: 100vh;
-    padding-bottom: 80px;
+    /* leaves space for the sticky checkout bar + the global bottom nav */
+    padding-bottom: 130px;
+  }
+
+  .cart-items-collapsed-mobile {
+    display: none !important;
   }
 
   .cart-container {
@@ -182,16 +187,16 @@
   max-width: 60%;
 }
 
-/* ── Sticky bottom checkout bar ── */
+/* ── Sticky bottom checkout bar (stacked above the mobile-bottom-nav, ~60px tall) ── */
 .zahra-checkout-bar {
   position: fixed;
-  bottom: 0;
+  bottom: calc(60px + env(safe-area-inset-bottom, 0px));
   left: 0;
   right: 0;
   background: #fff;
   border-top: 1px solid #e6e6e6;
   padding: 10px 14px;
-  z-index: 1040;
+  z-index: 1085;
   display: flex;
   align-items: center;
   justify-content: space-between;

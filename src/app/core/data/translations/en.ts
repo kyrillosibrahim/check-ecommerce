@@ -181,6 +181,7 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'cart.promo_success': 'Code applied successfully',
   'cart.promo_discount': 'Promo discount',
   'cart.shipped_from': 'Order shipped from',
+  'cart.shop_name': 'Check Store',
   'cart.delete_products': 'Delete products',
   'cart.show_less': 'Show less',
   'cart.show_more': 'Show more',
