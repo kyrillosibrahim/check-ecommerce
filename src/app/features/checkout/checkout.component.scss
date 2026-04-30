@@ -6,6 +6,72 @@
   }
 }
 
+/* ═════════ Mobile sticky checkout bar ═════════ */
+@media (max-width: 767.98px) {
+  :host {
+    padding-bottom: 130px;
+  }
+}
+
+.checkout-sticky-bar {
+  position: fixed;
+  bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-top: 1px solid #e6e6e6;
+  padding: 10px 14px;
+  z-index: 1085;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.checkout-sticky-total {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  .label {
+    font-size: 0.72rem;
+    color: #777;
+    font-weight: 500;
+  }
+
+  .value {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--sz-accent, #d62f2f);
+    line-height: 1.1;
+  }
+}
+
+.checkout-sticky-btn {
+  background: var(--sz-accent, #d62f2f);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 11px 22px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+@media (min-width: 768px) {
+  .checkout-sticky-bar {
+    display: none !important;
+  }
+}
+
 .success-container {
   animation: fadeInUp 0.6s ease-out;
 }

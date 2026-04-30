@@ -283,7 +283,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   private updateActiveNav(url: string): void {
-    this.hideBottomNav = url.startsWith('/checkout');
+    this.hideBottomNav = false;
     if (url === '/' || url === '') this.activeNavIndex = 0;
     else if (url.startsWith('/offers')) this.activeNavIndex = 1;
     else if (url.startsWith('/cart')) this.activeNavIndex = 2;
