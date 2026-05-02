@@ -21,24 +21,96 @@ router.post('/login-alert', async (req, res) => {
       from: 'KaroKan Dashboard <onboarding@resend.dev>',
       to,
       subject: `تنبيه: ${username} سجّل دخول إلى لوحة التحكم`,
-      html: `<div dir="rtl" style="font-family:Tahoma,Arial,sans-serif;padding:24px;background:#f0f2f5;">
-  <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
-    <div style="background:#095da6;padding:20px 24px;color:#fff;">
-      <h2 style="margin:0;font-size:20px;">تنبيه دخول لوحة التحكم</h2>
-    </div>
-    <div style="padding:24px;color:#374151;line-height:1.8;">
-      <p style="margin:0 0 16px;font-size:15px;">المستخدم <strong style="color:#095da6;">${username}</strong> فتح لوحة التحكم وسجّل دخول.</p>
-      <ul style="margin:0;padding-right:20px;font-size:14px;">
-        <li>التوقيت: ${when}</li>
-        <li>IP: ${ip}</li>
-        <li>المتصفح: ${userAgent}</li>
-      </ul>
-    </div>
-    <div style="background:#f9fafb;padding:14px 24px;border-top:1px solid #e5e7eb;font-size:11px;color:#9ca3af;text-align:center;">
-      KaroKan Dashboard &copy; ${new Date().getFullYear()}
-    </div>
-  </div>
-</div>`,
+      html: `<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%);font-family:Tahoma,Arial,sans-serif;min-height:100vh;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 16px;">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.4);">
+
+        <!-- Header -->
+        <tr>
+          <td style="background:linear-gradient(135deg,#1d4ed8 0%,#0369a1 100%);padding:32px 28px;text-align:center;">
+            <div style="font-size:40px;margin-bottom:12px;">🔐</div>
+            <h1 style="margin:0;color:#fff;font-size:22px;font-weight:700;letter-spacing:0.5px;">تنبيه أمني</h1>
+            <p style="margin:8px 0 0;color:#bfdbfe;font-size:13px;">تم تسجيل دخول إلى لوحة التحكم</p>
+          </td>
+        </tr>
+
+        <!-- Alert Banner -->
+        <tr>
+          <td style="background:#fef3c7;padding:14px 28px;border-bottom:3px solid #f59e0b;">
+            <p style="margin:0;color:#92400e;font-size:13px;font-weight:600;text-align:center;">
+              ⚠️ &nbsp; إذا لم تكن أنت من قام بتسجيل الدخول، تواصل فوراً مع المسؤول
+            </p>
+          </td>
+        </tr>
+
+        <!-- Body -->
+        <tr>
+          <td style="background:#fff;padding:28px;">
+
+            <!-- User badge -->
+            <div style="background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1px solid #bfdbfe;border-radius:12px;padding:16px 20px;margin-bottom:24px;text-align:center;">
+              <div style="font-size:32px;margin-bottom:6px;">👤</div>
+              <p style="margin:0;color:#1e40af;font-size:18px;font-weight:700;">${username}</p>
+              <p style="margin:4px 0 0;color:#64748b;font-size:12px;">سجّل دخوله بنجاح</p>
+            </div>
+
+            <!-- Info cards -->
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="padding-bottom:12px;">
+                  <div style="background:#f8fafc;border:1px solid #e2e8f0;border-right:4px solid #3b82f6;border-radius:8px;padding:14px 16px;display:flex;align-items:center;">
+                    <span style="font-size:18px;margin-left:10px;">🕐</span>
+                    <div>
+                      <div style="color:#94a3b8;font-size:11px;margin-bottom:3px;">التوقيت</div>
+                      <div style="color:#1e293b;font-size:14px;font-weight:600;">${when}</div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding-bottom:12px;">
+                  <div style="background:#f8fafc;border:1px solid #e2e8f0;border-right:4px solid #10b981;border-radius:8px;padding:14px 16px;">
+                    <span style="font-size:18px;margin-left:10px;">🌐</span>
+                    <div>
+                      <div style="color:#94a3b8;font-size:11px;margin-bottom:3px;">عنوان IP</div>
+                      <div style="color:#1e293b;font-size:14px;font-weight:600;direction:ltr;text-align:right;">${ip}</div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div style="background:#f8fafc;border:1px solid #e2e8f0;border-right:4px solid #8b5cf6;border-radius:8px;padding:14px 16px;">
+                    <span style="font-size:18px;margin-left:10px;">💻</span>
+                    <div>
+                      <div style="color:#94a3b8;font-size:11px;margin-bottom:3px;">المتصفح</div>
+                      <div style="color:#1e293b;font-size:13px;font-weight:500;direction:ltr;text-align:right;word-break:break-all;">${userAgent}</div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="background:#0f172a;padding:20px 28px;text-align:center;">
+            <p style="margin:0;color:#475569;font-size:11px;">
+              KaroKan Dashboard &copy; ${new Date().getFullYear()} &nbsp;|&nbsp; رسالة آلية — لا ترد عليها
+            </p>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`,
     });
 
     if (error) {

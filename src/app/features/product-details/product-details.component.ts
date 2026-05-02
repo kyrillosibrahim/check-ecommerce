@@ -39,6 +39,9 @@ export class ProductDetailsComponent implements OnInit {
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   product: IProduct | undefined;
+  /** Product merged with the active variant's images/prices/stock. Equals `product` when no variant is selected. */
+  displayProduct: IProduct | undefined;
+  selectedVariantId: string | null = null;
   relatedProducts: IProduct[] = [];
   quantity = 1;
   isLoading = signal(true);
@@ -48,11 +51,61 @@ export class ProductDetailsComponent implements OnInit {
   readonly starsArray = [1, 2, 3, 4, 5];
 
   get hasDiscount(): boolean {
-    return !!this.product && this.product.discountPercentage > 0;
+    return !!this.displayProduct && this.displayProduct.discountPercentage > 0;
   }
 
   get naturalImages(): string[] {
-    return this.product?.naturalImages ?? [];
+    return this.displayProduct?.naturalImages ?? [];
+  }
+
+  get hasVariants(): boolean {
+    return !!this.product?.hasVariants && !!this.product.variants?.length;
+  }
+
+  /** List of selectable variant chips. The first chip represents the base product. */
+  get variantChips(): { id: string | null; label: string; ar?: string }[] {
+    if (!this.product || !this.hasVariants) return [];
+    const baseLabel = this.product.baseVariantNameAr || this.product.titleAr || this.product.title;
+    const chips: { id: string | null; label: string; ar?: string }[] = [
+      { id: null, label: baseLabel, ar: this.product.baseVariantNameAr }
+    ];
+    for (const v of this.product.variants!) {
+      chips.push({ id: v.id, label: v.nameAr || v.name, ar: v.nameAr });
+    }
+    return chips;
+  }
+
+  selectVariant(id: string | null): void {
+    this.selectedVariantId = id;
+    this.displayProduct = this.computeDisplayProduct();
+    this.quantity = 1;
+    this.cdr.markForCheck();
+  }
+
+  private computeDisplayProduct(): IProduct | undefined {
+    if (!this.product) return undefined;
+    const id = this.selectedVariantId;
+    if (!id) return this.product;
+    const v = this.product.variants?.find(x => x.id === id);
+    if (!v) return this.product;
+
+    const originalPrice = v.originalPrice ?? this.product.price;
+    const discountedPrice = v.discountedPrice ?? originalPrice;
+    const discountPercentage = originalPrice > 0 && discountedPrice < originalPrice
+      ? Math.round(((originalPrice - discountedPrice) / originalPrice) * 100 * 100) / 100
+      : 0;
+
+    return {
+      ...this.product,
+      images: v.mainImages?.length ? v.mainImages : this.product.images,
+      naturalImages: v.naturalImages?.length ? v.naturalImages : this.product.naturalImages,
+      price: originalPrice,
+      discountPercentage,
+      wholesalePrice: v.wholesalePrice ?? this.product.wholesalePrice,
+      originalPrice: v.originalPrice ?? this.product.originalPrice,
+      discountedPrice: v.discountedPrice ?? this.product.discountedPrice,
+      stock: v.stock ?? this.product.stock,
+    };
   }
 
   ngOnInit(): void {
@@ -62,6 +115,8 @@ export class ProductDetailsComponent implements OnInit {
       this.productService.getOneProduct(params['id']).subscribe(result => {
         if (result) {
           this.product = result.product;
+          this.selectedVariantId = null;
+          this.displayProduct = result.product;
           this.relatedProducts = result.relatedProducts;
           this.trackRecentlyViewed(result.product.id);
           this.buildDescriptionHtml(result.product);
@@ -69,6 +124,7 @@ export class ProductDetailsComponent implements OnInit {
           this.seoService.setProductJsonLd(result.product);
         } else {
           this.product = undefined;
+          this.displayProduct = undefined;
           this.relatedProducts = [];
           this.descriptionHtml = '';
         }
@@ -88,7 +144,7 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   incrementQty(): void {
-    if (this.product && this.quantity < this.product.stock) {
+    if (this.displayProduct && this.quantity < this.displayProduct.stock) {
       this.quantity++;
     }
   }
@@ -100,9 +156,10 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   addToCart(): void {
-    if (this.product) {
-      this.cartService.addToCart(this.product, this.quantity);
-      this.product = { ...this.product, inCart: true };
+    if (this.displayProduct) {
+      this.cartService.addToCart(this.displayProduct, this.quantity);
+      this.displayProduct = { ...this.displayProduct, inCart: true };
+      if (this.product) this.product = { ...this.product, inCart: true };
     }
   }
 

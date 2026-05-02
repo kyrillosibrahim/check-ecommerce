@@ -374,3 +374,44 @@
     opacity: 1;
   }
 }
+
+/* ── Variant Selector ──────────────────────── */
+.variant-selector {
+  margin-top: 0.5rem;
+
+  &__label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--sz-text-secondary);
+    margin-bottom: 0.5rem;
+  }
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+}
+
+.variant-chip {
+  border: 1.5px solid var(--sz-border-color, #dee2e6);
+  background: var(--sz-bg-secondary, #f8f9fa);
+  color: var(--sz-text-primary);
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s, color 0.2s, transform 0.2s;
+
+  &:hover {
+    border-color: var(--sz-accent, #1bbc9b);
+    transform: translateY(-1px);
+  }
+
+  &--active {
+    background: var(--sz-accent, #1bbc9b);
+    border-color: var(--sz-accent, #1bbc9b);
+    color: #fff;
+  }
+}

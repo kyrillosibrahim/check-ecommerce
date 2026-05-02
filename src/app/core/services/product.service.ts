@@ -75,6 +75,22 @@ export class ProductService {
       isWholesaleOffer: sp.isWholesaleOffer || false,
       offerPiecesCount: sp.offerPiecesCount,
       offerPrice: sp.offerPrice,
+      hasVariants: !!sp.hasVariants,
+      variantOptionType: sp.variantOptionType,
+      variantOptionTypeAr: sp.variantOptionTypeAr,
+      baseVariantName: sp.baseVariantName,
+      baseVariantNameAr: sp.baseVariantNameAr,
+      variants: (sp.variants || []).map((v: any) => ({
+        id: v.id,
+        name: v.name || '',
+        nameAr: v.nameAr,
+        mainImages: (v.mainImages || []).map(toFullUrl),
+        naturalImages: (v.naturalImages || v.normalImages || []).map(toFullUrl),
+        wholesalePrice: v.wholesalePrice,
+        originalPrice: v.originalPrice,
+        discountedPrice: v.discountedPrice,
+        stock: v.stock,
+      })),
     };
   }
 

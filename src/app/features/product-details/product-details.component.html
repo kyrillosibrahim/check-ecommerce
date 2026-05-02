@@ -24,7 +24,7 @@
     <div class="row g-3 g-md-5">
       <!-- Image Gallery -->
       <div class="col-md-5">
-        <app-image-gallery [images]="product.images" [productTitle]="product.title" />
+        <app-image-gallery [images]="displayProduct!.images" [productTitle]="product.title" />
       </div>
 
       <!-- Product Info -->
@@ -37,6 +37,25 @@
           <span class="form-badge mb-1">
             <i class="bi bi-capsule me-1"></i>{{ product.productForm.type | localize:product.productForm.typeAr }}@if (product.productForm.count) { · {{ product.productForm.count }}}
           </span>
+        }
+
+        <!-- Variant Selector -->
+        @if (hasVariants) {
+          <div class="variant-selector mb-3">
+            @if (product.variantOptionTypeAr) {
+              <div class="variant-selector__label">{{ product.variantOptionTypeAr }}:</div>
+            }
+            <div class="variant-selector__chips">
+              @for (chip of variantChips; track chip.id) {
+                <button type="button"
+                        class="variant-chip"
+                        [class.variant-chip--active]="selectedVariantId === chip.id"
+                        (click)="selectVariant(chip.id)">
+                  {{ chip.label }}
+                </button>
+              }
+            </div>
+          </div>
         }
 
         <!-- Rating -->
@@ -53,11 +72,11 @@
         @if (!product.comingSoon) {
           <div class="mb-1">
             @if (hasDiscount) {
-              <span class="price-original fs-6 me-2">{{ product.price | egpCurrency }}</span>
-              <span class="price-current fs-4">{{ product | discountPrice | egpCurrency }}</span>
-              <span class="badge bg-danger ms-2">{{ 'details.off' | translate }} -{{ product.discountPercentage }}% </span>
+              <span class="price-original fs-6 me-2">{{ displayProduct!.price | egpCurrency }}</span>
+              <span class="price-current fs-4">{{ displayProduct! | discountPrice | egpCurrency }}</span>
+              <span class="badge bg-danger ms-2">{{ 'details.off' | translate }} -{{ displayProduct!.discountPercentage }}% </span>
             } @else {
-              <span class="price-current fs-4">{{ product.price | egpCurrency }}</span>
+              <span class="price-current fs-4">{{ displayProduct!.price | egpCurrency }}</span>
             }
           </div>
         }
@@ -75,9 +94,9 @@
             <span class="text-warning fw-semibold">
               <i class="bi bi-clock me-1"></i>{{ 'product.coming_soon' | translate }}
             </span>
-          } @else if (product.stock > 0) {
+          } @else if (displayProduct!.stock > 0) {
             <span class="text-success fw-semibold">
-              <i class="bi bi-check-circle me-1"></i>{{ 'details.in_stock' | translate }} ({{ product.stock }} {{ 'details.available' | translate }})
+              <i class="bi bi-check-circle me-1"></i>{{ 'details.in_stock' | translate }} ({{ displayProduct!.stock }} {{ 'details.available' | translate }})
             </span>
           } @else {
             <span class="text-danger fw-semibold">
@@ -91,7 +110,7 @@
           <button class="btn btn-warning btn-md w-100" (click)="onComingSoon()">
             <i class="bi bi-clock me-2"></i>{{ 'product.coming_soon' | translate }}
           </button>
-        } @else if (product.stock > 0) {
+        } @else if (displayProduct!.stock > 0) {
           <div class="d-flex align-items-center gap-3 mb-4">
             <div class="input-group" style="width: 140px;">
               <button class="btn btn-outline-secondary" (click)="decrementQty()" [disabled]="quantity <= 1">
@@ -101,7 +120,7 @@
                     style="background-color: var(--sz-bg-secondary); border-color: var(--sz-border-color);">
                 {{ quantity }}
               </span>
-              <button class="btn btn-outline-secondary" (click)="incrementQty()" [disabled]="quantity >= product.stock">
+              <button class="btn btn-outline-secondary" (click)="incrementQty()" [disabled]="quantity >= displayProduct!.stock">
                 <i class="bi bi-plus"></i>
               </button>
             </div>
@@ -246,18 +265,18 @@
 </div>
 
 <!-- Sticky Bottom Bar -->
-@if (product && showStickyBar() && !product.comingSoon && product.stock > 0) {
+@if (product && displayProduct && showStickyBar() && !product.comingSoon && displayProduct.stock > 0) {
   <div class="sticky-buy-bar">
     <div class="container sticky-buy-bar__inner">
-      <img [src]="product.images[0]" [alt]="product.title" class="sticky-buy-bar__image">
+      <img [src]="displayProduct.images[0]" [alt]="product.title" class="sticky-buy-bar__image">
       <div class="sticky-buy-bar__info">
         <span class="sticky-buy-bar__title">{{ product.title | localize:product.titleAr }}</span>
         <div class="sticky-buy-bar__price-row">
           @if (hasDiscount) {
-            <span class="sticky-buy-bar__price-original">{{ product.price | egpCurrency }}</span>
-            <span class="sticky-buy-bar__price">{{ product | discountPrice | egpCurrency }}</span>
+            <span class="sticky-buy-bar__price-original">{{ displayProduct.price | egpCurrency }}</span>
+            <span class="sticky-buy-bar__price">{{ displayProduct | discountPrice | egpCurrency }}</span>
           } @else {
-            <span class="sticky-buy-bar__price">{{ product.price | egpCurrency }}</span>
+            <span class="sticky-buy-bar__price">{{ displayProduct.price | egpCurrency }}</span>
           }
         </div>
       </div>
@@ -266,7 +285,7 @@
           <i class="bi bi-dash"></i>
         </button>
         <span class="sticky-buy-bar__qty-value">{{ quantity }}</span>
-        <button class="sticky-buy-bar__qty-btn" (click)="incrementQty()" [disabled]="quantity >= product.stock">
+        <button class="sticky-buy-bar__qty-btn" (click)="incrementQty()" [disabled]="quantity >= displayProduct.stock">
           <i class="bi bi-plus"></i>
         </button>
       </div>
