@@ -2,7 +2,19 @@ const express = require('express');
 const { Resend } = require('resend');
 
 const router = express.Router();
-const resend = new Resend(process.env.RESEND_API_KEY);
+
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const ALERT_EMAIL_TO = process.env.ALERT_EMAIL_TO;
+const ALERT_EMAIL_FROM = process.env.ALERT_EMAIL_FROM || 'KaroKan Dashboard <onboarding@resend.dev>';
+
+const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
+
+if (!RESEND_API_KEY) {
+  console.warn('[notifications] RESEND_API_KEY is not set — login alerts will be skipped.');
+}
+if (!ALERT_EMAIL_TO) {
+  console.warn('[notifications] ALERT_EMAIL_TO is not set — login alerts will be skipped.');
+}
 
 // POST /api/notifications/login-alert
 router.post('/login-alert', async (req, res) => {
@@ -11,14 +23,22 @@ router.post('/login-alert', async (req, res) => {
     return res.status(400).json({ success: false, message: 'username required' });
   }
 
-  const to = process.env.ALERT_EMAIL_TO;
+  if (!resend || !ALERT_EMAIL_TO) {
+    console.warn('[login-alert] skipped — missing RESEND_API_KEY or ALERT_EMAIL_TO');
+    return res.status(503).json({
+      success: false,
+      message: 'Email service not configured (missing RESEND_API_KEY or ALERT_EMAIL_TO).',
+    });
+  }
+
+  const to = ALERT_EMAIL_TO;
   const when = new Date().toLocaleString('ar-EG', { timeZone: 'Africa/Cairo' });
   const userAgent = req.headers['user-agent'] || 'Unknown';
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown';
 
   try {
     const { data, error } = await resend.emails.send({
-      from: 'KaroKan Dashboard <onboarding@resend.dev>',
+      from: ALERT_EMAIL_FROM,
       to,
       subject: `تنبيه: ${username} سجّل دخول إلى لوحة التحكم`,
       html: `<!DOCTYPE html>
@@ -115,9 +135,10 @@ router.post('/login-alert', async (req, res) => {
 
     if (error) {
       console.error('[login-alert] Resend error:', error);
-      return res.status(500).json({ success: false, message: error.message });
+      return res.status(502).json({ success: false, message: error.message });
     }
 
+    console.log(`[login-alert] sent to ${to} for user "${username}" (id=${data?.id})`);
     res.json({ success: true, id: data?.id });
   } catch (err) {
     console.error('[login-alert] error:', err.message);
