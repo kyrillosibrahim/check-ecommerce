@@ -38,15 +38,8 @@ const upload = multer({
   },
 });
 
-// --- Multer fields for 3 image types ---
-const uploadFields = upload.fields([
-  { name: 'mainImages', maxCount: 20 },
-  { name: 'swiperImages', maxCount: 20 },
-  { name: 'normalImages', maxCount: 20 },
-]);
-
 // --- Routes ---
-router.post('/', uploadFields, createProduct);
+router.post('/', upload.any(), createProduct);
 router.get('/', getAllProducts);
 router.get('/getoneproduct/:id', getProductById);
 router.post('/by-ids', getProductsByIds);

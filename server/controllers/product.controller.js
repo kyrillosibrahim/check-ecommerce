@@ -57,7 +57,8 @@ async function createProduct(req, res, next) {
       }
     }
 
-    const files = req.files || {};
+    const filesArr = Array.isArray(req.files) ? req.files : [];
+    const files = filesArr.reduce((acc, f) => { (acc[f.fieldname] = acc[f.fieldname] || []).push(f); return acc; }, {});
     const mainImages = await uploadImages(files.mainImages, `${cloudFolder}/main`);
     const swiperImages = await uploadImages(files.swiperImages, `${cloudFolder}/swiper`);
     const normalImages = await uploadImages(files.normalImages, `${cloudFolder}/normal`);
@@ -107,6 +108,20 @@ async function createProduct(req, res, next) {
       normalImages,
       createdAt: new Date().toISOString(),
     };
+
+    if (body.hasVariants === 'true') {
+      const variantMeta = parseSafe(body.variants) || [];
+      const variants = await Promise.all(variantMeta.map(async (v, i) => {
+        const vMain = await uploadImages(files[`variant_${i}_mainImages`], `${cloudFolder}/variants/${i}/main`);
+        const vNormal = await uploadImages(files[`variant_${i}_normalImages`], `${cloudFolder}/variants/${i}/normal`);
+        return { ...v, mainImages: vMain, normalImages: vNormal };
+      }));
+      productData.hasVariants = true;
+      productData.variantOptionType = body.variantOptionType || '';
+      productData.variantOptionTypeAr = body.variantOptionTypeAr || '';
+      productData.baseVariantNameAr = body.baseVariantNameAr || '';
+      productData.variants = variants;
+    }
 
     const saved = await Product.create(productData);
     const obj = saved.toObject(); delete obj._id; delete obj.__v;
