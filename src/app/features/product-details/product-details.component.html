@@ -21,14 +21,14 @@
       </ol>
     </nav>
 
-    <div class="row g-3 g-md-5">
+    <div class="row g-3 g-md-4 product-details-row">
       <!-- Image Gallery -->
-      <div class="col-md-5">
+      <div class="col-lg-4 col-md-6">
         <app-image-gallery [images]="displayProduct!.images" [productTitle]="product.title" />
       </div>
 
       <!-- Product Info -->
-      <div class="col-md-7">
+      <div class="col-lg-5 col-md-6">
         <span class="badge bg-danger bg-opacity-10 text-danger mb-2">{{ product.brand }}</span>
         <h1 class="h5 fw-bold mb-1" style="line-height: 1.8;">{{ product.title | localize:product.titleAr }}</h1>
 
@@ -156,6 +156,12 @@
             <span class="badge bg-secondary bg-opacity-10 text-secondary me-1">{{ tag }}</span>
           }
         </div> -->
+      </div>
+
+      <!-- Shipping Estimator + Trust Panel -->
+      <div class="col-lg-3 col-md-12 product-details-aside">
+        <app-shipping-estimator class="d-block mb-3" [initialItemsCount]="quantity" />
+        <app-trust-panel />
       </div>
     </div>
 

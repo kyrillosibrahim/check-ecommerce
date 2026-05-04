@@ -151,6 +151,7 @@ export const AR_TRANSLATIONS: Record<string, string> = {
   'details.added': 'تمت الإضافة !',
   'details.add_to_cart': 'أضف إلى السلة',
   'details.delivery_quality': 'جودة التوصيل',
+  'details.select_city_hint': 'يرجى اختيار المحافظة لتحديد تكلفة الشحن',
   'details.tags': 'الوسوم:',
   'details.description': 'وصف المنتج',
   'details.natural_images': 'صورة المنتج على الطبيعة',

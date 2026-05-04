@@ -364,62 +364,6 @@
   }
 }
 
-// ═══ Trust Section ═══
-.sz-trust-card {
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid var(--sz-border-color);
-  background: var(--sz-bg-card);
-}
-
-.sz-trust-header {
-  background: linear-gradient(135deg, #f5c842 0%, #e8a800 100%);
-  color: #1a1a1a;
-  font-weight: 700;
-  font-size: 1rem;
-  padding: 0.75rem 1.25rem;
-}
-
-.sz-trust-body {
-  padding: 0.5rem 1rem;
-}
-
-.sz-trust-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  padding: 0.65rem 0;
-  border-bottom: 1px solid var(--sz-border-color);
-
-  &:last-child {
-    border-bottom: none;
-  }
-}
-
-.sz-trust-icon {
-  width: 25px;
-  height: 40px;
-  object-fit: contain;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.sz-trust-text {
-  flex: 1;
-}
-
-.sz-trust-item-title {
-  font-weight: 700;
-  font-size: 0.88rem;
-  color: var(--sz-accent);
-  margin-bottom: 0.2rem;
-}
-
-.sz-trust-item-desc {
-  font-size: 0.8rem;
-  color: var(--sz-text-secondary, #6c757d);
-  line-height: 1.4;
-}
 .mincointeiner{
   padding-inline: 150px  !important;
       @media (max-width: 576px) {

@@ -151,6 +151,7 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'details.added': 'Added!',
   'details.add_to_cart': 'Add to Cart',
   'details.delivery_quality': 'Delivery Quality',
+  'details.select_city_hint': 'Please select a governorate to estimate shipping cost',
   'details.tags': 'Tags:',
   'details.description': 'Product Description',
   'details.natural_images': 'Product in Real Life',

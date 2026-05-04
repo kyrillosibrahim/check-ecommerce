@@ -18,11 +18,13 @@ import { EgpCurrencyPipe } from '../../shared/pipes/egp-currency.pipe';
 import { TranslationService } from '../../core/services/translation.service';
 import { TestimonialsMarqueeComponent } from '../../shared/components/testimonials-marquee/testimonials-marquee.component';
 import { TextLoopComponent } from '../../shared/components/text-loop/text-loop.component';
+import { ShippingEstimatorComponent } from '../../shared/components/shipping-estimator/shipping-estimator.component';
+import { TrustPanelComponent } from '../../shared/components/trust-panel/trust-panel.component';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-product-details',
-  imports: [EgpCurrencyPipe, RouterLink, ImageGalleryComponent, RelatedProductsComponent, SkeletonLoaderComponent, CarouselModule, DiscountPricePipe, TranslatePipe, LocalizePipe, TestimonialsMarqueeComponent, TextLoopComponent],
+  imports: [EgpCurrencyPipe, RouterLink, ImageGalleryComponent, RelatedProductsComponent, SkeletonLoaderComponent, CarouselModule, DiscountPricePipe, TranslatePipe, LocalizePipe, TestimonialsMarqueeComponent, TextLoopComponent, ShippingEstimatorComponent, TrustPanelComponent],
   templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

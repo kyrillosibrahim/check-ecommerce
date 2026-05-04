@@ -15,6 +15,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { LocalizePipe } from '../../shared/pipes/localize.pipe';
 import { TranslationService } from '../../core/services/translation.service';
 import { EgpCurrencyPipe } from '../../shared/pipes/egp-currency.pipe';
+import { TrustPanelComponent } from '../../shared/components/trust-panel/trust-panel.component';
 
 const FAR_GOVERNORATES_EN = [
   'Red Sea',
@@ -32,7 +33,7 @@ const FAR_GOVERNORATES_EN = [
 
 @Component({
   selector: 'app-checkout',
-  imports: [ReactiveFormsModule, FormsModule, AsyncPipe, EgpCurrencyPipe, RouterLink, TranslatePipe, LocalizePipe],
+  imports: [ReactiveFormsModule, FormsModule, AsyncPipe, EgpCurrencyPipe, RouterLink, TranslatePipe, LocalizePipe, TrustPanelComponent],
   templateUrl: './checkout.component.html',
   styleUrl: './checkout.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -67,15 +68,6 @@ export class CheckoutComponent implements OnDestroy {
 
   paymentMethod = signal<'cod' | 'instapay'>('cod');
   notes = '';
-
-  readonly trustItems = [
-    { icon: 'assets/iconsd/148879f265.png',  titleKey: 'checkout.trust_original_title',  descKey: 'checkout.trust_original_desc' },
-    { icon: 'assets/iconsd/2806135749.png',  titleKey: 'checkout.trust_packaging_title', descKey: 'checkout.trust_packaging_desc' },
-    { icon: 'assets/iconsd/434e05ab7e.png',  titleKey: 'checkout.trust_support_title',   descKey: 'checkout.trust_support_desc' },
-    { icon: 'assets/iconsd/675e62576b.webp', titleKey: 'checkout.trust_cod_title',        descKey: 'checkout.trust_cod_desc' },
-    { icon: 'assets/iconsd/ff1b3550-fdc5-43b0-8430-22fe2af59834_LE_upscale_prime_light_ai_100_remove_background_general_clip_to_object_off.png', titleKey: 'checkout.trust_return_title', descKey: 'checkout.trust_return_desc' },
-    { icon: 'assets/iconsd/privacy.png',     titleKey: 'checkout.trust_sameday_title',   descKey: 'checkout.trust_sameday_desc' },
-  ];
 
   deliveryFromLabel = signal('');
   deliveryToLabel = signal('');

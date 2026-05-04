@@ -1,0 +1,46 @@
+<div class="sz-shipping-estimator">
+  <h6 class="sz-section-title">
+    <i class="bi bi-geo-alt"></i>
+    {{ 'checkout.governorate' | translate }}
+  </h6>
+
+  <select class="form-select mb-2"
+          [(ngModel)]="selectedGovernorateName"
+          (change)="onGovernorateChange()">
+    <option value="">{{ 'checkout.select_governorate' | translate }}</option>
+    @for (gov of governorates; track gov.id) {
+      <option [value]="gov.governorate_name_en">{{ gov.governorate_name_en | localize:gov.governorate_name_ar }}</option>
+    }
+  </select>
+
+  @if (!selectedGovernorate) {
+    <div class="sz-estimator-hint">
+      <i class="bi bi-info-circle me-1"></i>{{ 'details.select_city_hint' | translate }}
+    </div>
+  }
+
+  @if (selectedGovernorate) {
+    <div class="sz-option-card selected">
+      <div class="sz-option-head">
+        <span class="sz-radio checked"></span>
+        <span class="sz-option-title">{{ 'checkout.jt_express' | translate }}</span>
+      </div>
+      <div class="sz-option-body">
+        <div class="sz-option-sub">
+          {{ 'checkout.delivery_cost_prefix' | translate }} {{ shippingCost | egpCurrency }}
+        </div>
+        @if (deliveryFromLabel()) {
+          <div class="sz-option-sub">
+            {{ 'checkout.expected_delivery' | translate }} {{ deliveryFromLabel() }} - {{ deliveryToLabel() }}
+          </div>
+        }
+        <div class="sz-cutoff">
+          {{ 'checkout.order_before_prefix' | translate }}
+          {{ pad(cutoffHours()) }} {{ 'checkout.hours' | translate }}
+          {{ pad(cutoffMinutes()) }} {{ 'checkout.minutes' | translate }}
+          {{ pad(cutoffSeconds()) }} {{ 'checkout.seconds' | translate }}
+        </div>
+      </div>
+    </div>
+  }
+</div>
