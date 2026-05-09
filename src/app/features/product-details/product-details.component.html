@@ -76,8 +76,11 @@
           <div class="mb-1">
             @if (hasDiscount) {
               <span class="price-current fs-4 me-2">{{ (displayProduct!.discountedPrice || (displayProduct! | discountPrice)) | egpCurrency }}</span>
-              <span class="price-original fs-6">{{ (displayProduct!.originalPrice || displayProduct!.price) | egpCurrency }}</span>
-              <span class="badge bg-danger ms-2" dir="ltr">{{ displayProduct!.discountPercentage }}% {{ 'details.off' | translate }}</span>
+              <span class="price-original fs-6" style="font-size: 20px !important;">{{ (displayProduct!.originalPrice || displayProduct!.price) | egpCurrency }}</span>
+              <div  style="display: inline;margin: 0px 10px;">
+              <span class="badge bg-danger" style="border-radius: 0px 5px 5px 0px;">{{ 'details.off' | translate }}</span>
+              <span class="badge bg-danger "style="border-radius: 5px 0px 0px 5px;direction: ltr;" >%{{ displayProduct!.discountPercentage }} -</span>
+              </div>
             } @else {
               <span class="price-current fs-4">{{ displayProduct!.price | egpCurrency }}</span>
             }
@@ -218,7 +221,7 @@
                         </div>
                       </td>
                       <td class="comparison-action-cell">
-                        <a [href]="site.link" target="_blank" rel="noopener noreferrer" class="btn-buy-now">
+                        <a [href]="site.link"  rel="noopener noreferrer" class="btn-buy-now">
                           {{ 'details.comparison_buy' | translate }}
                         </a>
                       </td>
