@@ -19,6 +19,7 @@ const expenseRoutes = require('./routes/expense.routes');
 const wholesaleOfferRoutes = require('./routes/wholesale-offer.routes');
 const notificationRoutes = require('./routes/notifications.routes');
 const activityLogRoutes = require('./routes/activity-log.routes');
+const externalWebsiteRoutes = require('./routes/external-website.routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -116,6 +117,7 @@ app.use('/api/expenses', expenseRoutes);
 app.use('/api/wholesale-offers', wholesaleOfferRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/activity-logs', activityLogRoutes);
+app.use('/api/external-websites', externalWebsiteRoutes);
 
 // --- Health check ---
 app.get('/api/health', (_req, res) => {

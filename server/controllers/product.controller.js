@@ -103,6 +103,7 @@ async function createProduct(req, res, next) {
       productForm: parseSafe(body.productForm) || null,
       faq: (parseSafe(body.faq) || []).map(f => ({ q: f.q || f.qAr || '', a: f.a || f.aAr || '', qAr: f.qAr || f.q || '', aAr: f.aAr || f.a || '' })),
       offers: parseSafe(body.offers) || [],
+      comparisonSites: parseSafe(body.comparisonSites) || [],
       mainImages,
       swiperImages,
       normalImages,

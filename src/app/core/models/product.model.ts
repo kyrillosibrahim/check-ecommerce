@@ -58,6 +58,9 @@ export interface IProduct {
   metaDescription?: string;
   seoKeywords?: string[];
 
+  // Price comparison with external websites
+  comparisonSites?: IComparisonSite[];
+
   // Variants (sizes / types / colors / volumes / models)
   hasVariants?: boolean;
   variantOptionType?: 'size' | 'type' | 'volume' | 'color' | 'model';
@@ -65,6 +68,14 @@ export interface IProduct {
   baseVariantName?: string;
   baseVariantNameAr?: string;
   variants?: IProductVariant[];
+}
+
+export interface IComparisonSite {
+  websiteId?: number;
+  websiteName: string;
+  websiteLogo: string;
+  price: number;
+  link: string;
 }
 
 export interface IProductVariant {

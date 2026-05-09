@@ -6,6 +6,7 @@ import { ProductService } from '../../core/services/product.service';
 import { CartService } from '../../core/services/cart.service';
 import { WishlistService } from '../../core/services/wishlist.service';
 import { SeoService } from '../../core/services/seo.service';
+import { SiteSettingsService } from '../../core/services/settings.service';
 import { IProduct } from '../../core/models/product.model';
 import { ImageGalleryComponent } from './components/image-gallery/image-gallery.component';
 import { RelatedProductsComponent } from './components/related-products/related-products.component';
@@ -38,8 +39,10 @@ export class ProductDetailsComponent implements OnInit {
   cartService = inject(CartService);
   private wishlistService = inject(WishlistService);
   private seoService = inject(SeoService);
+  private settingsService = inject(SiteSettingsService);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
+  ourLogoUrl = 'assets/logobluewithoutbg.png';
   product: IProduct | undefined;
   /** Product merged with the active variant's images/prices/stock. Equals `product` when no variant is selected. */
   displayProduct: IProduct | undefined;
@@ -54,6 +57,18 @@ export class ProductDetailsComponent implements OnInit {
 
   get hasDiscount(): boolean {
     return !!this.displayProduct && this.displayProduct.discountPercentage > 0;
+  }
+
+  getOurPrice(): number {
+    if (!this.displayProduct) return 0;
+    return this.displayProduct.discountedPrice ||
+      (this.displayProduct.price * (1 - (this.displayProduct.discountPercentage || 0) / 100));
+  }
+
+  getPriceDiffPercent(sitePrice: number): number {
+    const ourPrice = this.getOurPrice();
+    if (!ourPrice) return 0;
+    return Math.round(((sitePrice - ourPrice) / ourPrice) * 100);
   }
 
   get naturalImages(): string[] {
@@ -111,6 +126,10 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.settingsService.getSettings().subscribe(settings => {
+      this.ourLogoUrl = this.settingsService.getLogoUrl(settings.logo) || this.ourLogoUrl;
+      this.cdr.markForCheck();
+    });
     this.route.params.subscribe(params => {
       this.isLoading.set(true);
       this.quantity = 1;
@@ -236,6 +255,10 @@ export class ProductDetailsComponent implements OnInit {
       if (ids.length > 20) ids = ids.slice(0, 20);
       localStorage.setItem(key, JSON.stringify(ids));
     } catch { /* ignore */ }
+  }
+
+  truncate(text: string, max = 40): string {
+    return text.length > max ? text.slice(0, max) + '...' : text;
   }
 
   onComingSoon(): void {

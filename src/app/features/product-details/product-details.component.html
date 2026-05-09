@@ -22,13 +22,16 @@
     </nav>
 
     <div class="row g-3 g-md-4 product-details-row">
-      <!-- Image Gallery -->
-      <div class="col-lg-4 col-md-6">
-        <app-image-gallery [images]="displayProduct!.images" [productTitle]="product.title" />
-      </div>
+      <!-- Left wrapper: image + info + comparison -->
+      <div class="col-lg-9">
+        <div class="row g-3 g-md-4">
+          <!-- Image Gallery -->
+          <div class="col-md-5">
+            <app-image-gallery [images]="displayProduct!.images" [productTitle]="product.title" />
+          </div>
 
-      <!-- Product Info -->
-      <div class="col-lg-5 col-md-6">
+          <!-- Product Info -->
+          <div class="col-md-7">
         <span class="badge bg-danger bg-opacity-10 text-danger mb-2">{{ product.brand }}</span>
         <h1 class="h5 fw-bold mb-1" style="line-height: 1.8;">{{ product.title | localize:product.titleAr }}</h1>
 
@@ -72,9 +75,9 @@
         @if (!product.comingSoon) {
           <div class="mb-1">
             @if (hasDiscount) {
-              <span class="price-original fs-6 me-2">{{ displayProduct!.price | egpCurrency }}</span>
-              <span class="price-current fs-4">{{ displayProduct! | discountPrice | egpCurrency }}</span>
-              <span class="badge bg-danger ms-2">{{ 'details.off' | translate }} -{{ displayProduct!.discountPercentage }}% </span>
+              <span class="price-current fs-4 me-2">{{ (displayProduct!.discountedPrice || (displayProduct! | discountPrice)) | egpCurrency }}</span>
+              <span class="price-original fs-6">{{ (displayProduct!.originalPrice || displayProduct!.price) | egpCurrency }}</span>
+              <span class="badge bg-danger ms-2" dir="ltr">{{ displayProduct!.discountPercentage }}% {{ 'details.off' | translate }}</span>
             } @else {
               <span class="price-current fs-4">{{ displayProduct!.price | egpCurrency }}</span>
             }
@@ -96,7 +99,7 @@
             </span>
           } @else if (displayProduct!.stock > 0) {
             <span class="text-success fw-semibold">
-              <i class="bi bi-check-circle me-1"></i>{{ 'details.in_stock' | translate }} ({{ displayProduct!.stock }} {{ 'details.available' | translate }})
+              <i class="bi bi-check-circle me-1"></i>{{ 'details.in_stock' | translate }}
             </span>
           } @else {
             <span class="text-danger fw-semibold">
@@ -156,6 +159,76 @@
             <span class="badge bg-secondary bg-opacity-10 text-secondary me-1">{{ tag }}</span>
           }
         </div> -->
+          </div>
+        </div>
+
+        <!-- Price Comparison Section -->
+        @if (product.comparisonSites?.length) {
+          <section class="mt-4 pt-3 comparison-section" style="border-top: 1px solid var(--sz-border-color);">
+            <h3 class="section-title">{{ 'details.price_comparison' | translate }}</h3>
+            <div class="table-responsive">
+              <table class="comparison-table">
+                <thead>
+                  <tr>
+                    <th>{{ 'details.comparison_product' | translate }}</th>
+                    <th>{{ 'details.comparison_site' | translate }}</th>
+                    <th>{{ 'details.comparison_price' | translate }}</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Our row -->
+                  <tr class="comparison-row comparison-row--ours">
+                    <td class="comparison-product">
+                      <img [src]="displayProduct!.images[0]" [alt]="product.titleAr || product.title" class="comparison-product-img">
+                      <span class="comparison-product-name">{{ truncate(product.titleAr || product.title) }}</span>
+                    </td>
+                    <td>
+                      <img [src]="ourLogoUrl" alt="موقعنا" class="comparison-site-logo">
+                    </td>
+                    <td class="comparison-price comparison-price--ours">
+                      <div class="comparison-price__inner">
+                        <span>{{ (displayProduct!.discountedPrice || (displayProduct! | discountPrice)) | egpCurrency }}</span>
+                        <div class="price-trend price-trend--down">
+                          <i class="bi bi-arrow-down-short"></i>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="comparison-action-cell">
+                      <span class="comparison-badge-best">الأرخص</span>
+                    </td>
+                  </tr>
+                  <!-- Competitor rows -->
+                  @for (site of product.comparisonSites!; track site.websiteName) {
+                    <tr class="comparison-row">
+                      <td class="comparison-product">
+                        <img [src]="displayProduct!.images[0]" [alt]="product.titleAr || product.title" class="comparison-product-img">
+                        <span class="comparison-product-name">{{ truncate(product.titleAr || product.title) }}</span>
+                      </td>
+                      <td>
+                        <img [src]="site.websiteLogo" [alt]="site.websiteName" class="comparison-site-logo">
+                      </td>
+                      <td class="comparison-price">
+                        <div class="comparison-price__inner">
+                          <span>{{ site.price | egpCurrency }}</span>
+                          <div class="price-trend price-trend--up">
+                            <i class="bi bi-arrow-up-short"></i>
+                            <span dir="ltr">+{{ getPriceDiffPercent(site.price) }}%</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="comparison-action-cell">
+                        <a [href]="site.link" target="_blank" rel="noopener noreferrer" class="btn-buy-now">
+                          {{ 'details.comparison_buy' | translate }}
+                        </a>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </section>
+        }
       </div>
 
       <!-- Shipping Estimator + Trust Panel -->
@@ -279,8 +352,8 @@
         <span class="sticky-buy-bar__title">{{ product.title | localize:product.titleAr }}</span>
         <div class="sticky-buy-bar__price-row">
           @if (hasDiscount) {
-            <span class="sticky-buy-bar__price-original">{{ displayProduct.price | egpCurrency }}</span>
-            <span class="sticky-buy-bar__price">{{ displayProduct | discountPrice | egpCurrency }}</span>
+            <span class="sticky-buy-bar__price">{{ (displayProduct.discountedPrice || (displayProduct | discountPrice)) | egpCurrency }}</span>
+            <span class="sticky-buy-bar__price-original">{{ (displayProduct.originalPrice || displayProduct.price) | egpCurrency }}</span>
           } @else {
             <span class="sticky-buy-bar__price">{{ displayProduct.price | egpCurrency }}</span>
           }

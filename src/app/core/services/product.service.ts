@@ -72,6 +72,7 @@ export class ProductService {
       cartQuantity: sp.cartQuantity || 0,
       inFavorite: sp.inFavorite || false,
       offers: sp.offers || [],
+      comparisonSites: sp.comparisonSites || [],
       isWholesaleOffer: sp.isWholesaleOffer || false,
       offerPiecesCount: sp.offerPiecesCount,
       offerPrice: sp.offerPrice,
