@@ -35,7 +35,22 @@ app.use((_req, res, next) => {
 });
 
 // --- Middleware ---
-app.use(cors());
+const allowedOrigins = [
+  process.env.CORS_ORIGIN,
+  process.env.FRONTEND_URL,
+  'http://localhost:4200',
+  'http://localhost:4000',
+  'http://localhost:5200',
+].filter(Boolean);
+
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+    console.warn('[CORS] Blocked origin:', origin);
+    return cb(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

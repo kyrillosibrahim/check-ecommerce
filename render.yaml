@@ -1,7 +1,7 @@
 services:
   # ── Express Backend API ──────────────────────────────────────────────
   - type: web
-    name: check-ecommerce
+    name: kaf
     runtime: node
     rootDir: server
     buildCommand: npm install
@@ -23,10 +23,14 @@ services:
         sync: false        # Add in Render dashboard
       - key: ALERT_EMAIL_TO
         value: kyrilosibrahim012753@gmail.com
+      - key: CORS_ORIGIN
+        value: https://kaf.onrender.com
+      - key: FRONTEND_URL
+        value: https://kaf.onrender.com
 
   # ── Angular SSR Frontend ─────────────────────────────────────────────
   - type: web
-    name: check-store
+    name: kaf-store
     runtime: node
     buildCommand: npm ci && npm run build
     startCommand: node dist/e-commerce/server/server.mjs

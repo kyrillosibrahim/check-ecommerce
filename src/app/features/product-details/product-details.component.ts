@@ -133,6 +133,7 @@ export class ProductDetailsComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.isLoading.set(true);
       this.quantity = 1;
+      if (this.isBrowser) window.scrollTo({ top: 0, behavior: 'instant' });
       this.productService.getOneProduct(params['id']).subscribe(result => {
         if (result) {
           this.product = result.product;

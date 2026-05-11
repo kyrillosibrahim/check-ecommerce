@@ -17,7 +17,7 @@
   display: block;
   width: 100%;
   aspect-ratio: 9 / 16;
-  border-radius: 12px;
+  border-radius: 5px;
   overflow: hidden;
   background: #000;
   text-decoration: none;
@@ -37,4 +37,7 @@
     object-fit: cover;
     display: block;
   }
+    @media (max-width: 768px) {
+      width: 65%;
+    }
 }

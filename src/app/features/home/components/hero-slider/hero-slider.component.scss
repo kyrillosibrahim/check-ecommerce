@@ -73,3 +73,9 @@
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+.netto{
+  margin-top: 10px;
+  @media (max-width: 768px) {
+    margin-top: 5px;
+  }
+}

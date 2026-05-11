@@ -1,6 +1,6 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
 import { IMAGE_CONFIG } from '@angular/common';
-import { provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
+import { provideRouter, withPreloading, PreloadAllModules, withInMemoryScrolling } from '@angular/router';
 import { provideHttpClient, withInterceptors, withFetch } from '@angular/common/http';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -16,7 +16,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
-    provideRouter(routes, withPreloading(PreloadAllModules)),
+    provideRouter(routes, withPreloading(PreloadAllModules), withInMemoryScrolling({ scrollPositionRestoration: 'top' })),
     provideHttpClient(withFetch(), withInterceptors([securityInterceptor, authInterceptor, cacheInterceptor])),
     provideClientHydration(withEventReplay()),
     provideAnimationsAsync(),

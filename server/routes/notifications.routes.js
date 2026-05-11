@@ -5,7 +5,7 @@ const router = express.Router();
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const ALERT_EMAIL_TO = process.env.ALERT_EMAIL_TO;
-const ALERT_EMAIL_FROM = process.env.ALERT_EMAIL_FROM || 'KaroKan Dashboard <onboarding@resend.dev>';
+const ALERT_EMAIL_FROM = process.env.ALERT_EMAIL_FROM || 'Kaf Dashboard <onboarding@resend.dev>';
 
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
@@ -121,7 +121,7 @@ router.post('/login-alert', async (req, res) => {
         <tr>
           <td style="background:#0f172a;padding:20px 28px;text-align:center;">
             <p style="margin:0;color:#475569;font-size:11px;">
-              KaroKan Dashboard &copy; ${new Date().getFullYear()} &nbsp;|&nbsp; رسالة آلية — لا ترد عليها
+              Kaf Dashboard &copy; ${new Date().getFullYear()} &nbsp;|&nbsp; رسالة آلية — لا ترد عليها
             </p>
           </td>
         </tr>

@@ -36,8 +36,8 @@
               }
             } @else if (hasDiscount(product)) {
               <div class="d-flex align-items-center gap-2">
-                <span class="fw-bold fs-5" style="color: var(--sz-accent);">{{ product | discountPrice | egpCurrency }}</span>
-                <span class="text-decoration-line-through text-muted">{{ product.price | egpCurrency }}</span>
+                <span class="fw-bold fs-5" style="color: var(--sz-accent);">{{ (product.discountedPrice || (product | discountPrice)) | egpCurrency }}</span>
+                <span class="text-decoration-line-through text-muted">{{ (product.originalPrice || product.price) | egpCurrency }}</span>
                 <span style="direction: ltr;" class="badge bg-danger">% {{ product.discountPercentage }} -</span>
               </div>
             } @else {

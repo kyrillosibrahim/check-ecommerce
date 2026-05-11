@@ -11,18 +11,18 @@ async function sendWelcomeEmail(name, email) {
   if (!resend) return;
   const firstName = name.split(' ')[0];
   resend.emails.send({
-    from: 'KaroKan Store <onboarding@resend.dev>',
+    from: 'Kaf Store <onboarding@resend.dev>',
     to: email,
-    subject: `أهلاً بك في KaroKan يا ${firstName}! 🎉`,
+    subject: `أهلاً بك في Kaf يا ${firstName}! 🎉`,
     html: `<div dir="rtl" style="font-family:Tahoma,Arial,sans-serif;padding:24px;background:#f0f2f5;">
   <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
     <div style="background:linear-gradient(135deg,#1d4ed8,#0369a1);padding:32px 28px;text-align:center;color:#fff;">
       <div style="font-size:48px;margin-bottom:12px;">🎉</div>
       <h1 style="margin:0;font-size:24px;font-weight:700;">أهلاً وسهلاً يا ${firstName}!</h1>
-      <p style="margin:8px 0 0;color:#bfdbfe;font-size:14px;">نورت متجر KaroKan</p>
+      <p style="margin:8px 0 0;color:#bfdbfe;font-size:14px;">نورت متجر Kaf</p>
     </div>
     <div style="padding:28px;color:#374151;line-height:1.8;">
-      <p style="font-size:15px;margin:0 0 16px;">يسعدنا انضمامك لعائلة <strong style="color:#1d4ed8;">KaroKan</strong>! حسابك جاهز دلوقتي وتقدر تبدأ التسوق فوراً.</p>
+      <p style="font-size:15px;margin:0 0 16px;">يسعدنا انضمامك لعائلة <strong style="color:#1d4ed8;">Kaf</strong>! حسابك جاهز دلوقتي وتقدر تبدأ التسوق فوراً.</p>
       <div style="background:#eff6ff;border-right:4px solid #1d4ed8;border-radius:8px;padding:16px;margin:20px 0;">
         <p style="margin:0;font-size:14px;color:#1e40af;">🛍️ اكتشف آلاف المنتجات بأفضل الأسعار</p>
         <p style="margin:8px 0 0;font-size:14px;color:#1e40af;">🚚 توصيل لجميع محافظات مصر</p>
@@ -31,7 +31,7 @@ async function sendWelcomeEmail(name, email) {
       <p style="font-size:13px;color:#6b7280;margin:20px 0 0;">لو عندك أي استفسار، تواصل معنا في أي وقت.</p>
     </div>
     <div style="background:#f9fafb;padding:14px 24px;border-top:1px solid #e5e7eb;font-size:11px;color:#9ca3af;text-align:center;">
-      KaroKan Store &copy; ${new Date().getFullYear()} &nbsp;|&nbsp; رسالة آلية — لا ترد عليها
+      Kaf Store &copy; ${new Date().getFullYear()} &nbsp;|&nbsp; رسالة آلية — لا ترد عليها
     </div>
   </div>
 </div>`,

@@ -102,6 +102,13 @@ export class ProductCardComponent {
     return this.product.discountPercentage > 0;
   }
 
+  get wholesaleDiscountPct(): number {
+    const orig = this.product.originalPrice ?? 0;
+    const curr = this.product.price ?? 0;
+    if (!orig || orig <= curr) return 0;
+    return Math.round((orig - curr) / orig * 100);
+  }
+
   readonly starsArray = [1, 2, 3, 4, 5];
 
   navigateToProduct(): void {

@@ -60,8 +60,18 @@
     <div class="mt-auto">
       @if (priceMode === 'wholesale') {
         <div class="d-flex align-items-start justify-content-between">
-          <span class="price-current">{{ (product.wholesalePrice || product.price) | egpCurrency }}</span>
-          <span class="badge wholesale-badge-sm">{{ 'nav.wholesale_offers' | translate }}</span>
+          <div>
+            <span class="price-current">{{ product.price | egpCurrency }}</span>
+            @if (product.originalPrice && product.originalPrice > product.price) {
+              <span class="price-original d-block">{{ product.originalPrice | egpCurrency }}</span>
+            }
+          </div>
+          <div class="text-end">
+            <span class="badge wholesale-badge-sm">{{ 'nav.wholesale_offers' | translate }}</span>
+            @if (wholesaleDiscountPct > 0) {
+              <span class="badge bg-danger discount-badge-sm d-block mt-1">%{{ wholesaleDiscountPct }}-</span>
+            }
+          </div>
         </div>
         @if (product.minWholesaleQuantity && product.minWholesaleQuantity > 0) {
           <div class="wholesale-discount-msg mt-2">
@@ -71,9 +81,9 @@
         }
       } @else if (hasDiscount) {
         <div class="d-flex align-items-start justify-content-between">
-          <span class="price-current">{{ product | discountPrice | egpCurrency }}</span>
+          <span class="price-current">{{ (product.discountedPrice || (product | discountPrice)) | egpCurrency }}</span>
           <div class="text-end">
-            <span class="price-original d-block">{{ product.price | egpCurrency }}</span>
+            <span class="price-original d-block">{{ (product.originalPrice || product.price) | egpCurrency }}</span>
             <span class="badge bg-danger discount-badge-sm">%{{ product.discountPercentage }}-</span>
           </div>
         </div>
