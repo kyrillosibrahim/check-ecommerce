@@ -38,6 +38,8 @@ app.use((_req, res, next) => {
 const allowedOrigins = [
   process.env.CORS_ORIGIN,
   process.env.FRONTEND_URL,
+  'https://kaf-egypt.vercel.app',
+  'https://check-ecommerce.vercel.app',
   'http://localhost:4200',
   'http://localhost:4000',
   'http://localhost:5200',
