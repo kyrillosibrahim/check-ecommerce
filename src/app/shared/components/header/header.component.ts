@@ -167,6 +167,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   searchByCategory(category: ICategory): void {
     this.router.navigate(['/products'], { queryParams: { category: category.slug } });
     this.closeSearchOverlay();
+    this.hoveredCategory = null;
   }
 
   searchByBrand(brand: IBrand): void {

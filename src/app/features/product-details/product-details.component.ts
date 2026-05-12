@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, signal, PLATFORM_ID, HostListener } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestroy, OnInit, signal, PLATFORM_ID, HostListener } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -11,7 +11,6 @@ import { IProduct } from '../../core/models/product.model';
 import { ImageGalleryComponent } from './components/image-gallery/image-gallery.component';
 import { RelatedProductsComponent } from './components/related-products/related-products.component';
 import { SkeletonLoaderComponent } from '../../shared/components/skeleton-loader/skeleton-loader.component';
-import { CarouselModule } from 'primeng/carousel';
 import { DiscountPricePipe } from '../../shared/pipes/discount-price.pipe';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { LocalizePipe } from '../../shared/pipes/localize.pipe';
@@ -25,12 +24,12 @@ import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-product-details',
-  imports: [EgpCurrencyPipe, RouterLink, ImageGalleryComponent, RelatedProductsComponent, SkeletonLoaderComponent, CarouselModule, DiscountPricePipe, TranslatePipe, LocalizePipe, TestimonialsMarqueeComponent, TextLoopComponent, ShippingEstimatorComponent, TrustPanelComponent],
+  imports: [EgpCurrencyPipe, RouterLink, ImageGalleryComponent, RelatedProductsComponent, SkeletonLoaderComponent, DiscountPricePipe, TranslatePipe, LocalizePipe, TestimonialsMarqueeComponent, TextLoopComponent, ShippingEstimatorComponent, TrustPanelComponent],
   templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductDetailsComponent implements OnInit {
+export class ProductDetailsComponent implements OnInit, OnDestroy {
   translationService = inject(TranslationService);
   private cdr = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
@@ -52,6 +51,8 @@ export class ProductDetailsComponent implements OnInit {
   isLoading = signal(true);
   descriptionHtml: SafeHtml = '';
   showStickyBar = signal(false);
+  naturalExpanded = signal(false);
+  lightboxIndex = signal<number | null>(null);
 
   readonly starsArray = [1, 2, 3, 4, 5];
 
@@ -126,6 +127,7 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (this.isBrowser) document.body.classList.add('product-details-active');
     this.settingsService.getSettings().subscribe(settings => {
       this.ourLogoUrl = this.settingsService.getLogoUrl(settings.logo) || this.ourLogoUrl;
       this.cdr.markForCheck();
@@ -154,6 +156,10 @@ export class ProductDetailsComponent implements OnInit {
         this.cdr.markForCheck();
       });
     });
+  }
+
+  ngOnDestroy(): void {
+    if (this.isBrowser) document.body.classList.remove('product-details-active');
   }
 
   @HostListener('window:scroll')
@@ -260,6 +266,30 @@ export class ProductDetailsComponent implements OnInit {
 
   truncate(text: string, max = 40): string {
     return text.length > max ? text.slice(0, max) + '...' : text;
+  }
+
+  openLightbox(index: number): void {
+    this.lightboxIndex.set(index);
+    if (this.isBrowser) document.body.style.overflow = 'hidden';
+  }
+
+  closeLightbox(): void {
+    this.lightboxIndex.set(null);
+    if (this.isBrowser) document.body.style.overflow = '';
+  }
+
+  prevLightbox(): void {
+    const i = this.lightboxIndex();
+    if (i === null) return;
+    const len = this.naturalImages.length;
+    this.lightboxIndex.set((i - 1 + len) % len);
+  }
+
+  nextLightbox(): void {
+    const i = this.lightboxIndex();
+    if (i === null) return;
+    const len = this.naturalImages.length;
+    this.lightboxIndex.set((i + 1) % len);
   }
 
   onComingSoon(): void {

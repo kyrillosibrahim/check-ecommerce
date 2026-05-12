@@ -5,6 +5,99 @@
   padding: 0.85rem 1rem;
 }
 
+@media (max-width: 575.98px) {
+  .sz-shipping-estimator .form-select,
+  .sz-shipping-estimator .sz-gov-trigger {
+    max-width: 100%;
+    font-size: 0.85rem;
+    padding: 0.35rem 0.6rem;
+    text-align: center;
+    margin: auto;
+  }
+}
+
+.sz-gov-dropdown {
+  position: relative;
+}
+
+.sz-gov-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  background: var( #fff);
+  border: 1px solid var(--sz-border-color, #ced4da);
+  border-radius: 8px;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.9rem;
+  color: var(--sz-text-primary);
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  &:hover { border-color: var(--sz-accent); }
+
+  .sz-gov-dropdown.is-open & {
+    border-color: var(--sz-accent);
+    box-shadow: 0 0 0 2px rgba(27, 188, 155, 0.18);
+  }
+}
+
+.sz-gov-trigger__label {
+  flex: 1;
+  text-align: start;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sz-gov-trigger__chev {
+  font-size: 0.85rem;
+  color: var(--sz-text-secondary);
+  transition: transform 0.15s;
+
+  .sz-gov-dropdown.is-open & { transform: rotate(180deg); }
+}
+
+.sz-gov-menu {
+  position: absolute;
+  inset-inline: 0;
+  top: calc(100% + 4px);
+  z-index: 20;
+  list-style: none;
+  margin: 0;
+  padding: 0.25rem 0;
+  background: var(--sz-bg-card, #fff);
+  border: 1px solid var(--sz-border-color, #ced4da);
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.sz-gov-option {
+  padding: 0.5rem 0.85rem;
+  font-size: 0.88rem;
+  color: var(--sz-text-primary);
+  cursor: pointer;
+  transition: background 0.12s;
+
+  &:hover { background: var(--sz-bg-secondary, #f1f3f5); }
+
+  &.is-active {
+    background: rgba(27, 188, 155, 0.12);
+    color: var(--sz-accent);
+    font-weight: 600;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .sz-gov-menu {
+    max-height: 180px;
+    font-size: 0.85rem;
+  }
+}
+
 .sz-section-title {
   font-size: 0.95rem;
   color: var(--sz-text-primary);

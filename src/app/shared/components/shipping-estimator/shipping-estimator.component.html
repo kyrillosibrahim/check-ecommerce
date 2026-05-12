@@ -4,14 +4,28 @@
     {{ 'checkout.governorate' | translate }}
   </h6>
 
-  <select class="form-select mb-2"
-          [(ngModel)]="selectedGovernorateName"
-          (change)="onGovernorateChange()">
-    <option value="">{{ 'checkout.select_governorate' | translate }}</option>
-    @for (gov of governorates; track gov.id) {
-      <option [value]="gov.governorate_name_en">{{ gov.governorate_name_en | localize:gov.governorate_name_ar }}</option>
+  <div class="sz-gov-dropdown mb-2" [class.is-open]="dropdownOpen()">
+    <button type="button" class="sz-gov-trigger" (click)="toggleDropdown()">
+      <span class="sz-gov-trigger__label">
+        {{ selectedGovernorate ? selectedGovernorateLabel() : ('checkout.select_governorate' | translate) }}
+      </span>
+      <i class="bi bi-chevron-down sz-gov-trigger__chev"></i>
+    </button>
+    @if (dropdownOpen()) {
+      <ul class="sz-gov-menu" role="listbox">
+        <li class="sz-gov-option" [class.is-active]="!selectedGovernorate" (click)="selectGovernorate(null)">
+          {{ 'checkout.select_governorate' | translate }}
+        </li>
+        @for (gov of governorates; track gov.id) {
+          <li class="sz-gov-option"
+              [class.is-active]="gov.governorate_name_en === selectedGovernorateName"
+              (click)="selectGovernorate(gov)">
+            {{ gov.governorate_name_en | localize:gov.governorate_name_ar }}
+          </li>
+        }
+      </ul>
     }
-  </select>
+  </div>
 
   @if (!selectedGovernorate) {
     <div class="sz-estimator-hint">

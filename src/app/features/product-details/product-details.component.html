@@ -255,20 +255,64 @@
       </section>
     }
 
-    <!-- Natural Images Carousel -->
+    <!-- Natural Images Gallery -->
     @if (naturalImages.length > 0) {
       <section class="mt-3 pt-3" style="border-top: 1px solid var(--sz-border-color);">
         <h3 class="section-title">{{ 'details.natural_images' | translate }}</h3>
-        <div class="natural-carousel-wrapper">
-          <p-carousel [value]="naturalImages" [numVisible]="1" [numScroll]="1" [circular]="true">
-            <ng-template let-img #item>
-              <div class="natural-carousel-item">
-                <img [src]="img" [alt]="product.title" class="natural-carousel-img" />
-              </div>
-            </ng-template>
-          </p-carousel>
+        <div class="natural-gallery">
+          <button type="button" class="natural-gallery__main" (click)="openLightbox(0)">
+            <img [src]="naturalImages[0]" [alt]="product.title" class="natural-gallery__main-img" />
+          </button>
+
+          @if (naturalImages.length > 1 && naturalExpanded()) {
+            <div class="natural-gallery__grid">
+              @for (img of naturalImages.slice(1); track $index) {
+                <button type="button" class="natural-gallery__thumb" (click)="openLightbox($index + 1)">
+                  <img [src]="img" [alt]="product.title" />
+                </button>
+              }
+            </div>
+          }
+
+          @if (naturalImages.length > 1) {
+            <div class="natural-gallery__toggle-wrap">
+              <button type="button" class="natural-gallery__toggle" (click)="naturalExpanded.set(!naturalExpanded())">
+                {{ (naturalExpanded() ? 'cart.show_less' : 'cart.show_more') | translate }}
+                <i class="bi" [class.bi-chevron-up]="naturalExpanded()" [class.bi-chevron-down]="!naturalExpanded()"></i>
+              </button>
+            </div>
+          }
         </div>
       </section>
+    }
+
+    <!-- Natural Images Lightbox -->
+    @if (lightboxIndex() !== null) {
+      <div class="lightbox-backdrop" (click)="closeLightbox()">
+        <div class="lightbox-sheet" (click)="$event.stopPropagation()" [dir]="translationService.isArabic() ? 'rtl' : 'ltr'">
+          <button type="button" class="lightbox-close" (click)="closeLightbox()" aria-label="Close">
+            <i class="bi bi-x-lg"></i>
+          </button>
+          <div class="lightbox-stage">
+            <button type="button" class="lightbox-nav lightbox-nav--prev" (click)="prevLightbox()" [disabled]="naturalImages.length < 2" aria-label="Prev">
+              <i class="bi" [class.bi-chevron-right]="translationService.isArabic()" [class.bi-chevron-left]="!translationService.isArabic()"></i>
+            </button>
+            <img [src]="naturalImages[lightboxIndex()!]" [alt]="product.title" class="lightbox-image" />
+            <button type="button" class="lightbox-nav lightbox-nav--next" (click)="nextLightbox()" [disabled]="naturalImages.length < 2" aria-label="Next">
+              <i class="bi" [class.bi-chevron-left]="translationService.isArabic()" [class.bi-chevron-right]="!translationService.isArabic()"></i>
+            </button>
+          </div>
+          @if (naturalImages.length > 1) {
+            <div class="lightbox-thumbs">
+              @for (img of naturalImages; track $index) {
+                <button type="button" class="lightbox-thumb" [class.lightbox-thumb--active]="$index === lightboxIndex()" (click)="lightboxIndex.set($index)">
+                  <img [src]="img" [alt]="product.title" />
+                </button>
+              }
+            </div>
+          }
+        </div>
+      </div>
     }
 
     <!-- Testimonials Marquee -->

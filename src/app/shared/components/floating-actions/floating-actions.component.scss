@@ -148,6 +148,16 @@
   }
 }
 
+// ── Raise on product details page (avoid sticky buy bar) ──
+:host-context(body.product-details-active) .fab-container {
+  bottom: 6rem;
+}
+@media (max-width: 991.98px) {
+  :host-context(body.product-details-active) .fab-container {
+    bottom: 7rem;
+  }
+}
+
 // ── Mobile ──
 @media (max-width: 991.98px) {
   .fab-container {

@@ -88,21 +88,214 @@
   }
 }
 
-.natural-carousel-wrapper {
-  max-width: 400px;
+.natural-gallery {
+  max-width: 720px;
   margin: 0 auto;
+
+  &__main {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 1px solid var(--sz-border-color);
+    background-color: var(--sz-bg-secondary);
+    border-radius: 12px 12px 0 0;
+    overflow: hidden;
+    cursor: zoom-in;
+  }
+
+  &__main-img {
+    width: 100%;
+    max-height: 520px;
+    object-fit: contain;
+    display: block;
+  }
+
+  &__grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 0;
+  }
+
+  &__thumb {
+    padding: 0;
+    border: none;
+    border-top: 1px solid var(--sz-border-color);
+    background-color: var(--sz-bg-secondary);
+    border-radius: 0;
+    overflow: hidden;
+    cursor: zoom-in;
+    width: 100%;
+
+    img {
+      width: 100%;
+      height: auto;
+      max-height: 520px;
+      object-fit: contain;
+      display: block;
+    }
+  }
+
+  &__toggle-wrap {
+    text-align: center;
+    margin-top: 0.85rem;
+  }
+
+  &__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: transparent;
+    border: 1.5px solid var(--sz-accent);
+    color: var(--sz-accent);
+    padding: 0.45rem 1.1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+
+    &:hover {
+      background: var(--sz-accent);
+      color: #fff;
+    }
+  }
 }
 
-.natural-carousel-item {
-  padding: 0.5rem;
+.lightbox-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 1060;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: lightboxFade 0.18s ease-out;
 }
 
-.natural-carousel-img {
-  width: 100%;
+.lightbox-sheet {
+  position: relative;
+  background: #fff;
   border-radius: 12px;
+  width: 100%;
+  max-width: 1100px;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: lightboxRise 0.22s ease-out;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 0.5rem;
+  inset-inline-end: 0.5rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: #fff;
+  color: #222;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.lightbox-stage {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f6f6f6;
+  min-height: 320px;
+  padding: 1rem;
+}
+
+.lightbox-image {
+  max-width: 100%;
+  max-height: 70vh;
   object-fit: contain;
-  background-color: var(--sz-bg-secondary);
-  border: 1px solid var(--sz-border-color);
+  display: block;
+}
+
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  color: #222;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  &--prev { inset-inline-start: 0.75rem; }
+  &--next { inset-inline-end: 0.75rem; }
+}
+
+.lightbox-thumbs {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  overflow-x: auto;
+  border-top: 1px solid var(--sz-border-color);
+  background: #fff;
+}
+
+.lightbox-thumb {
+  flex: 0 0 auto;
+  width: 72px;
+  height: 72px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f6f6f6;
+  cursor: pointer;
+  transition: border-color 0.15s;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  &--active {
+    border-color: var(--sz-accent);
+  }
+}
+
+@keyframes lightboxFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes lightboxRise {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@media (max-width: 575.98px) {
+  .lightbox-backdrop { padding: 0; align-items: center; }
+  .lightbox-sheet { border-radius: 12px; max-height: 95vh; margin: 0; }
+  .lightbox-image { max-height: 60vh; }
 }
 
 .add-cart-btn {
@@ -180,6 +373,10 @@
   align-items: center;
   gap: 0.6rem;
   min-width: 200px;
+  @media (max-width: 768px) {
+    min-width: 95px;
+  }
+
 }
 
 .comparison-product-img {
@@ -249,6 +446,9 @@
   font-weight: 600;
   white-space: nowrap;
   width: 100%;
+    @media (max-width: 768px) {
+      font-size: 16PX;
+    }
 }
 
 // ── Price trend arrows ──

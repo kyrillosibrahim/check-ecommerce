@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { GovernorateService } from '../../../core/services/governorate.service';
@@ -27,9 +27,38 @@ export class ShippingEstimatorComponent implements OnInit, OnDestroy {
   @Output() governorateChange = new EventEmitter<IGovernorateApi | null>();
 
   private cdr = inject(ChangeDetectorRef);
+  private host = inject(ElementRef<HTMLElement>);
   private governorateService = inject(GovernorateService);
   private cartService = inject(CartService);
   translationService = inject(TranslationService);
+
+  dropdownOpen = signal(false);
+
+  toggleDropdown(): void {
+    this.dropdownOpen.set(!this.dropdownOpen());
+  }
+
+  selectGovernorate(gov: IGovernorateApi | null): void {
+    this.selectedGovernorateName = gov ? gov.governorate_name_en : '';
+    this.dropdownOpen.set(false);
+    this.onGovernorateChange();
+  }
+
+  selectedGovernorateLabel(): string {
+    if (!this.selectedGovernorate) return '';
+    return this.translationService.isArabic()
+      ? this.selectedGovernorate.governorate_name_ar
+      : this.selectedGovernorate.governorate_name_en;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocClick(e: MouseEvent): void {
+    if (!this.dropdownOpen()) return;
+    if (!this.host.nativeElement.contains(e.target as Node)) {
+      this.dropdownOpen.set(false);
+      this.cdr.markForCheck();
+    }
+  }
 
   governorates: IGovernorateApi[] = [];
   selectedGovernorateName = '';
