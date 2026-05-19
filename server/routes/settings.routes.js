@@ -28,6 +28,11 @@ const upload = multer({
 });
 
 router.get('/', getSettings);
-router.put('/', upload.single('logo'), updateSettings);
+router.put('/', upload.fields([
+  { name: 'logo',     maxCount: 1 },
+  { name: 'logoAr',  maxCount: 1 },
+  { name: 'logoEn',  maxCount: 1 },
+  { name: 'logoIcon',maxCount: 1 },
+]), updateSettings);
 
 module.exports = router;

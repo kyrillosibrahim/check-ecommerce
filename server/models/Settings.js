@@ -3,7 +3,10 @@ const mongoose = require('mongoose');
 // Singleton document - always one settings document with _id='global'
 const settingsSchema = new mongoose.Schema({
   _id: { type: String, default: 'global' },
-  logo: { type: String, default: '' },
+  logo:     { type: String, default: '' },
+  logoAr:   { type: String, default: '' },
+  logoEn:   { type: String, default: '' },
+  logoIcon: { type: String, default: '' },
   colors: {
     primaryLight: { type: String, default: '#4a90d9' },
     primaryDark: { type: String, default: '#4dabf7' },

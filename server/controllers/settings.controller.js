@@ -59,9 +59,22 @@ exports.updateSettings = async (req, res) => {
     const settings = await getSettingsDoc();
     const body = req.body;
 
-    if (req.file) {
+    const files = req.files || {};
+    if (files.logo?.[0]) {
       await deleteFile(settings.logo).catch(() => {});
-      settings.logo = await uploadFile(req.file.path, 'settings');
+      settings.logo = await uploadFile(files.logo[0].path, 'settings');
+    }
+    if (files.logoAr?.[0]) {
+      await deleteFile(settings.logoAr).catch(() => {});
+      settings.logoAr = await uploadFile(files.logoAr[0].path, 'settings');
+    }
+    if (files.logoEn?.[0]) {
+      await deleteFile(settings.logoEn).catch(() => {});
+      settings.logoEn = await uploadFile(files.logoEn[0].path, 'settings');
+    }
+    if (files.logoIcon?.[0]) {
+      await deleteFile(settings.logoIcon).catch(() => {});
+      settings.logoIcon = await uploadFile(files.logoIcon[0].path, 'settings');
     }
 
     if (body.colors) {
