@@ -7,6 +7,9 @@ const SERVER_URL = API_CONFIG.baseUrl;
 
 export interface ISiteSettings {
   logo: string;
+  logoAr?: string;
+  logoEn?: string;
+  logoIcon?: string;
   colors: {
     primaryLight: string;
     primaryDark: string;
@@ -40,5 +43,15 @@ export class SiteSettingsService {
     if (!logo) return '';
     if (logo.startsWith('http')) return logo;
     return `${SERVER_URL}/uploads/${logo}`;
+  }
+
+  getLogoUrlByLang(settings: ISiteSettings, lang: 'ar' | 'en'): string {
+    const src = (lang === 'ar' ? settings.logoAr : settings.logoEn) || settings.logo || '';
+    return this.getLogoUrl(src);
+  }
+
+  getIconUrl(settings: ISiteSettings): string {
+    const src = settings.logoIcon || settings.logo || '';
+    return this.getLogoUrl(src);
   }
 }

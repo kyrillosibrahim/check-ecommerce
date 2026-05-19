@@ -57,6 +57,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   logoUrl = 'assets/logobluewithoutbg.png';
   logoLoaded = false;
+  logoIconUrl = 'assets/logobluewithoutbg.png';
+  logoIconLoaded = false;
   social = { facebook: '', instagram: '', whatsapp: '', phone: '' };
   recentlyViewed: IProduct[] = [];
   brands: IBrand[] = [];
@@ -82,10 +84,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.brandService.getAll().subscribe(allBrands => {
       this.allBrands = allBrands;
       this.settingsService.getSettings().subscribe(settings => {
-        if (settings.logo) {
-          this.logoLoaded = false;
-          this.logoUrl = this.settingsService.getLogoUrl(settings.logo);
-        }
+        const lang = this.translationService.currentLang();
+        this.logoLoaded = false;
+        this.logoUrl = this.settingsService.getLogoUrlByLang(settings, lang);
+        this.logoIconLoaded = false;
+        this.logoIconUrl = this.settingsService.getIconUrl(settings);
         if (settings.social) {
           this.social = settings.social;
         }

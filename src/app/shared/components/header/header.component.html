@@ -317,9 +317,8 @@
       <!-- Drawer Header -->
       <div class="mobile-drawer-header">
         <a routerLink="/" (click)="closeMobileMenu()">
-          @if (logoLoaded) {
-            <img [src]="logoUrl" style="filter: sepia(1); " alt="" class="mobile-drawer-logo">
-          }
+          <img [src]="logoIconUrl" style="filter: sepia(1);" alt="" class="mobile-drawer-logo"
+               [style.display]="logoIconLoaded ? '' : 'none'" (load)="logoIconLoaded = true">
         </a>
         <button class="btn btn-link mobile-drawer-close" (click)="closeMobileMenu()">
           <i class="bi bi-x-lg"></i>
