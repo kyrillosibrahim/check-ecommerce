@@ -1,5 +1,4 @@
 .product-img {
-  height: 220px;
   object-fit: contain;
   transition: transform 0.3s ease;
   background-color: white;
@@ -93,6 +92,7 @@
 // ── Quick View Eye Icon ──
 .product-img-wrapper {
   overflow: hidden;
+  height: 220px;
 }
 
 .quick-view-overlay {
@@ -134,7 +134,7 @@
 
 // ── Mobile ──
 @media (max-width: 576px) {
-  .product-img {
+  .product-img-wrapper {
     height: 150px;
   }
 
@@ -207,7 +207,7 @@
 
 /* Smooth swap when the wholesale slideshow rotates */
 .product-img-fade {
-  transition: opacity 0.3s ease-in-out;
+  transition: opacity 0.15s ease-in-out;
 }
 
 /* ── Image swiper navigation arrows ── */
@@ -215,11 +215,11 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
+  width: 26px;
+  height: 52px;
+  border-radius: 6px;
   border: none;
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.9);
   color: #333;
   font-size: 1rem;
   display: flex;
@@ -227,18 +227,25 @@
   justify-content: center;
   cursor: pointer;
   z-index: 3;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
-  transition: background 0.2s ease, transform 0.2s ease, color 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: background 0.2s ease, color 0.2s ease;
 
   &:hover {
     background: var(--sz-accent, #6a8f6b);
     color: #fff;
-    transform: translateY(-50%) scale(1.08);
   }
 }
 
-.img-nav-prev { left: 6px; }
-.img-nav-next { right: 6px; }
+.img-nav-prev {
+  left: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.img-nav-next {
+  right: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
 
 .img-nav-dots {
   position: absolute;
@@ -273,12 +280,12 @@
 
 @media (max-width: 576px) {
   .img-nav-btn {
-    width: 26px;
-    height: 26px;
+    width: 22px;
+    height: 44px;
     font-size: 0.85rem;
   }
-  .img-nav-prev { left: 4px; }
-  .img-nav-next { right: 4px; }
+  .img-nav-prev { left: 0; }
+  .img-nav-next { right: 0; }
   .img-nav-dot { width: 5px; height: 5px; }
 }
 

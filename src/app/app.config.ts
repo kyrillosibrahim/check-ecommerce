@@ -1,5 +1,5 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
-import { IMAGE_CONFIG } from '@angular/common';
+import { IMAGE_CONFIG, IMAGE_LOADER, ImageLoaderConfig } from '@angular/common';
 import { provideRouter, withPreloading, PreloadAllModules, withInMemoryScrolling } from '@angular/router';
 import { provideHttpClient, withInterceptors, withFetch } from '@angular/common/http';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
@@ -31,6 +31,18 @@ export const appConfig: ApplicationConfig = {
     {
       provide: IMAGE_CONFIG,
       useValue: { disableImageSizeWarning: false, disableImageLazyLoadWarning: false }
+    },
+    {
+      provide: IMAGE_LOADER,
+      useValue: (config: ImageLoaderConfig) => {
+        const src = config.src;
+        if (src.includes('res.cloudinary.com') && src.includes('/upload/')) {
+          const transforms = ['f_auto', 'q_auto'];
+          if (config.width) transforms.push(`w_${config.width}`);
+          return src.replace('/upload/', `/upload/${transforms.join(',')}/`);
+        }
+        return src;
+      }
     }
   ]
 };

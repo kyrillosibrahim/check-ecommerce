@@ -16,40 +16,41 @@
 @font-face { font-family: 'KO Sans'; src: url('./assets/fonts/ko-sans/KOSans-Bold.otf') format('opentype'); font-weight: 700; font-style: normal; font-display: swap; }
 
 /* ---------- Theme Variables ---------- */
+/* Light: inspired by Amazon (#F7F8F8 bg, #FF9900 accent) + Noon (clean white cards) */
 :root,
 [data-bs-theme="light"] {
-  --sz-bg-primary: #efeade;
-  --sz-bg-secondary: #f1f3f5;
-  --sz-bg-card: #efeade;
-  --sz-text-primary: #1a1a2e;
-  --sz-text-secondary: #495057;
-  --sz-text-muted: #6c757d;
-  --sz-border-color: #b0b7bf;
-  --sz-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-  --sz-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.15);
-  --sz-accent: #827e62;
-  --sz-accent-hover: #827e62;
-  --sz-hero-overlay: rgba(0, 0, 0, 0.4);
-  --sz-skeleton-base: #dee2e6;
-  --sz-skeleton-shine: #f1f3f5;
-  --sz-skeleton-shine: #f1f3f5;
+  --sz-bg-primary: #F7F8F8;
+  --sz-bg-secondary: #EAEDED;
+  --sz-bg-card: #FFFFFF;
+  --sz-text-primary: #0F1111;
+  --sz-text-secondary: #565959;
+  --sz-text-muted: #8D9299;
+  --sz-border-color: #D5D9D9;
+  --sz-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --sz-shadow-hover: 0 4px 20px rgba(0, 0, 0, 0.15);
+  --sz-accent: #E47911;
+  --sz-accent-hover: #E47911;
+  --sz-hero-overlay: rgba(0, 0, 0, 0.35);
+  --sz-skeleton-base: #E3E6E6;
+  --sz-skeleton-shine: #F3F4F4;
 }
 
+/* Dark: Amazon dark navbar (#131921) + warm orange accent that pops */
 [data-bs-theme="dark"] {
-  --sz-bg-primary: #121212;
-  --sz-bg-secondary: #1e1e1e;
-  --sz-bg-card: #1e1e1e;
-  --sz-text-primary: #e0e0e0;
-  --sz-text-secondary: #a0a0a0;
-  --sz-text-muted: #666666;
-  --sz-border-color: #333333;
-  --sz-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
-  --sz-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.5);
-  --sz-accent: #6a3a07;
-  --sz-accent-hover: #6a3a07;
-  --sz-hero-overlay: rgba(0, 0, 0, 0.6);
-  --sz-skeleton-base: #2a2a2a;
-  --sz-skeleton-shine: #3a3a3a;
+  --sz-bg-primary: #131921;
+  --sz-bg-secondary: #1C2733;
+  --sz-bg-card: #1C2733;
+  --sz-text-primary: #E8EAED;
+  --sz-text-secondary: #A8B2BD;
+  --sz-text-muted: #6B7280;
+  --sz-border-color: #2F3E4E;
+  --sz-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --sz-shadow-hover: 0 4px 20px rgba(0, 0, 0, 0.65);
+  --sz-accent: #FF9900;
+  --sz-accent-hover: #FFB347;
+  --sz-hero-overlay: rgba(0, 0, 0, 0.55);
+  --sz-skeleton-base: #2A3A48;
+  --sz-skeleton-shine: #3A4E60;
 }
 
 * {

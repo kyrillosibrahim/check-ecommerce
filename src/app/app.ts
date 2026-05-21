@@ -24,7 +24,7 @@ export class App implements OnInit {
   private destroyRef = inject(DestroyRef);
 
   /** Pages where the footer should be hidden on mobile */
-  private noFooterRoutes = ['/profile', '/wishlist', '/cart', '/offers', '/checkout'];
+  private noFooterRoutes = ['/', '/profile', '/wishlist', '/cart', '/offers', '/checkout'];
   /** Pages where the header & floating actions should be hidden on mobile */
   private noChromeRoutes = ['/cart', '/checkout'];
   hideFooterOnMobile = signal(false);

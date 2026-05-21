@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, ChangeDetectorRef, OnInit, 
 import { RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subject, Subscription } from 'rxjs';
+import { Subject, Subscription, combineLatest } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, switchMap } from 'rxjs/operators';
 import { CartService } from '../../../core/services/cart.service';
 import { WishlistService } from '../../../core/services/wishlist.service';
@@ -81,26 +81,36 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.cdr.markForCheck();
     });
 
-    this.brandService.getAll().subscribe(allBrands => {
+    combineLatest([
+      this.brandService.getAll(),
+      this.settingsService.getSettings(),
+    ]).subscribe(([allBrands, settings]) => {
       this.allBrands = allBrands;
-      this.settingsService.getSettings().subscribe(settings => {
-        const lang = this.translationService.currentLang();
+      const lang = this.translationService.currentLang();
+
+      const newLogoUrl = this.settingsService.getLogoUrlByLang(settings, lang);
+      if (newLogoUrl !== this.logoUrl) {
         this.logoLoaded = false;
-        this.logoUrl = this.settingsService.getLogoUrlByLang(settings, lang);
+        this.logoUrl = newLogoUrl;
+      }
+
+      const newIconUrl = this.settingsService.getIconUrl(settings);
+      if (newIconUrl !== this.logoIconUrl) {
         this.logoIconLoaded = false;
-        this.logoIconUrl = this.settingsService.getIconUrl(settings);
-        if (settings.social) {
-          this.social = settings.social;
-        }
-        if (settings.bestSellingBrands?.length) {
-          this.brands = settings.bestSellingBrands
-            .map(id => allBrands.find(b => b.id === id))
-            .filter((b): b is IBrand => !!b);
-        } else {
-          this.brands = allBrands;
-        }
-        this.cdr.markForCheck();
-      });
+        this.logoIconUrl = newIconUrl;
+      }
+
+      if (settings.social) {
+        this.social = settings.social;
+      }
+      if (settings.bestSellingBrands?.length) {
+        this.brands = settings.bestSellingBrands
+          .map(id => allBrands.find(b => b.id === id))
+          .filter((b): b is IBrand => !!b);
+      } else {
+        this.brands = allBrands;
+      }
+      this.cdr.markForCheck();
     });
     this.categoryService.getAll().subscribe(c => {
       this.categories = c;

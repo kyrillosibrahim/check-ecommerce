@@ -27,14 +27,14 @@ export class FeaturedProductsComponent implements AfterViewInit {
     if (isPlatformBrowser(this.platformId)) {
       this.swiper = new Swiper(this.swiperRef.nativeElement, {
         modules: [Autoplay],
-        slidesPerView: 2,
+        slidesPerView: 2.2,
         spaceBetween: 12,
         grabCursor: true,
         breakpoints: {
-          576: { slidesPerView: 3, spaceBetween: 12 },
-          768: { slidesPerView: 4, spaceBetween: 12 },
-          992: { slidesPerView: 5, spaceBetween: 12 },
-          1200: { slidesPerView: 6, spaceBetween: 12 },
+          576: { slidesPerView: 3.2, spaceBetween: 12 },
+          768: { slidesPerView: 4.2, spaceBetween: 12 },
+          992: { slidesPerView: 5.2, spaceBetween: 12 },
+          1200: { slidesPerView: 6.2, spaceBetween: 12 },
         },
       });
     }

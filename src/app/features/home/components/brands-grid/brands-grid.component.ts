@@ -3,7 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { IBrand } from '../../../../core/models/brand.model';
 import Swiper from 'swiper';
-import { Autoplay } from 'swiper/modules';
+import { Autoplay, Grid } from 'swiper/modules';
 
 @Component({
   selector: 'app-brands-grid',
@@ -26,23 +26,23 @@ export class BrandsGridComponent implements AfterViewInit {
 
   private initSwiper() {
     new Swiper(this.swiperRef.nativeElement, {
-      modules: [Autoplay],
-      slidesPerView: 3,
+      modules: [Autoplay, Grid],
+      slidesPerView: 3.3,
       slidesPerGroup: 1,
-      spaceBetween: 0,
-      loop: true,
+      spaceBetween: 12,
       grabCursor: true,
       speed: 600,
+      grid: { rows: 2, fill: 'row' },
       autoplay: {
-        delay: 2000,
+        delay: 2500,
         disableOnInteraction: false,
         pauseOnMouseEnter: true,
       },
       breakpoints: {
-        576: { slidesPerView: 3, spaceBetween: 0 },
-        768: { slidesPerView: 4, spaceBetween: 0 },
-        992: { slidesPerView: 5, spaceBetween: 0 },
-        1200: { slidesPerView: 8, spaceBetween: 0 },
+        576: { slidesPerView: 3.3, grid: { rows: 2, fill: 'row' }, spaceBetween: 12 },
+        768: { slidesPerView: 4.3, grid: { rows: 2, fill: 'row' }, spaceBetween: 14 },
+        992: { slidesPerView: 5.3, grid: { rows: 2, fill: 'row' }, spaceBetween: 14 },
+        1200: { slidesPerView: 6.3, grid: { rows: 2, fill: 'row' }, spaceBetween: 16 },
       },
     });
   }
