@@ -56,6 +56,13 @@
       <app-text-loop [items]="product.offers!" size="sm" />
     }
 
+    @if (hasMoreVariantOptions) {
+      <div class="more-options-strip">
+        <i class="bi bi-layers-half"></i>
+        <span>{{ moreOptionsText }}</span>
+      </div>
+    }
+
     <!-- Price -->
     <div class="mt-auto">
       @if (priceMode === 'wholesale') {

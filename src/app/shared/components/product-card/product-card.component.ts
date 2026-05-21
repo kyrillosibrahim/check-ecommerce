@@ -123,6 +123,35 @@ export class ProductCardComponent implements OnInit {
     return this.product.discountPercentage > 0;
   }
 
+  get hasMoreVariantOptions(): boolean {
+    return !!this.product.hasVariants && (this.product.variants?.length ?? 0) > 1;
+  }
+
+  get moreOptionsText(): string {
+    const isAr = this.translationService.currentLang() === 'ar';
+    const type = this.product.variantOptionType;
+    const arMap: Record<string, string> = {
+      size: 'مقاس',
+      type: 'نوع',
+      volume: 'حجم',
+      color: 'لون',
+      model: 'موديل',
+    };
+    const enMap: Record<string, string> = {
+      size: 'size',
+      type: 'type',
+      volume: 'volume',
+      color: 'color',
+      model: 'model',
+    };
+    if (isAr) {
+      const label = this.product.variantOptionTypeAr || (type ? arMap[type] : 'الخيارات');
+      return `يوجد خيارات أكثر لل${label}`;
+    }
+    const label = type ? enMap[type] : 'options';
+    return `More ${label} options available`;
+  }
+
   get wholesaleDiscountPct(): number {
     const orig = this.product.originalPrice ?? 0;
     const curr = this.product.price ?? 0;
