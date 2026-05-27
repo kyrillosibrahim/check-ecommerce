@@ -2,6 +2,7 @@ const path = require('path');
 const fse = require('fs-extra');
 const Category = require('../models/Category');
 const Brand = require('../models/Brand');
+const Product = require('../models/Product');
 const { generateSlug } = require('../utils/slug.util');
 
 async function getNextId() {
@@ -15,20 +16,29 @@ function getNextSubId(subcategories) {
 
 async function getAllCategories(_req, res, next) {
   try {
-    const cats = await Category.find({}, { __v: 0 });
-    res.json(cats.map(c => ({ id: c.id, name: c.name, slug: c.slug, image: c.image || '', filterTags: c.filterTags || [] })));
+    const cats = await Category.find({}, { __v: 0 }).sort({ order: 1, id: 1 });
+    res.json(cats.map(c => ({ id: c.id, name: c.name, slug: c.slug, image: c.image || '', filterTags: c.filterTags || [], order: c.order || 0 })));
   } catch (err) { next(err); }
 }
 
 async function getDetailedCategories(_req, res, next) {
   try {
-    const cats = await Category.find({}, { __v: 0 });
+    const cats = await Category.find({}, { __v: 0 }).sort({ order: 1, id: 1 });
     const allBrands = await Brand.find({}, { __v: 0 });
     const detailed = cats.map(c => {
       const famousBrands = (c.famousBrands || []).map(bId => { const b = allBrands.find(x => x.id === bId); if (!b) return null; const o = b.toObject(); delete o._id; return o; }).filter(Boolean);
-      return { id: c.id, name: c.name, slug: c.slug, image: c.image || '', subcategories: c.subcategories || [], famousBrands, filterTags: c.filterTags || [] };
+      return { id: c.id, name: c.name, slug: c.slug, image: c.image || '', subcategories: c.subcategories || [], famousBrands, filterTags: c.filterTags || [], order: c.order || 0 };
     });
     res.json(detailed);
+  } catch (err) { next(err); }
+}
+
+async function reorderCategories(req, res, next) {
+  try {
+    const { ids } = req.body;
+    if (!Array.isArray(ids)) return res.status(400).json({ error: 'ids array is required.' });
+    await Promise.all(ids.map((id, index) => Category.updateOne({ id: Number(id) }, { $set: { order: index } })));
+    res.json({ message: 'Categories reordered.' });
   } catch (err) { next(err); }
 }
 
@@ -53,6 +63,8 @@ async function updateCategory(req, res, next) {
     if (await Category.findOne({ slug, id: { $ne: id } })) return res.status(409).json({ error: 'A category with this name already exists.' });
     const cat = await Category.findOne({ id });
     if (!cat) return res.status(404).json({ error: 'Category not found.' });
+    const oldSlug = cat.slug;
+    const oldName = cat.name;
     cat.name = name.trim(); cat.slug = slug;
     if (req.file) {
       if (cat.image && !cat.image.startsWith('http')) { const oldPath = path.join(__dirname, '..', cat.image); await fse.remove(oldPath).catch(() => {}); }
@@ -62,7 +74,17 @@ async function updateCategory(req, res, next) {
     }
     if (famousBrands !== undefined) { const p = typeof famousBrands === 'string' ? JSON.parse(famousBrands) : famousBrands; cat.famousBrands = Array.isArray(p) ? p.map(Number) : []; }
     if (filterTags !== undefined) { const p = typeof filterTags === 'string' ? JSON.parse(filterTags) : filterTags; cat.filterTags = Array.isArray(p) ? p : []; }
-    await cat.save(); const obj = cat.toObject(); delete obj._id; delete obj.__v; res.json(obj);
+    await cat.save();
+
+    // Cascade rename to all products referencing the old slug/name
+    if (oldSlug !== slug || oldName !== cat.name) {
+      await Product.updateMany(
+        { $or: [{ category: oldSlug }, { category: oldName }, { categoryFolder: oldSlug }] },
+        { $set: { category: slug, categoryFolder: slug } }
+      );
+    }
+
+    const obj = cat.toObject(); delete obj._id; delete obj.__v; res.json(obj);
   } catch (err) { next(err); }
 }
 
@@ -103,6 +125,8 @@ async function updateSubcategory(req, res, next) {
     if (subIndex === -1) return res.status(404).json({ error: 'Subcategory not found.' });
     const slug = generateSlug(name.trim());
     if (cat.subcategories.find(s => s.slug === slug && s.id !== subId)) return res.status(409).json({ error: 'Subcategory already exists.' });
+    const oldSubSlug = cat.subcategories[subIndex].slug;
+    const oldSubName = cat.subcategories[subIndex].name;
     cat.subcategories[subIndex].name = name.trim(); cat.subcategories[subIndex].slug = slug;
     if (req.file) {
       const oldImg = cat.subcategories[subIndex].image;
@@ -111,7 +135,17 @@ async function updateSubcategory(req, res, next) {
     } else if (req.body.imageUrl) {
       cat.subcategories[subIndex].image = req.body.imageUrl;
     }
-    await cat.save(); const obj = cat.toObject(); delete obj._id; delete obj.__v; res.json(obj);
+    await cat.save();
+
+    // Cascade rename to all products referencing the old subcategory slug/name
+    if (oldSubSlug !== slug || oldSubName !== cat.subcategories[subIndex].name) {
+      await Product.updateMany(
+        { $or: [{ subcategory: oldSubSlug }, { subcategory: oldSubName }] },
+        { $set: { subcategory: slug } }
+      );
+    }
+
+    const obj = cat.toObject(); delete obj._id; delete obj.__v; res.json(obj);
   } catch (err) { next(err); }
 }
 
@@ -129,4 +163,4 @@ async function deleteSubcategory(req, res, next) {
   } catch (err) { next(err); }
 }
 
-module.exports = { getAllCategories, getDetailedCategories, createCategory, updateCategory, deleteCategory, addSubcategory, updateSubcategory, deleteSubcategory };
+module.exports = { getAllCategories, getDetailedCategories, createCategory, updateCategory, deleteCategory, addSubcategory, updateSubcategory, deleteSubcategory, reorderCategories };

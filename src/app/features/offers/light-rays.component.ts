@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, Input, PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 declare const window: any;
 
@@ -162,7 +163,10 @@ void main() {
   gl_FragColor = fragColor;
 }`;
 
+  private platformId = inject(PLATFORM_ID);
+
   async ngAfterViewInit(): Promise<void> {
+    if (!isPlatformBrowser(this.platformId)) return;
     // Only init WebGL when component is visible in viewport
     this.observer = new IntersectionObserver(
       entries => {

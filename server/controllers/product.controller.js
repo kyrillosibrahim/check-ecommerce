@@ -121,6 +121,7 @@ async function createProduct(req, res, next) {
       productData.variantOptionType = body.variantOptionType || '';
       productData.variantOptionTypeAr = body.variantOptionTypeAr || '';
       productData.baseVariantNameAr = body.baseVariantNameAr || '';
+      if (body.baseColorHex) productData.baseColorHex = body.baseColorHex;
       productData.variants = variants;
     }
 

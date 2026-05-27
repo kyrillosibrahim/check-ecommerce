@@ -11,7 +11,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 import { LocalizePipe } from '../../pipes/localize.pipe';
 import { EgpCurrencyPipe } from '../../pipes/egp-currency.pipe';
 import { TextLoopComponent } from '../text-loop/text-loop.component';
-import Swal from 'sweetalert2';
+import { AlertService } from '../../../core/services/alert.service';
 
 @Component({
   selector: 'app-product-card',
@@ -29,6 +29,7 @@ export class ProductCardComponent implements OnInit {
   cartService = inject(CartService);
   private wishlistService = inject(WishlistService);
   private quickViewService = inject(QuickViewService);
+  private alertService = inject(AlertService);
   @Input({ required: true }) product!: IProduct;
   @Input() priceMode: 'retail' | 'wholesale' = 'retail';
   @Output() addToCart = new EventEmitter<IProduct>();
@@ -145,11 +146,14 @@ export class ProductCardComponent implements OnInit {
       model: 'model',
     };
     if (isAr) {
-      const label = this.product.variantOptionTypeAr || (type ? arMap[type] : 'الخيارات');
-      return `يوجد خيارات أكثر لل${label}`;
+      let label = this.product.variantOptionTypeAr || (type ? arMap[type] : 'الخيارات');
+      // Strip leading "ال" then merge with prefix lam to avoid 3 lams (e.g. لل + لون → للون not لللون)
+      if (label.startsWith('ال')) label = label.substring(2);
+      const prefixed = label.startsWith('ل') ? `لل${label.substring(1)}` : `لل${label}`;
+      return `يوجد خيارات أكثر بداخل ${prefixed}`;
     }
     const label = type ? enMap[type] : 'options';
-    return `More ${label} options available`;
+    return `More ${label} options available inside the product`;
   }
 
   get wholesaleDiscountPct(): number {
@@ -183,7 +187,7 @@ export class ProductCardComponent implements OnInit {
 
   onComingSoon(): void {
     const isAr = this.translationService.currentLang() === 'ar';
-    Swal.fire({
+    this.alertService.fire({
       title: isAr ? 'قريبًا !' : 'Coming Soon!',
       text: isAr
         ? 'المنتج على وشك الوصول الى مخازننا ... كن مستعدًا للحصول عليه!'

@@ -3,7 +3,6 @@ import { Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
-import emailjs from '@emailjs/browser';
 
 @Component({
   selector: 'app-forgot-password',
@@ -18,14 +17,15 @@ export class ForgotPasswordComponent {
   private authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
 
-  step: 'email' | 'reset' = 'email';
-  email = '';
+  step: 'phone' | 'reset' = 'phone';
+  phone = '';
+  otp = '';
   errorMessage = '';
   successMessage = '';
   isLoading = false;
 
-  emailForm = this.fb.group({
-    email: ['', [Validators.required, Validators.email]]
+  phoneForm = this.fb.group({
+    phone: ['', [Validators.required]]
   });
 
   resetForm = this.fb.group({
@@ -33,42 +33,31 @@ export class ForgotPasswordComponent {
     newPassword: ['', [Validators.required, Validators.minLength(6)]]
   });
 
-  get ef() { return this.emailForm.controls; }
+  get pf() { return this.phoneForm.controls; }
   get rf() { return this.resetForm.controls; }
 
   sendOtp(): void {
-    if (this.emailForm.invalid) {
-      this.emailForm.markAllAsTouched();
+    if (this.phoneForm.invalid) {
+      this.phoneForm.markAllAsTouched();
       return;
     }
 
     this.isLoading = true;
     this.errorMessage = '';
-    this.email = this.emailForm.value.email!;
+    this.phone = this.phoneForm.value.phone!;
 
-    this.authService.forgotPassword(this.email).subscribe({
+    this.authService.forgotPassword(this.phone).subscribe({
       next: (res) => {
-        // Send OTP email via EmailJS from browser
-        emailjs.send('service_xbrfnvs', 'template_3ybvtsk', {
-          to_email: this.email,
-          to_name: res.userName,
-          otp_code: res.otp,
-        }, 'astjtvircAmBPiUZ0').then(() => {
-          this.isLoading = false;
-          this.step = 'reset';
-          this.successMessage = 'forgot.otp_sent';
-          this.cdr.markForCheck();
-        }).catch(() => {
-          this.isLoading = false;
-          this.step = 'reset';
-          this.successMessage = 'forgot.otp_sent';
-          this.cdr.markForCheck();
-        });
-
+        this.otp = res.otp;
+        this.isLoading = false;
+        this.step = 'reset';
+        this.successMessage = 'forgot.otp_sent';
+        this.cdr.markForCheck();
       },
       error: (err) => {
         this.isLoading = false;
         this.errorMessage = err?.error?.error || 'حدث خطأ';
+        this.cdr.markForCheck();
       }
     });
   }
@@ -84,7 +73,7 @@ export class ForgotPasswordComponent {
     this.successMessage = '';
     const { otp, newPassword } = this.resetForm.value;
 
-    this.authService.resetPassword(this.email, otp!, newPassword!).subscribe({
+    this.authService.resetPassword(this.phone, otp!, newPassword!).subscribe({
       next: () => {
         this.isLoading = false;
         this.successMessage = 'forgot.success';

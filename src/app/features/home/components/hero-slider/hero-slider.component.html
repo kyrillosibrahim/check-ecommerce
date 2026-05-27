@@ -17,13 +17,33 @@
       <!-- Slides -->
       <div class="carousel-inner hei">
         @for (banner of banners(); track banner.id; let i = $index) {
-          <div class="carousel-item" style="height: 100%;" [class.active]="i === 0">
+          <div class="carousel-item" [class.active]="i === 0">
             @if (banner.link) {
               <a style="cursor: pointer;" (click)="navigateTo(banner.link)">
-                <img [src]="banner.image" class="d-block w-100 hero-image" alt="بنر">
+                @if (i === 0) {
+                  <img [ngSrc]="banner.image" class="d-block w-100 hero-image" alt="بنر"
+                       width="1600" height="500"
+                       sizes="100vw"
+                       priority>
+                } @else {
+                  <img [ngSrc]="banner.image" class="d-block w-100 hero-image" alt="بنر"
+                       width="1600" height="500"
+                       sizes="100vw"
+                       loading="lazy">
+                }
               </a>
             } @else {
-              <img [src]="banner.image" class="d-block w-100 hero-image" alt="بنر">
+              @if (i === 0) {
+                <img [ngSrc]="banner.image" class="d-block w-100 hero-image" alt="بنر"
+                     width="1600" height="500"
+                     sizes="100vw"
+                     priority>
+              } @else {
+                <img [ngSrc]="banner.image" class="d-block w-100 hero-image" alt="بنر"
+                     width="1600" height="500"
+                     sizes="100vw"
+                     loading="lazy">
+              }
             }
           </div>
         }

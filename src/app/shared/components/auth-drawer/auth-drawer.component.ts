@@ -6,7 +6,6 @@ import { AuthService } from '../../../core/services/auth.service';
 import { AuthDrawerService, AuthDrawerView } from '../../../core/services/auth-drawer.service';
 import { SiteSettingsService } from '../../../core/services/settings.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
-import emailjs from '@emailjs/browser';
 
 @Component({
   selector: 'app-auth-drawer',
@@ -29,8 +28,9 @@ export class AuthDrawerComponent implements OnInit {
   isLoading = false;
 
   // Forgot password step
-  forgotStep: 'email' | 'reset' = 'email';
-  private forgotEmail = '';
+  forgotStep: 'phone' | 'reset' = 'phone';
+  private forgotPhone = '';
+  forgotOtp = '';
 
   // Login form
   loginForm = this.fb.group({
@@ -42,14 +42,13 @@ export class AuthDrawerComponent implements OnInit {
   registerForm = this.fb.group({
     name: ['', [Validators.required]],
     phone: ['', [Validators.required]],
-    email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
     confirmPassword: ['', [Validators.required]]
   }, { validators: this.passwordsMatch });
 
   // Forgot password forms
-  emailForm = this.fb.group({
-    email: ['', [Validators.required, Validators.email]]
+  phoneForm = this.fb.group({
+    phone: ['', [Validators.required]]
   });
   resetForm = this.fb.group({
     otp: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]],
@@ -67,7 +66,7 @@ export class AuthDrawerComponent implements OnInit {
 
   get lf() { return this.loginForm.controls; }
   get rf() { return this.registerForm.controls; }
-  get ef() { return this.emailForm.controls; }
+  get pf() { return this.phoneForm.controls; }
   get rsf() { return this.resetForm.controls; }
 
   @HostListener('document:keydown.escape')
@@ -90,10 +89,11 @@ export class AuthDrawerComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
     this.isLoading = false;
-    this.forgotStep = 'email';
+    this.forgotStep = 'phone';
+    this.forgotOtp = '';
     this.loginForm.reset();
     this.registerForm.reset();
-    this.emailForm.reset();
+    this.phoneForm.reset();
     this.resetForm.reset();
     this.drawerService.switchView(view);
   }
@@ -136,9 +136,9 @@ export class AuthDrawerComponent implements OnInit {
 
     this.isLoading = true;
     this.errorMessage = '';
-    const { name, phone, email, password, confirmPassword } = this.registerForm.value;
+    const { name, phone, password, confirmPassword } = this.registerForm.value;
 
-    this.authService.register(name!, phone!, email!, password!, confirmPassword!).subscribe({
+    this.authService.register(name!, phone!, password!, confirmPassword!).subscribe({
       next: () => {
         this.isLoading = false;
         const pendingUrl = this.drawerService.getPendingUrl();
@@ -158,32 +158,22 @@ export class AuthDrawerComponent implements OnInit {
 
   // Forgot password - send OTP
   sendOtp(): void {
-    if (this.emailForm.invalid) {
-      this.emailForm.markAllAsTouched();
+    if (this.phoneForm.invalid) {
+      this.phoneForm.markAllAsTouched();
       return;
     }
 
     this.isLoading = true;
     this.errorMessage = '';
-    this.forgotEmail = this.emailForm.value.email!;
+    this.forgotPhone = this.phoneForm.value.phone!;
 
-    this.authService.forgotPassword(this.forgotEmail).subscribe({
+    this.authService.forgotPassword(this.forgotPhone).subscribe({
       next: (res) => {
-        emailjs.send('service_xbrfnvs', 'template_3ybvtsk', {
-          to_email: this.forgotEmail,
-          to_name: res.userName,
-          otp_code: res.otp,
-        }, 'astjtvircAmBPiUZ0').then(() => {
-          this.isLoading = false;
-          this.forgotStep = 'reset';
-          this.successMessage = 'forgot.otp_sent';
-          this.cdr.markForCheck();
-        }).catch(() => {
-          this.isLoading = false;
-          this.forgotStep = 'reset';
-          this.successMessage = 'forgot.otp_sent';
-          this.cdr.markForCheck();
-        });
+        this.forgotOtp = res.otp;
+        this.isLoading = false;
+        this.forgotStep = 'reset';
+        this.successMessage = 'forgot.otp_sent';
+        this.cdr.markForCheck();
       },
       error: (err) => {
         this.isLoading = false;
@@ -205,7 +195,7 @@ export class AuthDrawerComponent implements OnInit {
     this.successMessage = '';
     const { otp, newPassword } = this.resetForm.value;
 
-    this.authService.resetPassword(this.forgotEmail, otp!, newPassword!).subscribe({
+    this.authService.resetPassword(this.forgotPhone, otp!, newPassword!).subscribe({
       next: () => {
         this.isLoading = false;
         this.successMessage = 'forgot.success';

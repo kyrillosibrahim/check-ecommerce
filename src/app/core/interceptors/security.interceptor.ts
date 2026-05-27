@@ -4,7 +4,8 @@ const ALLOWED_ORIGINS = [
   'http://localhost:3000',
   'http://localhost:4000',
   'https://check-ecommerce.onrender.com',
-  'https://karokan-backend.onrender.com'
+  'https://karokan-backend.onrender.com',
+  'https://nominatim.openstreetmap.org'
 ];
 
 export const securityInterceptor: HttpInterceptorFn = (req, next) => {

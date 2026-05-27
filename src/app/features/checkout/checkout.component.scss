@@ -159,6 +159,105 @@
   }
 }
 
+// Address picker list
+.address-picker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.address-pick-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  text-align: start;
+  padding: 12px 14px;
+  border: 1.5px solid var(--sz-border-color);
+  border-radius: 12px;
+  background: var(--sz-bg-card);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+
+  &:hover { border-color: var(--sz-accent); }
+
+  &.active {
+    border-color: var(--sz-accent);
+    background: color-mix(in srgb, var(--sz-accent) 6%, var(--sz-bg-card));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--sz-accent) 14%, transparent);
+
+    .address-pick-radio { border-color: var(--sz-accent); }
+    .address-pick-radio-inner { background: var(--sz-accent); transform: scale(1); }
+  }
+}
+
+.address-pick-radio {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--sz-border-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  background: var(--sz-bg-card);
+}
+
+.address-pick-radio-inner {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: transparent;
+  transform: scale(0);
+  transition: transform 0.15s, background 0.15s;
+}
+
+.address-pick-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.address-pick-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--sz-text-primary);
+}
+
+.address-pick-line {
+  font-size: 0.82rem;
+  color: var(--sz-text-secondary);
+  line-height: 1.5;
+}
+
+.address-pick-phone {
+  font-size: 0.78rem;
+  color: var(--sz-text-muted);
+  direction: ltr;
+  text-align: start;
+}
+
+.address-pick-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1.5px dashed var(--sz-accent);
+  background: transparent;
+  color: var(--sz-accent);
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover { background: color-mix(in srgb, var(--sz-accent) 8%, transparent); }
+}
+
 // Option card (unified style for address, shipping company, payment method)
 .sz-option-card {
   border: 1.5px solid var(--sz-border-color);

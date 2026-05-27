@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, Input, PLATFORM_ID, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, Input, OnDestroy, PLATFORM_ID, ViewChild } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { IBrand } from '../../../../core/models/brand.model';
@@ -12,11 +12,12 @@ import { Autoplay, Grid } from 'swiper/modules';
   styleUrl: './brands-grid.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BrandsGridComponent implements AfterViewInit {
+export class BrandsGridComponent implements AfterViewInit, OnDestroy {
   @Input() brands: IBrand[] = [];
   @ViewChild('swiperRef') swiperRef!: ElementRef<HTMLElement>;
 
   private platformId = inject(PLATFORM_ID);
+  private swiper?: Swiper;
 
   ngAfterViewInit() {
     if (isPlatformBrowser(this.platformId) && this.brands.length > 0) {
@@ -24,8 +25,12 @@ export class BrandsGridComponent implements AfterViewInit {
     }
   }
 
+  ngOnDestroy(): void {
+    this.swiper?.destroy(true, true);
+  }
+
   private initSwiper() {
-    new Swiper(this.swiperRef.nativeElement, {
+    this.swiper = new Swiper(this.swiperRef.nativeElement, {
       modules: [Autoplay, Grid],
       slidesPerView: 3.3,
       slidesPerGroup: 1,

@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, EventEmitter, inject, Input, Output, PLATFORM_ID, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, EventEmitter, inject, Input, OnDestroy, Output, PLATFORM_ID, ViewChild } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { IProduct } from '../../../../core/models/product.model';
@@ -14,7 +14,7 @@ import { Autoplay } from 'swiper/modules';
   styleUrl: './featured-products.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FeaturedProductsComponent implements AfterViewInit {
+export class FeaturedProductsComponent implements AfterViewInit, OnDestroy {
   @Input({ required: true }) products: IProduct[] = [];
   @Output() addToCart = new EventEmitter<IProduct>();
   @Output() addToWishlist = new EventEmitter<IProduct>();
@@ -42,4 +42,8 @@ export class FeaturedProductsComponent implements AfterViewInit {
 
   slidePrev() { this.swiper?.slidePrev(); }
   slideNext() { this.swiper?.slideNext(); }
+
+  ngOnDestroy(): void {
+    this.swiper?.destroy(true, true);
+  }
 }

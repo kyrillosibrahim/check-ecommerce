@@ -50,12 +50,22 @@
             }
             <div class="variant-selector__chips">
               @for (chip of variantChips; track chip.id) {
-                <button type="button"
-                        class="variant-chip"
-                        [class.variant-chip--active]="selectedVariantId === chip.id"
-                        (click)="selectVariant(chip.id)">
-                  {{ chip.label }}
-                </button>
+                @if (chip.colorHex) {
+                  <button type="button"
+                          class="variant-chip variant-chip--swatch"
+                          [class.variant-chip--active]="selectedVariantId === chip.id"
+                          [style.background-color]="chip.colorHex"
+                          [title]="chip.label"
+                          (click)="selectVariant(chip.id)">
+                  </button>
+                } @else {
+                  <button type="button"
+                          class="variant-chip"
+                          [class.variant-chip--active]="selectedVariantId === chip.id"
+                          (click)="selectVariant(chip.id)">
+                    {{ chip.label }}
+                  </button>
+                }
               }
             </div>
           </div>
@@ -132,7 +142,7 @@
             </div>
           </div>
 
-          <div class="d-flex gap-3">
+          <div class="d-flex gap-3 flex-wrap">
             @if (product.inCart || cartService.isInCart(product.id)) {
               <button class="btn btn-secondary btn-md add-cart-btn" disabled>
                 <i class="bi bi-check-lg me-2"></i>{{ 'details.added' | translate }}
@@ -146,6 +156,7 @@
               <i class="bi" [class.bi-heart-fill]="isInWishlist" [class.bi-heart]="!isInWishlist"></i>
             </button>
           </div>
+
         }
 
         <!-- Delivery Quality Button -->
@@ -164,6 +175,14 @@
         </div> -->
           </div>
         </div>
+
+        @if (!(authService.isLoggedIn$ | async) && displayProduct) {
+          <app-direct-order-modal
+            class="mt-4 d-block"
+            [product]="displayProduct"
+            [quantity]="quantity">
+          </app-direct-order-modal>
+        }
 
         <!-- Price Comparison Section -->
         @if (product.comparisonSites?.length) {

@@ -1,0 +1,109 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.watch-feed {
+  position: fixed;
+  inset: 0;
+  bottom: 60px;
+  background: #000;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+  z-index: 1000;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.watch-slide {
+  position: relative;
+  width: 100%;
+  height: calc(100dvh - 60px);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #000;
+
+  video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+.watch-controls {
+  position: fixed;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  z-index: 1010;
+
+  [dir="rtl"] & {
+    right: auto;
+    left: 12px;
+  }
+}
+
+.watch-arrow {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font-size: 1.3rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: background 0.2s, transform 0.15s;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.65);
+  }
+
+  &:active {
+    transform: scale(0.92);
+  }
+}
+
+.watch-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  gap: 12px;
+
+  i {
+    font-size: 3rem;
+    opacity: 0.6;
+  }
+
+  p {
+    margin: 0;
+    font-size: 1rem;
+    opacity: 0.8;
+  }
+}
+
+@media (min-width: 992px) {
+  .watch-feed,
+  .watch-controls {
+    display: none;
+  }
+}

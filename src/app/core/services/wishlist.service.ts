@@ -7,7 +7,7 @@ import { IProduct } from '../models/product.model';
 import { CartService } from './cart.service';
 import { ProductService } from './product.service';
 import { API_CONFIG } from '../config/api.config';
-import Swal from 'sweetalert2';
+import { AlertService } from './alert.service';
 
 const SERVER_URL = API_CONFIG.baseUrl;
 
@@ -16,6 +16,7 @@ export class WishlistService {
   private http = inject(HttpClient);
   private cartService = inject(CartService);
   private productService = inject(ProductService);
+  private alertService = inject(AlertService);
   private platformId = inject(PLATFORM_ID);
 
   private wishlistSubject = new BehaviorSubject<IProduct[]>([]);
@@ -135,7 +136,7 @@ export class WishlistService {
         this.favoriteIds.update(s => { const n = new Set(s); n.delete(product.id); return n; });
         this.productService.updateProductFavoriteState(product.id, false);
         this.unmarkProcessing(product.id);
-        Swal.fire({ icon: 'error', title: 'خطأ', text: 'فشل إضافة المنتج للمفضلة', timer: 2000, showConfirmButton: false });
+        this.alertService.fire({ icon: 'error', title: 'خطأ', text: 'فشل إضافة المنتج للمفضلة', timer: 2000, showConfirmButton: false });
       },
     });
   }
@@ -163,7 +164,7 @@ export class WishlistService {
           this.wishlistSubject.next([...this.wishlistSubject.getValue(), removed]);
         }
         this.unmarkProcessing(productId);
-        Swal.fire({ icon: 'error', title: 'خطأ', text: 'فشل إزالة المنتج من المفضلة', timer: 2000, showConfirmButton: false });
+        this.alertService.fire({ icon: 'error', title: 'خطأ', text: 'فشل إزالة المنتج من المفضلة', timer: 2000, showConfirmButton: false });
       },
     });
   }

@@ -30,7 +30,7 @@
           </h6>
 
           <!-- Saved Address Card -->
-          @if (savedAddress && !showForm) {
+          @if (savedAddress && !showForm && !showAddressList) {
             <div class="sz-option-card selected">
               <div class="sz-option-head">
                 <span class="sz-radio checked"></span>
@@ -43,7 +43,7 @@
                     <i class="bi bi-pencil-square"></i>
                     {{ 'checkout.change_address_btn' | translate }}
                   </button>
-                  <button class="sz-chip-btn add" (click)="editAddress()">
+                  <button class="sz-chip-btn add" (click)="openAddNewAddress()">
                     <i class="bi bi-plus-lg"></i>
                     {{ 'checkout.add_new_address' | translate }}
                   </button>
@@ -66,6 +66,52 @@
                   <div class="d-flex align-items-center gap-2">
                     <span>{{ savedAddress.phone }}</span>
                   </div>
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- Saved Addresses Picker -->
+          @if (showAddressList) {
+            <div class="sz-option-card selected">
+              <div class="sz-option-head d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="sz-radio checked"></span>
+                  <span class="sz-option-title">اختر عنوان التوصيل</span>
+                </div>
+                <button class="btn btn-outline-secondary btn-sm" (click)="closeAddressList()">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
+
+              <div class="sz-option-body">
+                <div class="address-picker-list">
+                  @for (addr of savedAddresses; track $index) {
+                    <button type="button"
+                            class="address-pick-card"
+                            [class.active]="isSameAddress(addr, savedAddress)"
+                            (click)="pickAddress(addr)">
+                      <span class="address-pick-radio">
+                        <span class="address-pick-radio-inner"></span>
+                      </span>
+                      <span class="address-pick-body">
+                        <span class="address-pick-name">
+                          <i class="bi bi-geo-alt-fill me-1"></i>{{ addr.fullName }}
+                        </span>
+                        <span class="address-pick-line">
+                          {{ addr.address }}، {{ addr.city }} - {{ addr.governorate }}
+                        </span>
+                        <span class="address-pick-phone">
+                          <i class="bi bi-telephone me-1"></i>{{ addr.phone }}
+                        </span>
+                      </span>
+                    </button>
+                  }
+
+                  <button type="button" class="address-pick-add" (click)="openAddNewAddress()">
+                    <i class="bi bi-plus-lg"></i>
+                    {{ 'checkout.add_new_address' | translate }}
+                  </button>
                 </div>
               </div>
             </div>

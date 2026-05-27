@@ -1,156 +1,212 @@
-<div class="container section-padding">
-  <h2 class="section-title">حسابي</h2>
+@if (user) {
+<div class="profile-layout">
 
-  @if (user) {
-    <div class="profile-card">
-      <!-- Avatar + Name -->
-      <div class="profile-header">
-        <div class="avatar">
-          <span>{{ user.name.charAt(0) }}</span>
-        </div>
-        <div class="profile-header-info">
-          <h3 class="profile-name">{{ user.name }}</h3>
-          <span class="member-since">عضو منذ {{ user.createdAt | date:'mediumDate' }}</span>
-        </div>
+  <!-- ══ Sidebar ══ -->
+  <aside class="profile-sidebar">
+    <div class="sidebar-user-card">
+      <div class="sidebar-avatar">{{ user.name.charAt(0) }}</div>
+      <div class="sidebar-user-info">
+        <span class="sidebar-name">{{ user.name }}</span>
+        <span class="sidebar-sub">{{ user.phone }}</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="sidebar-nav-item" [class.active]="activeSection() === 'account'" (click)="activeSection.set('account')">
+        <i class="bi bi-person-gear"></i>
+        <span>حسابك</span>
+        <i class="bi bi-chevron-left sidebar-chevron"></i>
+      </button>
+      <button class="sidebar-nav-item" [class.active]="activeSection() === 'addresses'" (click)="activeSection.set('addresses')">
+        <i class="bi bi-geo-alt"></i>
+        <span>العناوين</span>
+        <i class="bi bi-chevron-left sidebar-chevron"></i>
+      </button>
+    </nav>
+
+    <button class="sidebar-logout" (click)="logout()">
+      <i class="bi bi-box-arrow-right"></i>
+      <span>تسجيل الخروج</span>
+    </button>
+  </aside>
+
+  <!-- ══ Content ══ -->
+  <main class="profile-content">
+
+    <!-- ─── Account Section ─── -->
+    @if (activeSection() === 'account') {
+      <div class="content-header">
+        <h2 class="content-title">حسابك</h2>
+        <p class="content-sub">استعرض و حدث بيانات التواصل و معلومات حسابك</p>
       </div>
 
-      <!-- Info Fields -->
-      <div class="profile-fields">
-        <!-- Name (read-only) -->
-        <div class="field-row">
-          <div class="field-label">
-            <i class="bi bi-person"></i>
-            <span>الاسم</span>
-          </div>
-          <div class="field-value">
-            <span>{{ user.name }}</span>
-            <button type="button" class="info-btn" (click)="showNameInfo()" title="تغيير الاسم">
-              <i class="bi bi-info-circle"></i>
+      <!-- Contact Info -->
+      <div class="info-card">
+        <h3 class="info-card-title">معلومات الاتصال</h3>
+        <div class="info-field">
+          <label>رقم الجوال</label>
+          <div class="field-input-row">
+            <input type="text" class="pf-input" [value]="user.phone" readonly dir="ltr">
+            <button type="button" class="field-edit-btn" (click)="showNameInfo()" title="تعديل">
+              <i class="bi bi-pencil"></i>
             </button>
           </div>
         </div>
+      </div>
 
-        <!-- Phone (read-only) -->
-        <div class="field-row">
-          <div class="field-label">
-            <i class="bi bi-phone"></i>
-            <span>رقم الهاتف</span>
-          </div>
-          <div class="field-value">
-            <span dir="ltr">{{ user.phone }}</span>
-          </div>
-        </div>
-
-        <!-- Email (editable) -->
-        <div class="field-row">
-          <div class="field-label">
-            <i class="bi bi-envelope"></i>
-            <span>البريد الإلكتروني</span>
-          </div>
-          <div class="field-value">
-            @if (editingEmail()) {
-              <form [formGroup]="emailForm" (ngSubmit)="saveEmail()" class="email-edit-form">
-                <input
-                  type="email"
-                  class="form-control form-control-sm"
-                  formControlName="email"
-                  placeholder="البريد الإلكتروني"
-                />
-                <div class="email-edit-actions">
-                  <button type="submit" class="btn btn-sm btn-primary" [disabled]="emailForm.invalid || emailSaving()">
-                    @if (emailSaving()) {
-                      <span class="spinner-border spinner-border-sm"></span>
-                    } @else {
-                      <i class="bi bi-check-lg"></i>
-                    }
-                  </button>
-                  <button type="button" class="btn btn-sm btn-outline-secondary" (click)="cancelEditEmail()" [disabled]="emailSaving()">
-                    <i class="bi bi-x-lg"></i>
-                  </button>
-                </div>
-              </form>
-            } @else {
-              <span>{{ user.email }}</span>
-              <button type="button" class="edit-btn" (click)="startEditEmail()" title="تعديل البريد الإلكتروني">
-                <i class="bi bi-pencil"></i>
-              </button>
-            }
+      <!-- Personal Info -->
+      <div class="info-card">
+        <h3 class="info-card-title">معلوماتك الشخصية</h3>
+        <div class="info-field">
+          <label>الاسم</label>
+          <div class="field-input-row">
+            <input type="text" class="pf-input" [value]="user.name" readonly>
+            <button type="button" class="field-edit-btn" (click)="showNameInfo()" title="تعديل">
+              <i class="bi bi-pencil"></i>
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- Password Section -->
-      <div class="password-section">
-        <button type="button" class="change-password-toggle" (click)="togglePasswordSection()">
-          <i class="bi bi-shield-lock"></i>
-          <span>تغيير كلمة المرور</span>
-          <i class="bi toggle-chevron" [class.bi-chevron-down]="!showPasswordSection()" [class.bi-chevron-up]="showPasswordSection()"></i>
-        </button>
+      <!-- Password -->
+      <div class="info-card">
+        <h3 class="info-card-title">
+          <i class="bi bi-shield-lock me-2" style="color:var(--sz-accent)"></i>تغيير كلمة المرور
+        </h3>
+        <form [formGroup]="passwordForm" (ngSubmit)="savePassword()" class="password-form">
+          <div class="info-field">
+            <label>كلمة المرور الحالية</label>
+            <div class="field-input-row">
+              <input [type]="showCurrentPassword() ? 'text' : 'password'" class="pf-input" formControlName="currentPassword" placeholder="أدخل كلمة المرور الحالية">
+              <button type="button" class="field-edit-btn" (click)="showCurrentPassword.set(!showCurrentPassword())">
+                <i class="bi" [class.bi-eye]="!showCurrentPassword()" [class.bi-eye-slash]="showCurrentPassword()"></i>
+              </button>
+            </div>
+          </div>
+          <div class="info-field">
+            <label>كلمة المرور الجديدة</label>
+            <div class="field-input-row">
+              <input [type]="showNewPassword() ? 'text' : 'password'" class="pf-input" formControlName="newPassword" placeholder="6 أحرف على الأقل">
+              <button type="button" class="field-edit-btn" (click)="showNewPassword.set(!showNewPassword())">
+                <i class="bi" [class.bi-eye]="!showNewPassword()" [class.bi-eye-slash]="showNewPassword()"></i>
+              </button>
+            </div>
+          </div>
+          <div class="info-field">
+            <label>تأكيد كلمة المرور</label>
+            <div class="field-input-row">
+              <input [type]="showConfirmPassword() ? 'text' : 'password'" class="pf-input" formControlName="confirmPassword" placeholder="أعد إدخال كلمة المرور الجديدة">
+              <button type="button" class="field-edit-btn" (click)="showConfirmPassword.set(!showConfirmPassword())">
+                <i class="bi" [class.bi-eye]="!showConfirmPassword()" [class.bi-eye-slash]="showConfirmPassword()"></i>
+              </button>
+            </div>
+          </div>
+          <div class="password-actions">
+            <button type="submit" class="btn-primary-pf" [disabled]="passwordForm.invalid || passwordSaving()">
+              @if (passwordSaving()) { <span class="spinner-border spinner-border-sm me-1"></span> } حفظ كلمة المرور
+            </button>
+          </div>
+        </form>
+      </div>
+    }
 
-        @if (showPasswordSection()) {
-          <form [formGroup]="passwordForm" (ngSubmit)="savePassword()" class="password-form">
-            <div class="password-field">
-              <label>كلمة المرور الحالية</label>
-              <div class="input-group">
-                <input
-                  [type]="showCurrentPassword() ? 'text' : 'password'"
-                  class="form-control"
-                  formControlName="currentPassword"
-                  placeholder="أدخل كلمة المرور الحالية"
-                />
-                <button type="button" class="input-group-text toggle-password" (click)="showCurrentPassword.set(!showCurrentPassword())">
-                  <i class="bi" [class.bi-eye]="!showCurrentPassword()" [class.bi-eye-slash]="showCurrentPassword()"></i>
-                </button>
+    <!-- ─── Addresses Section ─── -->
+    @if (activeSection() === 'addresses') {
+      <div class="content-header">
+        <h2 class="content-title">العناوين</h2>
+        <p class="content-sub">قم بإدارة عناوينك المحفوظة لتتمكن من إنهاء عمليات الشراء بسرعة وسهولة</p>
+      </div>
+
+      @if (!showAddressForm()) {
+        <div class="addresses-grid">
+          @for (addr of user.addresses; track $index) {
+            <div class="address-card">
+              <div class="address-card-icon"><i class="bi bi-geo-alt-fill"></i></div>
+              <div class="address-card-body">
+                <span class="address-card-name">{{ addr.fullName }}</span>
+                <span class="address-card-line">{{ addr.address }}</span>
+                <span class="address-card-line">{{ addr.city }} - {{ addr.governorate }}</span>
+                <span class="address-card-phone">
+                  <i class="bi bi-check-circle-fill text-success me-1"></i>{{ addr.phone }}
+                </span>
+              </div>
+              <button type="button" class="address-edit-btn" (click)="editAddress(addr)">تعديل</button>
+            </div>
+          }
+
+          <!-- Add new -->
+          <button type="button" class="address-add-card" (click)="openAddForm()">
+            <i class="bi bi-plus-lg"></i>
+            <span>إضافة عنوان جديد</span>
+          </button>
+        </div>
+      }
+
+      @if (showAddressForm()) {
+        <div class="info-card address-form-card">
+          <h3 class="info-card-title">{{ editingAddress() ? 'تعديل العنوان' : 'إضافة عنوان جديد' }}</h3>
+          <form [formGroup]="addressForm" (ngSubmit)="saveAddress()" class="address-form">
+            <div class="info-two-col">
+              <div class="info-field">
+                <label>الاسم الكامل</label>
+                <input type="text" class="pf-input" formControlName="fullName" placeholder="الاسم الكامل">
+              </div>
+              <div class="info-field">
+                <label>رقم الهاتف</label>
+                <input type="text" class="pf-input" formControlName="phone" placeholder="رقم الهاتف" dir="ltr">
               </div>
             </div>
-
-            <div class="password-field">
-              <label>كلمة المرور الجديدة</label>
-              <div class="input-group">
-                <input
-                  [type]="showNewPassword() ? 'text' : 'password'"
-                  class="form-control"
-                  formControlName="newPassword"
-                  placeholder="6 أحرف على الأقل"
-                />
-                <button type="button" class="input-group-text toggle-password" (click)="showNewPassword.set(!showNewPassword())">
-                  <i class="bi" [class.bi-eye]="!showNewPassword()" [class.bi-eye-slash]="showNewPassword()"></i>
-                </button>
+            <div class="info-two-col">
+              <div class="info-field">
+                <label>المحافظة</label>
+                <div class="pf-select-wrap">
+                  <select class="pf-input pf-select" formControlName="governorate" (change)="onGovernorateChange()">
+                    <option value="" disabled>اختر المحافظة</option>
+                    @for (gov of governorates; track gov.id) {
+                      <option [value]="gov.governorate_name_en">{{ gov.governorate_name_ar }}</option>
+                    }
+                  </select>
+                  <i class="bi bi-chevron-down pf-select-arrow"></i>
+                </div>
+              </div>
+              <div class="info-field">
+                <label>المدينة</label>
+                <div class="pf-select-wrap">
+                  <select class="pf-input pf-select" formControlName="city" [disabled]="cities.length === 0">
+                    <option value="" disabled>اختر المدينة</option>
+                    @for (city of cities; track city.id) {
+                      <option [value]="city.city_name_en">{{ city.city_name_ar }}</option>
+                    }
+                  </select>
+                  <i class="bi bi-chevron-down pf-select-arrow"></i>
+                </div>
               </div>
             </div>
-
-            <div class="password-field">
-              <label>تأكيد كلمة المرور الجديدة</label>
-              <div class="input-group">
-                <input
-                  [type]="showConfirmPassword() ? 'text' : 'password'"
-                  class="form-control"
-                  formControlName="confirmPassword"
-                  placeholder="أعد إدخال كلمة المرور الجديدة"
-                />
-                <button type="button" class="input-group-text toggle-password" (click)="showConfirmPassword.set(!showConfirmPassword())">
-                  <i class="bi" [class.bi-eye]="!showConfirmPassword()" [class.bi-eye-slash]="showConfirmPassword()"></i>
+            <div class="info-field">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <label class="mb-0">العنوان بالتفصيل</label>
+                <button type="button" class="gps-btn" (click)="useCurrentLocation()" [disabled]="locating()">
+                  @if (locating()) {
+                    <span class="spinner-border spinner-border-sm"></span>
+                  } @else {
+                    <i class="bi bi-geo-alt"></i>
+                  }
+                  موقعك الحالي
                 </button>
               </div>
+              <textarea class="pf-input pf-textarea" formControlName="address" rows="3" placeholder="الشارع، رقم المبنى، الدور..."></textarea>
             </div>
-
             <div class="password-actions">
-              <button type="submit" class="btn btn-primary" [disabled]="passwordForm.invalid || passwordSaving()">
-                @if (passwordSaving()) {
-                  <span class="spinner-border spinner-border-sm me-1"></span>
-                  جاري الحفظ...
-                } @else {
-                  <i class="bi bi-check2-circle me-1"></i>
-                  حفظ كلمة المرور
-                }
+              <button type="submit" class="btn-primary-pf" [disabled]="addressForm.invalid || savingAddress()">
+                @if (savingAddress()) { <span class="spinner-border spinner-border-sm me-1"></span> } حفظ العنوان
               </button>
-              <button type="button" class="btn btn-outline-secondary" (click)="togglePasswordSection()">
-                إلغاء
-              </button>
+              <button type="button" class="btn-ghost-pf" (click)="cancelAddressForm()">إلغاء</button>
             </div>
           </form>
-        }
-      </div>
-    </div>
-  }
+        </div>
+      }
+    }
+
+  </main>
 </div>
+}

@@ -4,16 +4,20 @@
 <!-- Below Slider Banners -->
 @if (belowSliderBanners.length > 0) {
   <section class="section-padding pb-0">
-    <div class="container" style="padding: 1% 3%;">
+    <div class="container below-slider-banners" style="padding: 1% 3%;">
       <div class="row g-3">
         @for (banner of belowSliderBanners; track banner.id) {
           <div class="col-12">
             @if (banner.link) {
               <a [href]="banner.link">
-                <img [src]="banner.image" [alt]="'بنر ' + banner.id" class="w-100 rounded-1 shadow-sm" loading="lazy" />
+                <img [ngSrc]="banner.image" [alt]="'بنر ' + banner.id" class="w-100 rounded-1 shadow-sm"
+                     width="1600" height="300"
+                     sizes="100vw" loading="lazy" />
               </a>
             } @else {
-              <img [src]="banner.image" [alt]="'بنر ' + banner.id" class="w-100 rounded-2 shadow-sm" loading="lazy" />
+              <img [ngSrc]="banner.image" [alt]="'بنر ' + banner.id" class="w-100 rounded-2 shadow-sm"
+                   width="1600" height="300"
+                   sizes="100vw" loading="lazy" />
             }
           </div>
         }

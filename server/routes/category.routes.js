@@ -11,6 +11,7 @@ const {
   addSubcategory,
   updateSubcategory,
   deleteSubcategory,
+  reorderCategories,
 } = require('../controllers/category.controller');
 
 const uploadDir = path.join(__dirname, '..', 'uploads', 'categories');
@@ -30,6 +31,7 @@ const router = express.Router();
 // Category routes
 router.get('/', getAllCategories);
 router.get('/detailed', getDetailedCategories);
+router.post('/reorder', express.json(), reorderCategories);
 router.post('/', upload.single('image'), createCategory);
 router.put('/:id', upload.single('image'), updateCategory);
 router.delete('/:id', deleteCategory);

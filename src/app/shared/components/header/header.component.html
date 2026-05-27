@@ -59,7 +59,10 @@
           <div class="spinner-border spinner-border-sm" role="status" style="color: var(--sz-accent);"></div>
         </div>
       }
-      <img [src]="logoUrl" alt="" class="header-logo" style="filter: sepia(1); " [style.display]="logoLoaded ? '' : 'none'"
+      <img [src]="logoUrl" alt="Logo" class="header-logo"
+           width="160" height="60"
+           fetchpriority="high" decoding="async"
+           style="filter: sepia(1);" [style.display]="logoLoaded ? '' : 'none'"
            (load)="logoLoaded = true">
     </a>
 
@@ -230,6 +233,9 @@
               <a class="profile-dropdown-item" routerLink="/profile" (click)="showProfileDropdown = false">
                 <i class="bi bi-person-gear me-2"></i>{{ 'nav.my_account' | translate }}
               </a>
+              <a class="profile-dropdown-item" routerLink="/profile" [queryParams]="{ section: 'addresses' }" (click)="showProfileDropdown = false">
+                <i class="bi bi-geo-alt me-2"></i>العناوين
+              </a>
               <hr class="profile-dropdown-divider">
               <a class="profile-dropdown-item text-danger" (click)="logout(); showProfileDropdown = false">
                 <i class="bi bi-box-arrow-right me-2"></i>{{ 'nav.logout' | translate }}
@@ -317,7 +323,8 @@
       <!-- Drawer Header -->
       <div class="mobile-drawer-header">
         <a routerLink="/" (click)="closeMobileMenu()">
-          <img [src]="logoIconUrl" style="filter: sepia(1);" alt="" class="mobile-drawer-logo"
+          <img [src]="logoIconUrl" style="filter: sepia(1);" alt="Logo" class="mobile-drawer-logo"
+               width="60" height="60" decoding="async"
                [style.display]="logoIconLoaded ? '' : 'none'" (load)="logoIconLoaded = true">
         </a>
         <button class="btn btn-link mobile-drawer-close" (click)="closeMobileMenu()">
@@ -395,7 +402,7 @@
 </nav>
 
 <!-- ═══════ Categories Bar (desktop) ═══════ -->
-@if (categories.length > 0) {
+@if (isLoadingCategories() || categories.length > 0) {
   <div class="categories-bar d-none d-lg-block"
        (mouseleave)="onCategoryLeave()">
     <div class="container">
@@ -416,13 +423,21 @@
             <i class="bi bi-cart-plus me-1"></i>{{ 'nav.wholesale_offers' | translate }}
           </a>
         </div>
-        @for (cat of categories; track cat.id) {
-          <div class="categories-bar-item-wrapper"
-               (mouseenter)="onCategoryHover(cat)">
-            <a class="categories-bar-item"
-               [class.active]="hoveredCategory !== null && hoveredCategory.id === cat.id"
-               (click)="searchByCategory(cat)">{{ cat.name }}</a>
-          </div>
+        @if (isLoadingCategories()) {
+          @for (slot of loaderSlots; track slot) {
+            <div class="categories-bar-item-wrapper">
+              <span class="categories-bar-item skeleton-chip"></span>
+            </div>
+          }
+        } @else {
+          @for (cat of categories; track cat.id) {
+            <div class="categories-bar-item-wrapper"
+                 (mouseenter)="onCategoryHover(cat)">
+              <a class="categories-bar-item"
+                 [class.active]="hoveredCategory !== null && hoveredCategory.id === cat.id"
+                 (click)="searchByCategory(cat)">{{ cat.name }}</a>
+            </div>
+          }
         }
       </div>
     </div>
@@ -629,6 +644,10 @@
     <span class="mobile-nav-icon"><i class="bi bi-percent"></i></span>
     <span class="mobile-nav-label">{{ 'nav.offers' | translate }}</span>
   </a>
+  <a class="mobile-bottom-nav-item" routerLink="/watch" routerLinkActive="active">
+    <span class="mobile-nav-icon"><i class="bi bi-play-btn-fill"></i></span>
+    <span class="mobile-nav-label">{{ 'nav.watch' | translate }}</span>
+  </a>
   <a class="mobile-bottom-nav-item" routerLink="/cart" routerLinkActive="active">
     <span class="mobile-nav-icon">
       <i class="bi bi-cart3"></i>
@@ -637,15 +656,6 @@
       }
     </span>
     <span class="mobile-nav-label">{{ 'nav.cart' | translate }}</span>
-  </a>
-  <a class="mobile-bottom-nav-item" routerLink="/wishlist" routerLinkActive="active">
-    <span class="mobile-nav-icon">
-      <i class="bi bi-heart-fill"></i>
-      @if (wishlistService.wishlistCount$ | async; as count) {
-        <span class="mobile-bottom-nav-badge">{{ count }}</span>
-      }
-    </span>
-    <span class="mobile-nav-label">{{ 'nav.wishlist' | translate }}</span>
   </a>
   @if (authService.isLoggedIn$ | async) {
     <a class="mobile-bottom-nav-item" routerLink="/profile" routerLinkActive="active">

@@ -176,7 +176,7 @@
     padding: 0 0.5rem 0.5rem !important;
 
     .btn {
-      font-size: 0.65rem;
+      font-size: 0.8rem;
       padding: 0.25rem 0.4rem;
         @media (max-width: 576px) {
       padding: 0.25rem 0.1rem !important;
@@ -209,7 +209,7 @@
 .more-options-strip {
   margin: 0.5rem -1rem 0.4rem;
   padding: 0.4rem 0.75rem;
-  background: linear-gradient(90deg, rgba(106, 143, 107, 0.14), rgba(106, 143, 107, 0.04));
+  background-color: black;
   color: var(--sz-accent, #6a8f6b);
   font-size: 0.72rem;
   font-weight: 700;
@@ -231,7 +231,7 @@
   .more-options-strip {
     margin-left: -0.5rem;
     margin-right: -0.5rem;
-    font-size: 0.65rem;
+    font-size: 0.57rem;
     padding: 0.3rem 0.5rem;
   }
 }

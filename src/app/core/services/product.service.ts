@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { BehaviorSubject, Observable, map, of, catchError } from 'rxjs';
+import { BehaviorSubject, Observable, map, of, catchError, retry, shareReplay, tap } from 'rxjs';
 import { IProduct } from '../models/product.model';
 import { API_CONFIG } from '../config/api.config';
 
@@ -12,21 +12,24 @@ export class ProductService {
 
   private productsSubject = new BehaviorSubject<IProduct[]>([]);
   products$ = this.productsSubject.asObservable();
-  private loaded = false;
+  private loadOnce$: Observable<IProduct[]> | null = null;
 
-  private ensureLoaded(): void {
-    if (this.loaded) return;
-    this.loaded = true;
-    this.http.get<any[]>(`${SERVER_URL}/api/products`).subscribe({
-      next: (serverProducts) => {
-        const mapped = serverProducts.map(p => this.mapServerProduct(p));
-        this.productsSubject.next(mapped);
-      },
-      error: (err) => {
-        console.error('Failed to load products from server:', err);
-        this.loaded = false;
-      }
-    });
+  private ensureLoaded(): Observable<IProduct[]> {
+    if (!this.loadOnce$) {
+      this.loadOnce$ = this.http.get<any[]>(`${SERVER_URL}/api/products`).pipe(
+        retry({ count: 2, delay: 800 }),
+        map(list => list.map(p => this.mapServerProduct(p))),
+        tap(mapped => this.productsSubject.next(mapped)),
+        catchError(err => {
+          console.error('Failed to load products from server:', err);
+          this.loadOnce$ = null;
+          return of([] as IProduct[]);
+        }),
+        shareReplay({ bufferSize: 1, refCount: false })
+      );
+      this.loadOnce$.subscribe();
+    }
+    return this.loadOnce$;
   }
 
   mapServerProduct(sp: any): IProduct {
@@ -81,6 +84,7 @@ export class ProductService {
       variantOptionTypeAr: sp.variantOptionTypeAr,
       baseVariantName: sp.baseVariantName,
       baseVariantNameAr: sp.baseVariantNameAr,
+      baseColorHex: sp.baseColorHex,
       variants: (sp.variants || []).map((v: any) => ({
         id: v.id,
         name: v.name || '',
@@ -91,6 +95,7 @@ export class ProductService {
         originalPrice: v.originalPrice,
         discountedPrice: v.discountedPrice,
         stock: v.stock,
+        colorHex: v.colorHex,
       })),
     };
   }
@@ -105,7 +110,7 @@ export class ProductService {
 
   /** Reload products from backend */
   refresh(): void {
-    this.loaded = false;
+    this.loadOnce$ = null;
     this.ensureLoaded();
   }
 

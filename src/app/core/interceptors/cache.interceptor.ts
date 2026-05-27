@@ -8,39 +8,37 @@ interface CacheEntry {
 
 const cache = new Map<string, CacheEntry>();
 
-/** URLs that should be cached (GET requests only) */
-const CACHEABLE_PATTERNS = [
-  '/api/categories/detailed',
-  '/api/brands',
-  '/api/banners',
-  '/api/settings',
-  '/api/governorates',
+/** Per-pattern cache rules. Patterns are matched via `url.includes`. */
+const CACHE_RULES: ReadonlyArray<{ pattern: string; ttl: number }> = [
+  { pattern: '/api/brands',              ttl: 24 * 60 * 60 * 1000 },
+  { pattern: '/api/categories/detailed', ttl:  6 * 60 * 60 * 1000 },
+  { pattern: '/api/governorates',        ttl: 24 * 60 * 60 * 1000 },
+  { pattern: '/api/banners',             ttl: 15 * 60 * 1000 },
+  { pattern: '/api/settings',            ttl: 10 * 60 * 1000 },
 ];
 
-/** Cache duration in ms (5 minutes) */
-const CACHE_DURATION = 5 * 60 * 1000;
+function ttlFor(url: string): number | null {
+  const rule = CACHE_RULES.find(r => url.includes(r.pattern));
+  return rule ? rule.ttl : null;
+}
 
 export const cacheInterceptor: HttpInterceptorFn = (req, next) => {
-  // Only cache GET requests
   if (req.method !== 'GET') {
     return next(req);
   }
 
-  // Check if this URL matches a cacheable pattern
-  const isCacheable = CACHEABLE_PATTERNS.some(pattern => req.url.includes(pattern));
-  if (!isCacheable) {
+  const ttl = ttlFor(req.url);
+  if (ttl === null) {
     return next(req);
   }
 
   const cacheKey = req.urlWithParams;
   const cached = cache.get(cacheKey);
 
-  // Return cached response if valid
   if (cached && cached.expiry > Date.now()) {
     return of(cached.response.clone());
   }
 
-  // Remove expired entry
   if (cached) {
     cache.delete(cacheKey);
   }
@@ -50,9 +48,16 @@ export const cacheInterceptor: HttpInterceptorFn = (req, next) => {
       if (event instanceof HttpResponse) {
         cache.set(cacheKey, {
           response: event.clone(),
-          expiry: Date.now() + CACHE_DURATION,
+          expiry: Date.now() + ttl,
         });
       }
     })
   );
 };
+
+/** Invalidate cached entries whose URL matches the given substring. */
+export function invalidateCache(urlSubstring: string): void {
+  for (const key of cache.keys()) {
+    if (key.includes(urlSubstring)) cache.delete(key);
+  }
+}

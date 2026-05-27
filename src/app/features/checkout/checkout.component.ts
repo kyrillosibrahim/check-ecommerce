@@ -65,6 +65,8 @@ export class CheckoutComponent implements OnDestroy {
   savedCityAr = '';
   savedDistrictAr = '';
   showForm = false;
+  showAddressList = false;
+  savedAddresses: IAddress[] = [];
 
   paymentMethod = signal<'cod' | 'instapay'>('cod');
   notes = '';
@@ -115,8 +117,9 @@ export class CheckoutComponent implements OnDestroy {
 
       const user = this.authService.getCurrentUser();
       if (user) {
-        if (user.addresses && user.addresses.length > 0) {
-          this.savedAddress = user.addresses[user.addresses.length - 1];
+        this.savedAddresses = user.addresses || [];
+        if (this.savedAddresses.length > 0) {
+          this.savedAddress = this.savedAddresses[this.savedAddresses.length - 1];
           this.prefillFromAddress(this.savedAddress);
           this.showForm = false;
         } else {
@@ -163,7 +166,35 @@ export class CheckoutComponent implements OnDestroy {
   }
 
   editAddress(): void {
+    // Open the address picker if there are multiple saved addresses,
+    // otherwise jump straight to the edit form
+    if (this.savedAddresses.length > 1) {
+      this.showAddressList = true;
+    } else {
+      this.showForm = true;
+    }
+  }
+
+  openAddNewAddress(): void {
+    this.showAddressList = false;
     this.showForm = true;
+  }
+
+  pickAddress(addr: IAddress): void {
+    this.savedAddress = addr;
+    this.prefillFromAddress(addr);
+    this.showAddressList = false;
+    this.showForm = false;
+    this.cdr.markForCheck();
+  }
+
+  closeAddressList(): void {
+    this.showAddressList = false;
+  }
+
+  isSameAddress(a: IAddress, b: IAddress | null): boolean {
+    if (!b) return false;
+    return a.governorate === b.governorate && a.city === b.city && a.address === b.address;
   }
 
   useSavedAddress(): void {

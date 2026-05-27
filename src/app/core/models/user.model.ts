@@ -2,7 +2,7 @@ export interface IUser {
   id: string;
   name: string;
   phone: string;
-  email: string;
+  email?: string;
   role: 'user' | 'admin';
   addresses?: IAddress[];
   createdAt?: string;

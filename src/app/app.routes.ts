@@ -11,12 +11,18 @@ export const routes: Routes = [
   {
     path: 'products',
     loadComponent: () => import('./features/products/products.component').then(c => c.ProductsComponent),
-    title: 'Check - المنتجات'
+    title: 'Check - المنتجات',
+    data: { preload: true }
   },
   {
     path: 'offers',
     loadComponent: () => import('./features/offers/offers.component').then(c => c.OffersComponent),
     title: 'Check - العروض والخصومات'
+  },
+  {
+    path: 'watch',
+    loadComponent: () => import('./features/watch/watch.component').then(c => c.WatchComponent),
+    title: 'Check - شاهد'
   },
   {
     path: 'wholesale-offers',
@@ -31,12 +37,14 @@ export const routes: Routes = [
   {
     path: 'product/:id',
     loadComponent: () => import('./features/product-details/product-details.component').then(c => c.ProductDetailsComponent),
-    title: 'Check - تفاصيل المنتج'
+    title: 'Check - تفاصيل المنتج',
+    data: { preload: true }
   },
   {
     path: 'cart',
     loadComponent: () => import('./features/cart/cart.component').then(c => c.CartComponent),
-    title: 'Check - سلة التسوق'
+    title: 'Check - سلة التسوق',
+    data: { preload: true }
   },
   {
     path: 'wishlist',

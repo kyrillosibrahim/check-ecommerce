@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject, ChangeDetectorRef, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, ChangeDetectorRef, OnInit, OnDestroy, HostListener, DestroyRef, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subject, Subscription, combineLatest } from 'rxjs';
+import { Subject, combineLatest } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, switchMap } from 'rxjs/operators';
 import { CartService } from '../../../core/services/cart.service';
 import { WishlistService } from '../../../core/services/wishlist.service';
@@ -42,6 +43,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   themeService = inject(ThemeService);
   translationService = inject(TranslationService);
   authDrawerService = inject(AuthDrawerService);
+  private destroyRef = inject(DestroyRef);
 
   searchTerm = '';
   showSearchOverlay = false;
@@ -64,18 +66,20 @@ export class HeaderComponent implements OnInit, OnDestroy {
   brands: IBrand[] = [];
   allBrands: IBrand[] = [];
   categories: ICategory[] = [];
+  isLoadingCategories = signal(true);
+  loaderSlots = [0, 1, 2];
 
   // Live search
   searchSuggestions: IProduct[] = [];
   brandSuggestions: IBrand[] = [];
   isSearching = false;
   private searchSubject = new Subject<string>();
-  private searchSub?: Subscription;
 
   ngOnInit(): void {
     this.updateActiveNav(this.router.url);
     this.router.events.pipe(
-      filter((e): e is NavigationEnd => e instanceof NavigationEnd)
+      filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(e => {
       this.updateActiveNav(e.urlAfterRedirects);
       this.cdr.markForCheck();
@@ -84,7 +88,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     combineLatest([
       this.brandService.getAll(),
       this.settingsService.getSettings(),
-    ]).subscribe(([allBrands, settings]) => {
+    ]).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(([allBrands, settings]) => {
       this.allBrands = allBrands;
       const lang = this.translationService.currentLang();
 
@@ -112,13 +116,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
       }
       this.cdr.markForCheck();
     });
-    this.categoryService.getAll().subscribe(c => {
-      this.categories = c;
-      this.cdr.markForCheck();
-    });
+    this.categoryService.getAll()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(c => {
+        this.categories = c;
+        this.isLoadingCategories.set(false);
+        this.cdr.markForCheck();
+      });
 
     // Live search: debounce input, call server
-    this.searchSub = this.searchSubject.pipe(
+    this.searchSubject.pipe(
       debounceTime(300),
       distinctUntilChanged(),
       switchMap(term => {
@@ -138,7 +145,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
         ).slice(0, 5);
         // Search products from server
         return this.productService.searchProducts({ search: term, limit: 10 });
-      })
+      }),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(result => {
       this.searchSuggestions = result.products;
       this.isSearching = false;
@@ -147,7 +155,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.searchSub?.unsubscribe();
+    if (this.hoverTimeout) clearTimeout(this.hoverTimeout);
   }
 
   onSearchInput(): void {
@@ -300,8 +308,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.hideBottomNav = false;
     if (url === '/' || url === '') this.activeNavIndex = 0;
     else if (url.startsWith('/offers')) this.activeNavIndex = 1;
-    else if (url.startsWith('/cart')) this.activeNavIndex = 2;
-    else if (url.startsWith('/wishlist')) this.activeNavIndex = 3;
+    else if (url.startsWith('/watch')) this.activeNavIndex = 2;
+    else if (url.startsWith('/cart')) this.activeNavIndex = 3;
     else if (url.startsWith('/profile')) this.activeNavIndex = 4;
     else this.activeNavIndex = -1;
   }

@@ -225,6 +225,28 @@
   }
 }
 
+.skeleton-chip {
+  display: inline-block;
+  width: 90px;
+  height: 22px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.18) 25%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0.18) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+  cursor: default;
+  border-bottom-color: transparent !important;
+
+  &:hover {
+    background: linear-gradient(90deg, rgba(255,255,255,0.18) 25%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0.18) 75%);
+    border-bottom-color: transparent !important;
+  }
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 .categories-bar-brands {
   background: rgba(255, 255, 255, 0.18);
   color: #fff;

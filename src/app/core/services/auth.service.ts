@@ -18,10 +18,10 @@ export class AuthService {
   isLoggedIn$ = this.currentUser$.pipe(map(user => !!user));
   isAdmin$ = this.currentUser$.pipe(map(user => user?.role === 'admin'));
 
-  register(name: string, phone: string, email: string, password: string, confirmPassword: string): Observable<{ user: IUser; token: string }> {
-    return this.http.post<{ user: IUser; token: string }>(`${this.API}/register`, {
-      name, phone, email, password, confirmPassword
-    }).pipe(
+  register(name: string, phone: string, password?: string, confirmPassword?: string): Observable<{ user: IUser; token: string }> {
+    const body: { name: string; phone: string; password?: string; confirmPassword?: string } = { name, phone };
+    if (password) { body.password = password; body.confirmPassword = confirmPassword; }
+    return this.http.post<{ user: IUser; token: string }>(`${this.API}/register`, body).pipe(
       tap(res => this.setSession(res.user, res.token))
     );
   }
@@ -34,12 +34,12 @@ export class AuthService {
     );
   }
 
-  forgotPassword(email: string): Observable<{ message: string; otp: string; userName: string }> {
-    return this.http.post<{ message: string; otp: string; userName: string }>(`${this.API}/forgot-password`, { email });
+  forgotPassword(phone: string): Observable<{ message: string; otp: string; userName: string }> {
+    return this.http.post<{ message: string; otp: string; userName: string }>(`${this.API}/forgot-password`, { phone });
   }
 
-  resetPassword(email: string, otp: string, newPassword: string): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`${this.API}/reset-password`, { email, otp, newPassword });
+  resetPassword(phone: string, otp: string, newPassword: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.API}/reset-password`, { phone, otp, newPassword });
   }
 
   logout(): void {
@@ -63,17 +63,6 @@ export class AuthService {
     const user = this.getCurrentUser();
     if (!user) throw new Error('Not logged in');
     return this.http.put<{ message: string }>(`${this.API}/users/${user.id}/change-password`, { currentPassword, newPassword });
-  }
-
-  updateEmail(email: string): Observable<IUser> {
-    const user = this.getCurrentUser();
-    if (!user) throw new Error('Not logged in');
-    return this.http.put<IUser>(`${this.API}/users/${user.id}/email`, { email }).pipe(
-      tap(updated => {
-        const token = user.token;
-        this.setSession({ ...updated }, token!);
-      })
-    );
   }
 
   saveAddress(address: IAddress): Observable<IUser> {

@@ -9,7 +9,7 @@ export class SeoService {
   private document = inject(DOCUMENT);
 
   private readonly siteUrl = 'https://check-ecommerce.onrender.com';
-  private readonly siteName = 'Check Store';
+  private readonly siteName = 'Kaf';
   private readonly defaultImage = `${this.siteUrl}/assets/logobluewithoutbg.png`;
 
   updateTitle(title: string): void {

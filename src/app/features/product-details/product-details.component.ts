@@ -1,9 +1,13 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestroy, OnInit, signal, PLATFORM_ID, HostListener } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestroy, OnInit, signal, PLATFORM_ID, DestroyRef, SecurityContext } from '@angular/core';
+import { isPlatformBrowser, AsyncPipe } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { fromEvent, animationFrameScheduler } from 'rxjs';
+import { throttleTime } from 'rxjs/operators';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ProductService } from '../../core/services/product.service';
 import { CartService } from '../../core/services/cart.service';
+import { AuthService } from '../../core/services/auth.service';
 import { WishlistService } from '../../core/services/wishlist.service';
 import { SeoService } from '../../core/services/seo.service';
 import { SiteSettingsService } from '../../core/services/settings.service';
@@ -20,11 +24,12 @@ import { TestimonialsMarqueeComponent } from '../../shared/components/testimonia
 import { TextLoopComponent } from '../../shared/components/text-loop/text-loop.component';
 import { ShippingEstimatorComponent } from '../../shared/components/shipping-estimator/shipping-estimator.component';
 import { TrustPanelComponent } from '../../shared/components/trust-panel/trust-panel.component';
+import { DirectOrderModalComponent } from './direct-order-modal/direct-order-modal.component';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-product-details',
-  imports: [EgpCurrencyPipe, RouterLink, ImageGalleryComponent, RelatedProductsComponent, SkeletonLoaderComponent, DiscountPricePipe, TranslatePipe, LocalizePipe, TestimonialsMarqueeComponent, TextLoopComponent, ShippingEstimatorComponent, TrustPanelComponent],
+  imports: [AsyncPipe, EgpCurrencyPipe, RouterLink, ImageGalleryComponent, RelatedProductsComponent, SkeletonLoaderComponent, DiscountPricePipe, TranslatePipe, LocalizePipe, TestimonialsMarqueeComponent, TextLoopComponent, ShippingEstimatorComponent, TrustPanelComponent, DirectOrderModalComponent],
   templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -36,10 +41,13 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   private productService = inject(ProductService);
   private sanitizer = inject(DomSanitizer);
   cartService = inject(CartService);
+  authService = inject(AuthService);
   private wishlistService = inject(WishlistService);
+
   private seoService = inject(SeoService);
   private settingsService = inject(SiteSettingsService);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private destroyRef = inject(DestroyRef);
 
   ourLogoUrl = 'assets/logobluewithoutbg.png';
   product: IProduct | undefined;
@@ -81,16 +89,20 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   }
 
   /** List of selectable variant chips. The first chip represents the base product. */
-  get variantChips(): { id: string | null; label: string; ar?: string }[] {
+  get variantChips(): { id: string | null; label: string; ar?: string; colorHex?: string }[] {
     if (!this.product || !this.hasVariants) return [];
     const baseLabel = this.product.baseVariantNameAr || this.product.titleAr || this.product.title;
-    const chips: { id: string | null; label: string; ar?: string }[] = [
-      { id: null, label: baseLabel, ar: this.product.baseVariantNameAr }
+    const chips: { id: string | null; label: string; ar?: string; colorHex?: string }[] = [
+      { id: null, label: baseLabel, ar: this.product.baseVariantNameAr, colorHex: this.product.baseColorHex }
     ];
     for (const v of this.product.variants!) {
-      chips.push({ id: v.id, label: v.nameAr || v.name, ar: v.nameAr });
+      chips.push({ id: v.id, label: v.nameAr || v.name, ar: v.nameAr, colorHex: v.colorHex });
     }
     return chips;
+  }
+
+  get isColorMode(): boolean {
+    return this.product?.variantOptionType === 'color';
   }
 
   selectVariant(id: string | null): void {
@@ -127,16 +139,33 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    if (this.isBrowser) document.body.classList.add('product-details-active');
-    this.settingsService.getSettings().subscribe(settings => {
-      this.ourLogoUrl = this.settingsService.getLogoUrl(settings.logo) || this.ourLogoUrl;
-      this.cdr.markForCheck();
-    });
-    this.route.params.subscribe(params => {
+    if (this.isBrowser) {
+      document.body.classList.add('product-details-active');
+      fromEvent(window, 'scroll', { passive: true })
+        .pipe(
+          throttleTime(120, animationFrameScheduler, { leading: true, trailing: true }),
+          takeUntilDestroyed(this.destroyRef)
+        )
+        .subscribe(() => {
+          const shouldShow = window.scrollY > 600;
+          if (shouldShow !== this.showStickyBar()) {
+            this.showStickyBar.set(shouldShow);
+          }
+        });
+    }
+    this.settingsService.getSettings()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(settings => {
+        this.ourLogoUrl = this.settingsService.getLogoUrl(settings.logo) || this.ourLogoUrl;
+        this.cdr.markForCheck();
+      });
+    this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       this.isLoading.set(true);
       this.quantity = 1;
       if (this.isBrowser) window.scrollTo({ top: 0, behavior: 'instant' });
-      this.productService.getOneProduct(params['id']).subscribe(result => {
+      this.productService.getOneProduct(params['id'])
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(result => {
         if (result) {
           this.product = result.product;
           this.selectedVariantId = null;
@@ -160,15 +189,6 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.isBrowser) document.body.classList.remove('product-details-active');
-  }
-
-  @HostListener('window:scroll')
-  onScroll(): void {
-    if (!this.isBrowser) return;
-    const shouldShow = window.scrollY > 600;
-    if (shouldShow !== this.showStickyBar()) {
-      this.showStickyBar.set(shouldShow);
-    }
   }
 
   incrementQty(): void {
@@ -249,7 +269,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
       ? (product.descriptionHtmlAr || product.descriptionHtml || '')
       : (product.descriptionHtml || product.descriptionHtmlAr || '');
     html = html.replace(/&nbsp;/g, ' ');
-    this.descriptionHtml = html ? this.sanitizer.bypassSecurityTrustHtml(html) : '';
+    this.descriptionHtml = html ? (this.sanitizer.sanitize(SecurityContext.HTML, html) ?? '') : '';
   }
 
   private trackRecentlyViewed(productId: string): void {

@@ -2,11 +2,11 @@ import { inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, combineLatest, map } from 'rxjs';
-import Swal from 'sweetalert2';
 import { IProduct } from '../models/product.model';
 import { ICartItem } from '../models/cart.model';
 import { TranslationService } from './translation.service';
 import { ProductService } from './product.service';
+import { AlertService } from './alert.service';
 import { API_CONFIG } from '../config/api.config';
 
 const SERVER_URL = API_CONFIG.baseUrl;
@@ -21,6 +21,7 @@ export class CartService {
   private http = inject(HttpClient);
   private translationService = inject(TranslationService);
   private productService = inject(ProductService);
+  private alertService = inject(AlertService);
   private platformId = inject(PLATFORM_ID);
 
   private cartSubject = new BehaviorSubject<ICartItem[]>([]);
@@ -92,19 +93,6 @@ export class CartService {
     }, 0))
   );
 
-  private Toast = Swal.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3500,
-    timerProgressBar: true,
-    customClass: { popup: 'cart-toast' },
-    didOpen: (toast) => {
-      toast.addEventListener('mouseenter', Swal.stopTimer);
-      toast.addEventListener('mouseleave', Swal.resumeTimer);
-    }
-  });
-
   private cartLoaded = false;
   loading = signal(true);
 
@@ -154,9 +142,11 @@ export class CartService {
 
         const isAr = this.translationService.isArabic();
         const name = isAr && product.titleAr ? product.titleAr : product.title;
-        this.Toast.fire({
+        this.alertService.toast({
           icon: 'success',
           title: isAr ? `تم إضافة "${name}" إلى السلة` : `"${name}" added to cart`,
+          timer: 3500,
+          customClass: { popup: 'cart-toast' },
         });
       },
       error: (err) => console.error('Failed to add to cart:', err),
