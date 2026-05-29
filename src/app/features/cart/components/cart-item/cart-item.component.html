@@ -59,7 +59,9 @@
   </div>
 
   <div class="zahra-price-row">
-    <span class="zahra-line-total">{{ lineTotal | egpCurrency }}</span>
+    <span class="zahra-original-price" [class.no-discount]="!(item.product.discountPercentage > 0)">
+      {{ item.product.price | egpCurrency }}
+    </span>
     <div class="zahra-qty">
       <button class="qty-btn" (click)="decrement()" [disabled]="item.quantity <= 1">
         <i class="bi bi-dash"></i>

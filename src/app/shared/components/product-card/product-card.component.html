@@ -8,10 +8,10 @@
     }
     <!-- Image swiper arrows (when more than one main image) -->
     @if (hasMultipleImages) {
-      <button type="button" class="img-nav-btn img-nav-prev" (click)="prevImage($event)" aria-label="Previous image">
+      <button type="button" class="img-nav-btn img-nav-prev" (click)="nextImage($event)" aria-label="Previous image">
         <i class="bi bi-chevron-left"></i>
       </button>
-      <button type="button" class="img-nav-btn img-nav-next" (click)="nextImage($event)" aria-label="Next image">
+      <button type="button" class="img-nav-btn img-nav-next" (click)="prevImage($event)" aria-label="Next image">
         <i class="bi bi-chevron-right"></i>
       </button>
       <div class="img-nav-dots">

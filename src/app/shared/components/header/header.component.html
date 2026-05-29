@@ -8,9 +8,11 @@
         </a>
         <span class="top-bar-divider">|</span>
       }
-      <a class="top-bar-link cursor-pointer" (click)="authDrawerService.open()">
-        <i class="bi bi-headset me-1"></i>{{ 'nav.contact_us' | translate }}
-      </a>
+      @if (social.whatsapp) {
+        <a [href]="'https://wa.me/' + social.whatsapp" target="_blank" rel="noopener" class="top-bar-link">
+          <i class="bi bi-headset me-1"></i>{{ 'nav.contact_us' | translate }}
+        </a>
+      }
       <span class="top-bar-divider">|</span>
       <div class="d-flex align-items-center gap-2">
         @if (social.facebook) {

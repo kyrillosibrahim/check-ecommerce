@@ -114,7 +114,27 @@ h6 {
   padding-top: 10px;
 }
 
-.zahra-line-total,
+.zahra-line-total {
+  color: var(--sz-accent, #d62f2f);
+  font-weight: 700;
+  font-size: 0.92rem;
+  white-space: nowrap;
+}
+
+.zahra-original-price {
+  font-size: 0.92rem;
+  color: #202020;
+  text-decoration: line-through;
+  white-space: nowrap;
+
+  &.no-discount {
+    color: var(--sz-accent, #d62f2f);
+    font-weight: 700;
+    font-size: 0.92rem;
+    text-decoration: none;
+  }
+}
+
 .zahra-unit-price {
   color: var(--sz-accent, #d62f2f);
   font-weight: 700;
@@ -165,9 +185,10 @@ h6 {
   align-items: center;
   justify-content: space-around;
   border-top: 1px solid #efefef;
-  padding-top: 8px;
+  padding-top: 0px;
   gap: 6px;
-
+  background-color: #efefef;
+  border-radius: 15px;
   .zahra-divider {
     width: 1px;
     align-self: stretch;

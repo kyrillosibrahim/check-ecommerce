@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { combineLatest } from 'rxjs';
 import { NgOptimizedImage } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ProductService } from '../../core/services/product.service';
@@ -71,18 +72,25 @@ export class HomeComponent implements OnInit {
       this.isLoading.set(false);
       this.cdr.markForCheck();
     });
-    this.brandService.getAll().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(b => {
-      this.brands = b;
-      this.isLoadingBrands.set(false);
-      this.cdr.markForCheck();
-    });
-    this.settingsService.getSettings().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(settings => {
+    combineLatest([
+      this.brandService.getAll(),
+      this.settingsService.getSettings()
+    ]).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(([allBrands, settings]) => {
+      const topIds: number[] = settings.bestSellingBrands || [];
+      if (topIds.length > 0) {
+        this.brands = topIds
+          .map(id => allBrands.find(b => b.id === id))
+          .filter((b): b is IBrand => !!b);
+      } else {
+        this.brands = allBrands;
+      }
       if (settings.bestSellingProducts?.length) {
         this.bestSellingProducts = settings.bestSellingProducts.map(
           (p: any) => this.productService.mapServerProduct(p)
         );
       }
       this.naturalProducts = (settings.naturalProducts || []).filter(i => i?.video);
+      this.isLoadingBrands.set(false);
       this.isLoadingProducts.set(false);
       this.cdr.markForCheck();
     });
