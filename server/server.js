@@ -160,10 +160,14 @@ async function seedGovernorates() {
 }
 
 // --- Start ---
-connectDB().then(async () => {
-  await seedGovernorates();
-  app.listen(PORT, () => {
-    console.log(`\n  Product Server running at http://localhost:${PORT}`);
-    console.log(`  Uploads dir: ${path.join(__dirname, 'uploads')}\n`);
-  });
+// Bind the port immediately so the platform (Render) sees a healthy service
+// and the health check responds even while the DB is still connecting.
+app.listen(PORT, () => {
+  console.log(`\n  Product Server running at http://localhost:${PORT}`);
+  console.log(`  Uploads dir: ${path.join(__dirname, 'uploads')}\n`);
 });
+
+// Connect to the DB in the background; never let a DB failure stop the server.
+connectDB()
+  .then(() => seedGovernorates())
+  .catch((err) => console.error('  Startup DB/seed error:', err.message));
