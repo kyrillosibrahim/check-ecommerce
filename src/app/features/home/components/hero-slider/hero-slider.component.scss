@@ -3,6 +3,10 @@
   margin-top: -1px;
 }
 
+.carousel-item {
+  background: var(--sz-bg-secondary, #EAEDED);
+}
+
 .hero-image {
   width: 100%;
   height: auto;

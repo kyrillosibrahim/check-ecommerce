@@ -20,30 +20,16 @@
           <div class="carousel-item" [class.active]="i === 0">
             @if (banner.link) {
               <a style="cursor: pointer;" (click)="navigateTo(banner.link)">
-                @if (i === 0) {
-                  <img [ngSrc]="banner.image" class="d-block w-100 hero-image" alt="بنر"
-                       width="1600" height="500"
-                       sizes="100vw"
-                       priority>
-                } @else {
-                  <img [ngSrc]="banner.image" class="d-block w-100 hero-image" alt="بنر"
-                       width="1600" height="500"
-                       sizes="100vw"
-                       loading="lazy">
-                }
+                <img [ngSrc]="banner.image" class="d-block w-100 hero-image" alt="بنر"
+                     width="1600" height="500"
+                     sizes="100vw"
+                     [priority]="i === 0">
               </a>
             } @else {
-              @if (i === 0) {
-                <img [ngSrc]="banner.image" class="d-block w-100 hero-image" alt="بنر"
-                     width="1600" height="500"
-                     sizes="100vw"
-                     priority>
-              } @else {
-                <img [ngSrc]="banner.image" class="d-block w-100 hero-image" alt="بنر"
-                     width="1600" height="500"
-                     sizes="100vw"
-                     loading="lazy">
-              }
+              <img [ngSrc]="banner.image" class="d-block w-100 hero-image" alt="بنر"
+                   width="1600" height="500"
+                   sizes="100vw"
+                   [priority]="i === 0">
             }
           </div>
         }
