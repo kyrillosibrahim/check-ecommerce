@@ -39,15 +39,24 @@ const allowedOrigins = [
   process.env.CORS_ORIGIN,
   process.env.FRONTEND_URL,
   'https://kaf-egypt.vercel.app',
-  // 'https://check-ecommerce.vercel.app',
+  'https://check-dashboard.vercel.app',
   'http://localhost:4200',
   'http://localhost:4000',
   'http://localhost:5200',
 ].filter(Boolean);
 
+// Allow Vercel preview deployments of the dashboard/store (hash-based subdomains).
+const allowedOriginPatterns = [
+  /^https:\/\/check-dashboard[a-z0-9-]*\.vercel\.app$/,
+  /^https:\/\/check-store[a-z0-9-]*\.vercel\.app$/,
+];
+
 app.use(cors({
   origin: (origin, cb) => {
-    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+    if (!origin || allowedOrigins.includes(origin) ||
+        allowedOriginPatterns.some(re => re.test(origin))) {
+      return cb(null, true);
+    }
     console.warn('[CORS] Blocked origin:', origin);
     return cb(new Error('Not allowed by CORS'));
   },
