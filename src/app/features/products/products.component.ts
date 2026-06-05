@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgTemplateOutlet } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -12,7 +12,6 @@ import { ICategory } from '../../core/models/category.model';
 import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
 import { SkeletonLoaderComponent } from '../../shared/components/skeleton-loader/skeleton-loader.component';
 import { ProductFilterComponent } from './components/product-filter/product-filter.component';
-import { PaginationComponent } from '../../shared/components/pagination/pagination.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 const ITEMS_PER_PAGE = 36;
@@ -26,12 +25,12 @@ export interface PriceRange {
 
 @Component({
   selector: 'app-products',
-  imports: [ProductCardComponent, SkeletonLoaderComponent, ProductFilterComponent, PaginationComponent, TranslatePipe, FormsModule, NgTemplateOutlet],
+  imports: [ProductCardComponent, SkeletonLoaderComponent, ProductFilterComponent, TranslatePipe, FormsModule, NgTemplateOutlet],
   templateUrl: './products.component.html',
   styleUrl: './products.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductsComponent implements OnInit {
+export class ProductsComponent implements OnInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -53,11 +52,21 @@ export class ProductsComponent implements OnInit {
   selectedFilterTags: string[] = [];
 
   currentPage = 1;
-  totalPages = 1;
   totalProducts = 0;
 
   isLoading = signal(true);
+  isLoadingMore = signal(false);
+  hasMore = signal(true);
   showFilterDrawer = false;
+
+  // Infinite scroll sentinel observer
+  private observer?: IntersectionObserver;
+
+  @ViewChild('scrollSentinel') set scrollSentinel(el: ElementRef<HTMLElement> | undefined) {
+    this.observer?.disconnect();
+    this.observer = undefined;
+    if (el) this.observeSentinel(el.nativeElement);
+  }
 
   // Sidebar filter state
   sidebarSections: Record<string, boolean> = {
@@ -199,28 +208,40 @@ export class ProductsComponent implements OnInit {
 
   onFilterTagsChange(tags: string[]): void {
     this.selectedFilterTags = tags;
-    this.currentPage = 1;
     this.fetchFromServer();
   }
 
   onSortChange(sort: string): void {
     this.sortBy = sort;
-    this.currentPage = 1;
     this.closeFilterDrawer();
     this.applyClientFilters();
   }
 
   onSearchChange(term: string): void {
     this.searchTerm = term;
-    this.currentPage = 1;
     this.closeFilterDrawer();
     this.fetchFromServer();
   }
 
-  onPageChange(page: number): void {
-    this.currentPage = page;
-    this.fetchFromServer();
-    if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
+  loadMore(): void {
+    if (this.isLoading() || this.isLoadingMore() || !this.hasMore()) return;
+    this.currentPage++;
+    this.fetchFromServer(true);
+  }
+
+  private observeSentinel(el: HTMLElement): void {
+    if (typeof IntersectionObserver === 'undefined') return;
+    this.observer = new IntersectionObserver(
+      entries => {
+        if (entries[0]?.isIntersecting) this.loadMore();
+      },
+      { rootMargin: '400px' },
+    );
+    this.observer.observe(el);
+  }
+
+  ngOnDestroy(): void {
+    this.observer?.disconnect();
   }
 
   onAddToCart(product: IProduct): void {
@@ -232,11 +253,11 @@ export class ProductsComponent implements OnInit {
   }
 
   get showingStart(): number {
-    return this.totalProducts === 0 ? 0 : (this.currentPage - 1) * ITEMS_PER_PAGE + 1;
+    return this.products.length === 0 ? 0 : 1;
   }
 
   get showingEnd(): number {
-    return Math.min((this.currentPage - 1) * ITEMS_PER_PAGE + this.products.length, this.totalProducts);
+    return this.products.length;
   }
 
   // Price range toggle
@@ -346,8 +367,14 @@ export class ProductsComponent implements OnInit {
     }
   }
 
-  private fetchFromServer(): void {
-    this.isLoading.set(true);
+  private fetchFromServer(append = false): void {
+    if (append) {
+      this.isLoadingMore.set(true);
+    } else {
+      this.currentPage = 1;
+      this.hasMore.set(true);
+      this.isLoading.set(true);
+    }
 
     this.productService.searchProducts({
       search: this.searchTerm || undefined,
@@ -358,13 +385,21 @@ export class ProductsComponent implements OnInit {
       page: this.currentPage,
       limit: ITEMS_PER_PAGE,
     }).subscribe(result => {
-      this.allFetchedProducts = result.products;
-      // Use the server-reported total (not the current page length) so paging works
+      this.allFetchedProducts = append
+        ? [...this.allFetchedProducts, ...result.products]
+        : result.products;
       this.totalProducts = result.total;
-      this.totalPages = Math.max(1, Math.ceil(result.total / ITEMS_PER_PAGE));
-      this.computeFilterCounts(result.products);
-      this.applyClientFiltersInternal(result.products);
+
+      // No more pages if the server returned a partial page or we've loaded everything
+      const reachedEnd =
+        result.products.length < ITEMS_PER_PAGE ||
+        (result.total > 0 && this.allFetchedProducts.length >= result.total);
+      this.hasMore.set(!reachedEnd);
+
+      this.computeFilterCounts(this.allFetchedProducts);
+      this.applyClientFiltersInternal(this.allFetchedProducts);
       this.isLoading.set(false);
+      this.isLoadingMore.set(false);
       this.cdr.markForCheck();
     });
   }
