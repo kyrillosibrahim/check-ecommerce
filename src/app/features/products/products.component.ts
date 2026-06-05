@@ -200,7 +200,7 @@ export class ProductsComponent implements OnInit {
   onFilterTagsChange(tags: string[]): void {
     this.selectedFilterTags = tags;
     this.currentPage = 1;
-    this.applyClientFilters();
+    this.fetchFromServer();
   }
 
   onSortChange(sort: string): void {
@@ -236,7 +236,7 @@ export class ProductsComponent implements OnInit {
   }
 
   get showingEnd(): number {
-    return Math.min(this.currentPage * ITEMS_PER_PAGE, this.totalProducts);
+    return Math.min((this.currentPage - 1) * ITEMS_PER_PAGE + this.products.length, this.totalProducts);
   }
 
   // Price range toggle
@@ -247,7 +247,6 @@ export class ProductsComponent implements OnInit {
     } else {
       this.selectedPriceRanges.push(range);
     }
-    this.currentPage = 1;
     this.applyClientFilters();
   }
 
@@ -263,7 +262,6 @@ export class ProductsComponent implements OnInit {
     } else {
       this.selectedAvailability.push(value);
     }
-    this.currentPage = 1;
     this.applyClientFilters();
   }
 
@@ -279,7 +277,6 @@ export class ProductsComponent implements OnInit {
     } else {
       this.selectedBrands.push(brand);
     }
-    this.currentPage = 1;
     this.applyClientFilters();
   }
 
@@ -329,7 +326,6 @@ export class ProductsComponent implements OnInit {
         this.selectedFilterTags = this.selectedFilterTags.filter(t => t !== filter.value);
         break;
     }
-    this.currentPage = 1;
     this.applyClientFilters();
   }
 
@@ -339,7 +335,6 @@ export class ProductsComponent implements OnInit {
     this.selectedBrands = [];
     this.selectedFilterTags = [];
     this.brandSearchTerm = '';
-    this.currentPage = 1;
     if (this.selectedBrand) {
       this.router.navigate([], {
         relativeTo: this.route,
@@ -364,19 +359,22 @@ export class ProductsComponent implements OnInit {
       limit: ITEMS_PER_PAGE,
     }).subscribe(result => {
       this.allFetchedProducts = result.products;
+      // Use the server-reported total (not the current page length) so paging works
+      this.totalProducts = result.total;
+      this.totalPages = Math.max(1, Math.ceil(result.total / ITEMS_PER_PAGE));
       this.computeFilterCounts(result.products);
-      this.applyClientFiltersInternal(result.products, result.total);
+      this.applyClientFiltersInternal(result.products);
       this.isLoading.set(false);
       this.cdr.markForCheck();
     });
   }
 
   private applyClientFilters(): void {
-    this.applyClientFiltersInternal(this.allFetchedProducts, this.allFetchedProducts.length);
+    this.applyClientFiltersInternal(this.allFetchedProducts);
     this.cdr.markForCheck();
   }
 
-  private applyClientFiltersInternal(serverProducts: IProduct[], serverTotal: number): void {
+  private applyClientFiltersInternal(serverProducts: IProduct[]): void {
     let filtered = [...serverProducts];
 
     // Apply price range filter
@@ -401,8 +399,6 @@ export class ProductsComponent implements OnInit {
     }
 
     this.products = this.applySorting(filtered);
-    this.totalProducts = filtered.length;
-    this.totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
   }
 
   private computeFilterCounts(products: IProduct[]): void {
