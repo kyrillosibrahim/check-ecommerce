@@ -150,9 +150,14 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     });
   }
 
-  /** Whether to show the success/pending message instead of the form. */
-  get showPendingMessage(): boolean {
-    return this.reviewSubmitted() || this.myReview()?.status === 'pending';
+  /** The user already has a review (or just submitted one) → hide the write form. */
+  get hasReviewed(): boolean {
+    return this.reviewSubmitted() || !!this.myReview();
+  }
+
+  /** Show the "under review" message vs the "already published" message. */
+  get isReviewPending(): boolean {
+    return this.reviewSubmitted() || this.myReview()?.status !== 'approved';
   }
 
   private loadReviews(productId: string): void {

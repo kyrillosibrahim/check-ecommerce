@@ -162,6 +162,7 @@ export const AR_TRANSLATIONS: Record<string, string> = {
   'reviews.comment_placeholder': 'شاركنا رأيك في المنتج...',
   'reviews.submit': 'إرسال التقييم',
   'reviews.pending_msg': 'تم إرسال تقييمك وسيتم مراجعته قبل النشر',
+  'reviews.already_reviewed': 'لقد قيّمت هذا المنتج بالفعل. شكرًا لك!',
   'reviews.login_required': 'سجّل الدخول لتتمكن من تقييم هذا المنتج.',
   'reviews.login_link': 'تسجيل الدخول',
   'reviews.no_reviews': 'لا توجد تقييمات بعد. كن أول من يقيّم هذا المنتج!',

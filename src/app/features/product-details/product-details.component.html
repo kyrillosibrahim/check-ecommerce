@@ -430,10 +430,10 @@
           <!-- Write a review -->
           <div class="review-form-wrap mb-4">
             @if (authService.isLoggedIn$ | async) {
-              @if (showPendingMessage) {
+              @if (hasReviewed) {
                 <div class="review-pending">
                   <i class="bi bi-check-circle-fill"></i>
-                  <span>{{ 'reviews.pending_msg' | translate }}</span>
+                  <span>{{ (isReviewPending ? 'reviews.pending_msg' : 'reviews.already_reviewed') | translate }}</span>
                 </div>
               } @else {
                 <h6 class="fw-bold mb-2">{{ 'reviews.write' | translate }}</h6>

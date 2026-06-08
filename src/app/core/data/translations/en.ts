@@ -162,6 +162,7 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'reviews.comment_placeholder': 'Share your thoughts about this product...',
   'reviews.submit': 'Submit Review',
   'reviews.pending_msg': 'Your review was submitted and will be reviewed before publishing',
+  'reviews.already_reviewed': 'You have already reviewed this product. Thank you!',
   'reviews.login_required': 'Log in to review this product.',
   'reviews.login_link': 'Log in',
   'reviews.no_reviews': 'No reviews yet. Be the first to review this product!',
