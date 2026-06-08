@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, Output, EventEmitter, OnInit, PLATFORM_ID, inject } from '@angular/core';
-import { NgOptimizedImage, isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { IProduct } from '../../../core/models/product.model';
 import { TranslationService } from '../../../core/services/translation.service';
@@ -15,7 +15,7 @@ import { AlertService } from '../../../core/services/alert.service';
 
 @Component({
   selector: 'app-product-card',
-  imports: [NgOptimizedImage, EgpCurrencyPipe, DiscountPricePipe, TranslatePipe, LocalizePipe, TextLoopComponent],
+  imports: [EgpCurrencyPipe, DiscountPricePipe, TranslatePipe, LocalizePipe, TextLoopComponent],
   templateUrl: './product-card.component.html',
   styleUrl: './product-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -43,7 +43,7 @@ export class ProductCardComponent implements OnInit {
   }
 
   /** Main images array used by the swiper. */
-  private get swiperImages(): string[] {
+  get swiperImages(): string[] {
     return this.product.images || [];
   }
 

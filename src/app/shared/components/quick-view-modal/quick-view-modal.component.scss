@@ -59,17 +59,23 @@
 .quick-view-image {
   flex: 0 0 50%;
   max-width: 50%;
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f8f8;
+  border-radius: 12px 0 0 12px;
+  overflow: hidden;
 
   img {
     width: 100%;
-    height: 100%;
+    height: 320px;
     object-fit: contain;
-    border-radius: 12px 0 0 12px;
-    background: #f8f8f8;
+    border-radius: 0;
   }
 }
 
-[dir='rtl'] .quick-view-image img {
+[dir='rtl'] .quick-view-image {
   border-radius: 0 12px 12px 0;
 }
 
@@ -141,10 +147,11 @@
   .quick-view-image {
     flex: none;
     max-width: 100%;
+    min-height: unset;
+    border-radius: 12px 12px 0 0;
 
     img {
-      border-radius: 12px 12px 0 0;
-      max-height: 250px;
+      height: 250px;
     }
   }
 
