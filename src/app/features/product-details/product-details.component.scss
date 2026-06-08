@@ -883,7 +883,7 @@
       width: 34px;
       flex-shrink: 0;
       white-space: nowrap;
-      i { color: $star-color; font-size: 0.75rem; }
+      i { color: var(--bar-color, #{$star-color}); font-size: 0.75rem; }
     }
     .bar {
       flex: 1;
@@ -896,7 +896,7 @@
       display: block;
       height: 100%;
       border-radius: 6px;
-      background: #4caf50;
+      background: var(--bar-color, #4caf50);
       transition: width 0.4s ease;
     }
   }

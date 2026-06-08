@@ -90,13 +90,27 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     return Math.round((sum / list.length) * 10) / 10;
   }
 
-  /** Distribution of ratings from 5 down to 1 with percentages. */
-  get ratingDistribution(): { star: number; count: number; percent: number }[] {
+  /** A distinct color per star level (5=green … 1=red). */
+  private readonly starColors: Record<number, string> = {
+    5: '#4caf50',
+    4: '#8bc34a',
+    3: '#ffc107',
+    2: '#ff9800',
+    1: '#f44336',
+  };
+
+  /** Distribution of ratings from 5 down to 1 with percentages and colors. */
+  get ratingDistribution(): { star: number; count: number; percent: number; color: string }[] {
     const list = this.reviews();
     const total = list.length;
     return [5, 4, 3, 2, 1].map(star => {
       const count = list.filter(r => Math.round(r.rating) === star).length;
-      return { star, count, percent: total ? Math.round((count / total) * 100) : 0 };
+      return {
+        star,
+        count,
+        percent: total ? Math.round((count / total) * 100) : 0,
+        color: this.starColors[star],
+      };
     });
   }
 

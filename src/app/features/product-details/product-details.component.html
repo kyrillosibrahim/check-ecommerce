@@ -417,7 +417,7 @@
           </small>
 
           @for (row of ratingDistribution; track row.star) {
-            <div class="dist-row">
+            <div class="dist-row" [style.--bar-color]="row.color">
               <span class="dist-pct">{{ row.percent }}%</span>
               <span class="bar"><span class="bar-fill" [style.width.%]="row.percent"></span></span>
               <span class="dist-star"><i class="bi bi-star-fill"></i> {{ row.star }}</span>
