@@ -483,7 +483,7 @@
                         }
                       </div>
                       @if (rev.updatedAt) {
-                        <small class="text-muted">{{ rev.updatedAt | date:'d MMMM y':'':(translationService.isArabic() ? 'ar-EG' : 'en-US') }}</small>
+                        <small class="text-muted" style="font-size: 15px;">{{ rev.updatedAt | date:'d MMMM y':'':(translationService.isArabic() ? 'ar-EG' : 'en-US') }}</small>
                       }
                     </div>
                     <div class="star-rating reviews-stars-sm">
@@ -506,8 +506,9 @@
 
                   <div class="review-foot">
                     <button class="helpful-btn" [class.active]="rev.helpfulByMe" (click)="markReviewHelpful(rev)">
+                      ({{ rev.helpfulCount || 0 }})
+                      {{ 'reviews.helpful' | translate }}
                       <i class="bi" [class.bi-hand-thumbs-up-fill]="rev.helpfulByMe" [class.bi-hand-thumbs-up]="!rev.helpfulByMe"></i>
-                      {{ 'reviews.helpful' | translate }} ({{ rev.helpfulCount || 0 }})
                     </button>
                   </div>
                 </div>
