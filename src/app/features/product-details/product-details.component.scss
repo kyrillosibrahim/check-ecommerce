@@ -1031,10 +1031,11 @@
 
     &:hover { border-color: var(--sz-accent, #1bbc9b); color: var(--sz-accent, #1bbc9b); }
 
+    /* Voted: stay outlined (no fill); the filled thumb icon signals the active state */
     &.active {
       border-color: var(--sz-accent, #1bbc9b);
-      background: var(--sz-accent, #1bbc9b);
-      color: #fff;
+      background: transparent;
+      color: var(--sz-accent, #1bbc9b);
     }
   }
 

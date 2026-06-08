@@ -1,5 +1,8 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
-import { IMAGE_CONFIG, IMAGE_LOADER, ImageLoaderConfig } from '@angular/common';
+import { IMAGE_CONFIG, IMAGE_LOADER, ImageLoaderConfig, registerLocaleData } from '@angular/common';
+import localeArEg from '@angular/common/locales/ar-EG';
+
+registerLocaleData(localeArEg, 'ar-EG');
 import { provideRouter, withPreloading, withInMemoryScrolling } from '@angular/router';
 import { provideHttpClient, withInterceptors, withFetch } from '@angular/common/http';
 import { provideClientHydration, withEventReplay, withHttpTransferCacheOptions } from '@angular/platform-browser';
