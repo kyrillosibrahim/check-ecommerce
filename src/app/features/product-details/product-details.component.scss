@@ -832,24 +832,79 @@
 
 /* ── Reviews section ── */
 .reviews-section {
-  .reviews-avg {
-    font-size: 2.4rem;
-    font-weight: 800;
-    line-height: 1;
-    color: var(--sz-text-primary);
+  $star-color: #f5a623;
+
+  .reviews-grid {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 2.5rem;
+    align-items: start;
   }
 
   .reviews-stars i,
   .reviews-stars-sm i {
-    color: #f5a623;
+    color: $star-color;
   }
-  .reviews-stars { font-size: 1.1rem; }
-  .reviews-stars-sm { font-size: 0.85rem; }
+  .reviews-stars { font-size: 1.15rem; }
+  .reviews-stars-sm { font-size: 0.9rem; }
+
+  /* ── Summary box ── */
+  .reviews-summary {
+    border: 1px solid var(--sz-border-color);
+    border-radius: 14px;
+    background: var(--sz-bg-card, #fff);
+    padding: 1.5rem;
+    text-align: center;
+    position: sticky;
+    top: 90px;
+
+    .reviews-avg {
+      font-size: 3rem;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--sz-text-primary);
+    }
+  }
+
+  .dist-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--sz-text-secondary);
+
+    .dist-pct {
+      width: 38px;
+      text-align: start;
+      flex-shrink: 0;
+    }
+    .dist-star {
+      width: 34px;
+      flex-shrink: 0;
+      white-space: nowrap;
+      i { color: $star-color; font-size: 0.75rem; }
+    }
+    .bar {
+      flex: 1;
+      height: 8px;
+      border-radius: 6px;
+      background: var(--sz-bg-secondary, #eee);
+      overflow: hidden;
+    }
+    .bar-fill {
+      display: block;
+      height: 100%;
+      border-radius: 6px;
+      background: #4caf50;
+      transition: width 0.4s ease;
+    }
+  }
 
   /* Interactive star input */
   .review-star-input i {
-    font-size: 1.6rem;
-    color: #f5a623;
+    font-size: 1.7rem;
+    color: $star-color;
     cursor: pointer;
     margin-inline-end: 4px;
     transition: transform 0.15s ease;
@@ -887,13 +942,110 @@
   .reviews-list {
     display: flex;
     flex-direction: column;
-    gap: 0.85rem;
+    gap: 1rem;
   }
 
   .review-card {
-    padding: 0.9rem 1rem;
+    padding: 1.1rem 1.2rem;
     border: 1px solid var(--sz-border-color);
-    border-radius: 8px;
+    border-radius: 12px;
     background: var(--sz-bg-card, #fff);
+  }
+
+  .review-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .review-avatar {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--sz-accent, #1bbc9b);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .verified-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: rgba(76, 175, 80, 0.14);
+    color: #2e7d32;
+
+    i { font-size: 0.8rem; }
+  }
+
+  .review-comment {
+    color: var(--sz-text-secondary);
+    line-height: 1.7;
+    white-space: pre-line;
+
+    &.clamped {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  }
+
+  .read-more-btn {
+    border: none;
+    background: none;
+    padding: 0;
+    color: var(--sz-accent, #1bbc9b);
+    font-weight: 700;
+    font-size: 0.82rem;
+    cursor: pointer;
+  }
+
+  .review-foot {
+    margin-top: 0.75rem;
+  }
+
+  .helpful-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.35rem 0.9rem;
+    border-radius: 20px;
+    border: 1px solid var(--sz-border-color);
+    background: transparent;
+    color: var(--sz-text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover { border-color: var(--sz-accent, #1bbc9b); color: var(--sz-accent, #1bbc9b); }
+
+    &.active {
+      border-color: var(--sz-accent, #1bbc9b);
+      background: var(--sz-accent, #1bbc9b);
+      color: #fff;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .reviews-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    .reviews-summary {
+      order: -1;
+      position: static;
+    }
   }
 }

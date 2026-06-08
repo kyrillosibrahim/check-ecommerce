@@ -1,8 +1,10 @@
 const express = require('express');
 const auth = require('../middleware/auth.middleware');
+const { optionalAuth } = require('../middleware/auth.middleware');
 const {
   createReview,
   getProductReviews,
+  markHelpful,
   getMyReview,
   getAllReviews,
   approveReview,
@@ -15,7 +17,8 @@ const router = express.Router();
 
 // Storefront (user)
 router.post('/', auth, createReview);
-router.get('/product/:productId', getProductReviews);
+router.get('/product/:productId', optionalAuth, getProductReviews);
+router.put('/:id/helpful', auth, markHelpful);
 router.get('/mine/:productId', auth, getMyReview);
 
 // Dashboard (admin)

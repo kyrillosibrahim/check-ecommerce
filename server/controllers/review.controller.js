@@ -1,6 +1,7 @@
 const Review = require('../models/Review');
 const Product = require('../models/Product');
 const User = require('../models/User');
+const Order = require('../models/Order');
 
 function generateId() {
   return 'rev-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -11,6 +12,28 @@ function clean(review) {
   delete obj._id;
   delete obj.__v;
   return obj;
+}
+
+/** Public shape: hides internal fields and adds helpful counters for the viewer. */
+function cleanPublic(review, viewerId) {
+  const obj = clean(review);
+  const helpfulBy = obj.helpfulBy || [];
+  delete obj.helpfulBy;
+  delete obj.userPhone;
+  obj.helpfulCount = helpfulBy.length;
+  obj.helpfulByMe = viewerId ? helpfulBy.includes(viewerId) : false;
+  return obj;
+}
+
+/** True when the user (matched by phone) has an order containing this product. */
+async function isVerifiedPurchase(userPhone, productId) {
+  if (!userPhone) return false;
+  try {
+    const order = await Order.findOne({ 'customer.phone': userPhone, 'items.productId': productId });
+    return !!order;
+  } catch {
+    return false;
+  }
 }
 
 /** Recalculate a product's average rating and count from its approved reviews. */
@@ -42,6 +65,7 @@ async function createReview(req, res, next) {
     const product = await Product.findOne({ id: productId });
     if (!product) return res.status(404).json({ error: 'المنتج غير موجود' });
 
+    const verified = await isVerifiedPurchase(user.phone, productId);
     const now = new Date().toISOString();
     const existing = await Review.findOne({ productId, userId: user.id });
 
@@ -52,6 +76,7 @@ async function createReview(req, res, next) {
       existing.status = 'pending';
       existing.userName = user.name;
       existing.userPhone = user.phone;
+      existing.verifiedPurchase = verified;
       existing.updatedAt = now;
       saved = await existing.save();
     } else {
@@ -67,6 +92,7 @@ async function createReview(req, res, next) {
         rating: stars,
         comment: (comment || '').trim(),
         status: 'pending',
+        verifiedPurchase: verified,
         createdAt: now,
         updatedAt: now,
       });
@@ -76,12 +102,31 @@ async function createReview(req, res, next) {
   } catch (err) { next(err); }
 }
 
-// GET /api/reviews/product/:productId  (public — approved only)
+// GET /api/reviews/product/:productId  (public — approved only, optionalAuth)
 async function getProductReviews(req, res, next) {
   try {
+    const viewerId = req.user?.id;
     const reviews = await Review.find({ productId: req.params.productId, status: 'approved' })
       .sort({ updatedAt: -1 });
-    return res.json(reviews.map(clean));
+    return res.json(reviews.map(r => cleanPublic(r, viewerId)));
+  } catch (err) { next(err); }
+}
+
+// PUT /api/reviews/:id/helpful  (auth) — toggle helpful vote
+async function markHelpful(req, res, next) {
+  try {
+    const review = await Review.findOne({ id: req.params.id });
+    if (!review) return res.status(404).json({ error: 'التقييم غير موجود' });
+
+    const uid = req.user.id;
+    const idx = (review.helpfulBy || []).indexOf(uid);
+    if (idx >= 0) {
+      review.helpfulBy.splice(idx, 1);
+    } else {
+      review.helpfulBy.push(uid);
+    }
+    await review.save();
+    return res.json({ helpfulCount: review.helpfulBy.length, helpfulByMe: idx < 0 });
   } catch (err) { next(err); }
 }
 
@@ -148,6 +193,7 @@ async function enableUserReviews(req, res, next) {
 module.exports = {
   createReview,
   getProductReviews,
+  markHelpful,
   getMyReview,
   getAllReviews,
   approveReview,

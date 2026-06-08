@@ -90,6 +90,52 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     return Math.round((sum / list.length) * 10) / 10;
   }
 
+  /** Distribution of ratings from 5 down to 1 with percentages. */
+  get ratingDistribution(): { star: number; count: number; percent: number }[] {
+    const list = this.reviews();
+    const total = list.length;
+    return [5, 4, 3, 2, 1].map(star => {
+      const count = list.filter(r => Math.round(r.rating) === star).length;
+      return { star, count, percent: total ? Math.round((count / total) * 100) : 0 };
+    });
+  }
+
+  // ── read-more state ──
+  expandedReviews = signal<Set<string>>(new Set());
+
+  isExpanded(id: string): boolean {
+    return this.expandedReviews().has(id);
+  }
+
+  isLongComment(comment: string): boolean {
+    return (comment || '').length > 160;
+  }
+
+  toggleExpand(id: string): void {
+    const next = new Set(this.expandedReviews());
+    if (next.has(id)) { next.delete(id); } else { next.add(id); }
+    this.expandedReviews.set(next);
+  }
+
+  initial(name: string): string {
+    return (name || '؟').trim().charAt(0).toUpperCase();
+  }
+
+  markReviewHelpful(review: IReview): void {
+    if (!this.authService.isLoggedIn()) {
+      this.alertService.toast({ icon: 'info', title: this.translationService.translate('reviews.login_to_vote') });
+      return;
+    }
+    this.reviewService.markHelpful(review.id).subscribe({
+      next: res => {
+        this.reviews.set(this.reviews().map(r =>
+          r.id === review.id ? { ...r, helpfulCount: res.helpfulCount, helpfulByMe: res.helpfulByMe } : r
+        ));
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
   /** Whether to show the success/pending message instead of the form. */
   get showPendingMessage(): boolean {
     return this.reviewSubmitted() || this.myReview()?.status === 'pending';
@@ -253,6 +299,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
       this.selectedStars.set(0);
       this.hoverStars.set(0);
       this.reviewComment = '';
+      this.expandedReviews.set(new Set());
       if (this.isBrowser) window.scrollTo({ top: 0, behavior: 'instant' });
       this.productService.getOneProduct(params['id'])
         .pipe(takeUntilDestroyed(this.destroyRef))

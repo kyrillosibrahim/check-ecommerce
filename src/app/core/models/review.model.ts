@@ -6,6 +6,9 @@ export interface IReview {
   rating: number;
   comment: string;
   status: 'pending' | 'approved';
+  verifiedPurchase?: boolean;
+  helpfulCount?: number;
+  helpfulByMe?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }

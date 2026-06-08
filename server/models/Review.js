@@ -12,6 +12,8 @@ const reviewSchema = new mongoose.Schema({
   rating: { type: Number, required: true, min: 1, max: 5 },
   comment: { type: String, default: '' },
   status: { type: String, default: 'pending' }, // 'pending' | 'approved'
+  verifiedPurchase: { type: Boolean, default: false },
+  helpfulBy: { type: [String], default: [] }, // userIds who marked this review helpful
   createdAt: { type: String },
   updatedAt: { type: String },
 });

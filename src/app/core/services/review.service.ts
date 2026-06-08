@@ -23,4 +23,9 @@ export class ReviewService {
   submitReview(data: { productId: string; rating: number; comment: string }): Observable<{ message: string; review: IReview }> {
     return this.http.post<{ message: string; review: IReview }>(this.API, data);
   }
+
+  /** Toggle a "helpful" vote on a review (auth required). */
+  markHelpful(reviewId: string): Observable<{ helpfulCount: number; helpfulByMe: boolean }> {
+    return this.http.put<{ helpfulCount: number; helpfulByMe: boolean }>(`${this.API}/${reviewId}/helpful`, {});
+  }
 }
