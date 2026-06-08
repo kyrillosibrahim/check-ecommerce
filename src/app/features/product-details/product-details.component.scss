@@ -836,7 +836,7 @@
 
   .reviews-grid {
     display: grid;
-    grid-template-columns: 1fr 320px;
+    grid-template-columns: 1fr 1fr;
     gap: 2.5rem;
     align-items: start;
   }
@@ -855,7 +855,7 @@
     background: var(--sz-bg-card, #fff);
     padding: 1.5rem;
     text-align: center;
-    position: sticky;
+    // position: sticky;
     top: 90px;
 
     .reviews-avg {
@@ -903,7 +903,7 @@
 
   /* Interactive star input */
   .review-star-input i {
-    font-size: 1.7rem;
+    font-size: 1.3rem;
     color: $star-color;
     cursor: pointer;
     margin-inline-end: 4px;

@@ -449,10 +449,12 @@
                 </div>
                 <textarea class="form-control mb-2" rows="3" [(ngModel)]="reviewComment"
                           [placeholder]="'reviews.comment_placeholder' | translate"></textarea>
-                <button class="btn btn-primary btn-sm" (click)="submitReview()" [disabled]="isSubmittingReview()">
+                <div style="text-align: end; width: 100%;">
+                <button class="btn btn-primary btn-sm" style="font-size: 18px;" (click)="submitReview()" [disabled]="isSubmittingReview()">
                   @if (isSubmittingReview()) { <span class="spinner-border spinner-border-sm me-1"></span> }
                   {{ 'reviews.submit' | translate }}
                 </button>
+                </div>
               }
             } @else {
               <div class="review-login-prompt">
