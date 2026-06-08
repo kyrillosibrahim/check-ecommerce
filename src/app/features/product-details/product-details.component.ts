@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestroy, OnInit, signal, PLATFORM_ID, DestroyRef, SecurityContext } from '@angular/core';
-import { isPlatformBrowser, AsyncPipe } from '@angular/common';
+import { isPlatformBrowser, AsyncPipe, DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { fromEvent, animationFrameScheduler } from 'rxjs';
@@ -11,7 +12,10 @@ import { AuthService } from '../../core/services/auth.service';
 import { WishlistService } from '../../core/services/wishlist.service';
 import { SeoService } from '../../core/services/seo.service';
 import { SiteSettingsService } from '../../core/services/settings.service';
+import { ReviewService } from '../../core/services/review.service';
+import { AlertService } from '../../core/services/alert.service';
 import { IProduct } from '../../core/models/product.model';
+import { IReview } from '../../core/models/review.model';
 import { ImageGalleryComponent } from './components/image-gallery/image-gallery.component';
 import { RelatedProductsComponent } from './components/related-products/related-products.component';
 import { SkeletonLoaderComponent } from '../../shared/components/skeleton-loader/skeleton-loader.component';
@@ -29,7 +33,7 @@ import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-product-details',
-  imports: [AsyncPipe, EgpCurrencyPipe, RouterLink, ImageGalleryComponent, RelatedProductsComponent, SkeletonLoaderComponent, DiscountPricePipe, TranslatePipe, LocalizePipe, TestimonialsMarqueeComponent, TextLoopComponent, ShippingEstimatorComponent, TrustPanelComponent, DirectOrderModalComponent],
+  imports: [AsyncPipe, DatePipe, FormsModule, EgpCurrencyPipe, RouterLink, ImageGalleryComponent, RelatedProductsComponent, SkeletonLoaderComponent, DiscountPricePipe, TranslatePipe, LocalizePipe, TestimonialsMarqueeComponent, TextLoopComponent, ShippingEstimatorComponent, TrustPanelComponent, DirectOrderModalComponent],
   templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -43,6 +47,8 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   cartService = inject(CartService);
   authService = inject(AuthService);
   private wishlistService = inject(WishlistService);
+  private reviewService = inject(ReviewService);
+  private alertService = inject(AlertService);
 
   private seoService = inject(SeoService);
   private settingsService = inject(SiteSettingsService);
@@ -63,6 +69,84 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   lightboxIndex = signal<number | null>(null);
 
   readonly starsArray = [1, 2, 3, 4, 5];
+
+  // ── Reviews ──
+  reviews = signal<IReview[]>([]);
+  myReview = signal<IReview | null>(null);
+  reviewSubmitted = signal(false);
+  selectedStars = signal(0);
+  hoverStars = signal(0);
+  reviewComment = '';
+  isSubmittingReview = signal(false);
+
+  get approvedReviewsCount(): number {
+    return this.reviews().length;
+  }
+
+  get averageRating(): number {
+    const list = this.reviews();
+    if (!list.length) return 0;
+    const sum = list.reduce((acc, r) => acc + (r.rating || 0), 0);
+    return Math.round((sum / list.length) * 10) / 10;
+  }
+
+  /** Whether to show the success/pending message instead of the form. */
+  get showPendingMessage(): boolean {
+    return this.reviewSubmitted() || this.myReview()?.status === 'pending';
+  }
+
+  private loadReviews(productId: string): void {
+    this.reviewService.getProductReviews(productId).subscribe(list => {
+      this.reviews.set(list || []);
+      this.cdr.markForCheck();
+    });
+    if (this.authService.isLoggedIn()) {
+      this.reviewService.getMyReview(productId).subscribe(mine => {
+        this.myReview.set(mine);
+        if (mine) {
+          this.selectedStars.set(mine.rating);
+          this.reviewComment = mine.comment;
+        }
+        this.cdr.markForCheck();
+      });
+    }
+  }
+
+  setStars(n: number): void {
+    this.selectedStars.set(n);
+  }
+
+  submitReview(): void {
+    if (!this.product) return;
+    const rating = this.selectedStars();
+    if (rating < 1) {
+      this.alertService.toast({ icon: 'warning', title: this.translationService.translate('reviews.choose_stars') });
+      return;
+    }
+    this.isSubmittingReview.set(true);
+    this.reviewService.submitReview({
+      productId: this.product.id,
+      rating,
+      comment: this.reviewComment.trim(),
+    }).subscribe({
+      next: res => {
+        this.myReview.set(res.review);
+        this.reviewSubmitted.set(true);
+        this.isSubmittingReview.set(false);
+        this.alertService.toast({ icon: 'success', title: this.translationService.translate('reviews.pending_msg') });
+        this.cdr.markForCheck();
+      },
+      error: err => {
+        this.isSubmittingReview.set(false);
+        this.alertService.fire({
+          icon: 'error',
+          title: this.translationService.translate('reviews.error'),
+          text: err?.error?.error || '',
+        });
+        this.cdr.markForCheck();
+      },
+    });
+  }
 
   get hasDiscount(): boolean {
     return !!this.displayProduct && this.displayProduct.discountPercentage > 0;
@@ -162,6 +246,13 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       this.isLoading.set(true);
       this.quantity = 1;
+      // reset review state for the new product
+      this.reviews.set([]);
+      this.myReview.set(null);
+      this.reviewSubmitted.set(false);
+      this.selectedStars.set(0);
+      this.hoverStars.set(0);
+      this.reviewComment = '';
       if (this.isBrowser) window.scrollTo({ top: 0, behavior: 'instant' });
       this.productService.getOneProduct(params['id'])
         .pipe(takeUntilDestroyed(this.destroyRef))
@@ -175,6 +266,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
           this.buildDescriptionHtml(result.product);
           this.seoService.setProductMeta(result.product);
           this.seoService.setProductJsonLd(result.product);
+          this.loadReviews(result.product.id);
         } else {
           this.product = undefined;
           this.displayProduct = undefined;

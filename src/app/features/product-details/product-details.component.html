@@ -396,6 +396,85 @@
       </div>
     </section>
 
+    <!-- Reviews -->
+    <section class="mt-5 pt-5 reviews-section" style="border-top: 1px solid var(--sz-border-color);">
+      <h3 class="section-title">{{ 'reviews.title' | translate }}</h3>
+
+      <!-- Summary -->
+      <div class="d-flex align-items-center gap-3 mb-4">
+        <div class="reviews-avg">{{ averageRating }}</div>
+        <div>
+          <div class="star-rating reviews-stars">
+            @for (star of starsArray; track star) {
+              <i class="bi"
+                 [class.bi-star-fill]="star <= averageRating"
+                 [class.bi-star-half]="star > averageRating && star - 0.5 <= averageRating"
+                 [class.bi-star]="star > averageRating && star - 0.5 > averageRating"></i>
+            }
+          </div>
+          <small class="text-secondary">{{ approvedReviewsCount }} {{ 'reviews.based_on' | translate }}</small>
+        </div>
+      </div>
+
+      <!-- Write a review -->
+      <div class="review-form-wrap mb-4">
+        @if (authService.isLoggedIn$ | async) {
+          @if (showPendingMessage) {
+            <div class="review-pending">
+              <i class="bi bi-check-circle-fill"></i>
+              <span>{{ 'reviews.pending_msg' | translate }}</span>
+            </div>
+          } @else {
+            <h6 class="fw-bold mb-2">{{ 'reviews.write' | translate }}</h6>
+            <div class="review-star-input mb-2">
+              @for (star of starsArray; track star) {
+                <i class="bi"
+                   [class.bi-star-fill]="star <= (hoverStars() || selectedStars())"
+                   [class.bi-star]="star > (hoverStars() || selectedStars())"
+                   (click)="setStars(star)"
+                   (mouseenter)="hoverStars.set(star)"
+                   (mouseleave)="hoverStars.set(0)"></i>
+              }
+            </div>
+            <textarea class="form-control mb-2" rows="3" [(ngModel)]="reviewComment"
+                      [placeholder]="'reviews.comment_placeholder' | translate"></textarea>
+            <button class="btn btn-primary btn-sm" (click)="submitReview()" [disabled]="isSubmittingReview()">
+              @if (isSubmittingReview()) { <span class="spinner-border spinner-border-sm me-1"></span> }
+              {{ 'reviews.submit' | translate }}
+            </button>
+          }
+        } @else {
+          <div class="review-login-prompt">
+            <i class="bi bi-info-circle me-1"></i>
+            {{ 'reviews.login_required' | translate }}
+            <a routerLink="/login">{{ 'reviews.login_link' | translate }}</a>
+          </div>
+        }
+      </div>
+
+      <!-- Reviews list -->
+      @if (approvedReviewsCount > 0) {
+        <div class="reviews-list">
+          @for (rev of reviews(); track rev.id) {
+            <div class="review-card">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="fw-semibold">{{ rev.userName }}</span>
+                <div class="star-rating reviews-stars-sm">
+                  @for (star of starsArray; track star) {
+                    <i class="bi" [class.bi-star-fill]="star <= rev.rating" [class.bi-star]="star > rev.rating"></i>
+                  }
+                </div>
+              </div>
+              @if (rev.comment) { <p class="mb-1 text-secondary">{{ rev.comment }}</p> }
+              @if (rev.updatedAt) { <small class="text-muted">{{ rev.updatedAt | date:'yyyy/MM/dd' }}</small> }
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="text-secondary">{{ 'reviews.no_reviews' | translate }}</p>
+      }
+    </section>
+
     <!-- Related Products -->
     @if (relatedProducts.length > 0) {
       <section class="mt-5 pt-5" style="border-top: 1px solid var(--sz-border-color);">

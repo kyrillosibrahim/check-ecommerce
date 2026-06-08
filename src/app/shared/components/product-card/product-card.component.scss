@@ -6,16 +6,13 @@
   object-fit: contain;
   background-color: white;
   opacity: 0;
-  transition: opacity 0.15s ease, transform 0.3s ease;
+  transition: opacity 0.15s ease;
 
   &.img-visible {
     opacity: 1;
   }
 }
 
-.card:hover .product-img.img-visible {
-  transform: scale(1.05);
-}
 
 .card {
   overflow: hidden;

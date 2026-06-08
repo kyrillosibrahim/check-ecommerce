@@ -15,6 +15,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   role: { type: String, default: 'user' },
   addresses: [addressSchema],
+  reviewsDisabled: { type: Boolean, default: false },
   createdAt: { type: String },
 });
 
