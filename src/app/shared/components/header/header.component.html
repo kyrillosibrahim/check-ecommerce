@@ -475,7 +475,8 @@
                 @for (sub of hoveredCategory.subcategories; track sub.id) {
                   <a class="mega-menu-sub-card" (click)="searchBySubcategory(hoveredCategory!, sub.slug)">
                     @if (sub.image) {
-                      <img [src]="sub.image" [alt]="sub.name" class="mega-menu-sub-img">
+                      <img [src]="sub.image" [alt]="sub.name" class="mega-menu-sub-img is-loading"
+                           (load)="onImgLoad($event)" (error)="onImgError($event)">
                     } @else {
                       <div class="mega-menu-sub-img-placeholder">
                         <i class="bi bi-grid"></i>
@@ -496,7 +497,8 @@
                 @for (brand of hoveredCategory.famousBrands; track brand.id) {
                   <a class="mega-menu-brand-card" (click)="searchByBrandFromMenu(brand.name)">
                     @if (brand.image) {
-                      <img [src]="brand.image" [alt]="brand.name" class="mega-menu-brand-img">
+                      <img [src]="brand.image" [alt]="brand.name" class="mega-menu-brand-img is-loading"
+                           (load)="onImgLoad($event)" (error)="onImgError($event)">
                     } @else {
                       <div class="mega-menu-brand-img-placeholder">
                         <i class="bi bi-award"></i>

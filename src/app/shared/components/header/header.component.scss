@@ -402,6 +402,25 @@
   border: 1px solid var(--sz-border-color);
 }
 
+/* Shimmer placeholder shown in the image's place until it finishes loading */
+.mega-menu-sub-img.is-loading,
+.mega-menu-brand-img.is-loading {
+  background: linear-gradient(90deg,
+    var(--sz-skeleton-base, #e9e9e9) 25%,
+    var(--sz-skeleton-shine, #f4f4f4) 50%,
+    var(--sz-skeleton-base, #e9e9e9) 75%) !important;
+  background-size: 200% 100% !important;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+/* Failed image: keep a neutral box instead of the browser's broken-image icon */
+.mega-menu-sub-img.is-failed,
+.mega-menu-brand-img.is-failed {
+  font-size: 0;
+  color: transparent;
+  background: var(--sz-bg-secondary) !important;
+}
+
 .mega-menu-sub-img-placeholder {
   border: 1px dashed var(--sz-border-color);
   background: var(--sz-bg-secondary);

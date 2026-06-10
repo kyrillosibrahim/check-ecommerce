@@ -261,6 +261,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
     clearTimeout(this.hoverTimeout);
   }
 
+  /** Remove the shimmer placeholder once a mega-menu image has loaded. */
+  onImgLoad(event: Event): void {
+    (event.target as HTMLElement).classList.remove('is-loading');
+  }
+
+  /** Drop the shimmer and mark a broken image so it doesn't show a broken icon. */
+  onImgError(event: Event): void {
+    const el = event.target as HTMLElement;
+    el.classList.remove('is-loading');
+    el.classList.add('is-failed');
+  }
+
   onMegaMenuLeave(): void {
     this.onCategoryLeave();
   }
