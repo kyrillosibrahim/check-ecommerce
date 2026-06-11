@@ -8,6 +8,7 @@
     "serve:ssr": "node dist/e-commerce/server/server.mjs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "e2e": "playwright test",
     "optimize:images": "node scripts/optimize-images.mjs"
   },
   "prettier": {
@@ -51,6 +52,7 @@
     "@angular/build": "^21.1.4",
     "@angular/cli": "^21.1.4",
     "@angular/compiler-cli": "^21.1.0",
+    "@playwright/test": "^1.60.0",
     "@types/canvas-confetti": "^1.9.0",
     "@types/express": "^5.0.6",
     "@types/file-saver": "^2.0.7",

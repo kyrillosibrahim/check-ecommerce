@@ -6,11 +6,12 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ICategory } from '../../../../core/models/category.model';
+import { CldImagePipe } from '../../../../shared/pipes/cld-image.pipe';
 import Swiper from 'swiper';
 
 @Component({
   selector: 'app-categories-grid',
-  imports: [RouterLink],
+  imports: [RouterLink, CldImagePipe],
   templateUrl: './categories-grid.component.html',
   styleUrl: './categories-grid.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

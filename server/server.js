@@ -22,6 +22,7 @@ const activityLogRoutes = require('./routes/activity-log.routes');
 const externalWebsiteRoutes = require('./routes/external-website.routes');
 const reviewRoutes = require('./routes/review.routes');
 const storageRoutes = require('./routes/storage.routes');
+const couponRoutes = require('./routes/coupon.routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -148,6 +149,7 @@ app.use('/api/activity-logs', activityLogRoutes);
 app.use('/api/external-websites', externalWebsiteRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/storage', storageRoutes);
+app.use('/api/coupons', couponRoutes);
 
 // --- Health check ---
 app.get('/api/health', (_req, res) => {

@@ -5,7 +5,7 @@
         <div class="swiper-slide">
           <a [routerLink]="['/products']" [queryParams]="{brand: brand.name}" class="brand-card" [title]="brand.name">
             @if (brand.image) {
-              <img [src]="brand.image" [alt]="brand.name"
+              <img [src]="brand.image | cldImage:200" [alt]="brand.name"
                    loading="lazy" decoding="async" draggable="false">
             } @else {
               <div class="brand-placeholder">

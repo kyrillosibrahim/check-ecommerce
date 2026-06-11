@@ -1,4 +1,5 @@
 const express = require('express');
+const { auth } = require('../middleware/auth.middleware');
 const {
   getCart,
   addToCart,
@@ -8,6 +9,9 @@ const {
 } = require('../controllers/cart.controller');
 
 const router = express.Router();
+
+// The cart is private to the logged-in user.
+router.use(auth);
 
 router.get('/getcart', getCart);
 router.post('/addtocart', addToCart);

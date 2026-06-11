@@ -30,18 +30,17 @@ export class CartComponent {
   }
 
   get promoApplied() { return this.cartService.promoApplied; }
-  get PROMO_DISCOUNT() { return this.cartService.PROMO_DISCOUNT; }
+  get promoCode() { return this.cartService.promoCode; }
+  promoDiscount$ = this.cartService.promoDiscount$;
 
   constructor() {
     this.cartService.loadCart();
   }
 
   applyPromo(): void {
-    if (this.cartService.applyPromo(this.promoCodeInput)) {
-      this.promoError.set(false);
-    } else {
-      this.promoError.set(true);
-    }
+    this.cartService.validatePromo(this.promoCodeInput).subscribe(res => {
+      this.promoError.set(!res.valid);
+    });
   }
 
   removePromo(): void {

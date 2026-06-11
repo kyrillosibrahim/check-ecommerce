@@ -1,12 +1,32 @@
 const Order = require('../models/Order');
+const User = require('../models/User');
+const { createNotification } = require('../utils/notify');
+const { validateCoupon, markCouponUsed } = require('../utils/coupons');
+
+function stripId(doc) { const obj = doc.toObject(); delete obj._id; return obj; }
+
+// Resolves the user id a notification should go to: the order's stored userId,
+// falling back to matching the customer's phone for legacy orders.
+async function resolveRecipientId(order) {
+  if (order.userId) return order.userId;
+  const phone = order.customer?.phone;
+  if (!phone) return null;
+  const user = await User.findOne({ phone: String(phone).trim() });
+  return user ? user.id : null;
+}
 
 async function getAllOrders(_req, res, next) {
-  try { const orders = await Order.find({}, { __v: 0 }).sort({ date: -1 }); res.json(orders.map(o => { const obj = o.toObject(); delete obj._id; return obj; })); }
+  try { const orders = await Order.find({}, { __v: 0 }).sort({ date: -1 }); res.json(orders.map(stripId)); }
+  catch (err) { next(err); }
+}
+
+async function getMyOrders(req, res, next) {
+  try { const orders = await Order.find({ userId: req.user.id }, { __v: 0 }).sort({ date: -1 }); res.json(orders.map(stripId)); }
   catch (err) { next(err); }
 }
 
 async function getOrderById(req, res, next) {
-  try { const order = await Order.findOne({ id: req.params.id }, { __v: 0 }); if (!order) return res.status(404).json({ error: 'Order not found.' }); const obj = order.toObject(); delete obj._id; res.json(obj); }
+  try { const order = await Order.findOne({ id: req.params.id }, { __v: 0 }); if (!order) return res.status(404).json({ error: 'Order not found.' }); res.json(stripId(order)); }
   catch (err) { next(err); }
 }
 
@@ -14,8 +34,61 @@ async function createOrder(req, res, next) {
   try {
     const body = req.body;
     if (!body.id || !body.items?.length) return res.status(400).json({ error: 'id and items are required.' });
-    const order = await Order.create({ id: body.id, customer: body.customer || {}, items: body.items || [], shippingAddress: body.shippingAddress || {}, shippingCost: parseFloat(body.shippingCost) || 0, shippingCompany: body.shippingCompany || '', subtotal: parseFloat(body.subtotal) || 0, discount: parseFloat(body.discount) || 0, total: parseFloat(body.total) || 0, status: body.status || 'pending', paymentStatus: body.paymentStatus || 'unpaid', paymentMethod: body.paymentMethod || 'cod', notes: body.notes || '', date: body.date || new Date().toISOString(), storeProfitTotal: parseFloat(body.storeProfitTotal) || 0, systemCommission: parseFloat(body.systemCommission) || 5 });
-    const obj = order.toObject(); delete obj._id; res.status(201).json({ message: 'Order created successfully.', order: obj });
+
+    const userId = req.user?.id || '';
+    const subtotal = parseFloat(body.subtotal) || 0;
+    const shippingCost = parseFloat(body.shippingCost) || 0;
+    const discount = parseFloat(body.discount) || 0; // product-level discount
+    // The amount a coupon applies to: items total after product discounts.
+    const couponBase = parseFloat(body.itemsTotal) || (subtotal - discount) || 0;
+    let total = parseFloat(body.total) || (couponBase + shippingCost);
+
+    // Re-validate the coupon server-side and apply the discount authoritatively.
+    let couponCode = '';
+    let couponDiscount = 0;
+    if (body.couponCode) {
+      const result = await validateCoupon(body.couponCode, userId, body.browserId);
+      if (result.valid) {
+        couponCode = String(body.couponCode).trim().toUpperCase();
+        couponDiscount = Math.round(couponBase * (result.discountPercentage / 100));
+        total = couponBase + shippingCost - couponDiscount;
+        await markCouponUsed(body.couponCode, userId, body.browserId);
+      }
+    }
+
+    const order = await Order.create({
+      id: body.id,
+      userId,
+      customer: body.customer || {},
+      items: body.items || [],
+      shippingAddress: body.shippingAddress || {},
+      shippingCost,
+      shippingCompany: body.shippingCompany || '',
+      subtotal,
+      discount,
+      couponCode,
+      couponDiscount,
+      total,
+      status: body.status || 'pending',
+      paymentStatus: body.paymentStatus || 'unpaid',
+      paymentMethod: body.paymentMethod || 'cod',
+      notes: body.notes || '',
+      date: body.date || new Date().toISOString(),
+      storeProfitTotal: parseFloat(body.storeProfitTotal) || 0,
+      systemCommission: parseFloat(body.systemCommission) || 5,
+    });
+
+    // State 3: notify the customer that their order is on its way.
+    if (userId) {
+      await createNotification(userId, {
+        type: 'order_created',
+        title: 'تم استلام طلبك',
+        body: 'لقد تم تسليم طلبك لشركة الشحن.. سيصلك طلبك فى خلال 24 ساعة',
+        link: '/notifications',
+      });
+    }
+
+    res.status(201).json({ message: 'Order created successfully.', order: stripId(order) });
   } catch (err) { next(err); }
 }
 
@@ -24,6 +97,7 @@ async function updateOrder(req, res, next) {
     const order = await Order.findOne({ id: req.params.id });
     if (!order) return res.status(404).json({ error: 'Order not found.' });
     const body = req.body;
+    const prevStatus = order.status;
     if (body.shippingCompany != null) order.shippingCompany = body.shippingCompany;
     if (body.shippingCost != null) order.shippingCost = parseFloat(body.shippingCost);
     if (body.status != null) order.status = body.status;
@@ -33,7 +107,23 @@ async function updateOrder(req, res, next) {
     if (body.storeProfitTotal != null) order.storeProfitTotal = parseFloat(body.storeProfitTotal);
     if (body.systemCommission != null) order.systemCommission = parseFloat(body.systemCommission);
     if (body.shippingAddress != null) order.shippingAddress = body.shippingAddress;
-    await order.save(); const obj = order.toObject(); delete obj._id; res.json({ message: 'Order updated successfully.', order: obj });
+    await order.save();
+
+    // State 1: when the order transitions to "shipped", notify its owner.
+    if (prevStatus !== 'shipped' && order.status === 'shipped') {
+      const recipientId = await resolveRecipientId(order);
+      if (recipientId) {
+        const company = order.shippingCompany || 'J&T';
+        await createNotification(recipientId, {
+          type: 'order_shipped',
+          title: 'تم شحن طلبك',
+          body: `تم ارسال طلبك رقم ${order.id} لشركة شحن ${company} سوف يصلك طلبك فى خلال 24 ساعه من الان`,
+          link: '/notifications',
+        });
+      }
+    }
+
+    res.json({ message: 'Order updated successfully.', order: stripId(order) });
   } catch (err) { next(err); }
 }
 
@@ -42,4 +132,4 @@ async function deleteOrder(req, res, next) {
   catch (err) { next(err); }
 }
 
-module.exports = { getAllOrders, getOrderById, createOrder, updateOrder, deleteOrder };
+module.exports = { getAllOrders, getMyOrders, getOrderById, createOrder, updateOrder, deleteOrder };

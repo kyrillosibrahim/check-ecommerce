@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, ElementRef, HostListener, Input, signal, ViewChild } from '@angular/core';
+import { CldImagePipe } from '../../../../shared/pipes/cld-image.pipe';
 
 @Component({
   selector: 'app-image-gallery',
+  imports: [CldImagePipe],
   templateUrl: './image-gallery.component.html',
   styleUrl: './image-gallery.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

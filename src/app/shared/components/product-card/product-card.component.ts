@@ -10,12 +10,13 @@ import { DiscountPricePipe } from '../../pipes/discount-price.pipe';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { LocalizePipe } from '../../pipes/localize.pipe';
 import { EgpCurrencyPipe } from '../../pipes/egp-currency.pipe';
+import { CldImagePipe } from '../../pipes/cld-image.pipe';
 import { TextLoopComponent } from '../text-loop/text-loop.component';
 import { AlertService } from '../../../core/services/alert.service';
 
 @Component({
   selector: 'app-product-card',
-  imports: [RouterLink, EgpCurrencyPipe, DiscountPricePipe, TranslatePipe, LocalizePipe, TextLoopComponent],
+  imports: [RouterLink, EgpCurrencyPipe, DiscountPricePipe, TranslatePipe, LocalizePipe, TextLoopComponent, CldImagePipe],
   templateUrl: './product-card.component.html',
   styleUrl: './product-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

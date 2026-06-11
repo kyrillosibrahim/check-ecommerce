@@ -323,7 +323,8 @@ export class CheckoutComponent implements OnDestroy {
       ...this.checkoutForm.value
     };
 
-    const promoDiscount = this.cartService.promoApplied() ? this.cartService.PROMO_DISCOUNT : 0;
+    const promoPct = this.cartService.promoApplied() ? this.cartService.promoPercentage() : 0;
+    const promoDiscount = Math.round(cartTotal * promoPct / 100);
     const shippingCompany = 'J&T Express';
     const paymentMethod = this.paymentMethod();
     const notes = this.notes?.trim() || '';
@@ -351,7 +352,9 @@ export class CheckoutComponent implements OnDestroy {
       },
       subtotal: cartSubtotal,
       discount: cartDiscount,
-      promoCode: this.cartService.promoApplied() ? this.cartService.promoCode() : null,
+      itemsTotal: cartTotal,
+      couponCode: this.cartService.promoApplied() ? this.cartService.promoCode() : null,
+      browserId: this.cartService.getBrowserId(),
       promoDiscount: promoDiscount,
       shippingCompany,
       paymentMethod,

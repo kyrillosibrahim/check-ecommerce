@@ -329,7 +329,7 @@
                   {{ 'checkout.qty_discount' | translate }}
                   <span class="badge bg-success ms-1" style="font-size: 0.6rem;">{{ cartService.promoCode() }}</span>
                 </span>
-                <span class="sz-discount-value fw-semibold">-{{ cartService.PROMO_DISCOUNT | egpCurrency }}</span>
+                <span class="sz-discount-value fw-semibold">-{{ cartService.promoDiscount$ | async | egpCurrency }}</span>
               </div>
             }
 
@@ -348,7 +348,7 @@
             <div class="d-flex justify-content-between">
               <span class="fw-bold fs-6">{{ 'checkout.total' | translate }} :</span>
               <span class="fw-bold fs-6" style="color: var(--sz-accent);">
-                {{ ((cartService.cartTotal$ | async) ?? 0) + shippingCost - (cartService.promoApplied() ? cartService.PROMO_DISCOUNT : 0) | egpCurrency }}
+                {{ ((cartService.cartTotal$ | async) ?? 0) + shippingCost - ((cartService.promoDiscount$ | async) ?? 0) | egpCurrency }}
               </span>
             </div>
           </div>
@@ -363,7 +363,7 @@
     <div class="checkout-sticky-bar d-md-none">
       <div class="checkout-sticky-total">
         <span class="label">{{ 'checkout.total' | translate }}</span>
-        <span class="value">{{ ((cartService.cartTotal$ | async) ?? 0) + shippingCost - (cartService.promoApplied() ? cartService.PROMO_DISCOUNT : 0) | egpCurrency }}</span>
+        <span class="value">{{ ((cartService.cartTotal$ | async) ?? 0) + shippingCost - ((cartService.promoDiscount$ | async) ?? 0) | egpCurrency }}</span>
       </div>
       <button class="checkout-sticky-btn" (click)="onSubmit()" [disabled]="checkoutForm.invalid">
         <i class="bi bi-check-circle me-1"></i>{{ 'checkout.place_order' | translate }}

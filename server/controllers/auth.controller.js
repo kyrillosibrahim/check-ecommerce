@@ -2,6 +2,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Otp = require('../models/Otp');
+const Notification = require('../models/Notification');
+const { createNotification } = require('../utils/notify');
 const JWT_SECRET = process.env.JWT_SECRET || 'check-secret-key-2026';
 
 function generateId() { return 'usr-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
@@ -31,6 +33,19 @@ async function login(req, res) {
     const user = await User.findOne({ phone: phone.trim() });
     if (!user || !(await bcrypt.compare(password, user.password))) return res.status(401).json({ error: 'رقم التليفون أو كلمة المرور غير صحيحة' });
     res.json({ user: sanitizeUser(user), token: signToken(user) });
+
+    // State 2: welcome the customer. Dedupe so we don't pile up unread greetings.
+    try {
+      const hasUnreadWelcome = await Notification.exists({ userId: user.id, type: 'welcome', read: false });
+      if (!hasUnreadWelcome) {
+        await createNotification(user.id, {
+          type: 'welcome',
+          title: 'أهلاً بك فى كاف',
+          body: `مرحبا شكرا لك يا ${user.name} فى الانضمام فى كاف`,
+          link: '/notifications',
+        });
+      }
+    } catch { /* never let notifications break login */ }
   } catch (err) { res.status(500).json({ error: 'حدث خطأ أثناء تسجيل الدخول' }); }
 }
 
@@ -96,7 +111,9 @@ async function changePassword(req, res) {
 
 async function saveAddress(req, res) {
   try {
-    const { id } = req.params; const { fullName, phone, governorate, city, address } = req.body;
+    // Always operate on the authenticated user — ignore any id in the URL so a
+    // user cannot edit someone else's address.
+    const id = req.user.id; const { fullName, phone, governorate, city, address } = req.body;
     if (!fullName || !phone || !governorate || !city || !address) return res.status(400).json({ error: 'جميع حقول العنوان مطلوبة' });
     const user = await User.findOne({ id });
     if (!user) return res.status(404).json({ error: 'المستخدم غير موجود' });

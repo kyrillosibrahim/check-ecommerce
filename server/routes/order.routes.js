@@ -1,6 +1,8 @@
 const express = require('express');
+const { auth, adminAuth } = require('../middleware/auth.middleware');
 const {
   getAllOrders,
+  getMyOrders,
   getOrderById,
   createOrder,
   updateOrder,
@@ -9,10 +11,14 @@ const {
 
 const router = express.Router();
 
-router.get('/', getAllOrders);
-router.get('/:id', getOrderById);
-router.post('/', createOrder);
-router.put('/:id', updateOrder);
-router.delete('/:id', deleteOrder);
+// Customer endpoints
+router.get('/mine', auth, getMyOrders);
+router.post('/', auth, createOrder);
+
+// Admin endpoints (dashboard sends x-admin-key)
+router.get('/', adminAuth, getAllOrders);
+router.get('/:id', adminAuth, getOrderById);
+router.put('/:id', adminAuth, updateOrder);
+router.delete('/:id', adminAuth, deleteOrder);
 
 module.exports = router;

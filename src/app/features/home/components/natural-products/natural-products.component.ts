@@ -51,6 +51,7 @@ export class NaturalProductsComponent implements AfterViewInit, OnChanges {
       loop: this.items.length > 2,
       grabCursor: true,
       speed: 600,
+      watchSlidesProgress: true,
       autoplay: {
         delay: 2000,
         disableOnInteraction: false,
@@ -63,16 +64,24 @@ export class NaturalProductsComponent implements AfterViewInit, OnChanges {
         1200: { slidesPerView: 5, spaceBetween: 16 },
       },
       on: {
-        afterInit: () => this.playAllVideos(),
-        slideChangeTransitionEnd: () => this.playAllVideos(),
+        afterInit: () => this.playVisibleVideos(),
+        slideChangeTransitionEnd: () => this.playVisibleVideos(),
       },
     });
-    setTimeout(() => this.playAllVideos(), 200);
+    setTimeout(() => this.playVisibleVideos(), 200);
   }
 
-  private playAllVideos(): void {
-    const videos = this.swiperRef.nativeElement.querySelectorAll('video');
-    videos.forEach(v => {
+  /**
+   * Only the slides currently in view download + play their video; off-screen
+   * videos stay paused with preload="none", so the home page no longer pulls
+   * every clip up front.
+   */
+  private playVisibleVideos(): void {
+    const root = this.swiperRef.nativeElement;
+    root.querySelectorAll<HTMLVideoElement>('.swiper-slide:not(.swiper-slide-visible) video').forEach(v => {
+      if (!v.paused) v.pause();
+    });
+    root.querySelectorAll<HTMLVideoElement>('.swiper-slide-visible video').forEach(v => {
       v.muted = true;
       v.playsInline = true;
       const result = v.play();

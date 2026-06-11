@@ -23,6 +23,7 @@ import { DiscountPricePipe } from '../../shared/pipes/discount-price.pipe';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { LocalizePipe } from '../../shared/pipes/localize.pipe';
 import { EgpCurrencyPipe } from '../../shared/pipes/egp-currency.pipe';
+import { CldImagePipe } from '../../shared/pipes/cld-image.pipe';
 import { TranslationService } from '../../core/services/translation.service';
 import { TestimonialsMarqueeComponent } from '../../shared/components/testimonials-marquee/testimonials-marquee.component';
 import { TextLoopComponent } from '../../shared/components/text-loop/text-loop.component';
@@ -33,7 +34,7 @@ import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-product-details',
-  imports: [AsyncPipe, DatePipe, FormsModule, EgpCurrencyPipe, RouterLink, ImageGalleryComponent, RelatedProductsComponent, SkeletonLoaderComponent, DiscountPricePipe, TranslatePipe, LocalizePipe, TestimonialsMarqueeComponent, TextLoopComponent, ShippingEstimatorComponent, TrustPanelComponent, DirectOrderModalComponent],
+  imports: [AsyncPipe, DatePipe, FormsModule, EgpCurrencyPipe, CldImagePipe, RouterLink, ImageGalleryComponent, RelatedProductsComponent, SkeletonLoaderComponent, DiscountPricePipe, TranslatePipe, LocalizePipe, TestimonialsMarqueeComponent, TextLoopComponent, ShippingEstimatorComponent, TrustPanelComponent, DirectOrderModalComponent],
   templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

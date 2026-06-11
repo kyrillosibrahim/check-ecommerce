@@ -1,0 +1,63 @@
+<div class="notif-page container py-4">
+  <h1 class="notif-title">
+    <i class="bi bi-bell-fill"></i>
+    الإشعارات
+  </h1>
+
+  @if ((notifications$ | async); as items) {
+    @if (items.length === 0) {
+      <div class="notif-empty">
+        <i class="bi bi-bell-slash"></i>
+        <p>لا توجد إشعارات حتى الآن</p>
+      </div>
+    } @else {
+      <div class="notif-list">
+        @for (n of items; track n.id) {
+          <div class="notif-card"
+               [class.unread]="!n.read"
+               [class.clickable]="n.link && n.link !== '/notifications'"
+               (click)="open(n)">
+
+            <div class="notif-icon" [class]="'type-' + n.type">
+              <i class="bi" [class]="iconFor(n.type)"></i>
+            </div>
+
+            <div class="notif-body">
+              @if (n.title) { <div class="notif-card-title">{{ n.title }}</div> }
+              <div class="notif-text">{{ n.body }}</div>
+
+              @if (n.type === 'coupon' && n.coupon?.code) {
+                <div class="coupon-box">
+                  <div class="coupon-fields">
+                    <div class="coupon-field">
+                      <span class="coupon-label">نسبة الخصم</span>
+                      <span class="coupon-value">{{ n.coupon!.discountPercentage }}%</span>
+                    </div>
+                    <button type="button" class="coupon-field coupon-copy"
+                            (click)="copyCode(n.coupon!.code); $event.stopPropagation()">
+                      <span class="coupon-label">الكود (اضغط للنسخ)</span>
+                      <span class="coupon-value">{{ n.coupon!.code }} <i class="bi bi-clipboard"></i></span>
+                    </button>
+                  </div>
+                  @if (countdown(n); as cd) {
+                    <div class="coupon-timer">
+                      <i class="bi bi-clock-history"></i> ينتهى خلال {{ cd }}
+                    </div>
+                  } @else {
+                    <div class="coupon-timer expired">انتهت صلاحية الكود</div>
+                  }
+                </div>
+              }
+
+              <div class="notif-time">{{ n.createdAt | date:'short' }}</div>
+            </div>
+
+            <button type="button" class="notif-remove" (click)="remove(n, $event)" aria-label="حذف">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+        }
+      </div>
+    }
+  }
+</div>

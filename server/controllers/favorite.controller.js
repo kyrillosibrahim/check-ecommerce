@@ -1,14 +1,14 @@
 const Product = require('../models/Product');
 const Favorite = require('../models/Favorite');
 
-async function getFavDoc() {
-  let fav = await Favorite.findById('global');
-  if (!fav) { fav = await Favorite.create({ _id: 'global', ids: [] }); }
+async function getFavDoc(userId) {
+  let fav = await Favorite.findOne({ userId });
+  if (!fav) { fav = await Favorite.create({ userId, ids: [] }); }
   return fav;
 }
 
-async function readFavorites() {
-  const fav = await getFavDoc();
+async function readFavorites(userId) {
+  const fav = await getFavDoc(userId);
   return fav.ids || [];
 }
 
@@ -27,23 +27,23 @@ function fixImagePaths(product) {
 
 async function getFavorites(req, res, next) {
   try {
-    const favIds = await readFavorites();
+    const favIds = await readFavorites(req.user.id);
     const products = await Product.find({ id: { $in: favIds } });
     const validIds = products.map(p => p.id);
-    if (validIds.length < favIds.length) { const fav = await getFavDoc(); fav.ids = validIds; await fav.save(); }
+    if (validIds.length < favIds.length) { const fav = await getFavDoc(req.user.id); fav.ids = validIds; await fav.save(); }
     res.json(products.map(fixImagePaths));
   } catch (err) { next(err); }
 }
 
 async function getFavoriteIds(req, res, next) {
-  try { res.json(await readFavorites()); } catch (err) { next(err); }
+  try { res.json(await readFavorites(req.user.id)); } catch (err) { next(err); }
 }
 
 async function addToFavorites(req, res, next) {
   try {
     const { productId } = req.body;
     if (!productId) return res.status(400).json({ error: 'productId is required.' });
-    const fav = await getFavDoc();
+    const fav = await getFavDoc(req.user.id);
     if (fav.ids.includes(productId)) return res.json({ message: 'Already in favorites.', favorites: fav.ids });
     fav.ids.push(productId); await fav.save();
     res.json({ message: 'Added to favorites.', favorites: fav.ids });
@@ -53,14 +53,14 @@ async function addToFavorites(req, res, next) {
 async function removeFromFavorites(req, res, next) {
   try {
     const { productId } = req.params;
-    const fav = await getFavDoc();
+    const fav = await getFavDoc(req.user.id);
     fav.ids = fav.ids.filter(id => id !== productId); await fav.save();
     res.json({ message: 'Removed from favorites.', favorites: fav.ids });
   } catch (err) { next(err); }
 }
 
 async function clearFavorites(req, res, next) {
-  try { const fav = await getFavDoc(); fav.ids = []; await fav.save(); res.json({ message: 'Favorites cleared.', favorites: [] }); }
+  try { const fav = await getFavDoc(req.user.id); fav.ids = []; await fav.save(); res.json({ message: 'Favorites cleared.', favorites: [] }); }
   catch (err) { next(err); }
 }
 

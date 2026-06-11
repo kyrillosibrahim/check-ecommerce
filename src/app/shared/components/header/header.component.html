@@ -202,6 +202,16 @@
           }
         }
       </a>
+      @if (authService.isLoggedIn$ | async) {
+        <a routerLink="/notifications" class="btn btn-link nav-icon p-0 position-relative">
+          <i class="bi bi-bell" style="font-size: 1.3rem;"></i>
+          @if ((notificationsService.unreadCount$ | async) ?? 0; as count) {
+            @if (count > 0) {
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">{{ count }}</span>
+            }
+          }
+        </a>
+      }
       <a routerLink="/cart" class="btn btn-link nav-icon p-0 position-relative">
         <i class="bi bi-cart3" style="font-size: 1.3rem;"></i>
         @if ((cartService.cartCount$ | async) ?? 0; as count) {
@@ -250,6 +260,19 @@
           <i class="bi bi-person-circle"></i>
           <span class="header-action-label">{{ 'nav.login' | translate }}</span>
         </button>
+      }
+
+      <!-- Notifications -->
+      @if (authService.isLoggedIn$ | async) {
+        <a routerLink="/notifications" class="header-action-btn position-relative" routerLinkActive="header-action-active">
+          <i class="bi bi-bell"></i>
+          <span class="header-action-label">الإشعارات</span>
+          @if ((notificationsService.unreadCount$ | async) ?? 0; as count) {
+            @if (count > 0) {
+              <span class="header-badge bg-danger">{{ count }}</span>
+            }
+          }
+        </a>
       }
 
       <!-- Wishlist -->

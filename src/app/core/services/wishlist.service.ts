@@ -8,6 +8,8 @@ import { CartService } from './cart.service';
 import { ProductService } from './product.service';
 import { API_CONFIG } from '../config/api.config';
 import { AlertService } from './alert.service';
+import { AuthService } from './auth.service';
+import { AuthDrawerService } from './auth-drawer.service';
 
 const SERVER_URL = API_CONFIG.baseUrl;
 
@@ -17,6 +19,8 @@ export class WishlistService {
   private cartService = inject(CartService);
   private productService = inject(ProductService);
   private alertService = inject(AlertService);
+  private auth = inject(AuthService);
+  private authDrawer = inject(AuthDrawerService);
   private platformId = inject(PLATFORM_ID);
 
   private wishlistSubject = new BehaviorSubject<IProduct[]>([]);
@@ -34,12 +38,22 @@ export class WishlistService {
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
-      this.loadFavoriteIds();
+      // Favorites are private — (re)load on login, clear on logout.
+      this.auth.currentUser$.subscribe(user => {
+        if (user) {
+          this.loadFavoriteIds();
+        } else {
+          this.favoriteIds.set(new Set());
+          this.wishlistSubject.next([]);
+          this.productService.clearAllFavoriteState();
+        }
+      });
     }
   }
 
   /** Load favorites on init to get accurate count (auto-cleans stale IDs) */
   private loadFavoriteIds(): void {
+    if (!this.auth.isLoggedIn()) return;
     this.http.get<any[]>(`${SERVER_URL}/api/favorites/getfavorit`).subscribe({
       next: (products) => {
         const ids = (products || []).map(p => p.id);
@@ -115,6 +129,7 @@ export class WishlistService {
   }
 
   addToWishlist(product: IProduct): void {
+    if (!this.auth.isLoggedIn()) { this.authDrawer.open('login'); return; }
     if (this.isProcessing(product.id)) return;
     this.markProcessing(product.id);
 

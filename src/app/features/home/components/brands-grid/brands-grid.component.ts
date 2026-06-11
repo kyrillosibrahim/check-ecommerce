@@ -2,12 +2,13 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, 
 import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { IBrand } from '../../../../core/models/brand.model';
+import { CldImagePipe } from '../../../../shared/pipes/cld-image.pipe';
 import Swiper from 'swiper';
 import { Autoplay, Grid } from 'swiper/modules';
 
 @Component({
   selector: 'app-brands-grid',
-  imports: [RouterLink],
+  imports: [RouterLink, CldImagePipe],
   templateUrl: './brands-grid.component.html',
   styleUrl: './brands-grid.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

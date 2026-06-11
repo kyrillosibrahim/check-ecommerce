@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
-// Single global cart document (not per-user, matching current behavior)
+// Per-user cart document, keyed by the owner's user id.
 const cartSchema = new mongoose.Schema({
-  _id: { type: String, default: 'global' },
+  userId: { type: String, required: true, unique: true, index: true },
   items: [
     {
       productId: String,

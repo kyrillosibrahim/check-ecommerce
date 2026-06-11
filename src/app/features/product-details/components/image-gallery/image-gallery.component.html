@@ -9,7 +9,7 @@
     (dblclick)="onDoubleClick()"
   >
     <img
-      [src]="selectedImage"
+      [src]="selectedImage | cldImage:900"
       [alt]="productTitle"
       class="main-image"
       [style.transform]="'scale(' + zoomScale() + ') translate(' + translateX() + 'px, ' + translateY() + 'px)'"
@@ -26,7 +26,7 @@
     <div class="thumbnails">
       @for (img of images; track $index) {
         <button class="thumb-btn" [class.active]="$index === selectedIndex()" (click)="selectImage($index)">
-          <img [src]="img" [alt]="productTitle + ' - ' + ($index + 1)" class="thumb-img" />
+          <img [src]="img | cldImage:120" [alt]="productTitle + ' - ' + ($index + 1)" class="thumb-img" loading="lazy" decoding="async" />
         </button>
       }
     </div>

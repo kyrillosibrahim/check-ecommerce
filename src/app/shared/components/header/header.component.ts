@@ -7,6 +7,7 @@ import { Subject, combineLatest } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, switchMap } from 'rxjs/operators';
 import { CartService } from '../../../core/services/cart.service';
 import { WishlistService } from '../../../core/services/wishlist.service';
+import { NotificationsService } from '../../../core/services/notifications.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ThemeService } from '../../../core/services/theme.service';
 import { TranslationService } from '../../../core/services/translation.service';
@@ -39,6 +40,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private settingsService = inject(SiteSettingsService);
   cartService = inject(CartService);
   wishlistService = inject(WishlistService);
+  notificationsService = inject(NotificationsService);
   authService = inject(AuthService);
   themeService = inject(ThemeService);
   translationService = inject(TranslationService);

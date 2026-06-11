@@ -2,14 +2,14 @@ const path = require('path');
 const Product = require('../models/Product');
 const Cart = require('../models/Cart');
 
-async function getCartDoc() {
-  let cart = await Cart.findById('global');
-  if (!cart) { cart = await Cart.create({ _id: 'global', items: [] }); }
+async function getCartDoc(userId) {
+  let cart = await Cart.findOne({ userId });
+  if (!cart) { cart = await Cart.create({ userId, items: [] }); }
   return cart;
 }
 
-async function readCart() {
-  const cart = await getCartDoc();
+async function readCart(userId) {
+  const cart = await getCartDoc(userId);
   return cart.items || [];
 }
 
@@ -28,7 +28,7 @@ function fixImagePaths(product) {
 
 async function getCart(req, res, next) {
   try {
-    const items = await readCart();
+    const items = await readCart(req.user.id);
     const result = [];
     for (const item of items) {
       const product = await Product.findOne({ id: item.productId });
@@ -42,7 +42,7 @@ async function addToCart(req, res, next) {
   try {
     const { productId, quantity = 1 } = req.body;
     if (!productId) return res.status(400).json({ error: 'productId is required.' });
-    const cart = await getCartDoc();
+    const cart = await getCartDoc(req.user.id);
     const existing = cart.items.find(i => i.productId === productId);
     if (existing) existing.quantity += quantity;
     else cart.items.push({ productId, quantity });
@@ -55,7 +55,7 @@ async function updateCartItem(req, res, next) {
   try {
     const { productId, quantity } = req.body;
     if (!productId || quantity == null) return res.status(400).json({ error: 'productId and quantity are required.' });
-    const cart = await getCartDoc();
+    const cart = await getCartDoc(req.user.id);
     const item = cart.items.find(i => i.productId === productId);
     if (!item) return res.status(404).json({ error: 'Item not found in cart.' });
     item.quantity = quantity; await cart.save();
@@ -66,14 +66,14 @@ async function updateCartItem(req, res, next) {
 async function removeFromCart(req, res, next) {
   try {
     const { productId } = req.params;
-    const cart = await getCartDoc();
+    const cart = await getCartDoc(req.user.id);
     cart.items = cart.items.filter(i => i.productId !== productId);
     await cart.save(); res.json({ message: 'Removed from cart.', cart: cart.items });
   } catch (err) { next(err); }
 }
 
 async function clearCart(req, res, next) {
-  try { const cart = await getCartDoc(); cart.items = []; await cart.save(); res.json({ message: 'Cart cleared.', cart: [] }); }
+  try { const cart = await getCartDoc(req.user.id); cart.items = []; await cart.save(); res.json({ message: 'Cart cleared.', cart: [] }); }
   catch (err) { next(err); }
 }
 

@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
   id: { type: String, required: true, unique: true },
+  userId: { type: String, index: true, default: '' },
   customer: mongoose.Schema.Types.Mixed,
   items: [mongoose.Schema.Types.Mixed],
   shippingAddress: mongoose.Schema.Types.Mixed,
@@ -9,6 +10,8 @@ const orderSchema = new mongoose.Schema({
   shippingCompany: { type: String, default: '' },
   subtotal: { type: Number, default: 0 },
   discount: { type: Number, default: 0 },
+  couponCode: { type: String, default: '' },
+  couponDiscount: { type: Number, default: 0 },
   total: { type: Number, default: 0 },
   status: { type: String, default: 'pending' },
   paymentStatus: { type: String, default: 'unpaid' },

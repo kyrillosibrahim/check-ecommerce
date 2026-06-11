@@ -35,7 +35,7 @@
         </div>
         <div class="zahra-order-total">
           @if (promoApplied()) {
-            <span>{{ (cartService.cartTotal$ | async)! - PROMO_DISCOUNT | egpCurrency }}</span>
+            <span>{{ (cartService.cartTotal$ | async)! - (promoDiscount$ | async)! | egpCurrency }}</span>
           } @else {
             <span>{{ cartService.cartTotal$ | async | egpCurrency }}</span>
           }
@@ -109,7 +109,7 @@
               <div class="d-flex align-items-center justify-content-between promo-success p-2 rounded">
                 <div>
                   <i class="bi bi-check-circle-fill text-success me-1"></i>
-                  <span class="fw-semibold" style="color: var(--sz-text-primary);">km298</span>
+                  <span class="fw-semibold" style="color: var(--sz-text-primary);">{{ promoCode() }}</span>
                   <small class="text-success d-block mt-1">
                     {{ 'cart.promo_success' | translate }}
                   </small>
@@ -139,9 +139,9 @@
               <div class="d-flex justify-content-between mb-3">
                 <span class="text-secondary fs-6">
                   {{ 'cart.promo_discount' | translate }}
-                  <span class="badge bg-success ms-1" style="font-size: 0.7rem;">km298</span>
+                  <span class="badge bg-success ms-1" style="font-size: 0.7rem;">{{ promoCode() }}</span>
                 </span>
-                <span class="text-danger fs-6">-{{ PROMO_DISCOUNT | egpCurrency }}</span>
+                <span class="text-danger fs-6">-{{ promoDiscount$ | async | egpCurrency }}</span>
               </div>
             }
 
@@ -156,7 +156,7 @@
               <span class="fw-bold fs-5">{{ 'cart.total' | translate }}</span>
               <span class="fw-bold fs-5" style="color: var(--sz-accent);">
                 @if (promoApplied()) {
-                  {{ (cartService.cartTotal$ | async)! - PROMO_DISCOUNT | egpCurrency }}
+                  {{ (cartService.cartTotal$ | async)! - (promoDiscount$ | async)! | egpCurrency }}
                 } @else {
                   {{ cartService.cartTotal$ | async | egpCurrency }}
                 }
@@ -178,7 +178,7 @@
       </a>
       <div class="zahra-checkout-total">
         @if (promoApplied()) {
-          <span>{{ (cartService.cartTotal$ | async)! - PROMO_DISCOUNT | egpCurrency }}</span>
+          <span>{{ (cartService.cartTotal$ | async)! - (promoDiscount$ | async)! | egpCurrency }}</span>
         } @else {
           <span>{{ cartService.cartTotal$ | async | egpCurrency }}</span>
         }

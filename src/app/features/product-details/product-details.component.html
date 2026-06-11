@@ -207,7 +207,7 @@
                   <!-- Our row -->
                   <tr class="comparison-row comparison-row--ours">
                     <td class="comparison-product">
-                      <img [src]="displayProduct!.images[0]" [alt]="product.titleAr || product.title" class="comparison-product-img">
+                      <img [src]="displayProduct!.images[0] | cldImage:90" [alt]="product.titleAr || product.title" class="comparison-product-img" loading="lazy">
                       <span class="comparison-product-name">{{ truncate(product.titleAr || product.title) }}</span>
                     </td>
                     <td>
@@ -229,7 +229,7 @@
                   @for (site of product.comparisonSites!; track site.websiteName) {
                     <tr class="comparison-row">
                       <td class="comparison-product">
-                        <img [src]="displayProduct!.images[0]" [alt]="product.titleAr || product.title" class="comparison-product-img">
+                        <img [src]="displayProduct!.images[0] | cldImage:90" [alt]="product.titleAr || product.title" class="comparison-product-img" loading="lazy">
                         <span class="comparison-product-name">{{ truncate(product.titleAr || product.title) }}</span>
                       </td>
                       <td>
@@ -285,14 +285,14 @@
         <h3 class="section-title">{{ 'details.natural_images' | translate }}</h3>
         <div class="natural-gallery">
           <button type="button" class="natural-gallery__main" (click)="openLightbox(0)">
-            <img [src]="naturalImages[0]" [alt]="product.title" class="natural-gallery__main-img" />
+            <img [src]="naturalImages[0] | cldImage:800" [alt]="product.title" class="natural-gallery__main-img" loading="lazy" decoding="async" />
           </button>
 
           @if (naturalImages.length > 1 && naturalExpanded()) {
             <div class="natural-gallery__grid">
               @for (img of naturalImages.slice(1); track $index) {
                 <button type="button" class="natural-gallery__thumb" (click)="openLightbox($index + 1)">
-                  <img [src]="img" [alt]="product.title" />
+                  <img [src]="img | cldImage:160" [alt]="product.title" loading="lazy" decoding="async" />
                 </button>
               }
             </div>
@@ -330,7 +330,7 @@
             <div class="lightbox-thumbs">
               @for (img of naturalImages; track $index) {
                 <button type="button" class="lightbox-thumb" [class.lightbox-thumb--active]="$index === lightboxIndex()" (click)="lightboxIndex.set($index)">
-                  <img [src]="img" [alt]="product.title" />
+                  <img [src]="img | cldImage:160" [alt]="product.title" loading="lazy" decoding="async" />
                 </button>
               }
             </div>
@@ -543,7 +543,7 @@
 @if (product && displayProduct && showStickyBar() && !product.comingSoon && displayProduct.stock > 0) {
   <div class="sticky-buy-bar">
     <div class="container sticky-buy-bar__inner">
-      <img [src]="displayProduct.images[0]" [alt]="product.title" class="sticky-buy-bar__image">
+      <img [src]="displayProduct.images[0] | cldImage:96" [alt]="product.title" class="sticky-buy-bar__image" loading="lazy">
       <div class="sticky-buy-bar__info">
         <span class="sticky-buy-bar__title">{{ product.title | localize:product.titleAr }}</span>
         <div class="sticky-buy-bar__price-row">

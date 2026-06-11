@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
-// Single global favorites document (not per-user, matching current behavior)
+// Per-user favorites document, keyed by the owner's user id.
 const favoriteSchema = new mongoose.Schema({
-  _id: { type: String, default: 'global' },
+  userId: { type: String, required: true, unique: true, index: true },
   ids: [String],
 });
 

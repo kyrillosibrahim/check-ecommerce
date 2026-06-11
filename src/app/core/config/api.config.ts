@@ -15,4 +15,6 @@ export const API_CONFIG = {
   get settingsUrl() { return `${this.baseUrl}/api/settings`; },
   get wholesaleOffersUrl() { return `${this.baseUrl}/api/wholesale-offers`; },
   get reviewsUrl() { return `${this.baseUrl}/api/reviews`; },
+  get notificationsUrl() { return `${this.baseUrl}/api/notifications`; },
+  get couponsUrl() { return `${this.baseUrl}/api/coupons`; },
 };
