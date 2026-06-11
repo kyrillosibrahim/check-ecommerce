@@ -24,7 +24,7 @@
   align-items: center;
   gap: 0.6rem;
   padding: 0.72rem 2.1rem;
-  border-radius: 999px;
+  border-radius: 10px;
   font-weight: 700;
   font-size: 0.95rem;
   text-decoration: none;
@@ -77,6 +77,15 @@
     outline-offset: 3px;
   }
 }
+
+@media(max-width:768px){
+.view-all-btn{
+    border-radius: 5px;
+  padding: 0.3rem .4rem;
+  font-size: 0.8rem;
+}
+}
+
 
 @keyframes vab-pulse {
   0%, 100% { box-shadow: 0 6px 18px rgba(228, 121, 17, 0.30); }
