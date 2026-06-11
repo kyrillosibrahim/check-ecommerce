@@ -168,6 +168,7 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'reviews.no_reviews': 'No reviews yet. Be the first to review this product!',
   'reviews.error': 'Could not submit the review',
   'details.off': 'OFF',
+  'details.view_brand_products': 'Browse products by',
   'details.in_stock': 'In Stock',
   'details.available': 'available',
   'details.added': 'Added!',

@@ -32,7 +32,12 @@
 
           <!-- Product Info -->
           <div class="col-md-7">
-        <span class="badge bg-danger bg-opacity-10 text-danger mb-2">{{ product.brand }}</span>
+        @if (product.brand) {
+          <a class="badge bg-danger bg-opacity-10 text-danger mb-2 brand-badge-link"
+             routerLink="/products"
+             [queryParams]="{ brand: product.brand }"
+             [title]="('details.view_brand_products' | translate) + ' ' + product.brand">{{ product.brand }}</a>
+        }
         <h1 class="h5 fw-bold mb-1" style="line-height: 1.8;">{{ product.title | localize:product.titleAr }}</h1>
 
         <!-- Product Form Badge -->

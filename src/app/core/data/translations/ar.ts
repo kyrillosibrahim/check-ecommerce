@@ -168,6 +168,7 @@ export const AR_TRANSLATIONS: Record<string, string> = {
   'reviews.no_reviews': 'لا توجد تقييمات بعد. كن أول من يقيّم هذا المنتج!',
   'reviews.error': 'تعذّر إرسال التقييم',
   'details.off': 'خصم',
+  'details.view_brand_products': 'تصفح منتجات',
   'details.in_stock': 'متوفر في المخزون',
   'details.available': 'متاح',
   'details.added': 'تمت الإضافة !',
