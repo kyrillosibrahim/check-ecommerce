@@ -14,6 +14,14 @@ export const routes: Routes = [
     title: 'Check - المنتجات',
     data: { preload: true }
   },
+  // ── Short, shareable links → reuse ProductsComponent, the filter comes from `data` ──
+  // To add another: copy this block, change the path + title + category/subcategory.
+  {
+    path: 'oils',
+    loadComponent: () => import('./features/products/products.component').then(c => c.ProductsComponent),
+    title: 'Check - زيوت الشعر',
+    data: { category: 'الشعر', subcategory: 'زيوت' }
+  },
   {
     path: 'offers',
     loadComponent: () => import('./features/offers/offers.component').then(c => c.OffersComponent),

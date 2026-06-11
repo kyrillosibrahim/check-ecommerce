@@ -1,6 +1,7 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, inject, OnDestroy, OnInit, PLATFORM_ID, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { isPlatformBrowser, NgTemplateOutlet } from '@angular/common';
+import { combineLatest } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../core/services/product.service';
 import { CartService } from '../../core/services/cart.service';
@@ -217,10 +218,14 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.cdr.markForCheck();
     });
 
-    this.route.queryParams.subscribe(params => {
-      this.selectedCategory = params['category'] || '';
-      this.selectedSubcategory = params['subcategory'] || '';
-      this.selectedBrand = params['brand'] || '';
+    // Short links (e.g. /oils) carry the filter in the route `data`; normal
+    // /products links carry it in the query string. When the URL has no query
+    // params at all we fall back to `data`, otherwise the query owns the state.
+    combineLatest([this.route.queryParams, this.route.data]).subscribe(([params, data]) => {
+      const noQuery = Object.keys(params).length === 0;
+      this.selectedCategory = params['category'] || (noQuery ? data['category'] : '') || '';
+      this.selectedSubcategory = params['subcategory'] || (noQuery ? data['subcategory'] : '') || '';
+      this.selectedBrand = params['brand'] || (noQuery ? data['brand'] : '') || '';
       this.searchTerm = params['search'] || '';
       this.currentPage = 1;
       this.fetchFromServer();
