@@ -324,7 +324,7 @@
   <!-- Sort section -->
   <div class="sidebar-section">
     <button class="sidebar-section-header" (click)="toggleSection('sort')">
-      <span><i class="bi bi-sort-down ms-1"></i> الترتيب</span>
+      <span> الترتيب</span>
       <i class="bi" [class.bi-chevron-up]="sidebarSections['sort']" [class.bi-chevron-down]="!sidebarSections['sort']"></i>
     </button>
     @if (sidebarSections['sort']) {
@@ -356,7 +356,7 @@
   <!-- Price range section -->
   <div class="sidebar-section">
     <button class="sidebar-section-header" (click)="toggleSection('price')">
-      <span><i class="bi bi-currency-dollar ms-1"></i> السعر</span>
+      <span> السعر</span>
       <i class="bi" [class.bi-chevron-up]="sidebarSections['price']" [class.bi-chevron-down]="!sidebarSections['price']"></i>
     </button>
     @if (sidebarSections['price']) {
@@ -375,7 +375,7 @@
   <!-- Availability section -->
   <div class="sidebar-section">
     <button class="sidebar-section-header" (click)="toggleSection('availability')">
-      <span><i class="bi bi-box-seam ms-1"></i> التوفر</span>
+      <span> التوفر</span>
       <i class="bi" [class.bi-chevron-up]="sidebarSections['availability']" [class.bi-chevron-down]="!sidebarSections['availability']"></i>
     </button>
     @if (sidebarSections['availability']) {
@@ -395,7 +395,7 @@
   @if (brandList.length > 0) {
     <div class="sidebar-section">
       <button class="sidebar-section-header" (click)="toggleSection('brand')">
-        <span><i class="bi bi-award ms-1"></i> العلامة التجارية</span>
+        <span> العلامة التجارية</span>
         <i class="bi" [class.bi-chevron-up]="sidebarSections['brand']" [class.bi-chevron-down]="!sidebarSections['brand']"></i>
       </button>
       @if (sidebarSections['brand']) {
@@ -430,7 +430,7 @@
   @if (availableFilterTags.length > 0) {
     <div class="sidebar-section">
       <button class="sidebar-section-header" (click)="toggleSection('filterTags')">
-        <span><i class="bi bi-tags ms-1"></i> الفلاتر</span>
+        <span> الفلاتر</span>
         <i class="bi" [class.bi-chevron-up]="sidebarSections['filterTags']" [class.bi-chevron-down]="!sidebarSections['filterTags']"></i>
       </button>
       @if (sidebarSections['filterTags']) {
