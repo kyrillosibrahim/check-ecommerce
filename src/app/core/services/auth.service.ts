@@ -78,8 +78,11 @@ export class AuthService {
 
   private setSession(user: IUser, token: string): void {
     const userData = { ...user, token };
-    this.currentUserSubject.next(userData);
+    // Persist the token BEFORE notifying subscribers: cart/favorites/notifications
+    // fire their authed requests synchronously on this emission, and the auth
+    // interceptor reads the token from localStorage — so it must already be there.
     if (this.isBrowser) localStorage.setItem(this.STORAGE_KEY, JSON.stringify(userData));
+    this.currentUserSubject.next(userData);
   }
 
   private loadUser(): IUser | null {
