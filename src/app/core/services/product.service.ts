@@ -169,6 +169,7 @@ export class ProductService {
     filterTags?: string[];
     page?: number;
     hasDiscount?: boolean;
+    sort?: string;
   }): Observable<{ products: IProduct[]; total: number }> {
     let params = new HttpParams();
     if (filters.search) params = params.set('search', filters.search);
@@ -180,6 +181,7 @@ export class ProductService {
     if (filters.page) params = params.set('page', filters.page.toString());
     if (filters.filterTags?.length) params = params.set('filterTags', filters.filterTags.join(','));
     if (filters.hasDiscount) params = params.set('hasDiscount', 'true');
+    if (filters.sort && filters.sort !== 'default') params = params.set('sort', filters.sort);
 
     return this.http.get<any>(`${SERVER_URL}/api/products`, { params }).pipe(
       map(res => {

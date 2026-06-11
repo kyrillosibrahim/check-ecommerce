@@ -133,7 +133,7 @@ async function createProduct(req, res, next) {
 
 async function getAllProducts(req, res, next) {
   try {
-    const { category, subcategory, search, brand, merchant, featured, limit, filterTags: filterTagsParam, hasDiscount, page } = req.query;
+    const { category, subcategory, search, brand, merchant, featured, limit, filterTags: filterTagsParam, hasDiscount, page, sort } = req.query;
     const query = {};
     if (category) query.$or = [{ category }, { categoryFolder: category }];
     if (subcategory) query.subcategory = subcategory;
@@ -150,7 +150,15 @@ async function getAllProducts(req, res, next) {
       query.$and = [{ $or: [{ title: { $regex: search, $options: 'i' } }, { titleAr: { $regex: search, $options: 'i' } }, { brand: { $regex: search, $options: 'i' } }, { tags: { $elemMatch: { $regex: term, $options: 'i' } } }, { category: { $regex: search, $options: 'i' } }] }];
     }
 
-    let products = await Product.find(query, { __v: 0 }).sort({ createdAt: -1, _id: -1 });
+    // Optional sort (offers page leads with the biggest discounts). Defaults to newest.
+    const sortMap = {
+      'discount-high': { discountPercentage: -1, createdAt: -1 },
+      'discount-low': { discountPercentage: 1, createdAt: -1 },
+      'price-low': { price: 1, createdAt: -1 },
+      'price-high': { price: -1, createdAt: -1 },
+    };
+    const sortSpec = sortMap[sort] || { createdAt: -1, _id: -1 };
+    let products = await Product.find(query, { __v: 0 }).sort(sortSpec);
 
     const { readCart } = require('./cart.controller');
     const cart = await readCart();

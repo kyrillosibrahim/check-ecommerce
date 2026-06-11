@@ -52,7 +52,8 @@ export class OffersComponent implements OnInit, AfterViewInit, OnDestroy {
   isLoadingMore = signal(false);
   hasMore = signal(true);
   selectedCategory = '';
-  sortBy = 'default';
+  // Offers page leads with the biggest discounts by default
+  sortBy = 'discount-high';
 
   currentPage = 1;
   totalProducts = 0;
@@ -237,9 +238,9 @@ export class OffersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onSortChange(value: string): void {
     this.sortBy = value;
-    this.currentPage = 1;
     this.closeFilterDrawer();
-    this.applyClientFilters();
+    // Re-query so the sort is applied globally across all pages, not just the loaded ones
+    this.fetchFromServer();
   }
 
   onAddToCart(product: IProduct): void {
@@ -362,6 +363,7 @@ export class OffersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.productService.searchProducts({
       hasDiscount: true,
       category: this.selectedCategory || undefined,
+      sort: this.sortBy,
       page: this.currentPage,
       limit: ITEMS_PER_PAGE,
     }).subscribe(result => {
