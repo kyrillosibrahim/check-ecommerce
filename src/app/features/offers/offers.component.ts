@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, inject, OnDestroy, OnInit, PLATFORM_ID, signal, ViewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { NgTemplateOutlet } from '@angular/common';
+import { isPlatformBrowser, NgTemplateOutlet } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../core/services/product.service';
 import { CartService } from '../../core/services/cart.service';
@@ -13,7 +13,6 @@ import { IProduct } from '../../core/models/product.model';
 import { IBanner } from '../../core/models/banner.model';
 import { ICategory } from '../../core/models/category.model';
 import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
-import { PaginationComponent } from '../../shared/components/pagination/pagination.component';
 import { LightRaysComponent } from './light-rays.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
@@ -29,12 +28,12 @@ interface PriceRange {
 @Component({
   selector: 'app-offers',
   standalone: true,
-  imports: [RouterLink, FormsModule, NgTemplateOutlet, ProductCardComponent, PaginationComponent, LightRaysComponent, TranslatePipe],
+  imports: [RouterLink, FormsModule, NgTemplateOutlet, ProductCardComponent, LightRaysComponent, TranslatePipe],
   templateUrl: './offers.component.html',
   styleUrl: './offers.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OffersComponent implements OnInit {
+export class OffersComponent implements OnInit, AfterViewInit, OnDestroy {
   translationService = inject(TranslationService);
   private cdr = inject(ChangeDetectorRef);
   private productService = inject(ProductService);
@@ -43,20 +42,35 @@ export class OffersComponent implements OnInit {
   private bannerService = inject(BannerService);
   private categoryService = inject(CategoryService);
   private seoService = inject(SeoService);
+  private platformId = inject(PLATFORM_ID);
 
   banners = signal<IBanner[]>([]);
   products: IProduct[] = [];
   allFetchedProducts: IProduct[] = [];
   categories: ICategory[] = [];
   isLoading = signal(true);
+  isLoadingMore = signal(false);
+  hasMore = signal(true);
   selectedCategory = '';
   sortBy = 'default';
 
   currentPage = 1;
-  totalPages = 1;
   totalProducts = 0;
 
   showFilterDrawer = false;
+
+  // Horizontal filter bar (desktop): which dropdown is open + sticky offset under the header
+  openFilterKey: string | null = null;
+  headerOffset = signal(96);
+
+  // Infinite scroll sentinel observer
+  private observer?: IntersectionObserver;
+
+  @ViewChild('scrollSentinel') set scrollSentinel(el: ElementRef<HTMLElement> | undefined) {
+    this.observer?.disconnect();
+    this.observer = undefined;
+    if (el) this.observeSentinel(el.nativeElement);
+  }
 
   sidebarSections: Record<string, boolean> = {
     sort: true,
@@ -158,6 +172,62 @@ export class OffersComponent implements OnInit {
     this.sidebarSections[section] = !this.sidebarSections[section];
   }
 
+  // ── Horizontal filter bar (desktop) ──
+  toggleFilterMenu(key: string): void {
+    this.openFilterKey = this.openFilterKey === key ? null : key;
+  }
+
+  isFilterMenuOpen(key: string): boolean {
+    return this.openFilterKey === key;
+  }
+
+  closeFilterMenus(): void {
+    this.openFilterKey = null;
+  }
+
+  ngAfterViewInit(): void {
+    this.measureHeaderOffset();
+  }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    this.measureHeaderOffset();
+  }
+
+  /** Measure the sticky navbar height so the filter bar can stick flush beneath it. */
+  private measureHeaderOffset(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const nav = document.querySelector('nav.navbar.sticky-top') as HTMLElement | null;
+    if (!nav) return;
+    const h = Math.round(nav.getBoundingClientRect().height);
+    if (h > 0 && h !== this.headerOffset()) {
+      this.headerOffset.set(h);
+      this.cdr.markForCheck();
+    }
+  }
+
+  // ── Infinite scroll ──
+  loadMore(): void {
+    if (this.isLoading() || this.isLoadingMore() || !this.hasMore()) return;
+    this.currentPage++;
+    this.fetchFromServer(true);
+  }
+
+  private observeSentinel(el: HTMLElement): void {
+    if (typeof IntersectionObserver === 'undefined') return;
+    this.observer = new IntersectionObserver(
+      entries => {
+        if (entries[0]?.isIntersecting) this.loadMore();
+      },
+      { rootMargin: '400px' },
+    );
+    this.observer.observe(el);
+  }
+
+  ngOnDestroy(): void {
+    this.observer?.disconnect();
+  }
+
   onCategorySelect(category: string): void {
     this.selectedCategory = category;
     this.currentPage = 1;
@@ -170,12 +240,6 @@ export class OffersComponent implements OnInit {
     this.currentPage = 1;
     this.closeFilterDrawer();
     this.applyClientFilters();
-  }
-
-  onPageChange(page: number): void {
-    this.currentPage = page;
-    this.fetchFromServer();
-    if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   onAddToCart(product: IProduct): void {
@@ -274,11 +338,11 @@ export class OffersComponent implements OnInit {
   }
 
   get showingStart(): number {
-    return this.totalProducts === 0 ? 0 : (this.currentPage - 1) * ITEMS_PER_PAGE + 1;
+    return this.products.length === 0 ? 0 : 1;
   }
 
   get showingEnd(): number {
-    return Math.min(this.currentPage * ITEMS_PER_PAGE, this.totalProducts);
+    return this.products.length;
   }
 
   formatCategoryName(slug: string): string {
@@ -286,8 +350,14 @@ export class OffersComponent implements OnInit {
     return cat?.name || slug.replaceAll('-', ' ');
   }
 
-  private fetchFromServer(): void {
-    this.isLoading.set(true);
+  private fetchFromServer(append = false): void {
+    if (append) {
+      this.isLoadingMore.set(true);
+    } else {
+      this.currentPage = 1;
+      this.hasMore.set(true);
+      this.isLoading.set(true);
+    }
 
     this.productService.searchProducts({
       hasDiscount: true,
@@ -295,20 +365,31 @@ export class OffersComponent implements OnInit {
       page: this.currentPage,
       limit: ITEMS_PER_PAGE,
     }).subscribe(result => {
-      this.allFetchedProducts = result.products;
-      this.computeFilterCounts(result.products);
-      this.applyClientFiltersInternal(result.products, result.total);
+      this.allFetchedProducts = append
+        ? [...this.allFetchedProducts, ...result.products]
+        : result.products;
+      this.totalProducts = result.total;
+
+      // No more pages if the server returned a partial page or we've loaded everything
+      const reachedEnd =
+        result.products.length < ITEMS_PER_PAGE ||
+        (result.total > 0 && this.allFetchedProducts.length >= result.total);
+      this.hasMore.set(!reachedEnd);
+
+      this.computeFilterCounts(this.allFetchedProducts);
+      this.applyClientFiltersInternal(this.allFetchedProducts);
       this.isLoading.set(false);
+      this.isLoadingMore.set(false);
       this.cdr.markForCheck();
     });
   }
 
   private applyClientFilters(): void {
-    this.applyClientFiltersInternal(this.allFetchedProducts, this.allFetchedProducts.length);
+    this.applyClientFiltersInternal(this.allFetchedProducts);
     this.cdr.markForCheck();
   }
 
-  private applyClientFiltersInternal(serverProducts: IProduct[], serverTotal: number): void {
+  private applyClientFiltersInternal(serverProducts: IProduct[]): void {
     let filtered = [...serverProducts];
 
     if (this.selectedPriceRanges.length > 0) {
@@ -330,8 +411,6 @@ export class OffersComponent implements OnInit {
     }
 
     this.products = this.applySorting(filtered);
-    this.totalProducts = filtered.length;
-    this.totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
   }
 
   private computeFilterCounts(products: IProduct[]): void {

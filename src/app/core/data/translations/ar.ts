@@ -385,6 +385,7 @@ export const AR_TRANSLATIONS: Record<string, string> = {
 
   // ── Offers Filter ──
   'offers.filter_all': 'الكل',
+  'offers.sort_label': 'الترتيب',
   'offers.sort_default': 'الافتراضي',
   'offers.sort_discount_high': 'الأكثر توفيرًا',
   'offers.sort_discount_low': 'الأقل توفيرًا',

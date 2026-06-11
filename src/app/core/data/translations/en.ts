@@ -386,6 +386,7 @@ export const EN_TRANSLATIONS: Record<string, string> = {
 
   // ── Offers Filter ──
   'offers.filter_all': 'All',
+  'offers.sort_label': 'Sort',
   'offers.sort_default': 'Default',
   'offers.sort_discount_high': 'Most Savings',
   'offers.sort_discount_low': 'Least Savings',

@@ -5,7 +5,9 @@
   position: relative;
   min-height: 100vh;
   background: transparent;
-  overflow: hidden;
+  // overflow-x: clip (not hidden) so the sticky filter bar still sticks and the
+  // dropdown menus aren't clipped vertically, while wide content stays contained.
+  overflow-x: clip;
 }
 
 .offers-banner-carousel {
@@ -41,8 +43,8 @@
 .spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid rgba(77, 171, 247, 0.15);
-  border-top-color: #4dabf7;
+  border: 3px solid rgba(var(--sz-accent-rgb), 0.18);
+  border-top-color: var(--sz-accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -69,7 +71,7 @@
   font-weight: 800;
   margin: 0 0 0.4rem;
   color: var(--bs-heading-color);
-  text-shadow: 0 0 40px rgba(77, 171, 247, 0.25);
+  text-shadow: 0 0 40px rgba(var(--sz-accent-rgb), 0.28);
 }
 
 .offers-subtitle {
@@ -81,7 +83,7 @@
 .heading-line {
   width: 60px;
   height: 3px;
-  background: linear-gradient(90deg, #0d6efd, #4dabf7);
+  background: linear-gradient(90deg, var(--sz-accent), color-mix(in srgb, var(--sz-accent), white 35%));
   margin: 0 auto;
   border-radius: 4px;
 }
@@ -665,5 +667,158 @@
   i {
     font-size: 3rem;
     margin-bottom: 1rem;
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// Warm gradient identity (light theme) — sets the offers
+// page apart from the rest of the site, on the brand orange.
+// ═══════════════════════════════════════════════════
+:host-context([data-bs-theme="light"]) .offers-page {
+  background:
+    radial-gradient(1100px 480px at 100% -8%, rgba(var(--sz-accent-rgb), 0.20), transparent 60%),
+    radial-gradient(900px 460px at 0% 2%, rgba(var(--sz-accent-rgb), 0.12), transparent 55%),
+    linear-gradient(165deg, #fff4ea 0%, #fff8f2 42%, #ffffff 100%);
+}
+
+// ═══════════════════════════════════════════════════
+// Horizontal filter bar (desktop) — matches the products page
+// ═══════════════════════════════════════════════════
+.hfilter-bar {
+  position: sticky;
+  top: var(--hfilter-top, 96px);
+  z-index: 1030;
+  background: var(--sz-bg-card);
+  border-radius: 12px;
+  padding: 0.6rem 0.75rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.07);
+}
+
+.hfilter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hfilter-group {
+  position: relative;
+}
+
+.hfilter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.9rem;
+  border: 1.5px solid var(--sz-border-color);
+  border-radius: 10px;
+  background: var(--sz-bg-card);
+  color: var(--sz-text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color 0.18s ease, background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+
+  .hfilter-caret {
+    font-size: 0.65rem;
+    color: var(--sz-text-muted);
+    transition: transform 0.22s ease, color 0.18s ease;
+  }
+
+  &:hover {
+    border-color: var(--sz-accent);
+  }
+
+  &.is-open {
+    border-color: var(--sz-accent);
+    box-shadow: 0 0 0 3px rgba(var(--sz-accent-rgb), 0.14);
+
+    .hfilter-caret {
+      transform: rotate(180deg);
+      color: var(--sz-accent);
+    }
+  }
+
+  // Selected state → takes a colour
+  &.is-active {
+    border-color: var(--sz-accent);
+    background: rgba(var(--sz-accent-rgb), 0.12);
+    color: color-mix(in srgb, var(--sz-accent), black 20%);
+  }
+}
+
+.hfilter-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  background: var(--sz-accent);
+  color: #fff;
+  border-radius: 9px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.hfilter-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  inset-inline-start: 0;
+  z-index: 5;
+  min-width: 230px;
+  max-height: 60vh;
+  overflow-y: auto;
+  background: var(--sz-bg-card);
+  border: 1px solid var(--sz-border-color);
+  border-radius: 12px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.16);
+  padding: 0.55rem 0.85rem;
+  animation: hfilterMenuIn 0.16s ease;
+
+  scrollbar-width: thin;
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-thumb {
+    background: var(--sz-border-color);
+    border-radius: 4px;
+  }
+
+  &.hfilter-menu--brand {
+    width: 280px;
+  }
+}
+
+@keyframes hfilterMenuIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hfilter-active {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px dashed var(--sz-border-color);
+}
+
+.hfilter-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1029;
+  background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hfilter-chip,
+  .hfilter-chip .hfilter-caret {
+    transition-duration: 0.01ms;
+  }
+  .hfilter-menu {
+    animation: none;
   }
 }

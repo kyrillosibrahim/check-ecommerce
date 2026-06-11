@@ -126,9 +126,187 @@
 
         <!-- Product grid area -->
         <div class="products-main">
-          <!-- Active filter chips -->
+
+          <!-- ═══ Horizontal filter bar (desktop) — sticks under the header ═══ -->
+          <div class="hfilter-bar d-none d-lg-block" [style.--hfilter-top]="headerOffset() + 'px'">
+            <div class="hfilter-chips">
+
+              <!-- Sort -->
+              <div class="hfilter-group">
+                <button type="button" class="hfilter-chip"
+                        [class.is-open]="isFilterMenuOpen('sort')"
+                        [class.is-active]="sortBy !== 'default'"
+                        (click)="toggleFilterMenu('sort')">
+                  <span>{{ 'offers.sort_label' | translate }}</span>
+                  <i class="bi bi-chevron-down hfilter-caret"></i>
+                </button>
+                @if (isFilterMenuOpen('sort')) {
+                  <div class="hfilter-menu">
+                    <label class="sidebar-radio-item">
+                      <input type="radio" name="hsort-offers" [checked]="sortBy === 'default'" (change)="onSortChange('default'); closeFilterMenus()">
+                      <span>{{ 'offers.sort_default' | translate }}</span>
+                    </label>
+                    <label class="sidebar-radio-item">
+                      <input type="radio" name="hsort-offers" [checked]="sortBy === 'discount-high'" (change)="onSortChange('discount-high'); closeFilterMenus()">
+                      <span>{{ 'offers.sort_discount_high' | translate }}</span>
+                    </label>
+                    <label class="sidebar-radio-item">
+                      <input type="radio" name="hsort-offers" [checked]="sortBy === 'discount-low'" (change)="onSortChange('discount-low'); closeFilterMenus()">
+                      <span>{{ 'offers.sort_discount_low' | translate }}</span>
+                    </label>
+                    <label class="sidebar-radio-item">
+                      <input type="radio" name="hsort-offers" [checked]="sortBy === 'price-low'" (change)="onSortChange('price-low'); closeFilterMenus()">
+                      <span>{{ 'offers.sort_price_low' | translate }}</span>
+                    </label>
+                    <label class="sidebar-radio-item">
+                      <input type="radio" name="hsort-offers" [checked]="sortBy === 'price-high'" (change)="onSortChange('price-high'); closeFilterMenus()">
+                      <span>{{ 'offers.sort_price_high' | translate }}</span>
+                    </label>
+                  </div>
+                }
+              </div>
+
+              <!-- Category -->
+              @if (categoryCounts.length > 0 && !selectedCategory) {
+                <div class="hfilter-group">
+                  <button type="button" class="hfilter-chip"
+                          [class.is-open]="isFilterMenuOpen('category')"
+                          (click)="toggleFilterMenu('category')">
+                    <span>القسم</span>
+                    <i class="bi bi-chevron-down hfilter-caret"></i>
+                  </button>
+                  @if (isFilterMenuOpen('category')) {
+                    <div class="hfilter-menu">
+                      @for (cat of categoryCounts; track cat.slug) {
+                        <label class="sidebar-radio-item">
+                          <input type="radio" name="hcat-offers" [checked]="selectedCategory === cat.slug" (change)="onCategorySelect(cat.slug); closeFilterMenus()">
+                          <span>{{ cat.name }}</span>
+                          <span class="filter-count">({{ cat.count }})</span>
+                        </label>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+
+              <!-- Price -->
+              <div class="hfilter-group">
+                <button type="button" class="hfilter-chip"
+                        [class.is-open]="isFilterMenuOpen('price')"
+                        [class.is-active]="selectedPriceRanges.length > 0"
+                        (click)="toggleFilterMenu('price')">
+                  <span>السعر</span>
+                  @if (selectedPriceRanges.length > 0) {
+                    <span class="hfilter-count">{{ selectedPriceRanges.length }}</span>
+                  }
+                  <i class="bi bi-chevron-down hfilter-caret"></i>
+                </button>
+                @if (isFilterMenuOpen('price')) {
+                  <div class="hfilter-menu">
+                    @for (range of priceRanges; track range.label) {
+                      <label class="sidebar-checkbox-item">
+                        <input type="checkbox" [checked]="isPriceRangeSelected(range)" (change)="togglePriceRange(range)">
+                        <span>{{ range.label }}</span>
+                        <span class="filter-count">({{ range.count }})</span>
+                      </label>
+                    }
+                  </div>
+                }
+              </div>
+
+              <!-- Availability -->
+              <div class="hfilter-group">
+                <button type="button" class="hfilter-chip"
+                        [class.is-open]="isFilterMenuOpen('availability')"
+                        [class.is-active]="selectedAvailability.length > 0"
+                        (click)="toggleFilterMenu('availability')">
+                  <span>التوفر</span>
+                  @if (selectedAvailability.length > 0) {
+                    <span class="hfilter-count">{{ selectedAvailability.length }}</span>
+                  }
+                  <i class="bi bi-chevron-down hfilter-caret"></i>
+                </button>
+                @if (isFilterMenuOpen('availability')) {
+                  <div class="hfilter-menu">
+                    @for (av of availabilityFilters; track av.value) {
+                      <label class="sidebar-checkbox-item">
+                        <input type="checkbox" [checked]="isAvailabilitySelected(av.value)" (change)="toggleAvailability(av.value)">
+                        <span>{{ av.label }}</span>
+                        <span class="filter-count">({{ av.count }})</span>
+                      </label>
+                    }
+                  </div>
+                }
+              </div>
+
+              <!-- Brand -->
+              @if (brandList.length > 0) {
+                <div class="hfilter-group">
+                  <button type="button" class="hfilter-chip"
+                          [class.is-open]="isFilterMenuOpen('brand')"
+                          [class.is-active]="selectedBrands.length > 0"
+                          (click)="toggleFilterMenu('brand')">
+                    <span>العلامة التجارية</span>
+                    @if (selectedBrands.length > 0) {
+                      <span class="hfilter-count">{{ selectedBrands.length }}</span>
+                    }
+                    <i class="bi bi-chevron-down hfilter-caret"></i>
+                  </button>
+                  @if (isFilterMenuOpen('brand')) {
+                    <div class="hfilter-menu hfilter-menu--brand">
+                      <div class="brand-search-wrapper mb-2">
+                        <input
+                          type="text"
+                          class="form-control form-control-sm brand-search-input"
+                          placeholder="ابحث عن علامة تجارية..."
+                          [value]="brandSearchTerm"
+                          (input)="onBrandSearch($any($event.target).value)">
+                        <i class="bi bi-search brand-search-icon"></i>
+                      </div>
+                      <div class="brand-list-scroll">
+                        @for (brand of filteredBrandList; track brand.name) {
+                          <label class="sidebar-checkbox-item">
+                            <input type="checkbox" [checked]="isBrandSelected(brand.name)" (change)="toggleBrand(brand.name)">
+                            <span>{{ brand.name }}</span>
+                            <span class="filter-count">({{ brand.count }})</span>
+                          </label>
+                        }
+                        @if (filteredBrandList.length === 0) {
+                          <p class="text-muted small text-center my-2">لا توجد نتائج</p>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Selected values appear here as removable chips -->
+            @if (activeFilters.length > 0) {
+              <div class="hfilter-active">
+                @for (filter of activeFilters; track filter.value) {
+                  <span class="active-filter-chip">
+                    {{ filter.label }}
+                    <button class="chip-remove" (click)="removeFilter(filter)">
+                      <i class="bi bi-x"></i>
+                    </button>
+                  </span>
+                }
+                <button class="btn btn-sm btn-link text-decoration-none clear-all-btn p-0" (click)="clearAllFilters()">
+                  مسح الكل
+                </button>
+              </div>
+            }
+          </div>
+
+          <!-- Click-away backdrop for the open dropdown -->
+          @if (openFilterKey) {
+            <div class="hfilter-backdrop d-none d-lg-block" (click)="closeFilterMenus()"></div>
+          }
+
+          <!-- Active filter chips (mobile only — desktop shows them inside the bar above) -->
           @if (activeFilters.length > 0) {
-            <div class="active-filters-bar mb-2">
+            <div class="active-filters-bar mb-2 d-lg-none">
               <div class="d-flex flex-wrap align-items-center gap-2">
                 @for (filter of activeFilters; track filter.value) {
                   <span class="active-filter-chip">
@@ -169,11 +347,19 @@
               }
             </div>
 
-            <!-- Pagination -->
-            <app-pagination
-              [currentPage]="currentPage"
-              [totalPages]="totalPages"
-              (pageChange)="onPageChange($event)" />
+            <!-- Infinite scroll: loading-more spinner -->
+            @if (isLoadingMore()) {
+              <div class="d-flex justify-content-center py-4">
+                <div class="spinner" role="status">
+                  <span class="visually-hidden">جارٍ التحميل...</span>
+                </div>
+              </div>
+            }
+
+            <!-- Infinite scroll sentinel (observed to auto-load the next page) -->
+            @if (hasMore()) {
+              <div #scrollSentinel style="height: 1px;"></div>
+            }
           }
         </div>
       </div>
