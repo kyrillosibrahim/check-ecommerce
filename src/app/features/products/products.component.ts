@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, inject, OnDestroy, OnInit, PLATFORM_ID, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NgTemplateOutlet } from '@angular/common';
+import { isPlatformBrowser, NgTemplateOutlet } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../core/services/product.service';
 import { CartService } from '../../core/services/cart.service';
@@ -30,10 +30,11 @@ export interface PriceRange {
   styleUrl: './products.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductsComponent implements OnInit, OnDestroy {
+export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private platformId = inject(PLATFORM_ID);
   private productService = inject(ProductService);
   private cartService = inject(CartService);
   private wishlistService = inject(WishlistService);
@@ -58,6 +59,10 @@ export class ProductsComponent implements OnInit, OnDestroy {
   isLoadingMore = signal(false);
   hasMore = signal(true);
   showFilterDrawer = false;
+
+  // Horizontal filter bar (desktop): which dropdown is open + sticky offset under the header
+  openFilterKey: string | null = null;
+  headerOffset = signal(96);
 
   // Infinite scroll sentinel observer
   private observer?: IntersectionObserver;
@@ -165,6 +170,40 @@ export class ProductsComponent implements OnInit, OnDestroy {
 
   toggleSection(section: string): void {
     this.sidebarSections[section] = !this.sidebarSections[section];
+  }
+
+  // ── Horizontal filter bar (desktop) ──
+  toggleFilterMenu(key: string): void {
+    this.openFilterKey = this.openFilterKey === key ? null : key;
+  }
+
+  isFilterMenuOpen(key: string): boolean {
+    return this.openFilterKey === key;
+  }
+
+  closeFilterMenus(): void {
+    this.openFilterKey = null;
+  }
+
+  ngAfterViewInit(): void {
+    this.measureHeaderOffset();
+  }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    this.measureHeaderOffset();
+  }
+
+  /** Measure the sticky navbar height so the filter bar can stick flush beneath it. */
+  private measureHeaderOffset(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const nav = document.querySelector('nav.navbar.sticky-top') as HTMLElement | null;
+    if (!nav) return;
+    const h = Math.round(nav.getBoundingClientRect().height);
+    if (h > 0 && h !== this.headerOffset()) {
+      this.headerOffset.set(h);
+      this.cdr.markForCheck();
+    }
   }
 
   ngOnInit(): void {
