@@ -286,6 +286,7 @@
   display: flex;
   direction: rtl;
   background: var(--sz-bg-card);
+  border-top: 3px solid var(--sz-accent);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
   animation: cartDropdownIn 0.2s ease;
   overflow: hidden;
@@ -299,20 +300,26 @@
   width: 350px;
   min-width: 250px;
   border-inline-start: 1px solid var(--sz-border-color);
-  background: var(--sz-bg-secondary);
+  background:
+    linear-gradient(180deg,
+      rgba(var(--sz-accent-rgb), 0.07) 0%,
+      rgba(var(--sz-accent-rgb), 0.015) 38%,
+      transparent 100%),
+    var(--sz-bg-card);
   overflow-y: auto;
-  padding: 0;
+  padding: 0.4rem 0;
 
   &::-webkit-scrollbar {
     width: 3px;
   }
   &::-webkit-scrollbar-thumb {
-    background: var(--sz-border-color);
+    background: rgba(var(--sz-accent-rgb), 0.35);
     border-radius: 3px;
   }
 }
 
 .mega-menu-cat-item {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.6rem;
@@ -322,34 +329,68 @@
   color: var(--sz-text-primary);
   text-decoration: none;
   cursor: pointer;
-  transition: all 0.15s;
-  border-inline-end: 3px solid transparent;
+  transition: background 0.18s ease, color 0.18s ease, padding-inline-start 0.18s ease;
+
+  /* Leading accent indicator (slides in on active) */
+  &::before {
+    content: '';
+    position: absolute;
+    inset-block: 0.45rem;
+    inset-inline-start: 0;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background: var(--sz-accent);
+    transform: scaleY(0);
+    transform-origin: center;
+    transition: transform 0.18s ease;
+  }
 
   i:first-child {
     font-size: 1rem;
     width: 20px;
     text-align: center;
-    color: var(--sz-text-secondary);
+    color: var(--sz-accent);
+    transition: color 0.18s ease;
   }
 
   .bi-chevron-left {
     font-size: 0.7rem;
     color: var(--sz-text-muted);
-    transition: transform 0.2s;
+    transition: transform 0.2s ease, color 0.18s ease;
   }
 
-  &:hover, &.active {
-    background:  var(--sz-accent) ;
-    color: var(--sz-bg-card);
-    border-inline-end-color:var(--sz-bg-card);
+  /* Idle hover: soft branded wash, no full fill yet */
+  &:hover:not(.active) {
+    background: rgba(var(--sz-accent-rgb), 0.1);
+    color: var(--sz-accent);
+    padding-inline-start: 1.5rem;
 
-    i:first-child {
-      color: var(--sz-bg-card);
-    }
+    &::before { transform: scaleY(1); }
 
     .bi-chevron-left {
       transform: translateX(-3px);
-      color: var(--sz-bg-card);
+      color: var(--sz-accent);
+    }
+  }
+
+  /* Selected category: full branded fill with depth */
+  &.active {
+    background: linear-gradient(90deg,
+      color-mix(in srgb, var(--sz-accent), white 5%) 0%,
+      color-mix(in srgb, var(--sz-accent), black 14%) 100%);
+    color: #fff;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+
+    &::before {
+      background: #fff;
+      transform: scaleY(1);
+    }
+
+    i:first-child { color: #fff; }
+
+    .bi-chevron-left {
+      transform: translateX(-3px);
+      color: #fff;
     }
   }
 }
@@ -363,31 +404,52 @@
 }
 
 .mega-menu-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-weight: 700;
   font-size: 0.85rem;
   color: var(--sz-accent);
   padding-bottom: 0.5rem;
   margin-bottom: 0.75rem;
   border-bottom: 1px solid var(--sz-border-color);
+
+  &::before {
+    content: '';
+    width: 4px;
+    height: 1em;
+    border-radius: 2px;
+    background: var(--sz-accent);
+  }
 }
 
 .mega-menu-sub-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 0.35rem;
 }
 
 .mega-menu-sub-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  border-radius: 5px;
+  padding: 0.5rem 0.35rem;
+  border-radius: 10px;
   text-decoration: none;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background 0.2s ease, transform 0.2s ease;
   color: var(--sz-text-primary);
 
   &:hover {
-    transform: translateY(-1px);
+    background: rgba(var(--sz-accent-rgb), 0.08);
+    transform: translateY(-2px);
+
+    .mega-menu-sub-img {
+      border-color: var(--sz-accent);
+      box-shadow: 0 4px 12px rgba(var(--sz-accent-rgb), 0.22);
+    }
+
+    .mega-menu-sub-name { color: color-mix(in srgb, var(--sz-accent), black 12%); }
   }
 }
 
@@ -400,6 +462,7 @@
 
 .mega-menu-sub-img {
   border: 1px solid var(--sz-border-color);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 /* Shimmer placeholder shown in the image's place until it finishes loading */
@@ -436,6 +499,7 @@
   font-weight: 600;
   text-align: center;
   margin-top: 0.35rem;
+  transition: color 0.2s ease;
 }
 
 /* ── Left column: Famous Brands ── */
@@ -457,17 +521,24 @@
   flex-direction: column;
   align-items: center;
   padding: 0.6rem;
-  border-radius: 5px;
+  border-radius: 10px;
   text-decoration: none;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background 0.2s ease, transform 0.2s ease;
   color: var(--sz-text-primary);
   border: none;
   background: transparent;
 
   &:hover {
-    background: var(--sz-bg-secondary);
+    background: rgba(var(--sz-accent-rgb), 0.08);
     transform: translateY(-2px);
+
+    .mega-menu-brand-img {
+      border-color: var(--sz-accent);
+      box-shadow: 0 4px 12px rgba(var(--sz-accent-rgb), 0.22);
+    }
+
+    .mega-menu-brand-name { color: color-mix(in srgb, var(--sz-accent), black 12%); }
   }
 }
 
@@ -478,6 +549,7 @@
   background: #fff;
   padding: 5px;
   border-radius: 8px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .mega-menu-brand-img {
@@ -498,6 +570,24 @@
   text-align: center;
   margin-top: 0.35rem;
   color: var(--sz-text-primary);
+  transition: color 0.2s ease;
+}
+
+/* Respect reduced-motion: keep color feedback, drop the lift/slide */
+@media (prefers-reduced-motion: reduce) {
+  .mega-menu-cat-item,
+  .mega-menu-cat-item::before,
+  .mega-menu-sub-card,
+  .mega-menu-brand-card,
+  .mega-menu-cat-item .bi-chevron-left {
+    transition-duration: 0.01ms;
+  }
+  .mega-menu-cat-item:hover:not(.active),
+  .mega-menu-sub-card:hover,
+  .mega-menu-brand-card:hover {
+    transform: none;
+    padding-inline-start: 1.25rem;
+  }
 }
 
 /* ── Search Bar Desktop ────────────── */
