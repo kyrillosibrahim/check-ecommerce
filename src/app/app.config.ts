@@ -14,6 +14,7 @@ import Aura from '@primeng/themes/aura';
 import { routes } from './app.routes';
 import { cacheInterceptor } from './core/interceptors/cache.interceptor';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { authErrorInterceptor } from './core/interceptors/auth-error.interceptor';
 import { securityInterceptor } from './core/interceptors/security.interceptor';
 
 export const appConfig: ApplicationConfig = {
@@ -21,7 +22,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
     provideRouter(routes, withPreloading(SelectivePreloadStrategy), withInMemoryScrolling({ scrollPositionRestoration: 'top' })),
-    provideHttpClient(withFetch(), withInterceptors([securityInterceptor, authInterceptor, cacheInterceptor])),
+    provideHttpClient(withFetch(), withInterceptors([securityInterceptor, authInterceptor, authErrorInterceptor, cacheInterceptor])),
     provideClientHydration(
       withEventReplay(),
       withHttpTransferCacheOptions({ includePostRequests: false, filter: r => r.method === 'GET' })
