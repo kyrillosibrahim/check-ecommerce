@@ -473,7 +473,7 @@
               <h6 class="mega-menu-section-title">{{ 'nav.subcategories' | translate }}</h6>
               <div class="mega-menu-sub-grid">
                 @for (sub of hoveredCategory.subcategories; track sub.id) {
-                  <a class="mega-menu-sub-card" (click)="searchBySubcategory(hoveredCategory!, sub.slug)">
+                  <a class="mega-menu-sub-card" (click)="searchBySubcategory(hoveredCategory!, sub.id)">
                     @if (sub.image) {
                       <img [src]="sub.image" [alt]="sub.name" class="mega-menu-sub-img is-loading"
                            (load)="onImgLoad($event)" (error)="onImgError($event)">

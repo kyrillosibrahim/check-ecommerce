@@ -48,7 +48,7 @@ export class BrandsComponent implements OnInit {
   }
 
   goToCategory(cat: ICategory): void {
-    this.router.navigate(['/products'], { queryParams: { category: cat.slug } });
+    this.router.navigate(['/products'], { queryParams: { category: cat.id } });
   }
 
   onSearchInput(value: string): void {

@@ -186,7 +186,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   searchByCategory(category: ICategory): void {
-    this.router.navigate(['/products'], { queryParams: { category: category.slug } });
+    // Use the numeric id (short URL) instead of the Arabic slug (long when encoded)
+    this.router.navigate(['/products'], { queryParams: { category: category.id } });
     this.closeSearchOverlay();
     this.hoveredCategory = null;
   }
@@ -277,9 +278,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.onCategoryLeave();
   }
 
-  searchBySubcategory(cat: ICategory, subSlug: string): void {
+  searchBySubcategory(cat: ICategory, subId: number): void {
     this.hoveredCategory = null;
-    this.router.navigate(['/products'], { queryParams: { category: cat.slug, subcategory: subSlug } });
+    // Short URL: numeric category + subcategory ids instead of Arabic slugs
+    this.router.navigate(['/products'], { queryParams: { category: cat.id, subcategory: subId } });
   }
 
   searchByBrandFromMenu(brandName: string): void {

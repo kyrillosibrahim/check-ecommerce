@@ -80,7 +80,7 @@
         <h6 class="footer-heading">{{ 'footer.categories' | translate }}</h6>
         <ul class="list-unstyled footer-links">
           @for (cat of categories; track cat.id) {
-            <li><a routerLink="/products" [queryParams]="{ category: cat.slug }" class="footer-link">{{ cat.name }}</a></li>
+            <li><a routerLink="/products" [queryParams]="{ category: cat.id }" class="footer-link">{{ cat.name }}</a></li>
           }
         </ul>
       </div>

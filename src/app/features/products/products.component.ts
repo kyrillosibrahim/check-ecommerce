@@ -213,39 +213,61 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
       description: 'تصفح جميع المنتجات المتاحة بأفضل الأسعار. فلاتر متقدمة للبحث حسب القسم والعلامة التجارية.',
       path: '/products',
     });
-    this.categoryService.getAll().subscribe(c => {
-      this.categories = c;
-      this.cdr.markForCheck();
-    });
+    // The URL carries short numeric ids; we resolve them back to the (Arabic) slugs
+    // the API and the UI use. Old slug-based links still work (resolveSlug passes
+    // non-numeric values through). Short links (e.g. /oils) carry the filter in the
+    // route `data`; when the URL has no query params we fall back to that.
+    combineLatest([this.route.queryParams, this.route.data, this.categoryService.getAll()])
+      .subscribe(([params, data, cats]) => {
+        this.categories = cats;
+        const noQuery = Object.keys(params).length === 0;
+        const rawCategory = String(params['category'] || (noQuery ? data['category'] : '') || '');
+        const rawSubcategory = String(params['subcategory'] || (noQuery ? data['subcategory'] : '') || '');
 
-    // Short links (e.g. /oils) carry the filter in the route `data`; normal
-    // /products links carry it in the query string. When the URL has no query
-    // params at all we fall back to `data`, otherwise the query owns the state.
-    combineLatest([this.route.queryParams, this.route.data]).subscribe(([params, data]) => {
-      const noQuery = Object.keys(params).length === 0;
-      this.selectedCategory = params['category'] || (noQuery ? data['category'] : '') || '';
-      this.selectedSubcategory = params['subcategory'] || (noQuery ? data['subcategory'] : '') || '';
-      this.selectedBrand = params['brand'] || (noQuery ? data['brand'] : '') || '';
-      this.searchTerm = params['search'] || '';
-      this.currentPage = 1;
-      this.fetchFromServer();
-    });
+        this.selectedCategory = this.resolveCategorySlug(rawCategory, cats);
+        this.selectedSubcategory = this.resolveSubcategorySlug(this.selectedCategory, rawSubcategory, cats);
+        this.selectedBrand = params['brand'] || (noQuery ? data['brand'] : '') || '';
+        this.searchTerm = params['search'] || '';
+        this.currentPage = 1;
+        this.fetchFromServer();
+        this.cdr.markForCheck();
+      });
+  }
+
+  /** Resolve a URL category param (numeric id or legacy slug) to the category slug. */
+  private resolveCategorySlug(raw: string, cats: ICategory[]): string {
+    if (!raw) return '';
+    if (/^\d+$/.test(raw)) return cats.find(c => c.id === +raw)?.slug || '';
+    return raw;
+  }
+
+  /** Resolve a URL subcategory param (numeric id or legacy slug) to the subcategory slug. */
+  private resolveSubcategorySlug(categorySlug: string, raw: string, cats: ICategory[]): string {
+    if (!raw) return '';
+    if (/^\d+$/.test(raw)) {
+      const cat = cats.find(c => c.slug === categorySlug);
+      return cat?.subcategories?.find(s => s.id === +raw)?.slug || '';
+    }
+    return raw;
   }
 
   onCategoryChange(category: string): void {
     this.selectedFilterTags = [];
     this.closeFilterDrawer();
+    const id = this.categories.find(c => c.slug === category)?.id;
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { category: category || null, subcategory: null },
+      queryParams: { category: (id ?? category) || null, subcategory: null },
       queryParamsHandling: 'merge',
     });
   }
 
   onSubcategoryChange(subcategory: string): void {
+    const cat = this.categories.find(c => c.slug === this.selectedCategory);
+    const subId = cat?.subcategories?.find(s => s.slug === subcategory)?.id;
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { subcategory: subcategory || null },
+      queryParams: { subcategory: (subId ?? subcategory) || null },
       queryParamsHandling: 'merge',
     });
   }
