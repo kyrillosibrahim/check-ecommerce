@@ -19,6 +19,17 @@
   }
 }
 
+// Center the glyph precisely (neutralises Bootstrap Icons' -0.125em baseline shift,
+// which otherwise reads as an off-centre icon — especially once rotated).
+.fab-toggle i,
+.fab-scroll-top i,
+.fab-item i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
 // ── Toggle Button ──
 .fab-toggle {
   width: 52px;
@@ -27,7 +38,7 @@
   border: none;
   background: #2bb5a0;
   color: #fff;
-  font-size: 1.4rem;
+  font-size: 1.6rem;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -39,13 +50,9 @@
     transform: scale(1.1);
   }
 
+  // Open state keeps the X dead-centre (no rotation → no baseline-shift artefact)
   &.open {
     background: #2bb5a0;
-    transform: rotate(90deg);
-
-    &:hover {
-      transform: rotate(90deg) scale(1.1);
-    }
   }
 }
 
@@ -57,7 +64,7 @@
   border: none;
   background: var(--sz-accent, #dc3545);
   color: #fff;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -87,12 +94,12 @@
 
 // ── Individual Items ──
 .fab-item {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   border: none;
   color: #fff;
-  font-size: 1.15rem;
+  font-size: 1.45rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -173,15 +180,15 @@
 
   .fab-toggle,
   .fab-scroll-top {
-    width: 46px;
-    height: 46px;
-    font-size: 1.2rem;
+    width: 48px;
+    height: 48px;
+    font-size: 1.4rem;
   }
 
   .fab-item {
-    width: 40px;
-    height: 40px;
-    font-size: 1rem;
+    width: 44px;
+    height: 44px;
+    font-size: 1.3rem;
   }
 
   :host-context([dir="rtl"]) {
