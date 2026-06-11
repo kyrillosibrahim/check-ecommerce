@@ -79,7 +79,6 @@
                     [class.is-open]="isFilterMenuOpen('sort')"
                     [class.is-active]="sortBy !== 'default'"
                     (click)="toggleFilterMenu('sort')">
-              <i class="bi bi-sort-down"></i>
               <span>الترتيب</span>
               <i class="bi bi-chevron-down hfilter-caret"></i>
             </button>
@@ -115,7 +114,6 @@
                     [class.is-open]="isFilterMenuOpen('price')"
                     [class.is-active]="selectedPriceRanges.length > 0"
                     (click)="toggleFilterMenu('price')">
-              <i class="bi bi-currency-dollar"></i>
               <span>السعر</span>
               @if (selectedPriceRanges.length > 0) {
                 <span class="hfilter-count">{{ selectedPriceRanges.length }}</span>
@@ -141,7 +139,6 @@
                     [class.is-open]="isFilterMenuOpen('availability')"
                     [class.is-active]="selectedAvailability.length > 0"
                     (click)="toggleFilterMenu('availability')">
-              <i class="bi bi-box-seam"></i>
               <span>التوفر</span>
               @if (selectedAvailability.length > 0) {
                 <span class="hfilter-count">{{ selectedAvailability.length }}</span>
@@ -168,7 +165,6 @@
                       [class.is-open]="isFilterMenuOpen('brand')"
                       [class.is-active]="selectedBrands.length > 0"
                       (click)="toggleFilterMenu('brand')">
-                <i class="bi bi-award"></i>
                 <span>العلامة التجارية</span>
                 @if (selectedBrands.length > 0) {
                   <span class="hfilter-count">{{ selectedBrands.length }}</span>
@@ -210,7 +206,6 @@
                       [class.is-open]="isFilterMenuOpen('filterTags')"
                       [class.is-active]="selectedFilterTags.length > 0"
                       (click)="toggleFilterMenu('filterTags')">
-                <i class="bi bi-tags"></i>
                 <span>الفلاتر</span>
                 @if (selectedFilterTags.length > 0) {
                   <span class="hfilter-count">{{ selectedFilterTags.length }}</span>
