@@ -242,9 +242,9 @@
   top: var(--hfilter-top, 96px);
   z-index: 1030;
   background: var(--sz-bg-card);
-  border: 1px solid var(--sz-border-color);
-  border-radius: 14px;
-  padding: 0.6rem 0.75rem;
+  // border: 1px solid var(--sz-border-color);
+  border-radius: 5px;
+  padding: 0.6rem;
   margin-bottom: 1rem;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
 }
