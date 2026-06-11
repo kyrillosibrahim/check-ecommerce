@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, Output, EventEmitter, OnInit, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { IProduct } from '../../../core/models/product.model';
 import { TranslationService } from '../../../core/services/translation.service';
 import { CartService } from '../../../core/services/cart.service';
@@ -15,7 +15,7 @@ import { AlertService } from '../../../core/services/alert.service';
 
 @Component({
   selector: 'app-product-card',
-  imports: [EgpCurrencyPipe, DiscountPricePipe, TranslatePipe, LocalizePipe, TextLoopComponent],
+  imports: [RouterLink, EgpCurrencyPipe, DiscountPricePipe, TranslatePipe, LocalizePipe, TextLoopComponent],
   templateUrl: './product-card.component.html',
   styleUrl: './product-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -164,6 +164,15 @@ export class ProductCardComponent implements OnInit {
   }
 
   readonly starsArray = [1, 2, 3, 4, 5];
+
+  /**
+   * Card body click. Retail cards navigate through the real <a class="stretched-link">
+   * (so Ctrl/middle-click open a new tab); only wholesale cards — which have no detail
+   * page — fall back to opening the quick-view here.
+   */
+  onCardClick(): void {
+    if (this.isWholesale) this.quickViewService.open(this.product);
+  }
 
   navigateToProduct(): void {
     if (this.isWholesale) {

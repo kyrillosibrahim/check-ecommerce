@@ -77,6 +77,12 @@
   }
 }
 
+// Keep the footer actions above the stretched-link overlay so they stay clickable
+.card-footer {
+  position: relative;
+  z-index: 2;
+}
+
 .card-footer .btn {
   font-size: 0.75rem;
   padding: 0.3rem 0.5rem;

@@ -1,6 +1,13 @@
 <div class="card card-hover h-100 shadow-sm position-relative card-clickable"
      style="border-color: var(--sz-border-color);"
-     (click)="navigateToProduct()">
+     (click)="onCardClick()">
+  <!-- Real link covering the card so Ctrl/middle-click open a new tab.
+       Wholesale offers have no detail page → they keep the click→quick-view. -->
+  @if (!isWholesale) {
+    <a class="stretched-link product-card-link"
+       [routerLink]="['/product', product.id]"
+       [attr.aria-label]="product.title | localize:product.titleAr"></a>
+  }
   <!-- Image -->
   <div class="product-img-wrapper position-relative">
     @for (img of swiperImages; track $index) {
