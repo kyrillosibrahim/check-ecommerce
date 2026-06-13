@@ -83,7 +83,7 @@ async function createOrder(req, res, next) {
       await createNotification(userId, {
         type: 'order_created',
         title: 'تم استلام طلبك',
-        body: 'لقد تم تسليم طلبك لشركة الشحن.. سيصلك طلبك فى خلال 24 ساعة',
+        body: 'لقد تم تسليم طلبك لشركة كــاف.. سيصلك تفاصيل طلبك فى خلال 24 ساعة',
         link: '/notifications',
       });
     }
