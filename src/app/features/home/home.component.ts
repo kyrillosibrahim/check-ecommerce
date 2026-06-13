@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { combineLatest } from 'rxjs';
-import { NgOptimizedImage } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ProductService } from '../../core/services/product.service';
 import { CartService } from '../../core/services/cart.service';
@@ -21,10 +20,11 @@ import { BrandsGridComponent } from './components/brands-grid/brands-grid.compon
 import { NaturalProductsComponent, INaturalProductItem } from './components/natural-products/natural-products.component';
 import { SkeletonLoaderComponent } from '../../shared/components/skeleton-loader/skeleton-loader.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { CldImagePipe } from '../../shared/pipes/cld-image.pipe';
 
 @Component({
   selector: 'app-home',
-  imports: [HeroSliderComponent, FeaturedProductsComponent, CategoriesGridComponent, BrandsGridComponent, NaturalProductsComponent, SkeletonLoaderComponent, TranslatePipe, NgOptimizedImage],
+  imports: [HeroSliderComponent, FeaturedProductsComponent, CategoriesGridComponent, BrandsGridComponent, NaturalProductsComponent, SkeletonLoaderComponent, TranslatePipe, CldImagePipe],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

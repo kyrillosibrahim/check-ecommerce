@@ -10,14 +10,12 @@
           <div class="col-12">
             @if (banner.link) {
               <a [href]="banner.link">
-                <img [ngSrc]="banner.image" [alt]="'بنر ' + banner.id" class="w-100 rounded-1 shadow-sm"
-                     width="1600" height="300"
-                     sizes="100vw" loading="lazy" />
+                <img [src]="banner.image | cldImage:1600" [alt]="'بنر ' + banner.id" class="w-100 rounded-1 shadow-sm"
+                     style="height:auto" loading="lazy" />
               </a>
             } @else {
-              <img [ngSrc]="banner.image" [alt]="'بنر ' + banner.id" class="w-100 rounded-2 shadow-sm"
-                   width="1600" height="300"
-                   sizes="100vw" loading="lazy" />
+              <img [src]="banner.image | cldImage:1600" [alt]="'بنر ' + banner.id" class="w-100 rounded-2 shadow-sm"
+                   style="height:auto" loading="lazy" />
             }
           </div>
         }
@@ -50,12 +48,12 @@
           <div class="col-12">
             @if (banner.link) {
               <a [href]="banner.link">
-                <img style="height: auto;" [ngSrc]="banner.image" [alt]="'بنر ' + banner.id" class="w-100 rounded-1 shadow-sm"
-                     width="1600" height="300" sizes="100vw" loading="lazy" />
+                <img style="height: auto;" [src]="banner.image | cldImage:1600" [alt]="'بنر ' + banner.id" class="w-100 rounded-1 shadow-sm"
+                     loading="lazy" />
               </a>
             } @else {
-              <img   style="height: auto;" [ngSrc]="banner.image" [alt]="'بنر ' + banner.id" class="w-100 rounded-2 shadow-sm"
-                   width="1600" height="300" sizes="100vw" loading="lazy" />
+              <img   style="height: auto;" [src]="banner.image | cldImage:1600" [alt]="'بنر ' + banner.id" class="w-100 rounded-2 shadow-sm"
+                   loading="lazy" />
             }
           </div>
         }
@@ -85,12 +83,12 @@
           <div class="col-12">
             @if (banner.link) {
               <a [href]="banner.link">
-                <img  style="height: auto;" [ngSrc]="banner.image" [alt]="'بنر ' + banner.id" class="w-100 rounded-1 shadow-sm"
-                     width="1600" height="300" sizes="100vw" loading="lazy" />
+                <img  style="height: auto;" [src]="banner.image | cldImage:1600" [alt]="'بنر ' + banner.id" class="w-100 rounded-1 shadow-sm"
+                     loading="lazy" />
               </a>
             } @else {
-              <img  style="height: auto;" [ngSrc]="banner.image" [alt]="'بنر ' + banner.id" class="w-100 rounded-2 shadow-sm"
-                   width="1600" height="300" sizes="100vw" loading="lazy" />
+              <img  style="height: auto;" [src]="banner.image | cldImage:1600" [alt]="'بنر ' + banner.id" class="w-100 rounded-2 shadow-sm"
+                   loading="lazy" />
             }
           </div>
         }
@@ -120,12 +118,12 @@
           <div class="col-12">
             @if (banner.link) {
               <a [href]="banner.link">
-                <img  style="height: auto;" [ngSrc]="banner.image" [alt]="'بنر ' + banner.id" class="w-100 rounded-1 shadow-sm"
-                     width="1600" height="300" sizes="100vw" loading="lazy" />
+                <img  style="height: auto;" [src]="banner.image | cldImage:1600" [alt]="'بنر ' + banner.id" class="w-100 rounded-1 shadow-sm"
+                     loading="lazy" />
               </a>
             } @else {
-              <img  style="height: auto;" [ngSrc]="banner.image" [alt]="'بنر ' + banner.id" class="w-100 rounded-2 shadow-sm"
-                   width="1600" height="300" sizes="100vw" loading="lazy" />
+              <img  style="height: auto;" [src]="banner.image | cldImage:1600" [alt]="'بنر ' + banner.id" class="w-100 rounded-2 shadow-sm"
+                   loading="lazy" />
             }
           </div>
         }
