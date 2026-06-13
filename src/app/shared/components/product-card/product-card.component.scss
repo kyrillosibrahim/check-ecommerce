@@ -81,10 +81,11 @@
 .card-footer {
   position: relative;
   z-index: 2;
+  padding: 0px 10px 10px 10px !important;
 }
 
 .card-footer .btn {
-  font-size: 0.75rem;
+  font-size: 16px;
   padding: 0.3rem 0.5rem;
 }
 
