@@ -19,6 +19,13 @@
     </div>
   }
 
+  @if (items.length > 0) {
+    <button type="button" class="watch-sound" (click)="toggleSound($event)"
+            [attr.aria-label]="muted() ? 'تشغيل الصوت' : 'كتم الصوت'">
+      <i class="bi" [class.bi-volume-mute-fill]="muted()" [class.bi-volume-up-fill]="!muted()"></i>
+    </button>
+  }
+
   <div class="watch-controls">
     <button type="button" class="watch-arrow watch-arrow--up" (click)="scrollBySlide(-1)" aria-label="Previous">
       <img src="assets/iconsd/arrow-down.png" alt="" />
