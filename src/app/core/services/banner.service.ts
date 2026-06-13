@@ -27,7 +27,7 @@ export class BannerService {
     return this.banners$;
   }
 
-  getByPage(page: 'home' | 'offers' | 'home-below'): Observable<IBanner[]> {
+  getByPage(page: IBanner['page']): Observable<IBanner[]> {
     return this.banners$.pipe(
       map(banners => banners.filter(b => b.page === page))
     );

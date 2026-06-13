@@ -47,6 +47,9 @@ export class HomeComponent implements OnInit {
   naturalProducts: INaturalProductItem[] = [];
   homeBanners: IBanner[] = [];
   belowSliderBanners: IBanner[] = [];
+  belowCategoriesBanners: IBanner[] = [];
+  belowBestSellingBanners: IBanner[] = [];
+  belowBrandsBanners: IBanner[] = [];
   isLoadingBanners = signal(true);
   isLoading = signal(true);
   isLoadingProducts = signal(true);
@@ -65,6 +68,18 @@ export class HomeComponent implements OnInit {
     });
     this.bannerService.getByPage('home-below').pipe(takeUntilDestroyed(this.destroyRef)).subscribe(b => {
       this.belowSliderBanners = b;
+      this.cdr.markForCheck();
+    });
+    this.bannerService.getByPage('below-categories').pipe(takeUntilDestroyed(this.destroyRef)).subscribe(b => {
+      this.belowCategoriesBanners = b;
+      this.cdr.markForCheck();
+    });
+    this.bannerService.getByPage('below-bestselling').pipe(takeUntilDestroyed(this.destroyRef)).subscribe(b => {
+      this.belowBestSellingBanners = b;
+      this.cdr.markForCheck();
+    });
+    this.bannerService.getByPage('below-brands').pipe(takeUntilDestroyed(this.destroyRef)).subscribe(b => {
+      this.belowBrandsBanners = b;
       this.cdr.markForCheck();
     });
     this.categoryService.getAll().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(c => {

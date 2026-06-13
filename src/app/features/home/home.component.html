@@ -41,6 +41,29 @@
   </div>
 </section>
 
+<!-- Banners below Best Selling -->
+@if (belowBestSellingBanners.length > 0) {
+  <section class="section-padding pb-0">
+    <div class="container" style="padding: 1% 3%;">
+      <div class="row g-3">
+        @for (banner of belowBestSellingBanners; track banner.id) {
+          <div class="col-12">
+            @if (banner.link) {
+              <a [href]="banner.link">
+                <img [ngSrc]="banner.image" [alt]="'بنر ' + banner.id" class="w-100 rounded-1 shadow-sm"
+                     width="1600" height="300" sizes="100vw" loading="lazy" />
+              </a>
+            } @else {
+              <img [ngSrc]="banner.image" [alt]="'بنر ' + banner.id" class="w-100 rounded-2 shadow-sm"
+                   width="1600" height="300" sizes="100vw" loading="lazy" />
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+}
+
 <!-- Categories -->
 <section class="section-padding">
   <div class="container">
@@ -52,6 +75,30 @@
     }
   </div>
 </section>
+
+<!-- Banners below Categories -->
+@if (belowCategoriesBanners.length > 0) {
+  <section class="section-padding pb-0">
+    <div class="container" style="padding: 1% 3%;">
+      <div class="row g-3">
+        @for (banner of belowCategoriesBanners; track banner.id) {
+          <div class="col-12">
+            @if (banner.link) {
+              <a [href]="banner.link">
+                <img [ngSrc]="banner.image" [alt]="'بنر ' + banner.id" class="w-100 rounded-1 shadow-sm"
+                     width="1600" height="300" sizes="100vw" loading="lazy" />
+              </a>
+            } @else {
+              <img [ngSrc]="banner.image" [alt]="'بنر ' + banner.id" class="w-100 rounded-2 shadow-sm"
+                   width="1600" height="300" sizes="100vw" loading="lazy" />
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+}
+
 <!-- All Brands -->
 <section class="section-padding" style="background-color: #ffffff;">
   <div class="container">
@@ -63,6 +110,29 @@
     }
   </div>
 </section>
+
+<!-- Banners below Brands -->
+@if (belowBrandsBanners.length > 0) {
+  <section class="section-padding pb-0">
+    <div class="container" style="padding: 1% 3%;">
+      <div class="row g-3">
+        @for (banner of belowBrandsBanners; track banner.id) {
+          <div class="col-12">
+            @if (banner.link) {
+              <a [href]="banner.link">
+                <img [ngSrc]="banner.image" [alt]="'بنر ' + banner.id" class="w-100 rounded-1 shadow-sm"
+                     width="1600" height="300" sizes="100vw" loading="lazy" />
+              </a>
+            } @else {
+              <img [ngSrc]="banner.image" [alt]="'بنر ' + banner.id" class="w-100 rounded-2 shadow-sm"
+                   width="1600" height="300" sizes="100vw" loading="lazy" />
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+}
 
 <!-- Natural Products (videos) -->
 @if (naturalProducts.length > 0) {
