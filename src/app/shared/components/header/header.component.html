@@ -685,6 +685,17 @@
     <span class="mobile-nav-label">{{ 'nav.cart' | translate }}</span>
   </a>
   @if (authService.isLoggedIn$ | async) {
+    <a class="mobile-bottom-nav-item" routerLink="/notifications" routerLinkActive="active">
+      <span class="mobile-nav-icon">
+        <i class="bi bi-bell-fill"></i>
+        @if ((notificationsService.unreadCount$ | async) ?? 0; as count) {
+          @if (count > 0) {
+            <span class="mobile-bottom-nav-badge">{{ count }}</span>
+          }
+        }
+      </span>
+      <span class="mobile-nav-label">الإشعارات</span>
+    </a>
     <a class="mobile-bottom-nav-item" routerLink="/profile" routerLinkActive="active">
       <span class="mobile-nav-icon"><i class="bi bi-person-fill"></i></span>
       <span class="mobile-nav-label">{{ 'nav.my_account' | translate }}</span>

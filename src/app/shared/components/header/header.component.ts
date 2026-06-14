@@ -313,20 +313,29 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.router.navigate(['/']);
   }
 
+  /** Bottom-nav item count: logged-in adds a Notifications item (6 vs 5). */
+  get navItemCount(): number {
+    return this.authService.isLoggedIn() ? 6 : 5;
+  }
+
   get navIndicatorLeft(): string {
     if (this.activeNavIndex < 0) return '-100%';
+    const count = this.navItemCount;
     const isRtl = this.translationService.currentLang() === 'ar';
-    const idx = isRtl ? (4 - this.activeNavIndex) : this.activeNavIndex;
-    return (idx * 20 + 10) + '%';
+    const idx = isRtl ? (count - 1 - this.activeNavIndex) : this.activeNavIndex;
+    const w = 100 / count;
+    return (idx * w + w / 2) + '%';
   }
 
   private updateActiveNav(url: string): void {
     this.hideBottomNav = false;
+    const loggedIn = this.authService.isLoggedIn();
     if (url === '/' || url === '') this.activeNavIndex = 0;
     else if (url.startsWith('/offers')) this.activeNavIndex = 1;
     else if (url.startsWith('/watch')) this.activeNavIndex = 2;
     else if (url.startsWith('/cart')) this.activeNavIndex = 3;
-    else if (url.startsWith('/profile')) this.activeNavIndex = 4;
+    else if (url.startsWith('/notifications')) this.activeNavIndex = loggedIn ? 4 : -1;
+    else if (url.startsWith('/profile')) this.activeNavIndex = loggedIn ? 5 : 4;
     else this.activeNavIndex = -1;
   }
 }
