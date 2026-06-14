@@ -30,6 +30,19 @@ export class NaturalProductsComponent implements AfterViewInit, OnChanges {
     return VIDEO_EXT_RE.test(url);
   }
 
+  /**
+   * A Cloudinary-generated poster (first frame) for a video URL, so the card
+   * shows an image immediately on mobile — where preload="metadata" often renders
+   * black until the clip plays. Returns '' for non-Cloudinary videos.
+   */
+  posterFor(url: string): string {
+    const marker = '/video/upload/';
+    if (!url || !url.includes(marker)) return '';
+    const start = url.indexOf(marker) + marker.length;
+    const rest = url.slice(start).replace(/\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i, '.jpg');
+    return `${url.slice(0, start)}so_0,f_auto,q_auto,w_400/${rest}`;
+  }
+
   ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId) && this.items.length > 0) {
       this.initSwiper();
