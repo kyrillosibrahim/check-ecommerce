@@ -132,9 +132,9 @@
   </section>
 }
 
-<!-- Natural Products (videos) -->
+<!-- Natural Products (videos) — desktop only -->
 @if (naturalProducts.length > 0) {
-  <section class="section-padding" style="background-color: var(--sz-bg-secondary, #f8f9fa);">
+  <section class="section-padding d-none d-lg-block" style="background-color: var(--sz-bg-secondary, #f8f9fa);">
     <div class="container">
       <h2 class="section-title">المنتجات في الطبيعة</h2>
       <app-natural-products [items]="naturalProducts" />
