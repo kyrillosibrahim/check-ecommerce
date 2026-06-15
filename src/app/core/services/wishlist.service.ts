@@ -128,9 +128,10 @@ export class WishlistService {
       this.wishlistSubject.getValue().some(p => p.id === productId);
   }
 
-  addToWishlist(product: IProduct): void {
-    if (!this.auth.isLoggedIn()) { this.authDrawer.open('login'); return; }
-    if (this.isProcessing(product.id)) return;
+  /** Adds to favorites. Returns false (without adding) when the user isn't logged in. */
+  addToWishlist(product: IProduct): boolean {
+    if (!this.auth.isLoggedIn()) { this.authDrawer.open('login'); return false; }
+    if (this.isProcessing(product.id)) return false;
     this.markProcessing(product.id);
 
     // Optimistic update — new Set triggers signal
@@ -154,6 +155,7 @@ export class WishlistService {
         this.alertService.fire({ icon: 'error', title: 'خطأ', text: 'فشل إضافة المنتج للمفضلة', timer: 2000, showConfirmButton: false });
       },
     });
+    return true;
   }
 
   removeFromWishlist(productId: string): void {

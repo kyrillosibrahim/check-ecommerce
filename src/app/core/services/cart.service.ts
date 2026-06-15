@@ -169,8 +169,16 @@ export class CartService {
     });
   }
 
-  addToCart(product: IProduct, quantity: number = 1): void {
-    if (!this.auth.isLoggedIn()) { this.authDrawer.open('login'); return; }
+  /** True if logged in; otherwise opens the login drawer and returns false. */
+  promptLoginIfNeeded(): boolean {
+    if (this.auth.isLoggedIn()) return true;
+    this.authDrawer.open('login');
+    return false;
+  }
+
+  /** Adds to cart. Returns false (without adding) when the user isn't logged in. */
+  addToCart(product: IProduct, quantity: number = 1): boolean {
+    if (!this.promptLoginIfNeeded()) return false;
     this.http.post<any>(`${SERVER_URL}/api/cart/addtocart`, {
       productId: product.id,
       quantity,
@@ -204,6 +212,7 @@ export class CartService {
       },
       error: (err) => console.error('Failed to add to cart:', err),
     });
+    return true;
   }
 
   removeFromCart(productId: string): void {

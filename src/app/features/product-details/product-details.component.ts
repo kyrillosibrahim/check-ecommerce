@@ -363,11 +363,12 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   }
 
   addToCart(): void {
-    if (this.displayProduct) {
-      this.cartService.addToCart(this.displayProduct, this.quantity);
-      this.displayProduct = { ...this.displayProduct, inCart: true };
-      if (this.product) this.product = { ...this.product, inCart: true };
-    }
+    if (!this.displayProduct) return;
+    // addToCart returns false for guests (and opens the login drawer) — skip the
+    // optimistic "in cart" state so it isn't shown as added when it wasn't.
+    if (!this.cartService.addToCart(this.displayProduct, this.quantity)) return;
+    this.displayProduct = { ...this.displayProduct, inCart: true };
+    if (this.product) this.product = { ...this.product, inCart: true };
   }
 
   get isInWishlist(): boolean {
@@ -379,8 +380,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
       if (this.isInWishlist) {
         this.wishlistService.removeFromWishlist(this.product.id);
         this.product = { ...this.product, inFavorite: false };
-      } else {
-        this.wishlistService.addToWishlist(this.product);
+      } else if (this.wishlistService.addToWishlist(this.product)) {
         this.product = { ...this.product, inFavorite: true };
       }
     }
