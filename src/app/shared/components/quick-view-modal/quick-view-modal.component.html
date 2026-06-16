@@ -87,7 +87,7 @@
 
           <!-- View Details Link (hidden for wholesale offers — they have no public detail page) -->
           @if (!product.isWholesaleOffer) {
-            <button class="btn btn-outline-secondary btn-sm w-100" (click)="navigateToProduct(product)">
+            <button class="btn btn-outline-secondary btn-sm w-100" style="border-color: #e35356 !important;" (click)="navigateToProduct(product)">
               <i class="bi bi-box-arrow-up-right me-1"></i>{{ 'product.view_product' | translate }}
             </button>
           }
