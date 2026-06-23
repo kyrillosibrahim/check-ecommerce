@@ -461,6 +461,10 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
       },
       showClass: { popup: 'dq-show' },
       hideClass: { popup: 'dq-hide' },
+      // Lock background scroll while open (a global rule disables SweetAlert2's
+      // own lock, so force it here and restore on close).
+      didOpen: () => document.body.style.setProperty('overflow', 'hidden', 'important'),
+      willClose: () => document.body.style.removeProperty('overflow'),
     });
   }
 

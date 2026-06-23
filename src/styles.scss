@@ -506,10 +506,14 @@ body.swal2-shown {
     margin: 0 !important;
     padding: 0 !important;
     border-radius: 16px !important;
+    overflow: hidden !important;
   }
 
-  /* Keep the close button pinned while the body scrolls */
+  /* The body scrolls inside; the close button stays pinned (it's a sibling of
+     the html container, not inside it). The explicit max-height is what makes
+     overflow-y actually trigger. */
   .dq-container .delivery-quality-popup .swal2-html-container {
+    max-height: 70vh !important;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch;
   }
