@@ -157,7 +157,7 @@
                 <i class="bi bi-cart-plus me-2"></i>{{ 'details.add_to_cart' | translate }}
               </button>
             }
-            <button class="btn btn-md" [class.btn-danger]="isInWishlist" [class.btn-outline-danger]="!isInWishlist" (click)="toggleWishlist()" [title]="'product.add_to_wishlist' | translate">
+            <button class="btn btn-md d-flex align-items-center justify-content-center" [class.btn-danger]="isInWishlist" [class.btn-outline-danger]="!isInWishlist" (click)="toggleWishlist()" [title]="'product.add_to_wishlist' | translate">
               <i class="bi" [class.bi-heart-fill]="isInWishlist" [class.bi-heart]="!isInWishlist"></i>
             </button>
           </div>
