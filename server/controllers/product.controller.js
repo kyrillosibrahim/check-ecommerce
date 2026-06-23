@@ -174,6 +174,17 @@ async function getAllProducts(req, res, next) {
       return obj;
     });
 
+    // Profit (EGP) is a computed value, so it can't be sorted at the DB level.
+    // Sort the in-memory list before pagination slicing.
+    if (sort === 'profit-high' || sort === 'profit-low') {
+      const profitOf = p => {
+        const w = p.wholesalePrice || 0;
+        const s = p.discountedPrice || p.price || 0;
+        return w > 0 ? s - w : 0;
+      };
+      result.sort((a, b) => sort === 'profit-high' ? profitOf(b) - profitOf(a) : profitOf(a) - profitOf(b));
+    }
+
     const total = result.length;
     if (page && limit) {
       const pageNum = parseInt(page, 10) || 1; const limitNum = parseInt(limit, 10) || 36;
