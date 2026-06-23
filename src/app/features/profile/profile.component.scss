@@ -35,18 +35,17 @@
 }
 
 .sidebar-avatar {
-  width: 52px;
-  height: 52px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   background: rgba(255,255,255,0.25);
   border: 2px solid rgba(255,255,255,0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.4rem;
-  font-weight: 700;
+  font-size: 1.9rem;
+  line-height: 1;
   flex-shrink: 0;
-  text-transform: uppercase;
 }
 
 .sidebar-user-info {
@@ -57,7 +56,7 @@
 }
 
 .sidebar-name {
-  font-size: 0.95rem;
+  font-size: 1.15rem;
   font-weight: 700;
   white-space: nowrap;
   overflow: hidden;
@@ -65,8 +64,8 @@
 }
 
 .sidebar-sub {
-  font-size: 0.72rem;
-  opacity: 0.85;
+  font-size: 0.88rem;
+  opacity: 0.9;
   direction: ltr;
 }
 
