@@ -493,49 +493,29 @@ body.swal2-shown {
   to   { opacity: 0; transform: translateY(8px) scale(0.99); }
 }
 
-/* Mobile: behave like a bottom sheet */
+/* Mobile: centered sheet — 85% wide, capped at 70% of the viewport, scrolls inside */
 @media (max-width: 576px) {
   .dq-container {
-    align-items: flex-end !important;
+    align-items: center !important;
   }
 
-  .delivery-quality-popup {
-    width: 100% !important;
-    max-width: 100% !important;
+  .dq-container .delivery-quality-popup {
+    width: 85% !important;
+    max-width: 85% !important;
+    max-height: 70vh !important;
     margin: 0 !important;
-    border-radius: 18px 18px 0 0 !important;
+    padding: 0 !important;
+    border-radius: 16px !important;
+  }
 
-    &::before {
-      content: '';
-      display: block;
-      width: 40px;
-      height: 4px;
-      border-radius: 2px;
-      background: var(--sz-border-color);
-      margin: 0.6rem auto 0;
-    }
+  /* Keep the close button pinned while the body scrolls */
+  .dq-container .delivery-quality-popup .swal2-html-container {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
   }
 
   .dq-sheet {
     padding: 1.4rem 1.15rem 1.35rem;
-  }
-
-  .dq-show {
-    animation: dq-slide-up 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-
-  .dq-hide {
-    animation: dq-slide-down 0.24s ease-in both;
-  }
-
-  @keyframes dq-slide-up {
-    from { transform: translateY(100%); }
-    to   { transform: none; }
-  }
-
-  @keyframes dq-slide-down {
-    from { transform: none; }
-    to   { transform: translateY(100%); }
   }
 }
 
