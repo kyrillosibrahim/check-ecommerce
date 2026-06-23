@@ -332,13 +332,217 @@ body.swal2-shown {
 .delivery-quality-popup {
   background-color: var(--sz-bg-card) !important;
   color: var(--sz-text-primary) !important;
+  border-radius: 16px !important;
+  padding: 0 !important;
+  overflow: hidden;
+  box-shadow: 0 24px 60px -16px rgba(0, 0, 0, 0.35) !important;
 
-  .swal2-title {
-    color: var(--sz-text-primary) !important;
+  .swal2-html-container {
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
   }
 
   .swal2-close {
     color: var(--sz-text-secondary) !important;
+    font-size: 1.5rem !important;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    transition: background-color 0.2s ease, color 0.2s ease;
+
+    &:hover {
+      background-color: var(--sz-bg-secondary) !important;
+      color: var(--sz-accent) !important;
+    }
+  }
+}
+
+.dq-sheet {
+  text-align: start;
+  padding: 1.75rem 1.5rem 1.5rem;
+}
+
+.dq-head {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1.1rem;
+}
+
+.dq-badge {
+  flex: 0 0 auto;
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(var(--sz-accent-rgb), 0.12);
+  color: var(--sz-accent);
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.dq-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  line-height: 1.3;
+  margin: 0;
+  color: var(--sz-text-primary);
+}
+
+.dq-sub {
+  font-size: 0.82rem;
+  line-height: 1.4;
+  margin: 0.2rem 0 0;
+  color: var(--sz-text-secondary);
+}
+
+.dq-lead {
+  font-size: 0.92rem;
+  line-height: 1.85;
+  margin: 0 0 1.25rem;
+  color: var(--sz-text-secondary);
+}
+
+.dq-gallery {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.dq-fig {
+  margin: 0;
+
+  img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid var(--sz-border-color);
+    display: block;
+  }
+
+  figcaption {
+    margin-top: 0.45rem;
+    text-align: center;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--sz-text-secondary);
+  }
+}
+
+.dq-points {
+  list-style: none;
+  margin: 0 0 1.25rem;
+  padding: 0.95rem 1.05rem;
+  background: var(--sz-bg-secondary);
+  border-radius: 12px;
+  display: grid;
+  gap: 0.65rem;
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-size: 0.86rem;
+    line-height: 1.5;
+    color: var(--sz-text-primary);
+  }
+
+  i {
+    flex: 0 0 auto;
+    margin-top: 0.1rem;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--sz-accent);
+    color: #fff;
+    font-size: 0.72rem;
+  }
+}
+
+.dq-note {
+  font-size: 0.86rem;
+  line-height: 1.8;
+  margin: 0;
+  color: var(--sz-text-secondary);
+}
+
+/* Entrance / exit motion */
+.dq-show {
+  animation: dq-pop 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.dq-hide {
+  animation: dq-pop-out 0.2s ease-in both;
+}
+
+@keyframes dq-pop {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes dq-pop-out {
+  from { opacity: 1; transform: none; }
+  to   { opacity: 0; transform: translateY(8px) scale(0.99); }
+}
+
+/* Mobile: behave like a bottom sheet */
+@media (max-width: 576px) {
+  .dq-container {
+    align-items: flex-end !important;
+  }
+
+  .delivery-quality-popup {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    border-radius: 18px 18px 0 0 !important;
+
+    &::before {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--sz-border-color);
+      margin: 0.6rem auto 0;
+    }
+  }
+
+  .dq-sheet {
+    padding: 1.4rem 1.15rem 1.35rem;
+  }
+
+  .dq-show {
+    animation: dq-slide-up 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .dq-hide {
+    animation: dq-slide-down 0.24s ease-in both;
+  }
+
+  @keyframes dq-slide-up {
+    from { transform: translateY(100%); }
+    to   { transform: none; }
+  }
+
+  @keyframes dq-slide-down {
+    from { transform: none; }
+    to   { transform: translateY(100%); }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dq-show,
+  .dq-hide {
+    animation: none !important;
   }
 }
 

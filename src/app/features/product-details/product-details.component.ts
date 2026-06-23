@@ -396,30 +396,71 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
 
   showDeliveryQuality(): void {
     const isAr = this.translationService.currentLang() === 'ar';
+    const t = isAr
+      ? {
+          title: 'كيف يتم تغليف المنتجات؟',
+          sub: 'تغليف احترافي يضمن وصول طلبك سليمًا',
+          lead: 'تتم عملية تغليف وحماية المنتجات بواسطة فريق مُدرب محترف لتقديم تغليف فائق الجودة، باستخدام أفضل الأدوات والمستلزمات.',
+          capWrap: 'سلوفان لاصق',
+          capCarton: 'كرتون مقوّى',
+          p1: 'لفائف فقاعات الهواء (Bubble Wrap) بطبقات متعددة',
+          p2: 'بكرات سلوفان (Stretch Wrap) لتثبيت التغليف',
+          p3: 'ورق كرتون مقوّى مخصص للشحن',
+          note: 'يُغلَّف كل منتج على حدة بطبقات متعددة من فقاعات الهواء قبل وضعه في الكرتون المخصص للشحن، ليصلك الطلب بأفضل حالة.',
+        }
+      : {
+          title: 'How are products packaged?',
+          sub: 'Professional packaging that protects every order',
+          lead: 'Products are packaged and protected by a professionally trained team using the best tools and supplies to deliver premium quality packaging.',
+          capWrap: 'Stretch wrap',
+          capCarton: 'Reinforced carton',
+          p1: 'Multiple layers of bubble wrap',
+          p2: 'Stretch wrap to secure the packaging',
+          p3: 'Reinforced shipping-grade cardboard',
+          note: 'Each product is individually wrapped in multiple layers of bubble wrap before being placed in the shipping carton, so your order arrives in perfect condition.',
+        };
     Swal.fire({
-      title: isAr ? 'كيف يتم تغليف المنتجات؟' : 'How are products packaged?',
       html: `
-        <p style="color: var(--sz-text-secondary); font-size: 0.95rem; line-height: 1.8; margin-bottom: 1.5rem;">
-          ${isAr
-            ? 'تتم عملية تغليف وحماية المنتجات بواسطة فريق مُدرب محترف ليقدم عملية تغليف فائقة الجودة، باستخدام أفضل أدوات ومستلزمات التغليف مثل لفائف فقاعات الهواء (Bubbles Wrap)، وبكرات السلوفان (Stretch Wrap)، بالإضافة إلى ورق الكارتون المُقوّى.'
-            : 'Products are packaged and protected by a professionally trained team to deliver premium quality packaging, using the best tools and supplies such as Bubble Wrap, Stretch Wrap, and reinforced cardboard.'}
-        </p>
-        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
-          <img src="assets/security/rapeer.png" alt="Stretch Wrap" style="width: 50%; border-radius: 10px; object-fit: cover;" />
-          <img src="assets/security/carton.png" alt="Bubble Wrap" style="width: 50%; border-radius: 10px; object-fit: cover;" />
+        <div class="dq-sheet">
+          <div class="dq-head">
+            <span class="dq-badge"><i class="bi bi-shield-check"></i></span>
+            <div class="dq-head-text">
+              <h3 class="dq-title">${t.title}</h3>
+              <p class="dq-sub">${t.sub}</p>
+            </div>
+          </div>
+
+          <p class="dq-lead">${t.lead}</p>
+
+          <div class="dq-gallery">
+            <figure class="dq-fig">
+              <img src="assets/security/rapeer.png" alt="${t.capWrap}" loading="lazy" />
+              <figcaption>${t.capWrap}</figcaption>
+            </figure>
+            <figure class="dq-fig">
+              <img src="assets/security/carton.png" alt="${t.capCarton}" loading="lazy" />
+              <figcaption>${t.capCarton}</figcaption>
+            </figure>
+          </div>
+
+          <ul class="dq-points">
+            <li><i class="bi bi-check-lg"></i><span>${t.p1}</span></li>
+            <li><i class="bi bi-check-lg"></i><span>${t.p2}</span></li>
+            <li><i class="bi bi-check-lg"></i><span>${t.p3}</span></li>
+          </ul>
+
+          <p class="dq-note">${t.note}</p>
         </div>
-        <p style="color: var(--sz-text-secondary); font-size: 0.9rem; line-height: 1.8;">
-          ${isAr
-            ? 'حيث يتم تغليف كل منتج على حدا بطبقات متعددة بلفائف البابلز قبل وضعها في الكرتون المخصص للشحن، ليصلك الطلب بأفضل حالة.'
-            : 'Each product is individually wrapped in multiple layers of bubble wrap before being placed in the shipping carton, so your order arrives in perfect condition.'}
-        </p>
       `,
       showCloseButton: true,
       showConfirmButton: false,
-      width: '650px',
+      width: '560px',
       customClass: {
-        popup: 'delivery-quality-popup'
-      }
+        popup: 'delivery-quality-popup',
+        container: 'dq-container',
+      },
+      showClass: { popup: 'dq-show' },
+      hideClass: { popup: 'dq-hide' },
     });
   }
 
