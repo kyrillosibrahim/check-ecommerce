@@ -77,9 +77,11 @@ export class WatchComponent implements OnInit, AfterViewInit, OnDestroy {
   /** Build a poster (first frame) from the Cloudinary URL so no black screen while buffering. */
   private posterFor(url: string): string | undefined {
     if (!url || !url.includes(CLD_VIDEO_MARK)) return undefined;
-    return url
-      .replace(CLD_VIDEO_MARK, `${CLD_VIDEO_MARK}so_0,q_auto,f_auto,w_640/`)
-      .replace(/\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i, '.jpg$2');
+    const withTx = url.replace(CLD_VIDEO_MARK, `${CLD_VIDEO_MARK}so_0,q_auto,f_auto,w_640/`);
+    // Force a .jpg still — works whether or not the source URL carried a video extension.
+    return VIDEO_EXT_RE.test(withTx)
+      ? withTx.replace(/\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i, '.jpg$2')
+      : withTx.replace(/(\?.*)?$/, '.jpg$1');
   }
 
   ngAfterViewInit(): void {
@@ -126,6 +128,23 @@ export class WatchComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }, { threshold: [0, 0.7, 1] });
     this.videos.forEach(v => this.observer!.observe(v.nativeElement));
+
+    // Start the first video right away instead of waiting for the observer to
+    // fire — eager preload + immediate play so it opens the moment the tab loads.
+    const first = this.videos.first?.nativeElement;
+    if (first) {
+      first.preload = 'auto';
+      first.playsInline = true;
+      first.muted = this.muted();
+      first.play().catch(() => {
+        if (!first.muted) {
+          first.muted = true;
+          this.muted.set(true);
+          this.cdr.markForCheck();
+          first.play().catch(() => {});
+        }
+      });
+    }
   }
 
   /** Warm up the next slide's video while the current one plays, to avoid a buffering gap. */

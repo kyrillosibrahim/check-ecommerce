@@ -5,10 +5,10 @@
         #slideVideo
         [src]="item.video"
         [attr.poster]="item.poster"
+        [attr.preload]="$index === 0 ? 'auto' : 'metadata'"
         muted
         loop
         playsinline
-        preload="metadata"
       ></video>
       @if (item.link) {
         <div class="watch-hint">
