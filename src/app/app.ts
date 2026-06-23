@@ -26,7 +26,7 @@ export class App implements OnInit {
   /** Pages where the footer should be hidden on mobile */
   private noFooterRoutes = ['/', '/profile', '/wishlist', '/cart', '/offers', '/checkout', '/watch'];
   /** Pages where the header & floating actions should be hidden on mobile */
-  private noChromeRoutes = ['/cart', '/checkout', '/watch'];
+  private noChromeRoutes = ['/cart', '/checkout', '/watch', '/profile'];
   hideFooterOnMobile = signal(false);
   hideChromeOnMobile = signal(false);
 
