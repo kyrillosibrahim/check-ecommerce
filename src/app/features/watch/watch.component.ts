@@ -6,10 +6,12 @@ import { SiteSettingsService } from '../../core/services/settings.service';
 
 interface IWatchItem {
   video: string;
+  poster?: string;
   link?: string;
 }
 
 const VIDEO_EXT_RE = /\.(mp4|webm|ogg|mov|m4v)(\?|$)/i;
+const CLD_VIDEO_MARK = '/video/upload/';
 
 @Component({
   selector: 'app-watch',
@@ -54,10 +56,30 @@ export class WatchComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
     this.settingsService.getSettings().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(settings => {
-      this.items = (settings.naturalProducts || []).filter(i => i?.video && this.isVideo(i.video));
+      this.items = (settings.naturalProducts || [])
+        .filter(i => i?.video && this.isVideo(i.video))
+        .map(i => ({
+          video: this.optimizeVideo(i.video),
+          poster: this.posterFor(i.video),
+          link: i.link,
+        }));
       this.cdr.markForCheck();
       queueMicrotask(() => this.setupObserver());
     });
+  }
+
+  /** Add Cloudinary auto quality/format so videos download smaller & start faster. */
+  private optimizeVideo(url: string): string {
+    if (!url || !url.includes(CLD_VIDEO_MARK)) return url;
+    return url.replace(CLD_VIDEO_MARK, `${CLD_VIDEO_MARK}q_auto,f_auto/`);
+  }
+
+  /** Build a poster (first frame) from the Cloudinary URL so no black screen while buffering. */
+  private posterFor(url: string): string | undefined {
+    if (!url || !url.includes(CLD_VIDEO_MARK)) return undefined;
+    return url
+      .replace(CLD_VIDEO_MARK, `${CLD_VIDEO_MARK}so_0,q_auto,f_auto,w_640/`)
+      .replace(/\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i, '.jpg$2');
   }
 
   ngAfterViewInit(): void {
@@ -84,6 +106,7 @@ export class WatchComponent implements OnInit, AfterViewInit, OnDestroy {
         if (entry.isIntersecting && entry.intersectionRatio >= 0.7) {
           v.playsInline = true;
           v.muted = this.muted();
+          this.preloadNext(v);
           const r = v.play();
           // Browsers block autoplay WITH sound — if that's why play() failed,
           // fall back to muted playback and reflect it in the toggle.
@@ -103,6 +126,18 @@ export class WatchComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }, { threshold: [0, 0.7, 1] });
     this.videos.forEach(v => this.observer!.observe(v.nativeElement));
+  }
+
+  /** Warm up the next slide's video while the current one plays, to avoid a buffering gap. */
+  private preloadNext(current: HTMLVideoElement): void {
+    if (!this.videos) return;
+    const arr = this.videos.toArray();
+    const idx = arr.findIndex(ref => ref.nativeElement === current);
+    const next = arr[idx + 1]?.nativeElement;
+    if (next && next.preload !== 'auto') {
+      next.preload = 'auto';
+      next.load();
+    }
   }
 
   /** User taps the speaker — this gesture unlocks audio, so unmuting plays sound. */
