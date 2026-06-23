@@ -168,6 +168,8 @@
   .mobile-actions {
     flex: 1 1 auto;
     justify-content: flex-end;
+    /* Space the action icons (search / wishlist / cart / menu) a bit further apart */
+    gap: 0.9rem !important;
   }
 
   .nav-icon {

@@ -51,6 +51,8 @@ Thumbs.db
 
 # Misc
 .claude/
+PROJECT_MEMORY.md
+live-header.png
 /New folder/
 /react-products-page/
 *.xlsx
