@@ -172,6 +172,21 @@
     gap: 0.9rem !important;
   }
 
+  /* Vertically center each icon inside its button so they line up with the logo
+     (Bootstrap Icons sit slightly high due to font line-height/baseline) */
+  .mobile-actions .nav-icon,
+  .mobile-actions .navbar-toggler {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+
+  .mobile-actions .nav-icon i {
+    display: block;
+    line-height: 1;
+  }
+
   .nav-icon {
     color: #fff;
     &:hover { color: rgba(255, 255, 255, 0.85); }
