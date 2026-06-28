@@ -313,9 +313,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.router.navigate(['/']);
   }
 
-  /** Bottom-nav item count: logged-in adds a Notifications item (6 vs 5). */
+  /** Bottom-nav items: home, offers, watch, cart, and (profile | login) = 5. */
   get navItemCount(): number {
-    return this.authService.isLoggedIn() ? 6 : 5;
+    return 5;
   }
 
   get navIndicatorLeft(): string {
@@ -334,8 +334,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     else if (url.startsWith('/offers')) this.activeNavIndex = 1;
     else if (url.startsWith('/watch')) this.activeNavIndex = 2;
     else if (url.startsWith('/cart')) this.activeNavIndex = 3;
-    else if (url.startsWith('/notifications')) this.activeNavIndex = loggedIn ? 4 : -1;
-    else if (url.startsWith('/profile')) this.activeNavIndex = loggedIn ? 5 : 4;
+    // Notifications moved to the top header bell — no bottom-nav slot anymore.
+    else if (url.startsWith('/profile')) this.activeNavIndex = loggedIn ? 4 : -1;
     else this.activeNavIndex = -1;
   }
 }
