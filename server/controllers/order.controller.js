@@ -3,7 +3,7 @@ const User = require('../models/User');
 const { createNotification } = require('../utils/notify');
 const { validateCoupon, markCouponUsed } = require('../utils/coupons');
 
-function stripId(doc) { const obj = doc.toObject(); delete obj._id; return obj; }
+function stripId(doc) { const obj = doc.toObject ? doc.toObject() : { ...doc }; delete obj._id; return obj; }
 
 // Resolves the user id a notification should go to: the order's stored userId,
 // falling back to matching the customer's phone for legacy orders.
@@ -16,17 +16,17 @@ async function resolveRecipientId(order) {
 }
 
 async function getAllOrders(_req, res, next) {
-  try { const orders = await Order.find({}, { __v: 0 }).sort({ date: -1 }); res.json(orders.map(stripId)); }
+  try { const orders = await Order.find({}, { __v: 0 }).sort({ date: -1 }).lean(); res.json(orders.map(stripId)); }
   catch (err) { next(err); }
 }
 
 async function getMyOrders(req, res, next) {
-  try { const orders = await Order.find({ userId: req.user.id }, { __v: 0 }).sort({ date: -1 }); res.json(orders.map(stripId)); }
+  try { const orders = await Order.find({ userId: req.user.id }, { __v: 0 }).sort({ date: -1 }).lean(); res.json(orders.map(stripId)); }
   catch (err) { next(err); }
 }
 
 async function getOrderById(req, res, next) {
-  try { const order = await Order.findOne({ id: req.params.id }, { __v: 0 }); if (!order) return res.status(404).json({ error: 'Order not found.' }); res.json(stripId(order)); }
+  try { const order = await Order.findOne({ id: req.params.id }, { __v: 0 }).lean(); if (!order) return res.status(404).json({ error: 'Order not found.' }); res.json(stripId(order)); }
   catch (err) { next(err); }
 }
 
@@ -49,10 +49,14 @@ async function createOrder(req, res, next) {
     if (body.couponCode) {
       const result = await validateCoupon(body.couponCode, userId, body.browserId);
       if (result.valid) {
-        couponCode = String(body.couponCode).trim().toUpperCase();
-        couponDiscount = Math.round(couponBase * (result.discountPercentage / 100));
-        total = couponBase + shippingCost - couponDiscount;
-        await markCouponUsed(body.couponCode, userId, body.browserId);
+        // Consume first (atomic, race-safe) and only apply the discount if THIS
+        // request actually consumed it — prevents concurrent double-spend.
+        const consumed = await markCouponUsed(body.couponCode, userId, body.browserId);
+        if (consumed) {
+          couponCode = String(body.couponCode).trim().toUpperCase();
+          couponDiscount = Math.round(couponBase * (result.discountPercentage / 100));
+          total = couponBase + shippingCost - couponDiscount;
+        }
       }
     }
 

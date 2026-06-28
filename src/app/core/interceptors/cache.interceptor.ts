@@ -1,4 +1,6 @@
 import { HttpInterceptorFn, HttpResponse } from '@angular/common/http';
+import { inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformServer } from '@angular/common';
 import { of, tap } from 'rxjs';
 
 interface CacheEntry {
@@ -6,7 +8,23 @@ interface CacheEntry {
   expiry: number;
 }
 
+// Browser-only, module-scoped cache. NEVER used on the server (see guard below):
+// under SSR a module-level Map is shared across every user's request, which both
+// leaks memory on the long-running Node process and risks serving one request's
+// response to another. Cap the size with simple LRU-ish eviction.
+const MAX_ENTRIES = 100;
 const cache = new Map<string, CacheEntry>();
+
+function setCache(key: string, entry: CacheEntry): void {
+  // Re-insert to move the key to the end (most-recently-used).
+  if (cache.has(key)) cache.delete(key);
+  cache.set(key, entry);
+  while (cache.size > MAX_ENTRIES) {
+    const oldest = cache.keys().next().value;
+    if (oldest === undefined) break;
+    cache.delete(oldest);
+  }
+}
 
 /** Per-pattern cache rules. Patterns are matched via `url.includes`. */
 const CACHE_RULES: ReadonlyArray<{ pattern: string; ttl: number }> = [
@@ -23,6 +41,11 @@ function ttlFor(url: string): number | null {
 }
 
 export const cacheInterceptor: HttpInterceptorFn = (req, next) => {
+  // Never cache on the server — the Map would be shared across all SSR requests.
+  if (isPlatformServer(inject(PLATFORM_ID))) {
+    return next(req);
+  }
+
   if (req.method !== 'GET') {
     return next(req);
   }
@@ -46,7 +69,7 @@ export const cacheInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     tap(event => {
       if (event instanceof HttpResponse) {
-        cache.set(cacheKey, {
+        setCache(cacheKey, {
           response: event.clone(),
           expiry: Date.now() + ttl,
         });

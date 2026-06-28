@@ -7,6 +7,7 @@ const {
   updateBanner,
   deleteBanner,
 } = require('../controllers/banner.controller');
+const { adminAuth } = require('../middleware/auth.middleware');
 
 const router = express.Router();
 
@@ -33,8 +34,8 @@ const upload = multer({
 });
 
 router.get('/', getAllBanners);
-router.post('/', upload.single('image'), createBanner);
-router.put('/:id', upload.single('image'), updateBanner);
-router.delete('/:id', deleteBanner);
+router.post('/', adminAuth, upload.single('image'), createBanner);
+router.put('/:id', adminAuth, upload.single('image'), updateBanner);
+router.delete('/:id', adminAuth, deleteBanner);
 
 module.exports = router;

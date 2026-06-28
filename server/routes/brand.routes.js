@@ -7,6 +7,7 @@ const {
   updateBrand,
   deleteBrand,
 } = require('../controllers/brand.controller');
+const { adminAuth } = require('../middleware/auth.middleware');
 
 const router = express.Router();
 
@@ -33,8 +34,8 @@ const upload = multer({
 });
 
 router.get('/', getAllBrands);
-router.post('/', upload.single('image'), createBrand);
-router.put('/:id', upload.single('image'), updateBrand);
-router.delete('/:id', deleteBrand);
+router.post('/', adminAuth, upload.single('image'), createBrand);
+router.put('/:id', adminAuth, upload.single('image'), updateBrand);
+router.delete('/:id', adminAuth, deleteBrand);
 
 module.exports = router;

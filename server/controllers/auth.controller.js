@@ -1,13 +1,15 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const User = require('../models/User');
 const Otp = require('../models/Otp');
 const Notification = require('../models/Notification');
 const { createNotification } = require('../utils/notify');
-const JWT_SECRET = process.env.JWT_SECRET || 'check-secret-key-2026';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 function generateId() { return 'usr-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
-function generateOtp() { return Math.floor(100000 + Math.random() * 900000).toString(); }
+// Security token — use a CSPRNG, not Math.random.
+function generateOtp() { return crypto.randomInt(100000, 1000000).toString(); }
 function signToken(user) { return jwt.sign({ id: user.id, phone: user.phone, role: user.role }, JWT_SECRET, { expiresIn: '7d' }); }
 function sanitizeUser(user) { const obj = user.toObject ? user.toObject() : { ...user }; delete obj.password; delete obj._id; delete obj.__v; return obj; }
 
@@ -76,7 +78,7 @@ async function resetPassword(req, res) {
 }
 
 async function getAllUsers(_req, res) {
-  try { const users = await User.find({}, { password: 0, __v: 0 }); res.json(users.map(u => { const o = u.toObject(); delete o._id; return o; })); }
+  try { const users = await User.find({}, { password: 0, __v: 0, _id: 0 }).lean(); res.json(users); }
   catch (err) { res.status(500).json({ error: 'حدث خطأ' }); }
 }
 

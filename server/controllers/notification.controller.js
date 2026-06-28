@@ -3,15 +3,15 @@ const NotificationCampaign = require('../models/NotificationCampaign');
 const Coupon = require('../models/Coupon');
 const Order = require('../models/Order');
 const User = require('../models/User');
-const { createNotification, genId } = require('../utils/notify');
+const { createNotification, createNotificationsBulk, genId } = require('../utils/notify');
 
-function stripId(doc) { const obj = doc.toObject(); delete obj._id; delete obj.__v; return obj; }
+function stripId(doc) { const obj = doc.toObject ? doc.toObject() : { ...doc }; delete obj._id; delete obj.__v; return obj; }
 
 // ---- Customer endpoints (auth) ----
 
 async function getMine(req, res, next) {
   try {
-    const items = await Notification.find({ userId: req.user.id }).sort({ createdAt: -1 }).limit(100);
+    const items = await Notification.find({ userId: req.user.id }).sort({ createdAt: -1 }).limit(100).lean();
     const unreadCount = await Notification.countDocuments({ userId: req.user.id, read: false });
     res.json({ notifications: items.map(stripId), unreadCount });
   } catch (err) { next(err); }
@@ -38,19 +38,24 @@ async function deleteOne(req, res, next) {
 async function resolveRecipients(target) {
   // target: 'all' | { userIds: [] } | { orderStatus: '...' }
   if (!target || target === 'all') {
-    const users = await User.find({ role: { $ne: 'admin' } }, { id: 1 });
+    const users = await User.find({ role: { $ne: 'admin' } }, { id: 1 }).lean();
     return { ids: users.map(u => u.id), audience: 'كل العملاء' };
   }
   if (Array.isArray(target.userIds) && target.userIds.length) {
     return { ids: target.userIds, audience: `${target.userIds.length} عميل محدد` };
   }
   if (target.orderStatus) {
-    const orders = await Order.find({ status: target.orderStatus });
+    const orders = await Order.find({ status: target.orderStatus }, { userId: 1, customer: 1 }).lean();
     const ids = new Set();
+    const phones = [];
     for (const o of orders) {
-      if (o.userId) { ids.add(o.userId); continue; }
-      const phone = o.customer?.phone;
-      if (phone) { const u = await User.findOne({ phone: String(phone).trim() }, { id: 1 }); if (u) ids.add(u.id); }
+      if (o.userId) ids.add(o.userId);
+      else if (o.customer?.phone) phones.push(String(o.customer.phone).trim());
+    }
+    // Resolve all legacy phone-only orders in one query instead of N findOne calls.
+    if (phones.length) {
+      const users = await User.find({ phone: { $in: phones } }, { id: 1 }).lean();
+      users.forEach(u => ids.add(u.id));
     }
     return { ids: [...ids], audience: `حالة الطلب: ${target.orderStatus}` };
   }
@@ -77,9 +82,8 @@ async function sendToCustomers(req, res, next) {
     }
 
     const { ids, audience } = await resolveRecipients(target);
-    for (const userId of ids) {
-      await createNotification(userId, { type, title, body, link, coupon: couponPayload });
-    }
+    // Single bulk insert instead of one await createNotification per recipient.
+    await createNotificationsBulk(ids, { type, title, body, link, coupon: couponPayload });
 
     await NotificationCampaign.create({
       id: genId().replace('ntf-', 'cmp-'),
@@ -95,7 +99,7 @@ async function sendToCustomers(req, res, next) {
 }
 
 async function getSentCampaigns(_req, res, next) {
-  try { const items = await NotificationCampaign.find({}).sort({ createdAt: -1 }).limit(200); res.json(items.map(stripId)); }
+  try { const items = await NotificationCampaign.find({}).sort({ createdAt: -1 }).limit(200).lean(); res.json(items.map(stripId)); }
   catch (err) { next(err); }
 }
 

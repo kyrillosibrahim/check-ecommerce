@@ -2,6 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const { getSettings, updateSettings } = require('../controllers/settings.controller');
+const { adminAuth } = require('../middleware/auth.middleware');
 
 const router = express.Router();
 
@@ -28,7 +29,7 @@ const upload = multer({
 });
 
 router.get('/', getSettings);
-router.put('/', upload.fields([
+router.put('/', adminAuth, upload.fields([
   { name: 'logo',     maxCount: 1 },
   { name: 'logoAr',  maxCount: 1 },
   { name: 'logoEn',  maxCount: 1 },

@@ -9,4 +9,10 @@ const couponUsageSchema = new mongoose.Schema({
   usedAt: { type: String },
 });
 
+// Atomic one-use guards: a duplicate insert (concurrent double-spend) violates
+// these and is rejected at the DB level. Partial filters skip empty ids so an
+// anonymous usage (userId:'') doesn't collide with other anonymous usages.
+couponUsageSchema.index({ code: 1, userId: 1 }, { unique: true, partialFilterExpression: { userId: { $gt: '' } } });
+couponUsageSchema.index({ code: 1, browserId: 1 }, { unique: true, partialFilterExpression: { browserId: { $gt: '' } } });
+
 module.exports = mongoose.model('CouponUsage', couponUsageSchema);

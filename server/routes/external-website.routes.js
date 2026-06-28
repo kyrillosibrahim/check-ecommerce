@@ -5,12 +5,13 @@ const {
   updateExternalWebsite,
   deleteExternalWebsite,
 } = require('../controllers/external-website.controller');
+const { adminAuth } = require('../middleware/auth.middleware');
 
 const router = express.Router();
 
 router.get('/', getAllExternalWebsites);
-router.post('/', createExternalWebsite);
-router.put('/:id', updateExternalWebsite);
-router.delete('/:id', deleteExternalWebsite);
+router.post('/', adminAuth, createExternalWebsite);
+router.put('/:id', adminAuth, updateExternalWebsite);
+router.delete('/:id', adminAuth, deleteExternalWebsite);
 
 module.exports = router;

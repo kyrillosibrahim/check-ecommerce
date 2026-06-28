@@ -27,10 +27,15 @@ async function validateCoupon(rawCode, userId, browserId) {
   return { valid: true, discountPercentage: coupon.discountPercentage, coupon };
 }
 
-/** Records consumption of a coupon for this account + browser. */
+/**
+ * Atomically records consumption of a coupon for this account + browser.
+ * Returns true if this call consumed it, false if it was already consumed
+ * (unique-index violation from a concurrent order) or on error — callers must
+ * only apply the discount when this returns true.
+ */
 async function markCouponUsed(rawCode, userId, browserId) {
   const code = (rawCode || '').trim().toUpperCase();
-  if (!code) return;
+  if (!code) return false;
   try {
     await CouponUsage.create({
       code,
@@ -38,8 +43,11 @@ async function markCouponUsed(rawCode, userId, browserId) {
       browserId: browserId || '',
       usedAt: new Date().toISOString(),
     });
+    return true;
   } catch (err) {
+    if (err && err.code === 11000) return false; // already used (race-safe)
     console.error('[coupons] failed to record usage:', err.message);
+    return false;
   }
 }
 

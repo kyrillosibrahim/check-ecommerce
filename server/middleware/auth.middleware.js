@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'check-secret-key-2026';
+// Secrets must come from the environment — no hardcoded fallbacks. server.js
+// validates their presence at startup (fail-fast) before any route is mounted.
+const JWT_SECRET = process.env.JWT_SECRET;
 
 /**
  * Verifies the JWT from the Authorization header and attaches the decoded
@@ -38,7 +40,7 @@ function optionalAuth(req, _res, next) {
   next();
 }
 
-const ADMIN_API_KEY = process.env.ADMIN_API_KEY || 'kaf-admin-key-2026';
+const ADMIN_API_KEY = process.env.ADMIN_API_KEY;
 
 /**
  * Authorizes admin-only endpoints. The dashboard authenticates client-side and

@@ -158,48 +158,70 @@ async function getAllProducts(req, res, next) {
       'price-high': { price: -1, createdAt: -1 },
     };
     const sortSpec = sortMap[sort] || { createdAt: -1, _id: -1 };
-    let products = await Product.find(query, { __v: 0 }).sort(sortSpec);
+    const isProfitSort = sort === 'profit-high' || sort === 'profit-low';
 
-    const { readCart } = require('./cart.controller');
-    const cart = await readCart();
-    const cartMap = new Map(cart.map(c => [c.productId, c.quantity]));
-    const { readFavorites } = require('./favorite.controller');
-    const favIds = await readFavorites();
-    const favSet = new Set(favIds);
-
-    let result = products.map(p => {
-      const obj = fixImagePaths(p);
+    // Cart/favorite flags are personal — only resolve them for an authenticated
+    // user (optionalAuth populates req.user). Anonymous visitors get false flags
+    // and the storefront manages their cart locally. This also avoids creating a
+    // phantom shared cart keyed on userId:undefined.
+    let cartMap = new Map();
+    let favSet = new Set();
+    if (req.user && req.user.id) {
+      const { readCart } = require('./cart.controller');
+      const { readFavorites } = require('./favorite.controller');
+      const [cart, favIds] = await Promise.all([readCart(req.user.id), readFavorites(req.user.id)]);
+      cartMap = new Map(cart.map(c => [c.productId, c.quantity]));
+      favSet = new Set(favIds);
+    }
+    const enrich = (obj) => {
       const qty = cartMap.get(obj.id);
       obj.inCart = !!qty; obj.cartQuantity = qty || 0; obj.inFavorite = favSet.has(obj.id);
       return obj;
-    });
+    };
 
-    // Profit (EGP) is a computed value, so it can't be sorted at the DB level.
-    // Sort the in-memory list before pagination slicing.
-    if (sort === 'profit-high' || sort === 'profit-low') {
+    // Profit (EGP) is computed, so it can't be sorted/paginated at the DB level.
+    // Only this branch loads the full matching set; everything else paginates in DB.
+    if (isProfitSort) {
+      const docs = await Product.find(query, { __v: 0 }).lean();
+      let result = docs.map(p => enrich(fixImagePaths(p)));
       const profitOf = p => {
         const w = p.wholesalePrice || 0;
         const s = p.discountedPrice || p.price || 0;
         return w > 0 ? s - w : 0;
       };
       result.sort((a, b) => sort === 'profit-high' ? profitOf(b) - profitOf(a) : profitOf(a) - profitOf(b));
+      const total = result.length;
+      if (page && limit) {
+        const pageNum = parseInt(page, 10) || 1; const limitNum = parseInt(limit, 10) || 36;
+        result = result.slice((pageNum - 1) * limitNum, pageNum * limitNum);
+        return res.json({ products: result, total });
+      }
+      if (limit) { const max = parseInt(limit, 10); if (!isNaN(max) && max > 0) result = result.slice(0, max); }
+      return res.json(result);
     }
 
-    const total = result.length;
+    // Paginated path — skip/limit + count at the DB level (no full-collection load).
     if (page && limit) {
       const pageNum = parseInt(page, 10) || 1; const limitNum = parseInt(limit, 10) || 36;
-      result = result.slice((pageNum - 1) * limitNum, pageNum * limitNum);
-      return res.json({ products: result, total });
+      const [docs, total] = await Promise.all([
+        Product.find(query, { __v: 0 }).sort(sortSpec).skip((pageNum - 1) * limitNum).limit(limitNum).lean(),
+        Product.countDocuments(query),
+      ]);
+      return res.json({ products: docs.map(p => enrich(fixImagePaths(p))), total });
     }
-    if (limit) { const max = parseInt(limit, 10); if (!isNaN(max) && max > 0) result = result.slice(0, max); }
-    return res.json(result);
+
+    // Unpaginated list (optionally capped by ?limit).
+    let dbQuery = Product.find(query, { __v: 0 }).sort(sortSpec);
+    if (limit) { const max = parseInt(limit, 10); if (!isNaN(max) && max > 0) dbQuery = dbQuery.limit(max); }
+    const docs = await dbQuery.lean();
+    return res.json(docs.map(p => enrich(fixImagePaths(p))));
   } catch (err) { next(err); }
 }
 
 async function getProduct(req, res, next) {
   try {
     const { category, slug } = req.params;
-    const product = await Product.findOne({ slug, $or: [{ category }, { categoryFolder: category }] }, { __v: 0 });
+    const product = await Product.findOne({ slug, $or: [{ category }, { categoryFolder: category }] }, { __v: 0 }).lean();
     if (!product) return res.status(404).json({ error: 'Product not found.' });
     res.json(fixImagePaths(product));
   } catch (err) { next(err); }
@@ -207,21 +229,23 @@ async function getProduct(req, res, next) {
 
 async function getProductById(req, res, next) {
   try {
-    const product = await Product.findOne({ id: req.params.id }, { __v: 0 });
+    const product = await Product.findOne({ id: req.params.id }, { __v: 0 }).lean();
     if (!product) return res.status(404).json({ error: 'Product not found.' });
     const obj = fixImagePaths(product);
 
-    const related = await Product.find({ categoryFolder: product.categoryFolder, id: { $ne: product.id } }, { __v: 0 }).limit(4);
+    const related = await Product.find({ categoryFolder: product.categoryFolder, id: { $ne: product.id } }, { __v: 0 }).limit(4).lean();
     obj.relatedProducts = related.map(fixImagePaths);
 
-    const { readCart } = require('./cart.controller');
-    const cart = await readCart();
-    const cartEntry = cart.find(c => c.productId === product.id);
-    obj.inCart = !!cartEntry; obj.cartQuantity = cartEntry ? cartEntry.quantity : 0;
-
-    const { readFavorites } = require('./favorite.controller');
-    const favIds = await readFavorites();
-    obj.inFavorite = favIds.includes(product.id);
+    // Personal flags only for an authenticated user (optionalAuth).
+    obj.inCart = false; obj.cartQuantity = 0; obj.inFavorite = false;
+    if (req.user && req.user.id) {
+      const { readCart } = require('./cart.controller');
+      const { readFavorites } = require('./favorite.controller');
+      const [cart, favIds] = await Promise.all([readCart(req.user.id), readFavorites(req.user.id)]);
+      const cartEntry = cart.find(c => c.productId === product.id);
+      obj.inCart = !!cartEntry; obj.cartQuantity = cartEntry ? cartEntry.quantity : 0;
+      obj.inFavorite = favIds.includes(product.id);
+    }
 
     res.json(obj);
   } catch (err) { next(err); }

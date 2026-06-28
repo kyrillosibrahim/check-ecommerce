@@ -1,4 +1,5 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, inject, OnDestroy, OnInit, PLATFORM_ID, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, ElementRef, HostListener, inject, OnDestroy, OnInit, PLATFORM_ID, signal, ViewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { isPlatformBrowser, NgTemplateOutlet } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -43,6 +44,7 @@ export class OffersComponent implements OnInit, AfterViewInit, OnDestroy {
   private categoryService = inject(CategoryService);
   private seoService = inject(SeoService);
   private platformId = inject(PLATFORM_ID);
+  private destroyRef = inject(DestroyRef);
 
   banners = signal<IBanner[]>([]);
   products: IProduct[] = [];
@@ -151,8 +153,8 @@ export class OffersComponent implements OnInit, AfterViewInit, OnDestroy {
       description: 'اكتشف أقوى العروض والخصومات على جميع المنتجات. وفر أكثر مع عروض حصرية يومية.',
       path: '/offers',
     });
-    this.bannerService.getByPage('offers').subscribe(b => this.banners.set(b));
-    this.categoryService.getAll().subscribe(c => {
+    this.bannerService.getByPage('offers').pipe(takeUntilDestroyed(this.destroyRef)).subscribe(b => this.banners.set(b));
+    this.categoryService.getAll().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(c => {
       this.categories = c;
       this.cdr.markForCheck();
     });
@@ -366,7 +368,7 @@ export class OffersComponent implements OnInit, AfterViewInit, OnDestroy {
       sort: this.sortBy,
       page: this.currentPage,
       limit: ITEMS_PER_PAGE,
-    }).subscribe(result => {
+    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(result => {
       this.allFetchedProducts = append
         ? [...this.allFetchedProducts, ...result.products]
         : result.products;

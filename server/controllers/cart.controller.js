@@ -9,6 +9,7 @@ async function getCartDoc(userId) {
 }
 
 async function readCart(userId) {
+  if (!userId) return [];
   const cart = await getCartDoc(userId);
   return cart.items || [];
 }
@@ -29,9 +30,13 @@ function fixImagePaths(product) {
 async function getCart(req, res, next) {
   try {
     const items = await readCart(req.user.id);
+    if (!items.length) return res.json([]);
+    // Fetch all cart products in a single query instead of one findOne per item.
+    const products = await Product.find({ id: { $in: items.map(i => i.productId) } }).lean();
+    const productMap = new Map(products.map(p => [p.id, p]));
     const result = [];
     for (const item of items) {
-      const product = await Product.findOne({ id: item.productId });
+      const product = productMap.get(item.productId);
       if (product) result.push({ product: fixImagePaths(product), quantity: item.quantity });
     }
     res.json(result);

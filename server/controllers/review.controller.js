@@ -107,7 +107,7 @@ async function getProductReviews(req, res, next) {
   try {
     const viewerId = req.user?.id;
     const reviews = await Review.find({ productId: req.params.productId, status: 'approved' })
-      .sort({ updatedAt: -1 });
+      .sort({ updatedAt: -1 }).lean();
     return res.json(reviews.map(r => cleanPublic(r, viewerId)));
   } catch (err) { next(err); }
 }
@@ -115,18 +115,23 @@ async function getProductReviews(req, res, next) {
 // PUT /api/reviews/:id/helpful  (auth) — toggle helpful vote
 async function markHelpful(req, res, next) {
   try {
-    const review = await Review.findOne({ id: req.params.id });
-    if (!review) return res.status(404).json({ error: 'التقييم غير موجود' });
-
     const uid = req.user.id;
-    const idx = (review.helpfulBy || []).indexOf(uid);
-    if (idx >= 0) {
-      review.helpfulBy.splice(idx, 1);
-    } else {
-      review.helpfulBy.push(uid);
-    }
-    await review.save();
-    return res.json({ helpfulCount: review.helpfulBy.length, helpfulByMe: idx < 0 });
+    // Atomic toggle (no read-modify-write race): try to add the vote only if not
+    // already present; if that matched nothing, the user had already voted → pull.
+    const added = await Review.findOneAndUpdate(
+      { id: req.params.id, helpfulBy: { $ne: uid } },
+      { $addToSet: { helpfulBy: uid } },
+      { new: true }
+    );
+    if (added) return res.json({ helpfulCount: (added.helpfulBy || []).length, helpfulByMe: true });
+
+    const removed = await Review.findOneAndUpdate(
+      { id: req.params.id },
+      { $pull: { helpfulBy: uid } },
+      { new: true }
+    );
+    if (!removed) return res.status(404).json({ error: 'التقييم غير موجود' });
+    return res.json({ helpfulCount: (removed.helpfulBy || []).length, helpfulByMe: false });
   } catch (err) { next(err); }
 }
 
@@ -143,7 +148,7 @@ async function getAllReviews(req, res, next) {
   try {
     const query = {};
     if (req.query.status) query.status = req.query.status;
-    const reviews = await Review.find(query).sort({ updatedAt: -1 });
+    const reviews = await Review.find(query).sort({ updatedAt: -1 }).lean();
     return res.json(reviews.map(clean));
   } catch (err) { next(err); }
 }

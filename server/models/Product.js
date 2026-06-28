@@ -38,4 +38,16 @@ const productSchema = new mongoose.Schema({
   createdAt: String,
 }, { strict: false });
 
+// Indexes for the hot query paths in getAllProducts (listing/filter/sort) and
+// getProduct/getProductById. Without these every listing was a full collection scan.
+productSchema.index({ categoryFolder: 1, createdAt: -1 });
+productSchema.index({ category: 1 });
+productSchema.index({ slug: 1 });
+productSchema.index({ brand: 1 });
+productSchema.index({ isWholesaleOffer: 1, createdAt: -1 });
+productSchema.index({ isFeatured: 1, createdAt: -1 });
+productSchema.index({ createdAt: -1 });
+// Weighted text index for the search box (title/brand/tags).
+productSchema.index({ title: 'text', titleAr: 'text', brand: 'text', tags: 'text' });
+
 module.exports = mongoose.model('Product', productSchema);

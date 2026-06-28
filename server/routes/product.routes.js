@@ -9,6 +9,7 @@ const {
   getProductsByIds,
   deleteProduct,
 } = require('../controllers/product.controller');
+const { adminAuth, optionalAuth } = require('../middleware/auth.middleware');
 
 const router = express.Router();
 
@@ -39,11 +40,11 @@ const upload = multer({
 });
 
 // --- Routes ---
-router.post('/', upload.any(), createProduct);
-router.get('/', getAllProducts);
-router.get('/getoneproduct/:id', getProductById);
+router.post('/', adminAuth, upload.any(), createProduct);
+router.get('/', optionalAuth, getAllProducts);
+router.get('/getoneproduct/:id', optionalAuth, getProductById);
 router.post('/by-ids', getProductsByIds);
-router.get('/:category/:slug', getProduct);
-router.delete('/:category/:slug', deleteProduct);
+router.get('/:category/:slug', optionalAuth, getProduct);
+router.delete('/:category/:slug', adminAuth, deleteProduct);
 
 module.exports = router;

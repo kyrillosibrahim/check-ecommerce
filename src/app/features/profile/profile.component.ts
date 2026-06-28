@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, NgZone, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, NgZone, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -25,6 +26,7 @@ export class ProfileComponent implements OnInit {
   private ngZone = inject(NgZone);
   private governorateService = inject(GovernorateService);
   private cdr = inject(ChangeDetectorRef);
+  private destroyRef = inject(DestroyRef);
 
   user: IUser | null = null;
 
@@ -61,7 +63,7 @@ export class ProfileComponent implements OnInit {
   ngOnInit(): void {
     this.user = this.authService.getCurrentUser();
     if (!this.user) { this.router.navigate(['/']); return; }
-    this.route.queryParamMap.subscribe(params => {
+    this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       const section = params.get('section');
       if (section === 'addresses') this.activeSection.set('addresses');
       else this.activeSection.set('account');

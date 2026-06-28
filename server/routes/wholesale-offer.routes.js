@@ -7,6 +7,7 @@ const {
   createOffer,
   deleteOffer,
 } = require('../controllers/wholesale-offer.controller');
+const { adminAuth } = require('../middleware/auth.middleware');
 
 const router = express.Router();
 
@@ -43,7 +44,7 @@ const uploadFields = upload.fields([
 
 router.get('/', listOffers);
 router.get('/:id', getOffer);
-router.post('/', uploadFields, createOffer);
-router.delete('/:id', deleteOffer);
+router.post('/', adminAuth, uploadFields, createOffer);
+router.delete('/:id', adminAuth, deleteOffer);
 
 module.exports = router;

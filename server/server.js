@@ -1,6 +1,17 @@
 require('dotenv').config();
+
+// --- Fail fast: required secrets must be present, no hardcoded fallbacks ---
+const REQUIRED_ENV = ['JWT_SECRET', 'ADMIN_API_KEY', 'MONGODB_URI'];
+const missingEnv = REQUIRED_ENV.filter((k) => !process.env[k]);
+if (missingEnv.length) {
+  console.error(`[FATAL] Missing required environment variables: ${missingEnv.join(', ')}`);
+  process.exit(1);
+}
+
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const path = require('path');
 const connectDB = require('./config/db');
 const productRoutes = require('./routes/product.routes');
@@ -27,6 +38,34 @@ const siteVisitRoutes = require('./routes/site-visit.routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Behind Render's proxy — needed for correct client IPs in rate limiting.
+app.set('trust proxy', 1);
+
+// --- Security headers (helmet) ---
+// CSP is set manually below (frame-ancestors only); CORP must stay cross-origin
+// so the storefront on another origin can load /uploads images.
+app.use(helmet({
+  contentSecurityPolicy: false,
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+}));
+
+// --- Rate limiting ---
+// Strict limiter for auth (brute-force / OTP abuse protection).
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'عدد محاولات كثير، حاول مرة أخرى بعد قليل' },
+});
+// Broad limiter for the rest of the API.
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 1000,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 // --- Security HTTP Headers ---
 app.use((_req, res, next) => {
@@ -62,12 +101,18 @@ app.use(cors({
       return cb(null, true);
     }
     console.warn('[CORS] Blocked origin:', origin);
-    return cb(new Error('Not allowed by CORS'));
+    // Reject cleanly: no CORS headers are added (browser blocks) instead of
+    // throwing, which would surface as a 500 via the error handler.
+    return cb(null, false);
   },
   credentials: true,
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Apply rate limiters: strict on auth, broad on the rest of the API.
+app.use('/api/auth', authLimiter);
+app.use('/api', apiLimiter);
 
 // --- Serve uploaded images statically ---
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

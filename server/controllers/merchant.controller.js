@@ -3,7 +3,7 @@ const Merchant = require('../models/Merchant');
 async function getNextId() { const last = await Merchant.findOne({}, { id: 1 }).sort({ id: -1 }); return last ? last.id + 1 : 1; }
 
 async function getAllMerchants(_req, res, next) {
-  try { const merchants = await Merchant.find({}, { __v: 0 }); res.json(merchants.map(m => { const o = m.toObject(); delete o._id; return o; })); }
+  try { const merchants = await Merchant.find({}, { __v: 0, _id: 0 }).lean(); res.json(merchants); }
   catch (err) { next(err); }
 }
 

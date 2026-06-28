@@ -1,4 +1,5 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, inject, OnDestroy, OnInit, PLATFORM_ID, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, ElementRef, HostListener, inject, OnDestroy, OnInit, PLATFORM_ID, signal, ViewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { isPlatformBrowser, NgTemplateOutlet } from '@angular/common';
 import { combineLatest } from 'rxjs';
@@ -41,6 +42,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
   private wishlistService = inject(WishlistService);
   private categoryService = inject(CategoryService);
   private seoService = inject(SeoService);
+  private destroyRef = inject(DestroyRef);
 
   products: IProduct[] = [];
   allFetchedProducts: IProduct[] = []; // unfiltered products from server for computing counts
@@ -121,9 +123,28 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     return count;
   }
 
-  get activeFilters(): { label: string; type: string; value: string }[] {
-    const filters: { label: string; type: string; value: string }[] = [];
+  // Memoized so the template (which reads activeFilters several times) doesn't
+  // rebuild a fresh array on every change-detection pass — that allocation also
+  // broke @for referential stability. Cache is keyed on a cheap state signature.
+  private _activeFiltersSig = '\0';
+  private _activeFiltersCache: { label: string; type: string; value: string }[] = [];
 
+  private activeFiltersSignature(): string {
+    return [
+      this.selectedBrand,
+      this.selectedPriceRanges.map(p => p.label).join(','),
+      this.selectedAvailability.join(','),
+      this.selectedBrands.join(','),
+      this.selectedFilterTags.join(','),
+    ].join('|');
+  }
+
+  get activeFilters(): { label: string; type: string; value: string }[] {
+    const sig = this.activeFiltersSignature();
+    if (sig === this._activeFiltersSig) return this._activeFiltersCache;
+    this._activeFiltersSig = sig;
+
+    const filters: { label: string; type: string; value: string }[] = [];
     if (this.selectedBrand) {
       filters.push({ label: this.selectedBrand, type: 'brand-param', value: this.selectedBrand });
     }
@@ -140,6 +161,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     for (const tag of this.selectedFilterTags) {
       filters.push({ label: tag, type: 'filterTag', value: tag });
     }
+    this._activeFiltersCache = filters;
     return filters;
   }
 
@@ -218,6 +240,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     // non-numeric values through). Short links (e.g. /oils) carry the filter in the
     // route `data`; when the URL has no query params we fall back to that.
     combineLatest([this.route.queryParams, this.route.data, this.categoryService.getAll()])
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(([params, data, cats]) => {
         this.categories = cats;
         const noQuery = Object.keys(params).length === 0;

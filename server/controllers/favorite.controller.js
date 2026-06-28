@@ -8,6 +8,7 @@ async function getFavDoc(userId) {
 }
 
 async function readFavorites(userId) {
+  if (!userId) return [];
   const fav = await getFavDoc(userId);
   return fav.ids || [];
 }

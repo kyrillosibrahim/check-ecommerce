@@ -13,6 +13,7 @@ const {
   deleteSubcategory,
   reorderCategories,
 } = require('../controllers/category.controller');
+const { adminAuth } = require('../middleware/auth.middleware');
 
 const uploadDir = path.join(__dirname, '..', 'uploads', 'categories');
 fse.ensureDirSync(uploadDir);
@@ -31,14 +32,14 @@ const router = express.Router();
 // Category routes
 router.get('/', getAllCategories);
 router.get('/detailed', getDetailedCategories);
-router.post('/reorder', express.json(), reorderCategories);
-router.post('/', upload.single('image'), createCategory);
-router.put('/:id', upload.single('image'), updateCategory);
-router.delete('/:id', deleteCategory);
+router.post('/reorder', adminAuth, express.json(), reorderCategories);
+router.post('/', adminAuth, upload.single('image'), createCategory);
+router.put('/:id', adminAuth, upload.single('image'), updateCategory);
+router.delete('/:id', adminAuth, deleteCategory);
 
 // Subcategory routes
-router.post('/:id/subcategories', upload.single('image'), addSubcategory);
-router.put('/:id/subcategories/:subId', upload.single('image'), updateSubcategory);
-router.delete('/:id/subcategories/:subId', deleteSubcategory);
+router.post('/:id/subcategories', adminAuth, upload.single('image'), addSubcategory);
+router.put('/:id/subcategories/:subId', adminAuth, upload.single('image'), updateSubcategory);
+router.delete('/:id/subcategories/:subId', adminAuth, deleteSubcategory);
 
 module.exports = router;

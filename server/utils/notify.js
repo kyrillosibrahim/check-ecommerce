@@ -30,4 +30,32 @@ async function createNotification(userId, payload = {}) {
   }
 }
 
-module.exports = { createNotification, genId };
+/**
+ * Creates the same notification for many users in a single insertMany instead
+ * of one create() per user. Returns the number of docs inserted.
+ */
+async function createNotificationsBulk(userIds, payload = {}) {
+  const ids = [...new Set((userIds || []).filter(Boolean))];
+  if (!ids.length) return 0;
+  const now = new Date().toISOString();
+  const docs = ids.map((userId) => ({
+    id: genId() + '-' + Math.random().toString(36).slice(2, 7),
+    userId,
+    type: payload.type || 'general',
+    title: payload.title || '',
+    body: payload.body || '',
+    link: payload.link || '',
+    coupon: payload.coupon || undefined,
+    read: false,
+    createdAt: now,
+  }));
+  try {
+    await Notification.insertMany(docs, { ordered: false });
+  } catch (err) {
+    // ordered:false → valid docs still insert; just log the partial failure.
+    console.error('[notify] bulk insert partial/failed:', err.message);
+  }
+  return docs.length;
+}
+
+module.exports = { createNotification, createNotificationsBulk, genId };
