@@ -5,6 +5,7 @@
         <div class="swiper-slide">
           <app-product-card
             [product]="product"
+            [eagerLoad]="true"
             (addToCart)="addToCart.emit($event)"
             (addToWishlist)="addToWishlist.emit($event)" />
         </div>

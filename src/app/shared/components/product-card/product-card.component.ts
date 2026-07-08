@@ -33,6 +33,7 @@ export class ProductCardComponent implements OnInit {
   private alertService = inject(AlertService);
   @Input({ required: true }) product!: IProduct;
   @Input() priceMode: 'retail' | 'wholesale' = 'retail';
+  @Input() eagerLoad = false;
   @Output() addToCart = new EventEmitter<IProduct>();
   @Output() addToWishlist = new EventEmitter<IProduct>();
 

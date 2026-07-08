@@ -11,7 +11,7 @@
            class="category-slide-link">
           <div class="category-circle">
             @if (category.image) {
-              <img [src]="category.image | cldImage:220" [alt]="category.name" loading="lazy" decoding="async">
+              <img [src]="category.image | cldImage:220" [alt]="category.name" loading="eager" decoding="async">
             } @else {
               <i class="bi bi-grid"></i>
             }

@@ -12,7 +12,8 @@
   <div class="product-img-wrapper position-relative">
     @for (img of swiperImages; track $index) {
       <img [src]="img | cldImage:450" [alt]="product.title" class="card-img-top product-img"
-           [class.img-visible]="$index === currentImageIdx" loading="lazy" decoding="async">
+           [class.img-visible]="$index === currentImageIdx"
+           [attr.loading]="eagerLoad ? 'eager' : 'lazy'" decoding="async">
     }
     <!-- Image swiper arrows (when more than one main image) -->
     @if (hasMultipleImages) {
