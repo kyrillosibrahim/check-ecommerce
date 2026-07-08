@@ -29,8 +29,8 @@
   font-size: 0.95rem;
   text-decoration: none;
   color: #fff;
-  background: linear-gradient(135deg, var(--sz-accent, #E47911), var(--sz-accent-hover, #FF9900));
-  box-shadow: 0 6px 18px rgba(228, 121, 17, 0.32);
+  background: linear-gradient(135deg, var(--sz-accent, #2E8B57), var(--sz-accent-hover, #3CB371));
+  box-shadow: 0 6px 18px rgba(46, 139, 87, 0.32);
   position: relative;
   overflow: hidden;
   isolation: isolate;
@@ -63,7 +63,7 @@
   &:hover {
     color: #fff;
     transform: translateY(-3px);
-    box-shadow: 0 10px 26px rgba(228, 121, 17, 0.45);
+    box-shadow: 0 10px 26px rgba(46, 139, 87, 0.45);
     animation-play-state: paused;
 
     i { transform: translateX(-5px); }
@@ -73,7 +73,7 @@
   &:active { transform: translateY(-1px); }
 
   &:focus-visible {
-    outline: 3px solid rgba(228, 121, 17, 0.4);
+    outline: 3px solid rgba(46, 139, 87, 0.4);
     outline-offset: 3px;
   }
 }
@@ -88,8 +88,8 @@
 
 
 @keyframes vab-pulse {
-  0%, 100% { box-shadow: 0 6px 18px rgba(228, 121, 17, 0.30); }
-  50% { box-shadow: 0 7px 24px rgba(228, 121, 17, 0.55); }
+  0%, 100% { box-shadow: 0 6px 18px rgba(46, 139, 87, 0.30); }
+  50% { box-shadow: 0 7px 24px rgba(46, 139, 87, 0.55); }
 }
 
 @media (prefers-reduced-motion: reduce) {

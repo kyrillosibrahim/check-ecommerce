@@ -42,8 +42,8 @@
   &.clickable:hover { box-shadow: 0 6px 18px rgba(0, 0, 0, .08); transform: translateY(-1px); }
 
   &.unread {
-    border-color: var(--sz-accent, #E47911);
-    background: linear-gradient(0deg, var(--sz-bg-card, #fff), rgba(228, 121, 17, .04));
+    border-color: var(--sz-accent, #2E8B57);
+    background: linear-gradient(0deg, var(--sz-bg-card, #fff), rgba(46, 139, 87, .04));
 
     &::before {
       content: '';
@@ -53,7 +53,7 @@
       bottom: 14px;
       width: 4px;
       border-radius: 4px;
-      background: var(--sz-accent, #E47911);
+      background: var(--sz-accent, #2E8B57);
     }
   }
 }
@@ -71,7 +71,7 @@
 
   &.type-order_shipped { background: #10b981; }
   &.type-order_created { background: #3b82f6; }
-  &.type-coupon { background: linear-gradient(135deg, #E47911, #ff9f43); }
+  &.type-coupon { background: linear-gradient(135deg, #2E8B57, #4FC085); }
   &.type-welcome { background: #8b5cf6; }
   &.type-general { background: #64748b; }
 }
@@ -114,8 +114,8 @@
   margin-top: .75rem;
   padding: .75rem;
   border-radius: 12px;
-  background: rgba(228, 121, 17, .07);
-  border: 1px dashed var(--sz-accent, #E47911);
+  background: rgba(46, 139, 87, .07);
+  border: 1px dashed var(--sz-accent, #2E8B57);
 }
 
 .coupon-fields {
@@ -144,14 +144,14 @@
 .coupon-value {
   font-weight: 800;
   font-size: 1.05rem;
-  color: var(--sz-accent, #E47911);
+  color: var(--sz-accent, #2E8B57);
   letter-spacing: .5px;
 }
 
 .coupon-copy {
   cursor: pointer;
   transition: background .15s ease;
-  &:hover { background: rgba(228, 121, 17, .12); }
+  &:hover { background: rgba(46, 139, 87, .12); }
 }
 
 .coupon-timer {

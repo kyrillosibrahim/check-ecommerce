@@ -28,9 +28,9 @@
   --sz-border-color: #D5D9D9;
   --sz-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   --sz-shadow-hover: 0 4px 20px rgba(0, 0, 0, 0.15);
-  --sz-accent: #E47911;
-  --sz-accent-hover: #E47911;
-  --sz-accent-rgb: 228, 121, 17;
+  --sz-accent: #2E8B57;
+  --sz-accent-hover: #3CA36A;
+  --sz-accent-rgb: 46, 139, 87;
   --sz-hero-overlay: rgba(0, 0, 0, 0.35);
   --sz-skeleton-base: #E3E6E6;
   --sz-skeleton-shine: #F3F4F4;
@@ -47,9 +47,9 @@
   --sz-border-color: #2F3E4E;
   --sz-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
   --sz-shadow-hover: 0 4px 20px rgba(0, 0, 0, 0.65);
-  --sz-accent: #FF9900;
-  --sz-accent-hover: #FFB347;
-  --sz-accent-rgb: 255, 153, 0;
+  --sz-accent: #3CB371;
+  --sz-accent-hover: #57C98A;
+  --sz-accent-rgb: 60, 179, 113;
   --sz-hero-overlay: rgba(0, 0, 0, 0.55);
   --sz-skeleton-base: #2A3A48;
   --sz-skeleton-shine: #3A4E60;
@@ -235,13 +235,13 @@ a {
   }
 
   .btn-primary {
-    background-color: #e35356;
-    border: 1.5px solid #e35356;
+    background-color: #2E8B57;
+    border: 1.5px solid #2E8B57;
     color: #fff;
 
     &:hover, &:focus {
-      background-color: #e35355b4;
-      border-color: #e35355b4;
+      background-color: #256F45;
+      border-color: #256F45;
       color: #fff;
     }
   }

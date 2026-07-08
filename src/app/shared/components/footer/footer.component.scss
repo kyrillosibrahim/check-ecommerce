@@ -14,7 +14,7 @@
   i {
     font-size: 2rem;
     flex-shrink: 0;
-    color: var(--sz-accent, #E47911) !important;
+    color: var(--sz-accent, #2E8B57) !important;
 
   }
 
@@ -45,7 +45,7 @@
 }
 
 .footer-heading {
-  color: var(--sz-accent, #E47911);
+  color: var(--sz-accent, #2E8B57);
   font-size: 0.9rem;
   font-weight: 700;
   margin-bottom: 1rem;
@@ -69,7 +69,7 @@
   transition: color 0.2s ease;
 
   &:hover {
-    color: var(--sz-accent-hover, #FF9900) !important;
+    color: var(--sz-accent-hover, #3CB371) !important;
   }
 }
 
@@ -138,7 +138,7 @@
 }
 
 .footer-bottom {
-  background: linear-gradient(135deg, var(--sz-accent, #E47911), var(--sz-accent-hover, #FF9900)) !important;
+  background: linear-gradient(135deg, var(--sz-accent, #2E8B57), var(--sz-accent-hover, #3CB371)) !important;
   color: #fff;
   margin: 0 calc(var(--bs-gutter-x) * -0.5);
   display: flex;
