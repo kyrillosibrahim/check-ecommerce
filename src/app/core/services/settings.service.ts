@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, shareReplay } from 'rxjs';
+import { Observable, catchError, of, shareReplay } from 'rxjs';
 import { API_CONFIG } from '../config/api.config';
 
 const SERVER_URL = API_CONFIG.baseUrl;
@@ -36,6 +36,7 @@ export class SiteSettingsService {
   );
 
   private homeProducts$ = this.http.get<any[]>(`${SERVER_URL}/api/settings/home-products`).pipe(
+    catchError(() => of([] as any[])),
     shareReplay(1)
   );
 

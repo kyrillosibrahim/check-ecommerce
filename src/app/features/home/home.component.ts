@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { catchError, of } from 'rxjs';
 import { ProductService } from '../../core/services/product.service';
 import { CartService } from '../../core/services/cart.service';
 import { WishlistService } from '../../core/services/wishlist.service';
@@ -110,7 +111,10 @@ export class HomeComponent implements OnInit {
       }
     });
 
-    this.settingsService.getHomeProducts().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(products => {
+    this.settingsService.getHomeProducts().pipe(
+      catchError(() => of([])),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(products => {
       this.bestSellingProducts = products.map(p => this.productService.mapServerProduct(p));
       this.isLoadingProducts.set(false);
       this.cdr.markForCheck();
