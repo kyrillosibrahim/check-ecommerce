@@ -1031,34 +1031,51 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.85rem 1.25rem;
+    padding: 0.9rem 1.25rem;
     color: var(--sz-text-primary);
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 500;
     transition: all 0.15s;
+    border-right: 3px solid transparent;
 
     i {
       font-size: 1.1rem;
       width: 22px;
       text-align: center;
-      color: var(--sz-text-secondary);
+      color: var(--sz-accent);
+      opacity: 0.7;
     }
 
-    &:hover, &.active {
-      background: var(--sz-bg-secondary);
+    &:hover {
+      background: color-mix(in srgb, var(--sz-accent) 8%, transparent);
       color: var(--sz-accent);
+      border-right-color: var(--sz-accent);
 
-      i {
-        color: var(--sz-accent);
-      }
+      i { opacity: 1; }
+    }
+
+    &.active {
+      background: color-mix(in srgb, var(--sz-accent) 12%, transparent);
+      color: var(--sz-accent);
+      font-weight: 600;
+      border-right-color: var(--sz-accent);
+
+      i { opacity: 1; }
     }
   }
 }
 
 .mobile-drawer-footer {
-  padding: 1rem 1.25rem;
-  border-top: 1px solid var(--sz-border-color);
+  padding: 1.1rem 1.25rem;
+  border-top: 2px solid color-mix(in srgb, var(--sz-accent) 20%, transparent);
+  background: color-mix(in srgb, var(--sz-accent) 4%, var(--sz-bg-card));
+
+  .btn {
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+    font-size: 0.85rem;
+  }
 }
 
 /* ── Mobile Language Button ─────── */
