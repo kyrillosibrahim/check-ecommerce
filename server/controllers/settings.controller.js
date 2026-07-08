@@ -1,6 +1,7 @@
 const { uploadFile, deleteFile } = require('../utils/cloudinary.util');
 const Settings = require('../models/Settings');
 const Product = require('../models/Product');
+const Brand = require('../models/Brand');
 
 const DEFAULT_SETTINGS = {
   _id: 'global', logo: '',
@@ -34,6 +35,18 @@ exports.getSettings = async (_req, res) => {
     delete obj.cartCount; delete obj.favoritesCount;
     res.json(obj);
   } catch (err) { res.status(500).json({ error: 'Failed to read settings.' }); }
+};
+
+exports.getFeaturedBrands = async (_req, res) => {
+  try {
+    const settings = await getSettingsDoc();
+    const topIds = settings.bestSellingBrands || [];
+    const allBrands = await Brand.find({}, { _id: 0, __v: 0 }).lean();
+    if (!topIds.length) return res.json(allBrands);
+    const brandMap = new Map(allBrands.map(b => [b.id, b]));
+    const result = topIds.map(id => brandMap.get(id)).filter(Boolean);
+    res.json(result.length ? result : allBrands);
+  } catch (err) { res.status(500).json({ error: 'Failed to load featured brands.' }); }
 };
 
 exports.getHomeProducts = async (_req, res) => {

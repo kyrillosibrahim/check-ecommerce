@@ -55,8 +55,6 @@ export class HomeComponent implements OnInit {
   isLoadingProducts = signal(true);
   isLoadingBrands = signal(true);
 
-  private allBrands: IBrand[] = [];
-  private brandTopIds: number[] = [];
 
   ngOnInit(): void {
     this.seoService.setPageMeta({
@@ -91,24 +89,15 @@ export class HomeComponent implements OnInit {
       this.cdr.markForCheck();
     });
 
-    this.brandService.getAll().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(allBrands => {
-      this.allBrands = allBrands;
-      this.brands = this.brandTopIds.length > 0
-        ? this.brandTopIds.map(id => allBrands.find(b => b.id === id)).filter((b): b is IBrand => !!b)
-        : allBrands;
+    this.brandService.getFeaturedBrands().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(brands => {
+      this.brands = brands;
       this.isLoadingBrands.set(false);
       this.cdr.markForCheck();
     });
 
     this.settingsService.getSettings().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(settings => {
-      this.brandTopIds = settings.bestSellingBrands || [];
       this.naturalProducts = (settings.naturalProducts || []).filter(i => i?.video);
-      if (this.allBrands.length && this.brandTopIds.length) {
-        this.brands = this.brandTopIds
-          .map(id => this.allBrands.find(b => b.id === id))
-          .filter((b): b is IBrand => !!b);
-        this.cdr.markForCheck();
-      }
+      this.cdr.markForCheck();
     });
 
     this.settingsService.getHomeProducts().pipe(
