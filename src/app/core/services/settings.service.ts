@@ -22,7 +22,7 @@ export interface ISiteSettings {
     whatsapp: string;
     phone: string;
   };
-  bestSellingProducts: any[];
+  bestSellingProducts: number[];
   bestSellingBrands: number[];
   naturalProducts?: { video: string; link: string }[];
 }
@@ -35,8 +35,16 @@ export class SiteSettingsService {
     shareReplay(1)
   );
 
+  private homeProducts$ = this.http.get<any[]>(`${SERVER_URL}/api/settings/home-products`).pipe(
+    shareReplay(1)
+  );
+
   getSettings(): Observable<ISiteSettings> {
     return this.settings$;
+  }
+
+  getHomeProducts(): Observable<any[]> {
+    return this.homeProducts$;
   }
 
   getLogoUrl(logo: string): string {

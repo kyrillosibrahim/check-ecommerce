@@ -66,10 +66,14 @@
 <section class="section-padding">
   <div class="container">
     <h2 class="section-title">{{ 'home.shop_by_category' | translate }}</h2>
-    @if (isLoading()) {
+    @defer (on viewport; prefetch on idle) {
+      @if (isLoading()) {
+        <app-skeleton-loader type="card" [count]="6" />
+      } @else {
+        <app-categories-grid [categories]="categories" />
+      }
+    } @placeholder {
       <app-skeleton-loader type="card" [count]="6" />
-    } @else {
-      <app-categories-grid [categories]="categories" />
     }
   </div>
 </section>
@@ -101,10 +105,14 @@
 <section class="section-padding" style="background-color: #ffffff;">
   <div class="container">
     <h2 class="section-title">أقوى البراندات</h2>
-    @if (isLoadingBrands()) {
+    @defer (on viewport; prefetch on idle) {
+      @if (isLoadingBrands()) {
+        <app-skeleton-loader type="card" [count]="8" />
+      } @else if (brands.length > 0) {
+        <app-brands-grid [brands]="brands" />
+      }
+    } @placeholder {
       <app-skeleton-loader type="card" [count]="8" />
-    } @else if (brands.length > 0) {
-      <app-brands-grid [brands]="brands" />
     }
   </div>
 </section>
@@ -133,11 +141,15 @@
 }
 
 <!-- Natural Products (videos) — desktop only -->
-@if (naturalProducts.length > 0) {
-  <section class="section-padding d-none d-lg-block" style="background-color: var(--sz-bg-secondary, #f8f9fa);">
-    <div class="container">
-      <h2 class="section-title">المنتجات في الطبيعة</h2>
-      <app-natural-products [items]="naturalProducts" />
-    </div>
-  </section>
+@defer (on viewport; prefetch on idle) {
+  @if (naturalProducts.length > 0) {
+    <section class="section-padding d-none d-lg-block" style="background-color: var(--sz-bg-secondary, #f8f9fa);">
+      <div class="container">
+        <h2 class="section-title">المنتجات في الطبيعة</h2>
+        <app-natural-products [items]="naturalProducts" />
+      </div>
+    </section>
+  }
+} @placeholder {
+  <span></span>
 }

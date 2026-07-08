@@ -31,27 +31,35 @@ exports.getSettings = async (_req, res) => {
   try {
     const settings = await getSettingsDoc();
     const obj = settings.toObject(); delete obj._id; delete obj.__v;
+    delete obj.cartCount; delete obj.favoritesCount;
+    res.json(obj);
+  } catch (err) { res.status(500).json({ error: 'Failed to read settings.' }); }
+};
+
+exports.getHomeProducts = async (_req, res) => {
+  try {
+    const settings = await getSettingsDoc();
+    const productIds = settings.bestSellingProducts || [];
+    if (!productIds.length) return res.json([]);
+
+    const products = await Product.find({ id: { $in: productIds } }, { __v: 0 }).lean();
+    const productMap = new Map(products.map(p => [p.id, p]));
 
     let favSet = new Set(); let cartMap = new Map();
     try { const { readFavorites } = require('./favorite.controller'); favSet = new Set(await readFavorites()); } catch {}
     try { const { readCart } = require('./cart.controller'); const cart = await readCart(); cartMap = new Map(cart.map(c => [c.productId, c.quantity])); } catch {}
 
-    if (obj.bestSellingProducts?.length) {
-      const products = await Product.find({ id: { $in: obj.bestSellingProducts } }, { __v: 0 });
-      const productMap = new Map(products.map(p => [p.id, p]));
-      const seen = new Set();
-      obj.bestSellingProducts = obj.bestSellingProducts
-        .filter(id => { if (seen.has(id) || !productMap.has(id)) return false; seen.add(id); return true; })
-        .map(id => {
-          const p = fixImagePaths(productMap.get(id));
-          p.inFavorite = favSet.has(id); const qty = cartMap.get(id); p.inCart = !!qty; p.cartQuantity = qty || 0;
-          return p;
-        });
-    }
+    const seen = new Set();
+    const result = productIds
+      .filter(id => { if (seen.has(id) || !productMap.has(id)) return false; seen.add(id); return true; })
+      .map(id => {
+        const p = fixImagePaths(productMap.get(id));
+        p.inFavorite = favSet.has(id); const qty = cartMap.get(id); p.inCart = !!qty; p.cartQuantity = qty || 0;
+        return p;
+      });
 
-    delete obj.cartCount; delete obj.favoritesCount;
-    res.json(obj);
-  } catch (err) { res.status(500).json({ error: 'Failed to read settings.' }); }
+    res.json(result);
+  } catch (err) { res.status(500).json({ error: 'Failed to load home products.' }); }
 };
 
 exports.updateSettings = async (req, res) => {

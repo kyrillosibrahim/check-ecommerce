@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
-import { combineLatest } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ProductService } from '../../core/services/product.service';
 import { CartService } from '../../core/services/cart.service';
@@ -55,6 +54,9 @@ export class HomeComponent implements OnInit {
   isLoadingProducts = signal(true);
   isLoadingBrands = signal(true);
 
+  private allBrands: IBrand[] = [];
+  private brandTopIds: number[] = [];
+
   ngOnInit(): void {
     this.seoService.setPageMeta({
       title: 'الرئيسية',
@@ -87,25 +89,29 @@ export class HomeComponent implements OnInit {
       this.isLoading.set(false);
       this.cdr.markForCheck();
     });
-    combineLatest([
-      this.brandService.getAll(),
-      this.settingsService.getSettings()
-    ]).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(([allBrands, settings]) => {
-      const topIds: number[] = settings.bestSellingBrands || [];
-      if (topIds.length > 0) {
-        this.brands = topIds
-          .map(id => allBrands.find(b => b.id === id))
-          .filter((b): b is IBrand => !!b);
-      } else {
-        this.brands = allBrands;
-      }
-      if (settings.bestSellingProducts?.length) {
-        this.bestSellingProducts = settings.bestSellingProducts.map(
-          (p: any) => this.productService.mapServerProduct(p)
-        );
-      }
-      this.naturalProducts = (settings.naturalProducts || []).filter(i => i?.video);
+
+    this.brandService.getAll().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(allBrands => {
+      this.allBrands = allBrands;
+      this.brands = this.brandTopIds.length > 0
+        ? this.brandTopIds.map(id => allBrands.find(b => b.id === id)).filter((b): b is IBrand => !!b)
+        : allBrands;
       this.isLoadingBrands.set(false);
+      this.cdr.markForCheck();
+    });
+
+    this.settingsService.getSettings().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(settings => {
+      this.brandTopIds = settings.bestSellingBrands || [];
+      this.naturalProducts = (settings.naturalProducts || []).filter(i => i?.video);
+      if (this.allBrands.length && this.brandTopIds.length) {
+        this.brands = this.brandTopIds
+          .map(id => this.allBrands.find(b => b.id === id))
+          .filter((b): b is IBrand => !!b);
+        this.cdr.markForCheck();
+      }
+    });
+
+    this.settingsService.getHomeProducts().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(products => {
+      this.bestSellingProducts = products.map(p => this.productService.mapServerProduct(p));
       this.isLoadingProducts.set(false);
       this.cdr.markForCheck();
     });
