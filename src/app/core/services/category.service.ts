@@ -1,15 +1,17 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, shareReplay, tap, map } from 'rxjs';
 import { ICategory } from '../models/category.model';
 import { IBrand } from '../models/brand.model';
 import { API_CONFIG } from '../config/api.config';
+import { withLocalCache } from '../utils/local-cache.util';
 
 const SERVER_URL = API_CONFIG.baseUrl;
 
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
   private http = inject(HttpClient);
+  private platformId = inject(PLATFORM_ID);
   private categoriesSubject = new BehaviorSubject<ICategory[]>([]);
   private allCategories$?: Observable<ICategory[]>;
 
@@ -17,7 +19,7 @@ export class CategoryService {
 
   getAll(): Observable<ICategory[]> {
     if (!this.allCategories$) {
-      this.allCategories$ = this.http.get<ICategory[]>(`${SERVER_URL}/api/categories/detailed`).pipe(
+      const request$ = this.http.get<ICategory[]>(`${SERVER_URL}/api/categories/detailed`).pipe(
         map(cats => cats.map(c => ({
           id: c.id,
           name: c.name,
@@ -39,6 +41,7 @@ export class CategoryService {
         tap(cats => this.categoriesSubject.next(cats)),
         shareReplay(1)
       );
+      this.allCategories$ = withLocalCache('kaf:categories', request$, this.platformId);
     }
     return this.allCategories$;
   }

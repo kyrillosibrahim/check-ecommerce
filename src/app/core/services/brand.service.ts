@@ -1,8 +1,9 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, catchError, of, shareReplay, tap, map } from 'rxjs';
 import { IBrand } from '../models/brand.model';
 import { API_CONFIG } from '../config/api.config';
+import { withLocalCache } from '../utils/local-cache.util';
 
 const SERVER_URL = API_CONFIG.baseUrl;
 
@@ -14,13 +15,18 @@ const mapBrand = (b: any): IBrand => ({
 @Injectable({ providedIn: 'root' })
 export class BrandService {
   private http = inject(HttpClient);
+  private platformId = inject(PLATFORM_ID);
   private brandsSubject = new BehaviorSubject<IBrand[]>([]);
   private allBrands$?: Observable<IBrand[]>;
 
-  private featuredBrands$ = this.http.get<IBrand[]>(`${SERVER_URL}/api/settings/featured-brands`).pipe(
-    map(brands => brands.map(mapBrand)),
-    catchError(() => of([] as IBrand[])),
-    shareReplay(1)
+  private featuredBrands$ = withLocalCache(
+    'kaf:featured-brands',
+    this.http.get<IBrand[]>(`${SERVER_URL}/api/settings/featured-brands`).pipe(
+      map(brands => brands.map(mapBrand)),
+      catchError(() => of([] as IBrand[])),
+      shareReplay(1)
+    ),
+    this.platformId
   );
 
   brands$ = this.brandsSubject.asObservable();

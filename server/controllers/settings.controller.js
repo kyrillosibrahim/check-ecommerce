@@ -42,6 +42,7 @@ exports.getFeaturedBrands = async (_req, res) => {
     const settings = await getSettingsDoc();
     const topIds = settings.bestSellingBrands || [];
     const allBrands = await Brand.find({}, { _id: 0, __v: 0 }).lean();
+    res.set('Cache-Control', 'public, max-age=1800, stale-while-revalidate=3600');
     if (!topIds.length) return res.json(allBrands);
     const brandMap = new Map(allBrands.map(b => [b.id, b]));
     const result = topIds.map(id => brandMap.get(id)).filter(Boolean);
@@ -53,7 +54,7 @@ exports.getHomeProducts = async (_req, res) => {
   try {
     const settings = await getSettingsDoc();
     const productIds = settings.bestSellingProducts || [];
-    if (!productIds.length) return res.json([]);
+    if (!productIds.length) { res.set('Cache-Control', 'public, max-age=1800'); return res.json([]); }
 
     const products = await Product.find({ id: { $in: productIds } }, { __v: 0 }).lean();
     const productMap = new Map(products.map(p => [p.id, p]));
@@ -71,6 +72,7 @@ exports.getHomeProducts = async (_req, res) => {
         return p;
       });
 
+    res.set('Cache-Control', 'public, max-age=1800, stale-while-revalidate=3600');
     res.json(result);
   } catch (err) { res.status(500).json({ error: 'Failed to load home products.' }); }
 };

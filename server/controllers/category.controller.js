@@ -29,6 +29,7 @@ async function getDetailedCategories(_req, res, next) {
       const famousBrands = (c.famousBrands || []).map(bId => { const b = allBrands.find(x => x.id === bId); if (!b) return null; const o = b.toObject(); delete o._id; return o; }).filter(Boolean);
       return { id: c.id, name: c.name, slug: c.slug, image: c.image || '', subcategories: c.subcategories || [], famousBrands, filterTags: c.filterTags || [], order: c.order || 0 };
     });
+    res.set('Cache-Control', 'public, max-age=1800, stale-while-revalidate=3600');
     res.json(detailed);
   } catch (err) { next(err); }
 }

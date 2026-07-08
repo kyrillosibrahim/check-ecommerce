@@ -1,7 +1,8 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, of, shareReplay } from 'rxjs';
 import { API_CONFIG } from '../config/api.config';
+import { withLocalCache } from '../utils/local-cache.util';
 
 const SERVER_URL = API_CONFIG.baseUrl;
 
@@ -30,14 +31,19 @@ export interface ISiteSettings {
 @Injectable({ providedIn: 'root' })
 export class SiteSettingsService {
   private http = inject(HttpClient);
+  private platformId = inject(PLATFORM_ID);
 
   private settings$ = this.http.get<ISiteSettings>(`${SERVER_URL}/api/settings`).pipe(
     shareReplay(1)
   );
 
-  private homeProducts$ = this.http.get<any[]>(`${SERVER_URL}/api/settings/home-products`).pipe(
-    catchError(() => of([] as any[])),
-    shareReplay(1)
+  private homeProducts$ = withLocalCache(
+    'kaf:home-products',
+    this.http.get<any[]>(`${SERVER_URL}/api/settings/home-products`).pipe(
+      catchError(() => of([] as any[])),
+      shareReplay(1)
+    ),
+    this.platformId
   );
 
   getSettings(): Observable<ISiteSettings> {
