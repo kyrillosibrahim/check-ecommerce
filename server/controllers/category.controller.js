@@ -4,6 +4,14 @@ const Category = require('../models/Category');
 const Brand = require('../models/Brand');
 const Product = require('../models/Product');
 const { generateSlug } = require('../utils/slug.util');
+const { cacheGet, cacheSet, cacheClear, MIN } = require('../utils/cache.util');
+
+const CACHE_LIST     = 'categories:list';
+const CACHE_DETAILED = 'categories:detailed';
+
+function _invalidate() {
+  cacheClear('categories:');
+}
 
 async function getNextId() {
   const last = await Category.findOne({}, { id: 1 }).sort({ id: -1 });
@@ -16,19 +24,37 @@ function getNextSubId(subcategories) {
 
 async function getAllCategories(_req, res, next) {
   try {
-    const cats = await Category.find({}, { __v: 0 }).sort({ order: 1, id: 1 });
-    res.json(cats.map(c => ({ id: c.id, name: c.name, slug: c.slug, image: c.image || '', filterTags: c.filterTags || [], order: c.order || 0 })));
+    const cached = cacheGet(CACHE_LIST);
+    if (cached) return res.json(cached);
+
+    const cats = await Category.find({}, { __v: 0 }).sort({ order: 1, id: 1 }).lean();
+    const result = cats.map(c => ({ id: c.id, name: c.name, slug: c.slug, image: c.image || '', filterTags: c.filterTags || [], order: c.order || 0 }));
+
+    cacheSet(CACHE_LIST, result, 10 * MIN);
+    res.json(result);
   } catch (err) { next(err); }
 }
 
 async function getDetailedCategories(_req, res, next) {
   try {
-    const cats = await Category.find({}, { __v: 0 }).sort({ order: 1, id: 1 });
-    const allBrands = await Brand.find({}, { __v: 0 });
+    const cached = cacheGet(CACHE_DETAILED);
+    if (cached) {
+      res.set('Cache-Control', 'public, max-age=1800, stale-while-revalidate=3600');
+      return res.json(cached);
+    }
+
+    const [cats, allBrands] = await Promise.all([
+      Category.find({}, { __v: 0 }).sort({ order: 1, id: 1 }).lean(),
+      Brand.find({}, { _id: 0, __v: 0 }).lean(),
+    ]);
+
+    const brandMap = new Map(allBrands.map(b => [b.id, b]));
     const detailed = cats.map(c => {
-      const famousBrands = (c.famousBrands || []).map(bId => { const b = allBrands.find(x => x.id === bId); if (!b) return null; const o = b.toObject(); delete o._id; return o; }).filter(Boolean);
+      const famousBrands = (c.famousBrands || []).map(bId => brandMap.get(bId)).filter(Boolean);
       return { id: c.id, name: c.name, slug: c.slug, image: c.image || '', subcategories: c.subcategories || [], famousBrands, filterTags: c.filterTags || [], order: c.order || 0 };
     });
+
+    cacheSet(CACHE_DETAILED, detailed, 30 * MIN);
     res.set('Cache-Control', 'public, max-age=1800, stale-while-revalidate=3600');
     res.json(detailed);
   } catch (err) { next(err); }
@@ -39,6 +65,7 @@ async function reorderCategories(req, res, next) {
     const { ids } = req.body;
     if (!Array.isArray(ids)) return res.status(400).json({ error: 'ids array is required.' });
     await Promise.all(ids.map((id, index) => Category.updateOne({ id: Number(id) }, { $set: { order: index } })));
+    _invalidate();
     res.json({ message: 'Categories reordered.' });
   } catch (err) { next(err); }
 }
@@ -51,6 +78,7 @@ async function createCategory(req, res, next) {
     if (await Category.findOne({ slug })) return res.status(409).json({ error: 'Category already exists.' });
     const image = req.file ? '/uploads/categories/' + req.file.filename : (imageUrl || '');
     const newCat = await Category.create({ id: await getNextId(), name: name.trim(), slug, image, subcategories: [], famousBrands: [], filterTags: [] });
+    _invalidate();
     const obj = newCat.toObject(); delete obj._id; delete obj.__v; res.status(201).json(obj);
   } catch (err) { next(err); }
 }
@@ -77,7 +105,6 @@ async function updateCategory(req, res, next) {
     if (filterTags !== undefined) { const p = typeof filterTags === 'string' ? JSON.parse(filterTags) : filterTags; cat.filterTags = Array.isArray(p) ? p : []; }
     await cat.save();
 
-    // Cascade rename to all products referencing the old slug/name
     if (oldSlug !== slug || oldName !== cat.name) {
       await Product.updateMany(
         { $or: [{ category: oldSlug }, { category: oldName }, { categoryFolder: oldSlug }] },
@@ -85,6 +112,7 @@ async function updateCategory(req, res, next) {
       );
     }
 
+    _invalidate();
     const obj = cat.toObject(); delete obj._id; delete obj.__v; res.json(obj);
   } catch (err) { next(err); }
 }
@@ -96,6 +124,7 @@ async function deleteCategory(req, res, next) {
     if (!cat) return res.status(404).json({ error: 'Category not found.' });
     if (cat.image && !cat.image.startsWith('http')) await fse.remove(path.join(__dirname, '..', cat.image)).catch(() => {});
     for (const sub of (cat.subcategories || [])) { if (sub.image && !sub.image.startsWith('http')) await fse.remove(path.join(__dirname, '..', sub.image)).catch(() => {}); }
+    _invalidate();
     res.json({ message: 'Category deleted successfully.' });
   } catch (err) { next(err); }
 }
@@ -111,7 +140,9 @@ async function addSubcategory(req, res, next) {
     if ((cat.subcategories || []).find(s => s.slug === slug)) return res.status(409).json({ error: 'Subcategory already exists.' });
     const image = req.file ? '/uploads/categories/' + req.file.filename : (req.body.imageUrl || '');
     cat.subcategories.push({ id: getNextSubId(cat.subcategories), name: name.trim(), slug, image });
-    await cat.save(); const obj = cat.toObject(); delete obj._id; delete obj.__v; res.status(201).json(obj);
+    await cat.save();
+    _invalidate();
+    const obj = cat.toObject(); delete obj._id; delete obj.__v; res.status(201).json(obj);
   } catch (err) { next(err); }
 }
 
@@ -138,7 +169,6 @@ async function updateSubcategory(req, res, next) {
     }
     await cat.save();
 
-    // Cascade rename to all products referencing the old subcategory slug/name
     if (oldSubSlug !== slug || oldSubName !== cat.subcategories[subIndex].name) {
       await Product.updateMany(
         { $or: [{ subcategory: oldSubSlug }, { subcategory: oldSubName }] },
@@ -146,6 +176,7 @@ async function updateSubcategory(req, res, next) {
       );
     }
 
+    _invalidate();
     const obj = cat.toObject(); delete obj._id; delete obj.__v; res.json(obj);
   } catch (err) { next(err); }
 }
@@ -160,6 +191,7 @@ async function deleteSubcategory(req, res, next) {
     const imgToDelete = cat.subcategories[subIndex].image;
     if (imgToDelete && !imgToDelete.startsWith('http')) await fse.remove(path.join(__dirname, '..', imgToDelete)).catch(() => {});
     cat.subcategories.splice(subIndex, 1); await cat.save();
+    _invalidate();
     const obj = cat.toObject(); delete obj._id; delete obj.__v; res.json(obj);
   } catch (err) { next(err); }
 }

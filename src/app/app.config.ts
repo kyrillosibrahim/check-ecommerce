@@ -6,10 +6,12 @@ registerLocaleData(localeArEg, 'ar-EG');
 import { provideRouter, withPreloading, withInMemoryScrolling } from '@angular/router';
 import { provideHttpClient, withInterceptors, withFetch } from '@angular/common/http';
 import { provideClientHydration, withEventReplay, withHttpTransferCacheOptions } from '@angular/platform-browser';
+import { provideServiceWorker } from '@angular/service-worker';
 import { SelectivePreloadStrategy } from './core/strategies/selective-preload.strategy';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
+import { environment } from '../environments/environment';
 
 import { routes } from './app.routes';
 import { cacheInterceptor } from './core/interceptors/cache.interceptor';
@@ -51,6 +53,10 @@ export const appConfig: ApplicationConfig = {
         }
         return src;
       }
-    }
+    },
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: environment.production,
+      registrationStrategy: 'registerWhenStable:30000'
+    })
   ]
 };

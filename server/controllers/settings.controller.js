@@ -2,6 +2,15 @@ const { uploadFile, deleteFile } = require('../utils/cloudinary.util');
 const Settings = require('../models/Settings');
 const Product = require('../models/Product');
 const Brand = require('../models/Brand');
+const { cacheGet, cacheSet, cacheClear, MIN, HOUR } = require('../utils/cache.util');
+
+const CACHE_SETTINGS        = 'settings:global';
+const CACHE_FEATURED_BRANDS = 'settings:featured-brands';
+const CACHE_HOME_PRODUCTS   = 'settings:home-products';
+
+function _invalidate() {
+  cacheClear('settings:');
+}
 
 const DEFAULT_SETTINGS = {
   _id: 'global', logo: '',
@@ -21,57 +30,78 @@ function fixImagePaths(product) {
   const slug = product.slug;
   if (!cat || !slug) return product;
   const fixPaths = (arr) => arr ? arr.map(p => p.startsWith('http') || p.startsWith(cat) ? p : cat + '/' + slug + '/' + p) : [];
-  const obj = product.toObject ? product.toObject() : { ...product };
+  const obj = { ...product };
   obj.mainImages = fixPaths(obj.mainImages); obj.swiperImages = fixPaths(obj.swiperImages); obj.normalImages = fixPaths(obj.normalImages);
   if (obj.images) obj.images = fixPaths(obj.images);
-  if (obj._id) delete obj._id; if (obj.__v !== undefined) delete obj.__v;
+  delete obj._id; delete obj.__v;
   return obj;
 }
 
 exports.getSettings = async (_req, res) => {
   try {
+    const cached = cacheGet(CACHE_SETTINGS);
+    if (cached) return res.json(cached);
+
     const settings = await getSettingsDoc();
     const obj = settings.toObject(); delete obj._id; delete obj.__v;
     delete obj.cartCount; delete obj.favoritesCount;
+
+    cacheSet(CACHE_SETTINGS, obj, 10 * MIN);
     res.json(obj);
   } catch (err) { res.status(500).json({ error: 'Failed to read settings.' }); }
 };
 
 exports.getFeaturedBrands = async (_req, res) => {
   try {
+    const cached = cacheGet(CACHE_FEATURED_BRANDS);
+    if (cached) {
+      res.set('Cache-Control', 'public, max-age=1800, stale-while-revalidate=3600');
+      return res.json(cached);
+    }
+
     const settings = await getSettingsDoc();
     const topIds = settings.bestSellingBrands || [];
     const allBrands = await Brand.find({}, { _id: 0, __v: 0 }).lean();
+
+    let result;
+    if (!topIds.length) {
+      result = allBrands;
+    } else {
+      const brandMap = new Map(allBrands.map(b => [b.id, b]));
+      const ordered = topIds.map(id => brandMap.get(id)).filter(Boolean);
+      result = ordered.length ? ordered : allBrands;
+    }
+
+    cacheSet(CACHE_FEATURED_BRANDS, result, 30 * MIN);
     res.set('Cache-Control', 'public, max-age=1800, stale-while-revalidate=3600');
-    if (!topIds.length) return res.json(allBrands);
-    const brandMap = new Map(allBrands.map(b => [b.id, b]));
-    const result = topIds.map(id => brandMap.get(id)).filter(Boolean);
-    res.json(result.length ? result : allBrands);
+    res.json(result);
   } catch (err) { res.status(500).json({ error: 'Failed to load featured brands.' }); }
 };
 
 exports.getHomeProducts = async (_req, res) => {
   try {
+    const cached = cacheGet(CACHE_HOME_PRODUCTS);
+    if (cached) {
+      res.set('Cache-Control', 'public, max-age=1800, stale-while-revalidate=3600');
+      return res.json(cached);
+    }
+
     const settings = await getSettingsDoc();
     const productIds = settings.bestSellingProducts || [];
-    if (!productIds.length) { res.set('Cache-Control', 'public, max-age=1800'); return res.json([]); }
+    if (!productIds.length) {
+      res.set('Cache-Control', 'public, max-age=1800');
+      return res.json([]);
+    }
 
     const products = await Product.find({ id: { $in: productIds } }, { __v: 0 }).lean();
     const productMap = new Map(products.map(p => [p.id, p]));
 
-    let favSet = new Set(); let cartMap = new Map();
-    try { const { readFavorites } = require('./favorite.controller'); favSet = new Set(await readFavorites()); } catch {}
-    try { const { readCart } = require('./cart.controller'); const cart = await readCart(); cartMap = new Map(cart.map(c => [c.productId, c.quantity])); } catch {}
-
     const seen = new Set();
     const result = productIds
       .filter(id => { if (seen.has(id) || !productMap.has(id)) return false; seen.add(id); return true; })
-      .map(id => {
-        const p = fixImagePaths(productMap.get(id));
-        p.inFavorite = favSet.has(id); const qty = cartMap.get(id); p.inCart = !!qty; p.cartQuantity = qty || 0;
-        return p;
-      });
+      .map(id => fixImagePaths(productMap.get(id)));
 
+    cacheSet(CACHE_HOME_PRODUCTS, result, 10 * MIN);
     res.set('Cache-Control', 'public, max-age=1800, stale-while-revalidate=3600');
     res.json(result);
   } catch (err) { res.status(500).json({ error: 'Failed to load home products.' }); }
@@ -122,6 +152,9 @@ exports.updateSettings = async (req, res) => {
 
     settings.markModified('colors'); settings.markModified('social'); settings.markModified('naturalProducts');
     await settings.save();
+
+    _invalidate();
+
     const obj = settings.toObject(); delete obj._id; delete obj.__v;
     res.json(obj);
   } catch (err) { console.error('[Settings Update Error]', err); res.status(500).json({ error: 'Failed to update settings.' }); }

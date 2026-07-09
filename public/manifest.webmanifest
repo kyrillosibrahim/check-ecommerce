@@ -1,0 +1,28 @@
+{
+  "name": "Check - تسوق أونلاين",
+  "short_name": "Check",
+  "description": "متجرك الإلكتروني للتسوق أونلاين. أفضل المنتجات بأفضل الأسعار مع شحن لجميع محافظات مصر.",
+  "theme_color": "#2E8B57",
+  "background_color": "#F7F8F8",
+  "display": "standalone",
+  "scope": "/",
+  "start_url": "/",
+  "dir": "rtl",
+  "lang": "ar",
+  "icons": [
+    {
+      "src": "assets/logobluewithoutbg.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "assets/logobluewithoutbg.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "categories": ["shopping", "lifestyle"],
+  "screenshots": []
+}

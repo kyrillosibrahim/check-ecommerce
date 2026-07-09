@@ -1,12 +1,27 @@
 const { uploadFile, deleteFile } = require('../utils/cloudinary.util');
 const Brand = require('../models/Brand');
 const { generateSlug } = require('../utils/slug.util');
+const { cacheGet, cacheSet, cacheDel, cacheClear, HOUR } = require('../utils/cache.util');
+
+const CACHE_KEY = 'brands:all';
+
+function _invalidate() {
+  cacheDel(CACHE_KEY);
+  cacheClear('categories:');    // detailed categories embed brand data
+  cacheClear('settings:featured-brands');
+}
 
 async function getNextId() { const last = await Brand.findOne({}, { id: 1 }).sort({ id: -1 }); return last ? last.id + 1 : 1; }
 
 async function getAllBrands(_req, res, next) {
-  try { const brands = await Brand.find({}, { __v: 0 }); res.json(brands.map(b => { const o = b.toObject(); delete o._id; return o; })); }
-  catch (err) { next(err); }
+  try {
+    const cached = cacheGet(CACHE_KEY);
+    if (cached) return res.json(cached);
+
+    const brands = await Brand.find({}, { _id: 0, __v: 0 }).lean();
+    cacheSet(CACHE_KEY, brands, HOUR);
+    res.json(brands);
+  } catch (err) { next(err); }
 }
 
 async function createBrand(req, res, next) {
@@ -20,6 +35,7 @@ async function createBrand(req, res, next) {
       imageUrl = await uploadFile(req.file.path, 'brands');
     }
     const newBrand = await Brand.create({ id: await getNextId(), name: name.trim(), slug, image: imageUrl, link: (link || '').trim() });
+    _invalidate();
     const obj = newBrand.toObject(); delete obj._id; delete obj.__v;
     res.status(201).json(obj);
   } catch (err) { next(err); }
@@ -43,6 +59,7 @@ async function updateBrand(req, res, next) {
     brand.name = name.trim(); brand.slug = slug;
     if (link !== undefined) brand.link = (link || '').trim();
     await brand.save();
+    _invalidate();
     const obj = brand.toObject(); delete obj._id; delete obj.__v;
     res.json(obj);
   } catch (err) { next(err); }
@@ -54,6 +71,7 @@ async function deleteBrand(req, res, next) {
     const brand = await Brand.findOneAndDelete({ id });
     if (!brand) return res.status(404).json({ error: 'Brand not found.' });
     await deleteFile(brand.image).catch(() => {});
+    _invalidate();
     res.json({ message: 'Brand deleted successfully.' });
   } catch (err) { next(err); }
 }

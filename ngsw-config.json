@@ -1,0 +1,106 @@
+{
+  "$schema": "./node_modules/@angular/service-worker/config/schema.json",
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app-shell",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/favicon.svg",
+          "/manifest.webmanifest",
+          "/*.css",
+          "/*.js"
+        ]
+      }
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/assets/**"
+        ]
+      }
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "api-settings",
+      "urls": [
+        "https://check-ecommerce.onrender.com/api/settings",
+        "https://check-ecommerce.onrender.com/api/settings/featured-brands",
+        "https://check-ecommerce.onrender.com/api/settings/home-products"
+      ],
+      "cacheConfig": {
+        "maxSize": 5,
+        "maxAge": "10m",
+        "timeout": "5s",
+        "strategy": "freshness"
+      }
+    },
+    {
+      "name": "api-categories",
+      "urls": [
+        "https://check-ecommerce.onrender.com/api/categories",
+        "https://check-ecommerce.onrender.com/api/categories/detailed"
+      ],
+      "cacheConfig": {
+        "maxSize": 5,
+        "maxAge": "30m",
+        "timeout": "5s",
+        "strategy": "freshness"
+      }
+    },
+    {
+      "name": "api-brands",
+      "urls": [
+        "https://check-ecommerce.onrender.com/api/brands"
+      ],
+      "cacheConfig": {
+        "maxSize": 5,
+        "maxAge": "1h",
+        "timeout": "5s",
+        "strategy": "freshness"
+      }
+    },
+    {
+      "name": "api-banners",
+      "urls": [
+        "https://check-ecommerce.onrender.com/api/banners"
+      ],
+      "cacheConfig": {
+        "maxSize": 5,
+        "maxAge": "15m",
+        "timeout": "5s",
+        "strategy": "freshness"
+      }
+    },
+    {
+      "name": "api-governorates",
+      "urls": [
+        "https://check-ecommerce.onrender.com/api/governorates"
+      ],
+      "cacheConfig": {
+        "maxSize": 5,
+        "maxAge": "24h",
+        "timeout": "5s",
+        "strategy": "performance"
+      }
+    },
+    {
+      "name": "api-products",
+      "urls": [
+        "https://check-ecommerce.onrender.com/api/products/**"
+      ],
+      "cacheConfig": {
+        "maxSize": 50,
+        "maxAge": "5m",
+        "timeout": "10s",
+        "strategy": "performance"
+      }
+    }
+  ]
+}
