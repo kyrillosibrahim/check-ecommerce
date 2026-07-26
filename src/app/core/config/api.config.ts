@@ -18,4 +18,5 @@ export const API_CONFIG = {
   get notificationsUrl() { return `${this.baseUrl}/api/notifications`; },
   get couponsUrl() { return `${this.baseUrl}/api/coupons`; },
   get siteVisitsUrl() { return `${this.baseUrl}/api/site-visits`; },
+  get customerActivityUrl() { return `${this.baseUrl}/api/customer-activity`; },
 };

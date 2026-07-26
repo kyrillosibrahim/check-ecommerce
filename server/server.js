@@ -35,6 +35,7 @@ const reviewRoutes = require('./routes/review.routes');
 const storageRoutes = require('./routes/storage.routes');
 const couponRoutes = require('./routes/coupon.routes');
 const siteVisitRoutes = require('./routes/site-visit.routes');
+const customerActivityRoutes = require('./routes/customer-activity.routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -59,12 +60,24 @@ const authLimiter = rateLimit({
   legacyHeaders: false,
   message: { error: 'عدد محاولات كثير، حاول مرة أخرى بعد قليل' },
 });
+// Telemetry writes are high-frequency and must never consume the budget that
+// keeps the storefront working — mobile carriers NAT many customers behind one IP.
+const trackingLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 90,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'too many events' },
+});
 // Broad limiter for the rest of the API.
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 1000,
   standardHeaders: true,
   legacyHeaders: false,
+  // Use originalUrl: inside app.use('/api', ...) Express strips the mount point
+  // from req.url/req.path, so req.path would be '/customer-activity'.
+  skip: (req) => req.method === 'POST' && req.originalUrl.startsWith('/api/customer-activity'),
 });
 
 // --- Security HTTP Headers ---
@@ -112,6 +125,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // Apply rate limiters: strict on auth, broad on the rest of the API.
 app.use('/api/auth', authLimiter);
+app.use('/api/customer-activity', (req, res, next) =>
+  req.method === 'POST' ? trackingLimiter(req, res, next) : next());
 app.use('/api', apiLimiter);
 
 // --- Serve uploaded images statically ---
@@ -197,6 +212,7 @@ app.use('/api/reviews', reviewRoutes);
 app.use('/api/storage', storageRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/site-visits', siteVisitRoutes);
+app.use('/api/customer-activity', customerActivityRoutes);
 
 // --- Health check ---
 app.get('/api/health', (_req, res) => {

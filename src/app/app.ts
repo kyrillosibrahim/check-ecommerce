@@ -10,6 +10,7 @@ import { AuthDrawerComponent } from './shared/components/auth-drawer/auth-drawer
 import { QuickViewModalComponent } from './shared/components/quick-view-modal/quick-view-modal.component';
 import { SiteSettingsService } from './core/services/settings.service';
 import { SiteVisitService } from './core/services/site-visit.service';
+import { CustomerActivityTrackerService } from './core/services/customer-activity-tracker.service';
 
 @Component({
   selector: 'app-root',
@@ -21,6 +22,7 @@ import { SiteVisitService } from './core/services/site-visit.service';
 export class App implements OnInit {
   private settingsService = inject(SiteSettingsService);
   private siteVisitService = inject(SiteVisitService);
+  private customerActivity = inject(CustomerActivityTrackerService);
   private platformId = inject(PLATFORM_ID);
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
@@ -34,6 +36,7 @@ export class App implements OnInit {
 
   ngOnInit(): void {
     this.siteVisitService.trackVisit();
+    this.customerActivity.start();
     this.router.events.pipe(
       filter((e): e is NavigationEnd => e instanceof NavigationEnd),
       takeUntilDestroyed(this.destroyRef)
