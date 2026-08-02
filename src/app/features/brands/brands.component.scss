@@ -131,7 +131,8 @@
   gap: 1rem;
   margin: -1.25rem -1.25rem 1.25rem;
   padding: 0.85rem 1.25rem;
-  background-color: #827e62;
+  background-color: var(--sz-accent);
+  background-image: linear-gradient(135deg, var(--sz-accent), var(--sz-accent-hover));
   border-top-left-radius: 14px;
   border-top-right-radius: 14px;
   flex-wrap: wrap;
