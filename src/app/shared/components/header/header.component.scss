@@ -332,7 +332,7 @@
 }
 
 .mega-menu-content {
-  width: 86%;
+  width: 94%;
   display: flex;
   direction: rtl;
   background: var(--sz-bg-card);
@@ -349,7 +349,8 @@
 .mega-menu-categories {
   width: 350px;
   min-width: 250px;
-  border-inline-start: 1px solid var(--sz-border-color);
+  /* Divider against the subcategories column, not the outer edge of the panel. */
+  border-inline-end: 1px solid var(--sz-border-color);
   background:
     linear-gradient(180deg,
       rgba(var(--sz-accent-rgb), 0.07) 0%,
@@ -557,7 +558,8 @@
   width: 360px;
   min-width: 240px;
   padding: 1.5rem 1.25rem;
-  border-inline-end: 1px solid var(--sz-border-color);
+  /* Divider against the subcategories column, not the outer edge of the panel. */
+  border-inline-start: 1px solid var(--sz-border-color);
   overflow-y: auto;
 }
 
