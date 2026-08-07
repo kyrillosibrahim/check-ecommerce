@@ -504,7 +504,10 @@
   }
 }
 
+/* Width is fixed so the shimmer fills the whole square while the image loads —
+   without it an unloaded <img> collapses to a thin strip. */
 .mega-menu-sub-img, .mega-menu-sub-img-placeholder {
+    width: 75px;
     height: 75px;
     border-radius: 8px;
     padding: 5px;
@@ -513,6 +516,7 @@
 
 .mega-menu-sub-img {
   border: 1px solid var(--sz-border-color);
+  object-fit: contain;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 

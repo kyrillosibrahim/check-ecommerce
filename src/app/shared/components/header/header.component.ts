@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject, ChangeDetectorRef, OnInit, OnDestroy, HostListener, DestroyRef, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, ChangeDetectorRef, OnInit, OnDestroy, HostListener, DestroyRef, signal, PLATFORM_ID } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, combineLatest } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, switchMap } from 'rxjs/operators';
@@ -18,15 +18,24 @@ import { SiteSettingsService } from '../../../core/services/settings.service';
 import { ProductService } from '../../../core/services/product.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { EgpCurrencyPipe } from '../../pipes/egp-currency.pipe';
+import { CldImagePipe } from '../../pipes/cld-image.pipe';
 import { IBrand } from '../../../core/models/brand.model';
 import { ICategory } from '../../../core/models/category.model';
 import { IProduct } from '../../../core/models/product.model';
 
 const RECENTLY_VIEWED_KEY = 'recently_viewed_products';
 
+/** Delivery widths used for the mega-menu thumbnails, matched to their rendered size. */
+const SUB_THUMB_WIDTH = 150;
+const BRAND_THUMB_WIDTH = 160;
+/** Upper bound on how many thumbnails the idle prefetch is allowed to warm. */
+const PREFETCH_LIMIT = 120;
+/** Bootstrap's `lg` breakpoint — below it the categories bar (and mega menu) is hidden. */
+const MEGA_MENU_MIN_WIDTH = 992;
+
 @Component({
   selector: 'app-header',
-  imports: [RouterLink, RouterLinkActive, AsyncPipe, FormsModule, TranslatePipe, EgpCurrencyPipe],
+  imports: [RouterLink, RouterLinkActive, AsyncPipe, FormsModule, TranslatePipe, EgpCurrencyPipe, CldImagePipe],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -46,6 +55,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   translationService = inject(TranslationService);
   authDrawerService = inject(AuthDrawerService);
   private destroyRef = inject(DestroyRef);
+  private platformId = inject(PLATFORM_ID);
+  private readonly cldImage = new CldImagePipe();
 
   searchTerm = '';
   showSearchOverlay = false;
@@ -124,6 +135,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.categories = c;
         this.isLoadingCategories.set(false);
         this.cdr.markForCheck();
+        this.prefetchMegaMenuImages(c);
       });
 
     // Live search: debounce input, call server
@@ -262,6 +274,42 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   onMegaMenuEnter(): void {
     clearTimeout(this.hoverTimeout);
+  }
+
+  /**
+   * Warm the browser cache with the resized mega-menu thumbnails. The menu itself
+   * lives behind `@if (hoveredCategory)`, so without this the images only start
+   * downloading on the first hover. Runs on idle time so it never competes with
+   * the initial render, and only on the breakpoint where the menu exists — the
+   * categories bar is `d-none d-lg-block`, so on phones these would never be shown.
+   */
+  private prefetchMegaMenuImages(cats: ICategory[]): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    if (!window.matchMedia(`(min-width: ${MEGA_MENU_MIN_WIDTH}px)`).matches) return;
+
+    const urls = new Set<string>();
+    for (const cat of cats) {
+      for (const sub of cat.subcategories || []) {
+        if (sub.image) urls.add(this.cldImage.transform(sub.image, SUB_THUMB_WIDTH));
+      }
+      for (const brand of cat.famousBrands || []) {
+        if (brand.image) urls.add(this.cldImage.transform(brand.image, BRAND_THUMB_WIDTH));
+      }
+    }
+    if (!urls.size) return;
+
+    const warm = () => {
+      for (const url of Array.from(urls).slice(0, PREFETCH_LIMIT)) {
+        const img = new Image();
+        img.decoding = 'async';
+        img.setAttribute('fetchpriority', 'low');
+        img.src = url;
+      }
+    };
+
+    // requestIdleCallback is still missing from some lib.dom typings.
+    const idle = (window as Window & { requestIdleCallback?: (cb: () => void) => void }).requestIdleCallback;
+    if (idle) idle(warm); else setTimeout(warm, 1500);
   }
 
   /** Remove the shimmer placeholder once a mega-menu image has loaded. */

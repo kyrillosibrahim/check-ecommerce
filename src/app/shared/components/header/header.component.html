@@ -136,7 +136,7 @@
                     @for (product of recentlyViewed; track product.id) {
                       <div class="rv-item" (click)="goToProduct(product)">
                         @if (getProductImage(product)) {
-                          <img [src]="getProductImage(product)" [alt]="product.title" class="rv-img" draggable="false">
+                          <img [src]="getProductImage(product) | cldImage:140" [alt]="product.title" class="rv-img" draggable="false">
                         } @else {
                           <div class="rv-img-placeholder"><i class="bi bi-box"></i></div>
                         }
@@ -166,7 +166,7 @@
                     @for (brand of brands; track brand.id) {
                       <a class="brand-logo-card" (click)="searchByBrand(brand)" [title]="brand.name">
                         @if (brand.image) {
-                          <img [src]="brand.image" [alt]="brand.name" loading="lazy">
+                          <img [src]="brand.image | cldImage:160" [alt]="brand.name" loading="lazy">
                         } @else {
                           <div class="brand-logo-placeholder">
                             <i class="bi bi-award"></i>
@@ -307,7 +307,7 @@
                 <div class="cart-dropdown-items">
                   @for (item of cartItems; track item.product.id) {
                     <div class="cart-dropdown-item">
-                      <img [src]="getProductImage(item.product)" [alt]="item.product.title" class="cart-dropdown-img">
+                      <img [src]="getProductImage(item.product) | cldImage:100" [alt]="item.product.title" class="cart-dropdown-img">
                       <div class="cart-dropdown-info">
                         <p class="cart-dropdown-name">{{ item.product.title }}</p>
                         <div class="d-flex align-items-center gap-2">
@@ -498,7 +498,8 @@
                 @for (sub of hoveredCategory.subcategories; track sub.id) {
                   <a class="mega-menu-sub-card" (click)="searchBySubcategory(hoveredCategory!, sub.id)">
                     @if (sub.image) {
-                      <img [src]="sub.image" [alt]="sub.name" class="mega-menu-sub-img is-loading"
+                      <img [src]="sub.image | cldImage:150" [alt]="sub.name" class="mega-menu-sub-img is-loading"
+                           width="75" height="75"
                            (load)="onImgLoad($event)" (error)="onImgError($event)">
                     } @else {
                       <div class="mega-menu-sub-img-placeholder">
@@ -520,7 +521,8 @@
                 @for (brand of hoveredCategory.famousBrands; track brand.id) {
                   <a class="mega-menu-brand-card" (click)="searchByBrandFromMenu(brand.name)">
                     @if (brand.image) {
-                      <img [src]="brand.image" [alt]="brand.name" class="mega-menu-brand-img is-loading"
+                      <img [src]="brand.image | cldImage:160" [alt]="brand.name" class="mega-menu-brand-img is-loading"
+                           width="80" height="80"
                            (load)="onImgLoad($event)" (error)="onImgError($event)">
                     } @else {
                       <div class="mega-menu-brand-img-placeholder">
@@ -610,7 +612,7 @@
                 @for (product of recentlyViewed; track product.id) {
                   <div class="rv-item" (click)="goToProduct(product)">
                     @if (getProductImage(product)) {
-                      <img [src]="getProductImage(product)" [alt]="product.title" class="rv-img" draggable="false">
+                      <img [src]="getProductImage(product) | cldImage:140" [alt]="product.title" class="rv-img" draggable="false">
                     } @else {
                       <div class="rv-img-placeholder"><i class="bi bi-box"></i></div>
                     }
