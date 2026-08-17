@@ -170,8 +170,6 @@ export class ProductCardComponent {
   }
 
   onAddToCart(): void {
-    // Don't flip the button to "added" (or emit) for guests — prompt login instead.
-    if (!this.cartService.promptLoginIfNeeded()) return;
     this.addedToCartLocal = true;
     this.addToCart.emit(this.product);
   }

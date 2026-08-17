@@ -50,7 +50,6 @@ export const routes: Routes = [
   },
   {
     path: 'cart',
-    canActivate: [authGuard],
     loadComponent: () => import('./features/cart/cart.component').then(c => c.CartComponent),
     title: 'Check - سلة التسوق',
     data: { preload: true }
@@ -63,7 +62,6 @@ export const routes: Routes = [
   },
   {
     path: 'checkout',
-    canActivate: [authGuard],
     loadComponent: () => import('./features/checkout/checkout.component').then(c => c.CheckoutComponent),
     title: 'Check - اتمام الطلب'
   },

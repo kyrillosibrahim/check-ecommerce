@@ -1,6 +1,6 @@
-import { inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
+import { DestroyRef, inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { toObservable } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, combineLatest, map, of, tap } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -10,7 +10,6 @@ import { TranslationService } from './translation.service';
 import { ProductService } from './product.service';
 import { AlertService } from './alert.service';
 import { AuthService } from './auth.service';
-import { AuthDrawerService } from './auth-drawer.service';
 import { API_CONFIG } from '../config/api.config';
 
 const SERVER_URL = API_CONFIG.baseUrl;
@@ -27,7 +26,7 @@ export class CartService {
   private productService = inject(ProductService);
   private alertService = inject(AlertService);
   private auth = inject(AuthService);
-  private authDrawer = inject(AuthDrawerService);
+  private destroyRef = inject(DestroyRef);
   private platformId = inject(PLATFORM_ID);
 
   private cartSubject = new BehaviorSubject<ICartItem[]>([]);
@@ -93,16 +92,25 @@ export class CartService {
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
-      // The cart is private to the user — load it on login, clear it on logout.
-      this.auth.currentUser$.subscribe(user => {
-        if (user) {
+      let previousUser = this.auth.getCurrentUser();
+      // A cart always exists: keyed by user id when signed in, by browser id when
+      // not. Logging in folds the guest cart into the account's; logging out drops
+      // the account's items and falls back to this browser's own cart.
+      this.auth.currentUser$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(user => {
+        if (user && !previousUser) {
+          this.mergeGuestCart();
+        } else if (user) {
           this.cartLoaded = false;
           this.loadCart();
         } else {
-          this.cartSubject.next([]);
+          if (previousUser) {
+            this.cartSubject.next([]);
+            this.productService.clearAllCartState();
+          }
           this.cartLoaded = false;
-          this.productService.clearAllCartState();
+          this.loadCart();
         }
+        previousUser = user;
       });
     }
   }
@@ -150,7 +158,7 @@ export class CartService {
 
   /** Load cart items from getcart API */
   loadCart(): void {
-    if (this.cartLoaded || !this.auth.isLoggedIn()) return;
+    if (this.cartLoaded) return;
     this.cartLoaded = true;
     this.loading.set(true);
     this.http.get<any[]>(`${SERVER_URL}/api/cart/getcart`).subscribe({
@@ -169,19 +177,12 @@ export class CartService {
     });
   }
 
-  /** True if logged in; otherwise opens the login drawer and returns false. */
-  promptLoginIfNeeded(): boolean {
-    if (this.auth.isLoggedIn()) return true;
-    this.authDrawer.open('login');
-    return false;
-  }
-
-  /** Adds to cart. Returns false (without adding) when the user isn't logged in. */
+  /** Adds to cart. Works for guests too — the browser id identifies their cart. */
   addToCart(product: IProduct, quantity: number = 1): boolean {
-    if (!this.promptLoginIfNeeded()) return false;
     this.http.post<any>(`${SERVER_URL}/api/cart/addtocart`, {
       productId: product.id,
       quantity,
+      browserId: this.getBrowserId(),
     }).subscribe({
       next: () => {
         const cart = this.cartSubject.getValue();
@@ -213,6 +214,18 @@ export class CartService {
       error: (err) => console.error('Failed to add to cart:', err),
     });
     return true;
+  }
+
+  mergeGuestCart(): void {
+    this.http.post<any[]>(`${SERVER_URL}/api/cart/merge`, {
+      browserId: this.getBrowserId(),
+    }).subscribe({
+      next: () => {
+        this.cartLoaded = false;
+        this.loadCart();
+      },
+      error: (err) => console.error('Failed to merge guest cart:', err),
+    });
   }
 
   removeFromCart(productId: string): void {
