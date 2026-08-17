@@ -1,6 +1,12 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist/e-commerce/browser",
+  "redirects": [
+    { "source": "/index.csr.html", "destination": "/", "permanent": true },
+    { "source": "/index.csr", "destination": "/", "permanent": true },
+    { "source": "/index.html", "destination": "/", "permanent": true },
+    { "source": "/index", "destination": "/", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.csr.html" }
   ]
