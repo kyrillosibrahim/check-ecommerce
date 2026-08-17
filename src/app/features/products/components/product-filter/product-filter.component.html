@@ -13,7 +13,7 @@
         <button class="category-card" [class.active]="selectedCategory === cat.slug" (click)="categoryChange.emit(cat.slug)">
           <div class="category-img-wrapper">
             @if (cat.image) {
-              <img [src]="cat.image" [alt]="cat.name" class="category-img" loading="lazy">
+              <img [src]="cat.image | cldImage:160" [alt]="cat.name" class="category-img" loading="lazy">
             } @else {
               <i class="bi bi-box category-icon-placeholder"></i>
             }
@@ -37,7 +37,7 @@
             <button class="category-card" [class.active]="selectedSubcategory === sub.slug" (click)="subcategoryChange.emit(sub.slug)">
               <div class="category-img-wrapper">
                 @if (sub.image) {
-                  <img [src]="sub.image" [alt]="sub.name" class="category-img" loading="lazy">
+                  <img [src]="sub.image | cldImage:160" [alt]="sub.name" class="category-img" loading="lazy">
                 } @else {
                   <i class="bi bi-box category-icon-placeholder"></i>
                 }

@@ -38,10 +38,10 @@
             <div class="carousel-item" [class.active]="i === 0">
               @if (banner.link) {
                 <a [routerLink]="banner.link">
-                  <img [src]="banner.image" class="d-block w-100 offers-banner-img" [alt]="'offers.banner_alt' | translate">
+                  <img [src]="banner.image | cldImage:1600" class="d-block w-100 offers-banner-img" [alt]="'offers.banner_alt' | translate">
                 </a>
               } @else {
-                <img [src]="banner.image" class="d-block w-100 offers-banner-img" [alt]="'offers.banner_alt' | translate">
+                <img [src]="banner.image | cldImage:1600" class="d-block w-100 offers-banner-img" [alt]="'offers.banner_alt' | translate">
               }
             </div>
           }

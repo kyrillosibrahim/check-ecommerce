@@ -16,6 +16,7 @@ import { ICategory } from '../../core/models/category.model';
 import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
 import { LightRaysComponent } from './light-rays.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { CldImagePipe } from '../../shared/pipes/cld-image.pipe';
 
 const ITEMS_PER_PAGE = 36;
 
@@ -29,7 +30,7 @@ interface PriceRange {
 @Component({
   selector: 'app-offers',
   standalone: true,
-  imports: [RouterLink, FormsModule, NgTemplateOutlet, ProductCardComponent, LightRaysComponent, TranslatePipe],
+  imports: [RouterLink, FormsModule, NgTemplateOutlet, ProductCardComponent, LightRaysComponent, TranslatePipe, CldImagePipe],
   templateUrl: './offers.component.html',
   styleUrl: './offers.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

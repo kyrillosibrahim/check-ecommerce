@@ -2,10 +2,11 @@ import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, inject
 import { Location } from '@angular/common';
 import { ICategory, ISubcategory } from '../../../../core/models/category.model';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { CldImagePipe } from '../../../../shared/pipes/cld-image.pipe';
 
 @Component({
   selector: 'app-product-filter',
-  imports: [TranslatePipe],
+  imports: [TranslatePipe, CldImagePipe],
   templateUrl: './product-filter.component.html',
   styleUrl: './product-filter.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

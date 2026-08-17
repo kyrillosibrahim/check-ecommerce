@@ -43,7 +43,7 @@
               @for (brand of filteredBrands(cat.famousBrands); track trackBrand($index, brand)) {
                 <a class="brand-card" (click)="goToBrand(brand)" [title]="brand.name">
                   @if (brand.image) {
-                    <img [src]="brand.image" [alt]="brand.name" loading="lazy">
+                    <img [src]="brand.image | cldImage:280" [alt]="brand.name" loading="lazy">
                   } @else {
                     <div class="brand-img-placeholder">
                       <i class="bi bi-award"></i>

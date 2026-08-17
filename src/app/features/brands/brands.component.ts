@@ -7,11 +7,12 @@ import { SeoService } from '../../core/services/seo.service';
 import { ICategory } from '../../core/models/category.model';
 import { IBrand } from '../../core/models/brand.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { CldImagePipe } from '../../shared/pipes/cld-image.pipe';
 
 @Component({
   selector: 'app-brands',
   standalone: true,
-  imports: [TranslatePipe],
+  imports: [TranslatePipe, CldImagePipe],
   templateUrl: './brands.component.html',
   styleUrl: './brands.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
