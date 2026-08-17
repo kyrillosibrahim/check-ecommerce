@@ -134,6 +134,28 @@
 
               <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit()" class="sz-option-body">
                 <div class="row g-2">
+                  @if (isGuest) {
+                    <div class="col-md-6">
+                      <label class="form-label">{{ 'checkout.full_name' | translate }}</label>
+                      <input class="form-control" formControlName="fullName" type="text"
+                             [placeholder]="'checkout.full_name_placeholder' | translate"
+                             [class.is-invalid]="f['fullName'].touched && f['fullName'].invalid">
+                      @if (f['fullName'].touched && f['fullName'].invalid) {
+                        <div class="invalid-feedback">{{ 'validation.full_name_required' | translate }}</div>
+                      }
+                    </div>
+
+                    <div class="col-md-6">
+                      <label class="form-label">{{ 'checkout.phone' | translate }}</label>
+                      <input class="form-control" formControlName="phone" type="tel"
+                             [placeholder]="'checkout.phone_placeholder' | translate"
+                             [class.is-invalid]="f['phone'].touched && f['phone'].invalid">
+                      @if (f['phone'].touched && f['phone'].invalid) {
+                        <div class="invalid-feedback">{{ 'validation.phone_invalid' | translate }}</div>
+                      }
+                    </div>
+                  }
+
                   <!-- Governorate -->
                   <div class="col-md-6">
                     <label class="form-label">{{ 'checkout.governorate' | translate }}</label>
@@ -248,6 +270,7 @@
             <div class="sz-option-head">
               <span class="sz-radio" [class.checked]="paymentMethod() === 'instapay'"></span>
               <span class="sz-option-title">{{ 'checkout.instapay' | translate }}</span>
+              <span class="sz-instapay-badge">{{ 'checkout.instapay_shipping_badge' | translate }}</span>
             </div>
             <div class="sz-option-body">
               <div class="sz-option-sub">{{ 'checkout.instapay_desc' | translate }}</div>

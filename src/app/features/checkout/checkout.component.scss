@@ -48,10 +48,49 @@
   }
 }
 
-.checkout-sticky-btn {
-  background: var(--sz-accent, #d62f2f);
+.checkout-sticky-btn,
+.place-order-inline {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
   color: #fff;
   border: none;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.22);
+  animation: checkoutButtonBreath 2.4s ease-in-out infinite;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 40%;
+    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+    transform: translateX(-150%);
+    animation: checkoutButtonSheen 2.8s linear infinite;
+    pointer-events: none;
+  }
+
+  &:not(:disabled):hover,
+  &:not(:disabled):focus,
+  &:not(:disabled):active {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    color: #fff;
+    border: none;
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    box-shadow: none;
+    animation: none;
+  }
+
+  &:disabled::after {
+    display: none;
+    animation: none;
+  }
+}
+
+.checkout-sticky-btn {
   border-radius: 8px;
   padding: 11px 22px;
   font-size: 0.9rem;
@@ -59,10 +98,27 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
 
-  &:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
+@keyframes checkoutButtonSheen {
+  from { transform: translateX(-150%); }
+  to { transform: translateX(350%); }
+}
+
+@keyframes checkoutButtonBreath {
+  0%, 100% { box-shadow: 0 4px 12px rgba(220, 38, 38, 0.22); }
+  50% { box-shadow: 0 7px 22px rgba(185, 28, 28, 0.46); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .checkout-sticky-btn,
+  .place-order-inline {
+    animation: none;
+
+    &::after {
+      display: none;
+      animation: none;
+    }
   }
 }
 
@@ -287,6 +343,18 @@
 .sz-option-title {
   color: var(--sz-text-primary);
   font-size: 0.9rem;
+}
+
+.sz-instapay-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background-color: #eaf7ee;
+  color: #198754;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sz-accent) 12%, transparent);
+  font-size: 0.7rem;
+  font-weight: 700;
 }
 
 .sz-option-body {

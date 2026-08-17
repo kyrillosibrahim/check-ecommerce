@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, ChangeDetectorRef, signal, OnDestroy } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -79,6 +80,8 @@ export class CheckoutComponent implements OnDestroy {
   private cutoffTimer: ReturnType<typeof setInterval> | null = null;
 
   checkoutForm: FormGroup = this.fb.group({
+    fullName: [''],
+    phone: [''],
     governorate: ['', [Validators.required]],
     city: ['', [Validators.required]],
     district: [''],
@@ -86,6 +89,15 @@ export class CheckoutComponent implements OnDestroy {
   });
 
   constructor() {
+    // Re-evaluated on every auth change, not just at construction: a visitor can
+    // sign in from the drawer while standing on this page, and leaving the guest
+    // validators in place would keep the form invalid against fields that are no
+    // longer rendered — locking the submit button with nothing to fix.
+    this.authService.currentUser$.pipe(takeUntilDestroyed()).subscribe(() => {
+      this.applyGuestValidators();
+      this.cdr.markForCheck();
+    });
+
     this.cartService.loadCart();
     this.loadGovernorates();
     this.startCutoffTimer();
@@ -94,6 +106,21 @@ export class CheckoutComponent implements OnDestroy {
       this.shippingCost = this.computeShipping();
       this.cdr.markForCheck();
     });
+  }
+
+  /** A guest must supply a name and phone; a signed-in customer already has both. */
+  private applyGuestValidators(): void {
+    const name = this.checkoutForm.get('fullName')!;
+    const phone = this.checkoutForm.get('phone')!;
+    if (this.authService.getCurrentUser()) {
+      name.clearValidators();
+      phone.clearValidators();
+    } else {
+      name.setValidators([Validators.required]);
+      phone.setValidators([Validators.required, Validators.pattern(/^01\d{9}$/)]);
+    }
+    name.updateValueAndValidity();
+    phone.updateValueAndValidity();
   }
 
   ngOnDestroy(): void {
@@ -108,7 +135,8 @@ export class CheckoutComponent implements OnDestroy {
     const base = this.selectedGovernorate.shippingCost || 0;
     const extra = this.selectedGovernorate.extraShippingCost || 0;
     const tiers = Math.floor(this.currentItemsCount / 5);
-    return base + tiers * extra;
+    const shippingCost = base + tiers * extra;
+    return this.paymentMethod() === 'instapay' ? Math.round(shippingCost / 2) : shippingCost;
   }
 
   private loadGovernorates(): void {
@@ -206,10 +234,16 @@ export class CheckoutComponent implements OnDestroy {
 
   selectPayment(method: 'cod' | 'instapay'): void {
     this.paymentMethod.set(method);
+    this.shippingCost = this.computeShipping();
+    this.cdr.markForCheck();
   }
 
   get f() {
     return this.checkoutForm.controls;
+  }
+
+  get isGuest(): boolean {
+    return !this.authService.getCurrentUser();
   }
 
   onGovernorateChange(): void {
@@ -318,9 +352,9 @@ export class CheckoutComponent implements OnDestroy {
 
     const user = this.authService.getCurrentUser();
     const shippingAddress: IAddress = {
-      fullName: user?.name || '',
-      phone: user?.phone || '',
-      ...this.checkoutForm.value
+      ...this.checkoutForm.value,
+      fullName: user?.name || this.checkoutForm.value.fullName || '',
+      phone: user?.phone || this.checkoutForm.value.phone || ''
     };
 
     const promoPct = this.cartService.promoApplied() ? this.cartService.promoPercentage() : 0;

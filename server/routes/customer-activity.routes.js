@@ -1,6 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const CustomerActivity = require('../models/CustomerActivity');
+const SiteVisit = require('../models/SiteVisit');
+const Cart = require('../models/Cart');
+const Order = require('../models/Order');
 const { adminAuth, optionalAuth } = require('../middleware/auth.middleware');
 
 const router = express.Router();
@@ -8,6 +11,14 @@ const router = express.Router();
 const MAX_PATH = 300, MAX_TITLE = 200, MAX_DEVICE = 64, MAX_NAME = 80, MAX_PHONE = 30;
 const MAX_DURATION = 4 * 60 * 60; // Longer than 4h is a parked tab, not reading.
 const MAX_BATCH = 20;
+
+// Facebook/Meta crawler ranges: link-preview bots report ordinary browser names,
+// so only the address distinguishes them from real visitors.
+const BOT_IP_PREFIXES = ['57.141.', '31.13.', '66.220.', '69.171.', '173.252.', '69.63.', '129.134.'];
+const CLOUD_IP_PREFIXES = ['54.', '13.57.', '45.247.', '45.243.', '45.241.'];
+const BOT_IP_REGEX = new RegExp(`^(?:${[...BOT_IP_PREFIXES, ...CLOUD_IP_PREFIXES]
+  .map(prefix => prefix.replace(/\./g, '\\.'))
+  .join('|')})`);
 
 function sanitize(raw, req) {
   const body = raw && typeof raw === 'object' ? raw : {};
@@ -64,6 +75,131 @@ router.post('/', optionalAuth, async (req, res) => {
 
     await CustomerActivity.insertMany(docs, { ordered: false });
     res.status(204).end();
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.get('/funnel', adminAuth, async (req, res) => {
+  try {
+    const from = req.query.from || null;
+    const to = req.query.to || null;
+    const dateFilter = {};
+    if (from || to) {
+      dateFilter.date = {};
+      if (from) dateFilter.date.$gte = from;
+      if (to) dateFilter.date.$lte = to;
+    }
+
+    const orderDate = {
+      $ifNull: [
+        '$date',
+        { $dateToString: { format: '%Y-%m-%d', date: '$createdAt', onNull: null } },
+      ],
+    };
+    const orderFilter = {};
+    if (from || to) {
+      const conditions = [];
+      if (from) conditions.push({ $gte: [orderDate, from] });
+      if (to) conditions.push({ $lte: [orderDate, to] });
+      orderFilter.$expr = { $and: conditions };
+    }
+
+    const [visits, activity, carts, orders] = await Promise.all([
+      SiteVisit.aggregate([
+        { $match: dateFilter },
+        {
+          $facet: {
+            visitors: [
+              { $match: { ipAddress: { $not: BOT_IP_REGEX } } },
+              { $group: { _id: '$deviceId' } },
+              { $count: 'n' },
+            ],
+            excluded: [
+              { $match: { ipAddress: BOT_IP_REGEX } },
+              { $group: { _id: '$deviceId', hits: { $sum: 1 } } },
+              {
+                $group: {
+                  _id: null,
+                  botDevices: { $sum: 1 },
+                  botHits: { $sum: '$hits' },
+                },
+              },
+            ],
+          },
+        },
+      ]),
+      CustomerActivity.aggregate([
+        { $match: { ...dateFilter, ipAddress: { $not: BOT_IP_REGEX } } },
+        {
+          $facet: {
+            viewedProduct: [
+              { $match: { path: /^\/product\// } },
+              { $group: { _id: '$deviceId' } },
+              { $count: 'n' },
+            ],
+            reachedCart: [
+              { $match: { path: '/cart' } },
+              { $group: { _id: '$deviceId' } },
+              { $count: 'n' },
+            ],
+            reachedCheckout: [
+              { $match: { path: '/checkout' } },
+              { $group: { _id: '$deviceId' } },
+              { $count: 'n' },
+            ],
+          },
+        },
+      ]),
+      Cart.aggregate([
+        { $match: { 'items.0': { $exists: true } } },
+        {
+          $facet: {
+            totals: [
+              {
+                $group: {
+                  _id: null,
+                  carts: { $sum: 1 },
+                  items: { $sum: { $size: '$items' } },
+                },
+              },
+            ],
+            guests: [
+              { $match: { userId: /^guest:/ } },
+              { $count: 'n' },
+            ],
+          },
+        },
+      ]),
+      Order.aggregate([
+        { $match: orderFilter },
+        { $count: 'n' },
+      ]),
+    ]);
+
+    const visitStats = visits[0] || {};
+    const activityStats = activity[0] || {};
+    const cartStats = carts[0] || {};
+
+    res.json({
+      range: { from, to },
+      stages: [
+        { key: 'visitors', label: 'زوار', count: visitStats.visitors?.[0]?.n || 0, unit: 'device' },
+        { key: 'viewedProduct', label: 'شافوا منتج', count: activityStats.viewedProduct?.[0]?.n || 0, unit: 'device' },
+        { key: 'reachedCart', label: 'وصلوا للسلة', count: activityStats.reachedCart?.[0]?.n || 0, unit: 'device' },
+        { key: 'reachedCheckout', label: 'بدأوا الدفع', count: activityStats.reachedCheckout?.[0]?.n || 0, unit: 'device' },
+        { key: 'ordered', label: 'أتمّوا الطلب', count: orders[0]?.n || 0, unit: 'order' },
+      ],
+      abandonedCarts: {
+        carts: cartStats.totals?.[0]?.carts || 0,
+        items: cartStats.totals?.[0]?.items || 0,
+        guestCarts: cartStats.guests?.[0]?.n || 0,
+      },
+      excluded: {
+        botDevices: visitStats.excluded?.[0]?.botDevices || 0,
+        botHits: visitStats.excluded?.[0]?.botHits || 0,
+      },
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
