@@ -82,6 +82,7 @@ router.post('/', optionalAuth, async (req, res) => {
 
 router.get('/funnel', adminAuth, async (req, res) => {
   try {
+    const MIN_DURATION_SECONDS = 2;
     const from = req.query.from || null;
     const to = req.query.to || null;
     const dateFilter = {};
@@ -106,14 +107,38 @@ router.get('/funnel', adminAuth, async (req, res) => {
     }
 
     const [visits, activity, carts, orders] = await Promise.all([
+      // This is looser than the funnel: SiteVisit logs any page open, while
+      // CustomerActivity requires a minimum dwell time, so they are not directly comparable.
       SiteVisit.aggregate([
         { $match: dateFilter },
         {
           $facet: {
-            visitors: [
+            rawTraffic: [
               { $match: { ipAddress: { $not: BOT_IP_REGEX } } },
-              { $group: { _id: '$deviceId' } },
-              { $count: 'n' },
+              {
+                $group: {
+                  _id: null,
+                  deviceIds: { $addToSet: '$deviceId' },
+                  ipAddresses: { $addToSet: '$ipAddress' },
+                  records: { $sum: 1 },
+                },
+              },
+              {
+                $project: {
+                  _id: 0,
+                  devices: { $size: '$deviceIds' },
+                  ips: {
+                    $size: {
+                      $filter: {
+                        input: '$ipAddresses',
+                        as: 'ip',
+                        cond: { $and: [{ $ne: ['$$ip', ''] }, { $ne: ['$$ip', null] }] },
+                      },
+                    },
+                  },
+                  records: 1,
+                },
+              },
             ],
             excluded: [
               { $match: { ipAddress: BOT_IP_REGEX } },
@@ -132,22 +157,126 @@ router.get('/funnel', adminAuth, async (req, res) => {
       CustomerActivity.aggregate([
         { $match: { ...dateFilter, ipAddress: { $not: BOT_IP_REGEX } } },
         {
-          $facet: {
-            viewedProduct: [
-              { $match: { path: /^\/product\// } },
-              { $group: { _id: '$deviceId' } },
-              { $count: 'n' },
-            ],
-            reachedCart: [
-              { $match: { path: '/cart' } },
-              { $group: { _id: '$deviceId' } },
-              { $count: 'n' },
-            ],
-            reachedCheckout: [
-              { $match: { path: '/checkout' } },
-              { $group: { _id: '$deviceId' } },
-              { $count: 'n' },
-            ],
+          $group: {
+            _id: '$deviceId',
+            paths: { $addToSet: '$path' },
+            ipAddresses: { $addToSet: '$ipAddress' },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            ipAddresses: {
+              $filter: {
+                input: '$ipAddresses',
+                as: 'ip',
+                cond: { $and: [{ $ne: ['$$ip', ''] }, { $ne: ['$$ip', null] }] },
+              },
+            },
+            viewedProduct: {
+              $anyElementTrue: {
+                $map: {
+                  input: '$paths',
+                  as: 'path',
+                  in: { $regexMatch: { input: { $ifNull: ['$$path', ''] }, regex: /^\/product\// } },
+                },
+              },
+            },
+            reachedCart: {
+              $and: [
+                {
+                  $anyElementTrue: {
+                    $map: {
+                      input: '$paths',
+                      as: 'path',
+                      in: { $regexMatch: { input: { $ifNull: ['$$path', ''] }, regex: /^\/product\// } },
+                    },
+                  },
+                },
+                { $in: ['/cart', '$paths'] },
+              ],
+            },
+            reachedCheckout: {
+              $and: [
+                {
+                  $anyElementTrue: {
+                    $map: {
+                      input: '$paths',
+                      as: 'path',
+                      in: { $regexMatch: { input: { $ifNull: ['$$path', ''] }, regex: /^\/product\// } },
+                    },
+                  },
+                },
+                { $in: ['/cart', '$paths'] },
+                { $in: ['/checkout', '$paths'] },
+              ],
+            },
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            visitorDevices: { $sum: 1 },
+            viewedProductDevices: { $sum: { $cond: ['$viewedProduct', 1, 0] } },
+            reachedCartDevices: { $sum: { $cond: ['$reachedCart', 1, 0] } },
+            reachedCheckoutDevices: { $sum: { $cond: ['$reachedCheckout', 1, 0] } },
+            visitorIpSets: { $push: '$ipAddresses' },
+            viewedProductIpSets: { $push: { $cond: ['$viewedProduct', '$ipAddresses', []] } },
+            reachedCartIpSets: { $push: { $cond: ['$reachedCart', '$ipAddresses', []] } },
+            reachedCheckoutIpSets: { $push: { $cond: ['$reachedCheckout', '$ipAddresses', []] } },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            visitors: {
+              devices: '$visitorDevices',
+              ips: {
+                $size: {
+                  $reduce: {
+                    input: '$visitorIpSets',
+                    initialValue: [],
+                    in: { $setUnion: ['$$value', '$$this'] },
+                  },
+                },
+              },
+            },
+            viewedProduct: {
+              devices: '$viewedProductDevices',
+              ips: {
+                $size: {
+                  $reduce: {
+                    input: '$viewedProductIpSets',
+                    initialValue: [],
+                    in: { $setUnion: ['$$value', '$$this'] },
+                  },
+                },
+              },
+            },
+            reachedCart: {
+              devices: '$reachedCartDevices',
+              ips: {
+                $size: {
+                  $reduce: {
+                    input: '$reachedCartIpSets',
+                    initialValue: [],
+                    in: { $setUnion: ['$$value', '$$this'] },
+                  },
+                },
+              },
+            },
+            reachedCheckout: {
+              devices: '$reachedCheckoutDevices',
+              ips: {
+                $size: {
+                  $reduce: {
+                    input: '$reachedCheckoutIpSets',
+                    initialValue: [],
+                    in: { $setUnion: ['$$value', '$$this'] },
+                  },
+                },
+              },
+            },
           },
         },
       ]),
@@ -183,13 +312,19 @@ router.get('/funnel', adminAuth, async (req, res) => {
 
     res.json({
       range: { from, to },
+      minDwellSeconds: MIN_DURATION_SECONDS,
       stages: [
-        { key: 'visitors', label: 'زوار', count: visitStats.visitors?.[0]?.n || 0, unit: 'device' },
-        { key: 'viewedProduct', label: 'شافوا منتج', count: activityStats.viewedProduct?.[0]?.n || 0, unit: 'device' },
-        { key: 'reachedCart', label: 'وصلوا للسلة', count: activityStats.reachedCart?.[0]?.n || 0, unit: 'device' },
-        { key: 'reachedCheckout', label: 'بدأوا الدفع', count: activityStats.reachedCheckout?.[0]?.n || 0, unit: 'device' },
+        { key: 'visitors', label: 'زوار', devices: activityStats.visitors?.devices || 0, ips: activityStats.visitors?.ips || 0, unit: 'device' },
+        { key: 'viewedProduct', label: 'شافوا منتج', devices: activityStats.viewedProduct?.devices || 0, ips: activityStats.viewedProduct?.ips || 0, unit: 'device' },
+        { key: 'reachedCart', label: 'وصلوا للسلة', devices: activityStats.reachedCart?.devices || 0, ips: activityStats.reachedCart?.ips || 0, unit: 'device' },
+        { key: 'reachedCheckout', label: 'بدأوا الدفع', devices: activityStats.reachedCheckout?.devices || 0, ips: activityStats.reachedCheckout?.ips || 0, unit: 'device' },
         { key: 'ordered', label: 'أتمّوا الطلب', count: orders[0]?.n || 0, unit: 'order' },
       ],
+      rawTraffic: {
+        devices: visitStats.rawTraffic?.[0]?.devices || 0,
+        ips: visitStats.rawTraffic?.[0]?.ips || 0,
+        records: visitStats.rawTraffic?.[0]?.records || 0,
+      },
       abandonedCarts: {
         carts: cartStats.totals?.[0]?.carts || 0,
         items: cartStats.totals?.[0]?.items || 0,
