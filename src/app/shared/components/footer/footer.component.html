@@ -49,7 +49,7 @@
       <!-- Brand + Contact -->
       <div class="col-lg-6 col-md-6">
         <div class="mb-3">
-          <img [src]="logoUrl" style="filter: sepia(1); " alt="Check" class="footer-logo">
+          <img [src]="logoUrl | cldImage:0:100" style="filter: sepia(1); " alt="Check" class="footer-logo" loading="lazy">
         </div>
         <p class="footer-text mb-3">{{ 'footer.description' | translate }}</p>
         <ul class="list-unstyled footer-contact">

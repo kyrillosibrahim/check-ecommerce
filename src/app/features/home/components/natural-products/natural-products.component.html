@@ -8,7 +8,7 @@
               @if (isVideo(item.video)) {
                 <video [src]="item.video" [poster]="posterFor(item.video)" muted loop playsinline preload="none"></video>
               } @else {
-                <img [src]="item.video" alt="" loading="lazy" draggable="false">
+                <img [src]="item.video | cldImage:400" alt="" loading="lazy" draggable="false">
               }
             </a>
           } @else {
@@ -16,7 +16,7 @@
               @if (isVideo(item.video)) {
                 <video [src]="item.video" [poster]="posterFor(item.video)" muted loop playsinline preload="none"></video>
               } @else {
-                <img [src]="item.video" alt="" loading="lazy" draggable="false">
+                <img [src]="item.video | cldImage:400" alt="" loading="lazy" draggable="false">
               }
             </div>
           }

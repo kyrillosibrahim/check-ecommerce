@@ -61,7 +61,7 @@
           <div class="spinner-border spinner-border-sm" role="status" style="color: var(--sz-accent);"></div>
         </div>
       }
-      <img [src]="logoUrl" alt="Logo" class="header-logo"
+      <img [src]="logoUrl | cldImage:0:120" alt="Logo" class="header-logo"
            width="160" height="60"
            fetchpriority="high" decoding="async"
            style="filter: sepia(1);" [style.display]="logoLoaded ? '' : 'none'"
@@ -348,7 +348,7 @@
       <!-- Drawer Header -->
       <div class="mobile-drawer-header">
         <a routerLink="/" (click)="closeMobileMenu()">
-          <img [src]="logoIconUrl" style="filter: sepia(1);" alt="Logo" class="mobile-drawer-logo"
+          <img [src]="logoIconUrl | cldImage:0:72" style="filter: sepia(1);" alt="Logo" class="mobile-drawer-logo"
                width="60" height="60" decoding="async"
                [style.display]="logoIconLoaded ? '' : 'none'" (load)="logoIconLoaded = true">
         </a>
@@ -642,7 +642,7 @@
                 @for (brand of brands; track brand.id) {
                   <a class="brand-logo-card" (click)="searchByBrand(brand)" [title]="brand.name">
                     @if (brand.image) {
-                      <img [src]="brand.image" [alt]="brand.name" loading="lazy">
+                      <img [src]="brand.image | cldImage:160" [alt]="brand.name" loading="lazy">
                     } @else {
                       <div class="brand-logo-placeholder">
                         <i class="bi bi-award"></i>

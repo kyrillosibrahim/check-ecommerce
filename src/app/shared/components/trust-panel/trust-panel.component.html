@@ -5,7 +5,7 @@
   <div class="sz-trust-body">
     @for (item of trustItems; track item.titleKey) {
       <div class="sz-trust-item">
-        <img [src]="item.useLogo ? logoUrl() : item.icon" class="sz-trust-icon" alt="">
+        <img [src]="(item.useLogo ? logoUrl() : item.icon) | cldImage:0:80" class="sz-trust-icon" alt="">
         <div class="sz-trust-text">
           <div class="sz-trust-item-title">{{ item.titleKey | translate }}</div>
           <div class="sz-trust-item-desc">{{ item.descKey | translate }}</div>

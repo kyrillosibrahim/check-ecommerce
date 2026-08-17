@@ -24,7 +24,7 @@
           [style.transform]="getItemTransform(i)"
           [style.opacity]="getItemOpacity(i)"
         >
-          <img [src]="item.image" [alt]="item.title || 'Slide ' + (i + 1)" class="carousel-image" />
+          <img [src]="item.image | cldImage:1600" [alt]="item.title || 'Slide ' + (i + 1)" class="carousel-image" />
         </div>
       }
     </div>

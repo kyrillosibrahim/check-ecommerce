@@ -7,6 +7,7 @@ import {
   OnDestroy,
   OnChanges,
 } from '@angular/core';
+import { CldImagePipe } from '../../pipes/cld-image.pipe';
 
 export interface CarouselItem {
   image: string;
@@ -21,7 +22,7 @@ const VELOCITY_THRESHOLD = 500;
 
 @Component({
   selector: 'app-carousel',
-  imports: [],
+  imports: [CldImagePipe],
   templateUrl: './carousel.component.html',
   styleUrl: './carousel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

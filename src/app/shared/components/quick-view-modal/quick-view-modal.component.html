@@ -8,7 +8,7 @@
       <div class="quick-view-content">
         <!-- Image -->
         <div class="quick-view-image">
-          <img [src]="getImage(product)" [alt]="product.title" />
+          <img [src]="getImage(product) | cldImage:600" [alt]="product.title" />
         </div>
 
         <!-- Details -->

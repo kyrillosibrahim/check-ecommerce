@@ -6,10 +6,11 @@ import { AuthService } from '../../../core/services/auth.service';
 import { AuthDrawerService, AuthDrawerView } from '../../../core/services/auth-drawer.service';
 import { SiteSettingsService } from '../../../core/services/settings.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { CldImagePipe } from '../../pipes/cld-image.pipe';
 
 @Component({
   selector: 'app-auth-drawer',
-  imports: [AsyncPipe, ReactiveFormsModule, TranslatePipe],
+  imports: [AsyncPipe, ReactiveFormsModule, TranslatePipe, CldImagePipe],
   templateUrl: './auth-drawer.component.html',
   styleUrl: './auth-drawer.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

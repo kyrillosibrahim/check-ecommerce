@@ -2,6 +2,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, 
 import { isPlatformBrowser } from '@angular/common';
 import Swiper from 'swiper';
 import { Autoplay } from 'swiper/modules';
+import { CldImagePipe } from '../../../../shared/pipes/cld-image.pipe';
 
 export interface INaturalProductItem {
   video: string;
@@ -12,7 +13,7 @@ const VIDEO_EXT_RE = /\.(mp4|webm|ogg|mov|m4v)(\?|$)/i;
 
 @Component({
   selector: 'app-natural-products',
-  imports: [],
+  imports: [CldImagePipe],
   templateUrl: './natural-products.component.html',
   styleUrl: './natural-products.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -8,11 +8,12 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 import { LocalizePipe } from '../../pipes/localize.pipe';
 import { EgpCurrencyPipe } from '../../pipes/egp-currency.pipe';
 import { DiscountPricePipe } from '../../pipes/discount-price.pipe';
+import { CldImagePipe } from '../../pipes/cld-image.pipe';
 
 @Component({
   selector: 'app-quick-view-modal',
   standalone: true,
-  imports: [AsyncPipe, TranslatePipe, LocalizePipe, EgpCurrencyPipe, DiscountPricePipe],
+  imports: [AsyncPipe, TranslatePipe, LocalizePipe, EgpCurrencyPipe, DiscountPricePipe, CldImagePipe],
   templateUrl: './quick-view-modal.component.html',
   styleUrl: './quick-view-modal.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

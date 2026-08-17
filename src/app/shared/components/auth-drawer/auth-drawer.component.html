@@ -11,7 +11,7 @@
       <i class="bi bi-x-lg"></i>
     </button>
     <div class="drawer-logo">
-      <img [src]="logoUrl"  style="filter: sepia(1); " alt="Check">
+      <img [src]="logoUrl | cldImage:0:60"  style="filter: sepia(1); " alt="Check" loading="lazy">
     </div>
   </div>
 

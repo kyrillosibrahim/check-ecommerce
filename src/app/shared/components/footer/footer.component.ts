@@ -1,13 +1,14 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { CldImagePipe } from '../../pipes/cld-image.pipe';
 import { SiteSettingsService } from '../../../core/services/settings.service';
 import { CategoryService } from '../../../core/services/category.service';
 import { ICategory } from '../../../core/models/category.model';
 
 @Component({
   selector: 'app-footer',
-  imports: [RouterLink, TranslatePipe],
+  imports: [RouterLink, TranslatePipe, CldImagePipe],
   templateUrl: './footer.component.html',
   styleUrl: './footer.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

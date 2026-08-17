@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { CldImagePipe } from '../../pipes/cld-image.pipe';
 import { SiteSettingsService } from '../../../core/services/settings.service';
 import { TranslationService } from '../../../core/services/translation.service';
 
@@ -14,7 +15,7 @@ interface TrustItem {
 
 @Component({
   selector: 'app-trust-panel',
-  imports: [TranslatePipe],
+  imports: [TranslatePipe, CldImagePipe],
   templateUrl: './trust-panel.component.html',
   styleUrl: './trust-panel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
