@@ -1,5 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, Output, EventEmitter, OnInit, PLATFORM_ID, inject } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { IProduct } from '../../../core/models/product.model';
 import { TranslationService } from '../../../core/services/translation.service';
@@ -21,11 +20,9 @@ import { AlertService } from '../../../core/services/alert.service';
   styleUrl: './product-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductCardComponent implements OnInit {
+export class ProductCardComponent {
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
-  private platformId = inject(PLATFORM_ID);
-  private imagesPreloaded = false;
   translationService = inject(TranslationService);
   cartService = inject(CartService);
   private wishlistService = inject(WishlistService);
@@ -61,28 +58,10 @@ export class ProductCardComponent implements OnInit {
     return imgs[this.currentImageIdx % imgs.length];
   }
 
-  ngOnInit(): void {
-    this.preloadImages();
-  }
-
-  private preloadImages(): void {
-    if (this.imagesPreloaded) return;
-    if (!isPlatformBrowser(this.platformId)) return;
-    const imgs = this.swiperImages;
-    if (imgs.length < 2) return;
-    this.imagesPreloaded = true;
-    for (let i = 1; i < imgs.length; i++) {
-      const img = new Image();
-      img.decoding = 'async';
-      img.src = imgs[i];
-    }
-  }
-
   prevImage(event: Event): void {
     event.stopPropagation();
     const len = this.swiperImages.length;
     if (len < 2) return;
-    this.preloadImages();
     this.currentImageIdx = (this.currentImageIdx - 1 + len) % len;
     this.cdr.markForCheck();
   }
@@ -91,7 +70,6 @@ export class ProductCardComponent implements OnInit {
     event.stopPropagation();
     const len = this.swiperImages.length;
     if (len < 2) return;
-    this.preloadImages();
     this.currentImageIdx = (this.currentImageIdx + 1) % len;
     this.cdr.markForCheck();
   }
