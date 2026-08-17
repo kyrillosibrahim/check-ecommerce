@@ -33,9 +33,18 @@ async function getOrderById(req, res, next) {
 async function createOrder(req, res, next) {
   try {
     const body = req.body;
+    const userId = req.user?.id || '';
     if (!body.id || !body.items?.length) return res.status(400).json({ error: 'id and items are required.' });
 
-    const userId = req.user?.id || '';
+    // A guest order has no account behind it, so the contact details are the only
+    // way to reach the buyer. `customer` is a Mixed field, hence the loose reads.
+    if (!userId) {
+      const firstFilled = (...values) => values.map(v => String(v || '').trim()).find(Boolean) || '';
+      const name = firstFilled(body.customer?.name, body.customer?.fullName);
+      const phone = firstFilled(body.customer?.phone, body.customer?.mobile);
+      if (!name || !phone) return res.status(400).json({ error: 'اسم ورقم تليفون العميل مطلوبين للطلب بدون حساب.' });
+    }
+
     const subtotal = parseFloat(body.subtotal) || 0;
     const shippingCost = parseFloat(body.shippingCost) || 0;
     const discount = parseFloat(body.discount) || 0; // product-level discount

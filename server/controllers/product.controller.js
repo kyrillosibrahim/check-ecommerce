@@ -160,16 +160,15 @@ async function getAllProducts(req, res, next) {
     const sortSpec = sortMap[sort] || { createdAt: -1, _id: -1 };
     const isProfitSort = sort === 'profit-high' || sort === 'profit-low';
 
-    // Cart/favorite flags are personal — only resolve them for an authenticated
-    // user (optionalAuth populates req.user). Anonymous visitors get false flags
-    // and the storefront manages their cart locally. This also avoids creating a
-    // phantom shared cart keyed on userId:undefined.
+    // Cart flags resolve for authenticated users and guest browsers. Favorite
+    // flags remain limited to authenticated users (optionalAuth populates req.user).
     let cartMap = new Map();
     let favSet = new Set();
-    if (req.user && req.user.id) {
-      const { readCart } = require('./cart.controller');
+    const { readCart, cartOwner } = require('./cart.controller');
+    const owner = cartOwner(req);
+    if (owner) {
       const { readFavorites } = require('./favorite.controller');
-      const [cart, favIds] = await Promise.all([readCart(req.user.id), readFavorites(req.user.id)]);
+      const [cart, favIds] = await Promise.all([readCart(owner), req.user && req.user.id ? readFavorites(req.user.id) : []]);
       cartMap = new Map(cart.map(c => [c.productId, c.quantity]));
       favSet = new Set(favIds);
     }
@@ -236,12 +235,13 @@ async function getProductById(req, res, next) {
     const related = await Product.find({ categoryFolder: product.categoryFolder, id: { $ne: product.id } }, { __v: 0 }).limit(4).lean();
     obj.relatedProducts = related.map(fixImagePaths);
 
-    // Personal flags only for an authenticated user (optionalAuth).
+    // Cart flags resolve for users and guest browsers; favorites require a user.
     obj.inCart = false; obj.cartQuantity = 0; obj.inFavorite = false;
-    if (req.user && req.user.id) {
-      const { readCart } = require('./cart.controller');
+    const { readCart, cartOwner } = require('./cart.controller');
+    const owner = cartOwner(req);
+    if (owner) {
       const { readFavorites } = require('./favorite.controller');
-      const [cart, favIds] = await Promise.all([readCart(req.user.id), readFavorites(req.user.id)]);
+      const [cart, favIds] = await Promise.all([readCart(owner), req.user && req.user.id ? readFavorites(req.user.id) : []]);
       const cartEntry = cart.find(c => c.productId === product.id);
       obj.inCart = !!cartEntry; obj.cartQuantity = cartEntry ? cartEntry.quantity : 0;
       obj.inFavorite = favIds.includes(product.id);

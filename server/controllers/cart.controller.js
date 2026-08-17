@@ -2,15 +2,23 @@ const path = require('path');
 const Product = require('../models/Product');
 const Cart = require('../models/Cart');
 
-async function getCartDoc(userId) {
-  let cart = await Cart.findOne({ userId });
-  if (!cart) { cart = await Cart.create({ userId, items: [] }); }
+/** Resolves the cart owner key for an authenticated user or guest browser. */
+function cartOwner(req) {
+  if (req.user?.id) return req.user.id;
+  const bid = String(req.get('x-browser-id') || req.body?.browserId || '').trim();
+  return bid ? `guest:${bid}` : '';
+}
+
+async function getCartDoc(owner) {
+  if (!owner) throw new Error('cartOwner is required');
+  let cart = await Cart.findOne({ userId: owner });
+  if (!cart) { cart = await Cart.create({ userId: owner, items: [] }); }
   return cart;
 }
 
-async function readCart(userId) {
-  if (!userId) return [];
-  const cart = await getCartDoc(userId);
+async function readCart(owner) {
+  if (!owner) return [];
+  const cart = await getCartDoc(owner);
   return cart.items || [];
 }
 
@@ -29,7 +37,9 @@ function fixImagePaths(product) {
 
 async function getCart(req, res, next) {
   try {
-    const items = await readCart(req.user.id);
+    const owner = cartOwner(req);
+    if (!owner) return res.json([]);
+    const items = await readCart(owner);
     if (!items.length) return res.json([]);
     // Fetch all cart products in a single query instead of one findOne per item.
     const products = await Product.find({ id: { $in: items.map(i => i.productId) } }).lean();
@@ -45,9 +55,11 @@ async function getCart(req, res, next) {
 
 async function addToCart(req, res, next) {
   try {
+    const owner = cartOwner(req);
+    if (!owner) return res.status(400).json({ error: 'browserId is required for guest carts.' });
     const { productId, quantity = 1 } = req.body;
     if (!productId) return res.status(400).json({ error: 'productId is required.' });
-    const cart = await getCartDoc(req.user.id);
+    const cart = await getCartDoc(owner);
     const existing = cart.items.find(i => i.productId === productId);
     if (existing) existing.quantity += quantity;
     else cart.items.push({ productId, quantity });
@@ -58,9 +70,11 @@ async function addToCart(req, res, next) {
 
 async function updateCartItem(req, res, next) {
   try {
+    const owner = cartOwner(req);
+    if (!owner) return res.status(400).json({ error: 'browserId is required for guest carts.' });
     const { productId, quantity } = req.body;
     if (!productId || quantity == null) return res.status(400).json({ error: 'productId and quantity are required.' });
-    const cart = await getCartDoc(req.user.id);
+    const cart = await getCartDoc(owner);
     const item = cart.items.find(i => i.productId === productId);
     if (!item) return res.status(404).json({ error: 'Item not found in cart.' });
     item.quantity = quantity; await cart.save();
@@ -70,16 +84,38 @@ async function updateCartItem(req, res, next) {
 
 async function removeFromCart(req, res, next) {
   try {
+    const owner = cartOwner(req);
+    if (!owner) return res.status(400).json({ error: 'browserId is required for guest carts.' });
     const { productId } = req.params;
-    const cart = await getCartDoc(req.user.id);
+    const cart = await getCartDoc(owner);
     cart.items = cart.items.filter(i => i.productId !== productId);
     await cart.save(); res.json({ message: 'Removed from cart.', cart: cart.items });
   } catch (err) { next(err); }
 }
 
 async function clearCart(req, res, next) {
-  try { const cart = await getCartDoc(req.user.id); cart.items = []; await cart.save(); res.json({ message: 'Cart cleared.', cart: [] }); }
+  try { const owner = cartOwner(req); if (!owner) return res.status(400).json({ error: 'browserId is required for guest carts.' }); const cart = await getCartDoc(owner); cart.items = []; await cart.save(); res.json({ message: 'Cart cleared.', cart: [] }); }
   catch (err) { next(err); }
 }
 
-module.exports = { getCart, addToCart, updateCartItem, removeFromCart, clearCart, readCart };
+async function mergeGuestCart(req, res, next) {
+  try {
+    if (!req.user?.id) return res.status(401).json({ error: 'Authentication required.' });
+    const browserId = String(req.body?.browserId || '').trim();
+    if (!browserId) return res.status(400).json({ error: 'browserId is required.' });
+    const guestCart = await Cart.findOne({ userId: `guest:${browserId}` });
+    if (!guestCart || !guestCart.items?.length) return res.json({ merged: 0 });
+
+    const userCart = await getCartDoc(req.user.id);
+    for (const guestItem of guestCart.items) {
+      const existing = userCart.items.find(item => item.productId === guestItem.productId);
+      if (existing) existing.quantity += guestItem.quantity;
+      else userCart.items.push({ productId: guestItem.productId, quantity: guestItem.quantity });
+    }
+    await userCart.save();
+    await Cart.deleteOne({ userId: `guest:${browserId}` });
+    res.json(userCart.items);
+  } catch (err) { next(err); }
+}
+
+module.exports = { getCart, addToCart, updateCartItem, removeFromCart, clearCart, mergeGuestCart, readCart, cartOwner };
