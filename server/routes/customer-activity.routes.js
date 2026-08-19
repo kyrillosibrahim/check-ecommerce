@@ -11,6 +11,7 @@ const router = express.Router();
 const MAX_PATH = 300, MAX_TITLE = 200, MAX_DEVICE = 64, MAX_NAME = 80, MAX_PHONE = 30;
 const MAX_DURATION = 4 * 60 * 60; // Longer than 4h is a parked tab, not reading.
 const MAX_BATCH = 20;
+const MAX_DELETE_IDS = 200;
 
 // Facebook/Meta crawler ranges: link-preview bots report ordinary browser names,
 // so only the address distinguishes them from real visitors.
@@ -419,6 +420,43 @@ router.delete('/', adminAuth, async (_req, res) => {
   try {
     await CustomerActivity.deleteMany({});
     res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Admin-only, unlike the POST '/' ingest route above which is public by design.
+router.post('/delete-many', adminAuth, async (req, res) => {
+  try {
+    if (!Array.isArray(req.body?.ids)) {
+      return res.status(400).json({ message: 'ids must be an array' });
+    }
+
+    const ids = req.body.ids
+      .slice(0, MAX_DELETE_IDS)
+      .filter(id => mongoose.Types.ObjectId.isValid(id));
+    if (ids.length === 0) {
+      return res.status(400).json({ message: 'لا توجد معرّفات صالحة' });
+    }
+
+    const result = await CustomerActivity.deleteMany({ _id: { $in: ids } });
+    res.json({ success: true, deleted: result.deletedCount || 0 });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.delete('/:id', adminAuth, async (req, res) => {
+  try {
+    // Guard before the query: an invalid id would surface as a 500 cast error.
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ message: 'معرّف غير صالح' });
+    }
+
+    const doc = await CustomerActivity.findByIdAndDelete(req.params.id);
+    if (!doc) return res.status(404).json({ message: 'السجل غير موجود' });
+
+    res.json({ success: true, deleted: 1 });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
