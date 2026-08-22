@@ -16,6 +16,7 @@ import { ReviewService } from '../../core/services/review.service';
 import { AlertService } from '../../core/services/alert.service';
 import { IProduct } from '../../core/models/product.model';
 import { IReview } from '../../core/models/review.model';
+import { unitPriceAfterDiscount } from '../../core/utils/pricing.util';
 import { ImageGalleryComponent } from './components/image-gallery/image-gallery.component';
 import { RelatedProductsComponent } from './components/related-products/related-products.component';
 import { SkeletonLoaderComponent } from '../../shared/components/skeleton-loader/skeleton-loader.component';
@@ -220,8 +221,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
 
   getOurPrice(): number {
     if (!this.displayProduct) return 0;
-    return this.displayProduct.discountedPrice ||
-      (this.displayProduct.price * (1 - (this.displayProduct.discountPercentage || 0) / 100));
+    return unitPriceAfterDiscount(this.displayProduct);
   }
 
   getPriceDiffPercent(sitePrice: number): number {

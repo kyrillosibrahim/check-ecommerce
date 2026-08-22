@@ -22,6 +22,7 @@ import { CldImagePipe } from '../../pipes/cld-image.pipe';
 import { IBrand } from '../../../core/models/brand.model';
 import { ICategory } from '../../../core/models/category.model';
 import { IProduct } from '../../../core/models/product.model';
+import { unitPriceAfterDiscount } from '../../../core/utils/pricing.util';
 
 const RECENTLY_VIEWED_KEY = 'recently_viewed_products';
 
@@ -87,6 +88,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
   brandSuggestions: IBrand[] = [];
   isSearching = false;
   private searchSubject = new Subject<string>();
+
+  /** Unit price after discount — used by the cart dropdown. */
+  unitPrice(product: IProduct): number {
+    return unitPriceAfterDiscount(product);
+  }
 
   ngOnInit(): void {
     this.updateActiveNav(this.router.url);

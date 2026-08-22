@@ -9,6 +9,7 @@ import { IGovernorateApi, ICityApi } from '../../../core/models/governorate.mode
 import { IProduct } from '../../../core/models/product.model';
 import { IAddress } from '../../../core/models/user.model';
 import { API_CONFIG } from '../../../core/config/api.config';
+import { unitPriceAfterDiscount } from '../../../core/utils/pricing.util';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -62,7 +63,7 @@ export class DirectOrderModalComponent implements OnInit {
   selectPayment(method: 'cod' | 'instapay'): void { this.paymentMethod.set(method); }
 
   get unitPrice(): number {
-    return this.product.price * (1 - (this.product.discountPercentage || 0) / 100);
+    return unitPriceAfterDiscount(this.product);
   }
 
   get subtotal(): number {

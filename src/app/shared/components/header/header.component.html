@@ -312,7 +312,7 @@
                         <p class="cart-dropdown-name">{{ item.product.title }}</p>
                         <div class="d-flex align-items-center gap-2">
                           <span class="cart-dropdown-qty">x{{ item.quantity }}</span>
-                          <span class="cart-dropdown-price">{{ item.product.price * (1 - item.product.discountPercentage / 100) * item.quantity | egpCurrency }}</span>
+                          <span class="cart-dropdown-price">{{ unitPrice(item.product) * item.quantity | egpCurrency }}</span>
                         </div>
                       </div>
                       <button class="cart-dropdown-remove" (click)="removeFromCartHover(item.product.id, $event)">

@@ -1,6 +1,7 @@
 import { Injectable, inject, DOCUMENT } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { API_CONFIG } from '../config/api.config';
+import { unitPriceAfterDiscount } from '../utils/pricing.util';
 
 @Injectable({ providedIn: 'root' })
 export class SeoService {
@@ -40,8 +41,8 @@ export class SeoService {
     this.meta.updateTag({ property: 'og:type', content: type });
   }
 
-  setProductMeta(product: { title: string; description: string; price: number; discountPercentage: number; images: string[]; id: string; brand: string; stock: number; metaTitle?: string; metaDescription?: string; seoKeywords?: string[] }): void {
-    const finalPrice = product.price * (1 - product.discountPercentage / 100);
+  setProductMeta(product: { title: string; description: string; price: number; discountPercentage: number; discountedPrice?: number; images: string[]; id: string; brand: string; stock: number; metaTitle?: string; metaDescription?: string; seoKeywords?: string[] }): void {
+    const finalPrice = unitPriceAfterDiscount(product);
 
     const seoTitle = product.metaTitle || product.title;
     this.updateTitle(`${seoTitle} | ${this.siteName}`);
@@ -89,8 +90,8 @@ export class SeoService {
     if (existing) existing.remove();
   }
 
-  setProductJsonLd(product: { title: string; description: string; price: number; discountPercentage: number; images: string[]; id: string; brand: string; stock: number; rating: number; ratingsCount: number; metaTitle?: string; metaDescription?: string; seoKeywords?: string[] }): void {
-    const finalPrice = product.price * (1 - product.discountPercentage / 100);
+  setProductJsonLd(product: { title: string; description: string; price: number; discountPercentage: number; discountedPrice?: number; images: string[]; id: string; brand: string; stock: number; rating: number; ratingsCount: number; metaTitle?: string; metaDescription?: string; seoKeywords?: string[] }): void {
+    const finalPrice = unitPriceAfterDiscount(product);
     const imageUrl = product.images?.[0]
       ? (product.images[0].startsWith('http') ? product.images[0] : `${API_CONFIG.uploadsUrl}/${product.images[0]}`)
       : this.defaultImage;

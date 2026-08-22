@@ -315,14 +315,14 @@
                     @if (item.product.discountPercentage > 0) {
                       <span class="sz-price-original">{{ item.product.price | egpCurrency }}</span>
                     }
-                    <span>{{ (item.product.price * (1 - item.product.discountPercentage / 100)) | egpCurrency }}</span>
+                    <span>{{ unitPrice(item.product) | egpCurrency }}</span>
                   </div>
                   <div class="sz-summary-line">
                     <span class="sz-summary-label">{{ 'cart.total' | translate }}:</span>
                     @if (item.product.discountPercentage > 0) {
                       <span class="sz-price-original">{{ (item.product.price * item.quantity) | egpCurrency }}</span>
                     }
-                    <span>{{ (item.product.price * (1 - item.product.discountPercentage / 100) * item.quantity) | egpCurrency }}</span>
+                    <span>{{ (unitPrice(item.product) * item.quantity) | egpCurrency }}</span>
                   </div>
                 </div>
                 <img [src]="item.product.images[0]" [alt]="item.product.title" class="sz-summary-image">

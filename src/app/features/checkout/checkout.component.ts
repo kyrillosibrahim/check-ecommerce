@@ -11,7 +11,9 @@ import { AuthService } from '../../core/services/auth.service';
 import { GovernorateService } from '../../core/services/governorate.service';
 import { API_CONFIG } from '../../core/config/api.config';
 import { IOrder, IAddress } from '../../core/models/user.model';
+import { IProduct } from '../../core/models/product.model';
 import { IGovernorateApi, ICityApi, IDistrictApi } from '../../core/models/governorate.model';
+import { unitPriceAfterDiscount } from '../../core/utils/pricing.util';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { LocalizePipe } from '../../shared/pipes/localize.pipe';
 import { TranslationService } from '../../core/services/translation.service';
@@ -71,6 +73,10 @@ export class CheckoutComponent implements OnDestroy {
 
   paymentMethod = signal<'cod' | 'instapay'>('cod');
   notes = '';
+
+  unitPrice(product: IProduct): number {
+    return unitPriceAfterDiscount(product);
+  }
 
   deliveryFromLabel = signal('');
   deliveryToLabel = signal('');
@@ -347,7 +353,7 @@ export class CheckoutComponent implements OnDestroy {
       title: item.product.title,
       titleAr: item.product.titleAr || item.product.title,
       quantity: item.quantity,
-      price: item.product.price * (1 - item.product.discountPercentage / 100)
+      price: unitPriceAfterDiscount(item.product)
     }));
 
     const user = this.authService.getCurrentUser();
@@ -401,8 +407,8 @@ export class CheckoutComponent implements OnDestroy {
         image: item.product.images?.[0] || '',
         merchant: item.product.merchant || '',
         quantity: item.quantity,
-        price: item.product.price * (1 - item.product.discountPercentage / 100),
-        total: item.quantity * item.product.price * (1 - item.product.discountPercentage / 100),
+        price: unitPriceAfterDiscount(item.product),
+        total: item.quantity * unitPriceAfterDiscount(item.product),
       })),
     };
     this.http.post(`${API_CONFIG.ordersUrl}`, orderPayload).subscribe();

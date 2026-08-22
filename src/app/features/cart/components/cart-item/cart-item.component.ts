@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ICartItem } from '../../../../core/models/cart.model';
+import { unitPriceAfterDiscount } from '../../../../core/utils/pricing.util';
 import { TranslationService } from '../../../../core/services/translation.service';
 import { WishlistService } from '../../../../core/services/wishlist.service';
 import { DiscountPricePipe } from '../../../../shared/pipes/discount-price.pipe';
@@ -23,7 +24,7 @@ export class CartItemComponent {
   @Output() remove = new EventEmitter<string>();
 
   get lineTotal(): number {
-    const unitPrice = this.item.product.price * (1 - this.item.product.discountPercentage / 100);
+    const unitPrice = unitPriceAfterDiscount(this.item.product);
     return unitPrice * this.item.quantity;
   }
 

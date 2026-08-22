@@ -11,6 +11,7 @@ import { ProductService } from './product.service';
 import { AlertService } from './alert.service';
 import { AuthService } from './auth.service';
 import { API_CONFIG } from '../config/api.config';
+import { unitPriceAfterDiscount } from '../utils/pricing.util';
 
 const SERVER_URL = API_CONFIG.baseUrl;
 
@@ -85,7 +86,7 @@ export class CartService {
   promoDiscount$ = combineLatest([this.cartSubject, this.promoPercentage$]).pipe(
     map(([items, pct]) => {
       if (!pct) return 0;
-      const total = items.reduce((sum, i) => sum + i.product.price * (1 - i.product.discountPercentage / 100) * i.quantity, 0);
+      const total = items.reduce((sum, i) => sum + unitPriceAfterDiscount(i.product) * i.quantity, 0);
       return Math.round(total * pct / 100);
     })
   );
@@ -135,7 +136,7 @@ export class CartService {
   /** Total price after discounts */
   cartTotal$ = this.cart$.pipe(
     map(items => items.reduce((sum, i) => {
-      const discounted = i.product.price * (1 - i.product.discountPercentage / 100);
+      const discounted = unitPriceAfterDiscount(i.product);
       return sum + discounted * i.quantity;
     }, 0))
   );
@@ -148,7 +149,7 @@ export class CartService {
   /** Total discount amount */
   cartDiscount$ = this.cart$.pipe(
     map(items => items.reduce((sum, i) => {
-      const discount = i.product.price * (i.product.discountPercentage / 100);
+      const discount = i.product.price - unitPriceAfterDiscount(i.product);
       return sum + discount * i.quantity;
     }, 0))
   );
