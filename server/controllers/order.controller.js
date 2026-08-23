@@ -50,7 +50,7 @@ async function createOrder(req, res, next) {
     const discount = parseFloat(body.discount) || 0; // product-level discount
     // The amount a coupon applies to: items total after product discounts.
     const couponBase = parseFloat(body.itemsTotal) || (subtotal - discount) || 0;
-    let total = parseFloat(body.total) || (couponBase + shippingCost);
+    let total = couponBase + shippingCost;
 
     // Re-validate the coupon server-side and apply the discount authoritatively.
     let couponCode = '';
@@ -120,6 +120,8 @@ async function updateOrder(req, res, next) {
     if (body.storeProfitTotal != null) order.storeProfitTotal = parseFloat(body.storeProfitTotal);
     if (body.systemCommission != null) order.systemCommission = parseFloat(body.systemCommission);
     if (body.shippingAddress != null) order.shippingAddress = body.shippingAddress;
+    // Total is derived from persisted components, never supplied by the client.
+    order.total = (order.subtotal || 0) - (order.discount || 0) - (order.couponDiscount || 0) + (order.shippingCost || 0);
     await order.save();
 
     // State 1: when the order transitions to "shipped", notify its owner.
