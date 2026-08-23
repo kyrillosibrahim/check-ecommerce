@@ -41,6 +41,7 @@ async function createNotificationsBulk(userIds, payload = {}) {
   const docs = ids.map((userId) => ({
     id: genId() + '-' + Math.random().toString(36).slice(2, 7),
     userId,
+    campaignId: payload.campaignId || '',
     type: payload.type || 'general',
     title: payload.title || '',
     body: payload.body || '',

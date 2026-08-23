@@ -2,7 +2,7 @@ const express = require('express');
 const { Resend } = require('resend');
 const { auth, adminAuth } = require('../middleware/auth.middleware');
 const {
-  getMine, markAllRead, markRead, deleteOne, sendToCustomers, getSentCampaigns,
+  getMine, markAllRead, markRead, deleteOne, sendToCustomers, getSentCampaigns, deleteCampaign,
 } = require('../controllers/notification.controller');
 
 const router = express.Router();
@@ -16,6 +16,7 @@ router.delete('/:id', auth, deleteOne);
 // ---- Admin: send to customers + sent log (x-admin-key) ----
 router.post('/admin/send', adminAuth, sendToCustomers);
 router.get('/admin/sent', adminAuth, getSentCampaigns);
+router.delete('/admin/sent/:id', adminAuth, deleteCampaign);
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const ALERT_EMAIL_TO = process.env.ALERT_EMAIL_TO;

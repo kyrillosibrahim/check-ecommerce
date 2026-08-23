@@ -82,11 +82,12 @@ async function sendToCustomers(req, res, next) {
     }
 
     const { ids, audience } = await resolveRecipients(target);
+    const campaignId = genId().replace('ntf-', 'cmp-');
     // Single bulk insert instead of one await createNotification per recipient.
-    await createNotificationsBulk(ids, { type, title, body, link, coupon: couponPayload });
+    await createNotificationsBulk(ids, { type, title, body, link, coupon: couponPayload, campaignId });
 
     await NotificationCampaign.create({
-      id: genId().replace('ntf-', 'cmp-'),
+      id: campaignId,
       type, title, body, link,
       coupon: couponPayload,
       audience,
@@ -103,4 +104,57 @@ async function getSentCampaigns(_req, res, next) {
   catch (err) { next(err); }
 }
 
-module.exports = { getMine, markAllRead, markRead, deleteOne, sendToCustomers, getSentCampaigns };
+async function deleteCampaign(req, res, next) {
+  try {
+    const id = req.params.id;
+    const campaign = await NotificationCampaign.findOne({ id });
+    if (!campaign) return res.status(404).json({ error: 'الحملة غير موجودة' });
+
+    const couponCode = campaign.type === 'coupon' ? (campaign.coupon?.code || '').trim() : '';
+    let otherCampaignsWithSameCode = 0;
+    if (couponCode) {
+      otherCampaignsWithSameCode = await NotificationCampaign.countDocuments({
+        'coupon.code': couponCode,
+        id: { $ne: id },
+      });
+    }
+
+    let deleteResult = await Notification.deleteMany({ campaignId: id });
+    let notificationsDeleted = deleteResult.deletedCount || 0;
+    const campaignTime = new Date(campaign.createdAt).getTime();
+    // Only fall back for a campaign that actually fanned out and predates campaignId:
+    // a zero-recipient campaign has nothing to find, and matching on content alone
+    // would delete a look-alike campaign's notifications instead of its own.
+    if (notificationsDeleted === 0 && campaign.recipientsCount > 0 && Number.isFinite(campaignTime)) {
+      const windowStart = new Date(campaignTime - 5000).toISOString();
+      const windowEnd = new Date(campaignTime + 5000).toISOString();
+      deleteResult = await Notification.deleteMany({
+        // Anything already tagged belongs to a campaign that can be matched exactly.
+        campaignId: { $in: [null, ''] },
+        type: campaign.type,
+        title: campaign.title,
+        body: campaign.body,
+        createdAt: { $gte: windowStart, $lte: windowEnd },
+      });
+      notificationsDeleted = deleteResult.deletedCount || 0;
+    }
+
+    let couponRemoved = false;
+    if (couponCode && otherCampaignsWithSameCode === 0) {
+      // Keep shared coupon codes until no other listed campaign references them.
+      const couponDeleteResult = await Coupon.deleteOne({ code: couponCode });
+      couponRemoved = (couponDeleteResult.deletedCount || 0) > 0;
+    }
+
+    await NotificationCampaign.deleteOne({ id });
+    res.json({
+      message: 'تم الحذف',
+      notificationsDeleted,
+      couponCode,
+      couponRemoved,
+      otherCampaignsWithSameCode,
+    });
+  } catch (err) { next(err); }
+}
+
+module.exports = { getMine, markAllRead, markRead, deleteOne, sendToCustomers, getSentCampaigns, deleteCampaign };

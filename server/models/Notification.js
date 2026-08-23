@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const notificationSchema = new mongoose.Schema({
   id: { type: String, required: true, unique: true },
   userId: { type: String, required: true, index: true },
+  campaignId: { type: String, default: '', index: true },
   type: {
     type: String,
     enum: ['welcome', 'order_created', 'order_shipped', 'coupon', 'general'],
