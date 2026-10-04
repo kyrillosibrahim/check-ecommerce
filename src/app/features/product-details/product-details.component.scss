@@ -192,20 +192,14 @@
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    background: transparent;
+    background: var(--sz-accent);
     border: 1.5px solid var(--sz-accent);
-    color: var(--sz-accent);
+    color: #fff;
     padding: 0.45rem 1.1rem;
     border-radius: 8px;
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.15s, color 0.15s;
-
-    &:hover {
-      background: var(--sz-accent);
-      color: #fff;
-    }
   }
 }
 
