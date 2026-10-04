@@ -65,7 +65,7 @@
 <!-- Categories -->
 <section class="section-padding">
   <div class="container">
-    <h2 class="section-title">{{ 'home.shop_by' | translate }} <span class="text-shimmer">{{ 'home.shop_by_highlight' | translate }}</span></h2>
+    <h2 class="section-title"><span class="text-shimmer">{{ 'home.shop_by_highlight' | translate }}</span></h2>
     @defer (on viewport; prefetch on idle) {
       @if (isLoading()) {
         <app-skeleton-loader type="card" [count]="6" />
