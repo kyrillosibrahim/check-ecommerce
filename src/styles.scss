@@ -163,6 +163,31 @@ a {
   }
 }
 
+.text-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--sz-accent) 0%,
+    var(--sz-accent) 40%,
+    #9ec5ff 50%,
+    var(--sz-accent) 60%,
+    var(--sz-accent) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: text-shimmer 2s linear infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes text-shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
+}
+
 .star-rating { color: #ffc107; font-size: 0.7rem; }
 
 .price-original {

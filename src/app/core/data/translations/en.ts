@@ -86,6 +86,8 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   // ── Home Page ──
   'home.featured_products': 'Featured Products',
   'home.shop_by_category': 'Shop by Category',
+  'home.shop_by': 'Shop by',
+  'home.shop_by_highlight': 'Category',
   'home.view_all_products': 'View All Products',
   'home.free_shipping': 'Free Shipping',
   'home.free_shipping_desc': 'On orders over $50',

@@ -27,7 +27,7 @@
 <!-- Best Selling Products -->
 <section class="section-padding" style="background-color: var(--sz-bg-secondary);">
   <div class="container">
-    <h2 class="section-title">المنتجات الأكثر مبيعاً</h2>
+    <h2 class="section-title">المنتجات <span class="text-shimmer">الأكثر مبيعاً</span></h2>
     @if (isLoadingProducts()) {
       <app-skeleton-loader type="card" [count]="6" />
     } @else if (bestSellingProducts.length > 0) {
@@ -65,7 +65,7 @@
 <!-- Categories -->
 <section class="section-padding">
   <div class="container">
-    <h2 class="section-title">{{ 'home.shop_by_category' | translate }}</h2>
+    <h2 class="section-title">{{ 'home.shop_by' | translate }} <span class="text-shimmer">{{ 'home.shop_by_highlight' | translate }}</span></h2>
     @defer (on viewport; prefetch on idle) {
       @if (isLoading()) {
         <app-skeleton-loader type="card" [count]="6" />
@@ -104,7 +104,7 @@
 <!-- All Brands -->
 <section class="section-padding" style="background-color: #ffffff;">
   <div class="container">
-    <h2 class="section-title">أقوى البراندات</h2>
+    <h2 class="section-title">أقوى <span class="text-shimmer">البراندات</span></h2>
     @defer (on viewport; prefetch on idle) {
       @if (isLoadingBrands()) {
         <app-skeleton-loader type="card" [count]="8" />
@@ -145,7 +145,7 @@
   @if (naturalProducts.length > 0) {
     <section class="section-padding d-none d-lg-block" style="background-color: var(--sz-bg-secondary, #f8f9fa);">
       <div class="container">
-        <h2 class="section-title">المنتجات في الطبيعة</h2>
+        <h2 class="section-title">المنتجات في <span class="text-shimmer">الطبيعة</span></h2>
         <app-natural-products [items]="naturalProducts" />
       </div>
     </section>

@@ -86,6 +86,8 @@ export const AR_TRANSLATIONS: Record<string, string> = {
   // ── Home Page ──
   'home.featured_products': 'منتجات مميزة',
   'home.shop_by_category': 'تسوق حسب الاقسام',
+  'home.shop_by': 'تسوق حسب',
+  'home.shop_by_highlight': 'الاقسام',
   'home.view_all_products': 'عرض جميع المنتجات',
   'home.free_shipping': 'شحن مجاني',
   'home.free_shipping_desc': 'للطلبات فوق $50',
