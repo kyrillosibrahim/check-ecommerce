@@ -52,9 +52,28 @@
   unicode-bidi: isolate;
   white-space: normal;
   :host ::ng-deep & {
-    h1, h2, h3, h4, h5, h6 {
+    :is(h1, h2, h3, h4, h5, h6):not(.accordion-header) {
       color: var(--sz-text-primary);
+      font-size: 1.15rem !important;
+      font-weight: 700;
+      line-height: 1.4;
+      margin-top: 1rem;
       margin-bottom: 0.5rem;
+
+      &:first-child {
+        margin-top: 0;
+      }
+    }
+
+    // Neutralize inline font sizes pasted from the rich-text editor
+    p, li, span {
+      font-size: inherit !important;
+    }
+
+    :is(h1, h2, h3, h4, h5, h6, p, li):not(.accordion-header) {
+      * {
+        font-size: inherit !important;
+      }
     }
 
     p {
