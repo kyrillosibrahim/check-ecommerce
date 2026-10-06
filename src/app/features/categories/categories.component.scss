@@ -33,7 +33,7 @@
   max-height: calc(100dvh - 124px);
   overflow-y: auto;
   scrollbar-width: none;
-  background: var(--sz-bg-secondary, #f5f6f7);
+  background: #eef3f7;
   border-inline-end: 1px solid var(--sz-border-color);
 
   &::-webkit-scrollbar {
@@ -71,7 +71,7 @@
       content: '';
       position: absolute;
       inset-block: 0;
-      inset-inline-start: 0;
+      inset-inline-end: 0;
       width: 3px;
       background: #dc3545;
     }
