@@ -28,8 +28,8 @@
   --sz-border-color: #D5D9D9;
   --sz-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   --sz-shadow-hover: 0 4px 20px rgba(0, 0, 0, 0.15);
-  --sz-accent: #315d7c;
-  --sz-accent-hover: #315d7c;
+  --sz-accent: #124072;
+  --sz-accent-hover: #124072;
   --sz-accent-rgb: 46, 139, 87;
   --sz-hero-overlay: rgba(0, 0, 0, 0.35);
   --sz-skeleton-base: #E3E6E6;
@@ -47,7 +47,7 @@
   --sz-border-color: #2F3E4E;
   --sz-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
   --sz-shadow-hover: 0 4px 20px rgba(0, 0, 0, 0.65);
-  --sz-accent: #315d7c;
+  --sz-accent: #124072;
   --sz-accent-hover: #024cb2;
   --sz-accent-rgb: 46, 139, 87;
   --sz-hero-overlay: rgba(0, 0, 0, 0.55);
@@ -265,13 +265,13 @@ a {
   }
 
   .btn-primary {
-    background-color: #315d7c;
-    border: 1.5px solid #315d7c;
+    background-color: #124072;
+    border: 1.5px solid #124072;
     color: #fff;
 
     &:hover, &:focus {
-      background-color: #315d7c;
-      border-color: #315d7c;
+      background-color: #124072;
+      border-color: #124072;
       color: #fff;
     }
   }
