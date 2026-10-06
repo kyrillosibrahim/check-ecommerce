@@ -348,7 +348,7 @@
       <!-- Drawer Header -->
       <div class="mobile-drawer-header">
         <a routerLink="/" (click)="closeMobileMenu()">
-          <img [src]="logoIconUrl | cldImage:0:72" style="filter: sepia(1);" alt="Logo" class="mobile-drawer-logo"
+          <img [src]="logoIconUrl | cldImage:0:72" style="filter: brightness(0) saturate(100%) invert(41%) sepia(54%) saturate(550%) hue-rotate(162deg) brightness(99%) contrast(95%);" alt="Logo" class="mobile-drawer-logo"
                width="60" height="60" decoding="async"
                [style.display]="logoIconLoaded ? '' : 'none'" (load)="logoIconLoaded = true">
         </a>
