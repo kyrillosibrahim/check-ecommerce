@@ -38,6 +38,11 @@ export const routes: Routes = [
     title: 'Check - عروض الجملة'
   },
   {
+    path: 'categories',
+    loadComponent: () => import('./features/categories/categories.component').then(c => c.CategoriesComponent),
+    title: 'Check - الأقسام'
+  },
+  {
     path: 'brands',
     loadComponent: () => import('./features/brands/brands.component').then(c => c.BrandsComponent),
     title: 'Check - العلامات التجارية'

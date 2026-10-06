@@ -1,0 +1,75 @@
+<section class="categories-page">
+  @if (isLoading()) {
+    <div class="categories-loading">
+      <div class="spinner-border" role="status" style="color: var(--sz-accent);"></div>
+    </div>
+  } @else if (categories().length === 0) {
+    <div class="categories-empty">
+      <i class="bi bi-grid d-block"></i>
+      <p>{{ 'categories.empty' | translate }}</p>
+    </div>
+  } @else {
+    <!-- Main categories rail -->
+    <nav class="categories-rail">
+      @for (cat of categories(); track cat.id) {
+        <button type="button" class="rail-item" [class.active]="cat.id === selected()?.id" (click)="selectCategory(cat)">
+          <span class="rail-item__img">
+            @if (cat.image) {
+              <img [src]="cat.image | cldImage:96" [alt]="cat.name" loading="lazy" decoding="async" />
+            } @else {
+              <i class="bi bi-grid"></i>
+            }
+          </span>
+          <span class="rail-item__name">{{ cat.name }}</span>
+        </button>
+      }
+    </nav>
+
+    <!-- Selected category content -->
+    @if (selected(); as cat) {
+      <div class="categories-pane">
+        <div class="pane-header">
+          <h1 class="pane-title">{{ cat.name }}</h1>
+          <a class="pane-view-all" routerLink="/products" [queryParams]="{ category: cat.id }">
+            {{ 'categories.view_all' | translate }}
+          </a>
+        </div>
+
+        @if (cat.subcategories?.length) {
+          <div class="tile-grid">
+            @for (sub of cat.subcategories; track sub.id) {
+              <a class="tile" routerLink="/products" [queryParams]="{ category: cat.id, subcategory: sub.id }">
+                <span class="tile__img">
+                  @if (sub.image) {
+                    <img [src]="sub.image | cldImage:200" [alt]="sub.name" loading="lazy" decoding="async" />
+                  } @else {
+                    <i class="bi bi-grid"></i>
+                  }
+                </span>
+                <span class="tile__name">{{ sub.name }}</span>
+              </a>
+            }
+          </div>
+        }
+
+        @if (cat.famousBrands?.length) {
+          <h2 class="pane-subtitle">{{ 'categories.top_brands' | translate }}</h2>
+          <div class="tile-grid">
+            @for (brand of cat.famousBrands; track brand.id) {
+              <a class="tile" routerLink="/products" [queryParams]="{ brand: brand.name }">
+                <span class="tile__img">
+                  @if (brand.image) {
+                    <img [src]="brand.image | cldImage:200" [alt]="brand.name" loading="lazy" decoding="async" />
+                  } @else {
+                    <i class="bi bi-award"></i>
+                  }
+                </span>
+                <span class="tile__name">{{ brand.name }}</span>
+              </a>
+            }
+          </div>
+        }
+      </div>
+    }
+  }
+</section>

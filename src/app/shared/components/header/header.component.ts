@@ -386,7 +386,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.hideBottomNav = url.split('?')[0].startsWith('/product/');
     const loggedIn = this.authService.isLoggedIn();
     if (url === '/' || url === '') this.activeNavIndex = 0;
-    else if (url.startsWith('/offers')) this.activeNavIndex = 1;
+    else if (url.startsWith('/categories')) this.activeNavIndex = 1;
     else if (url.startsWith('/watch')) this.activeNavIndex = 2;
     else if (url.startsWith('/cart')) this.activeNavIndex = 3;
     // Notifications moved to the top header bell — no bottom-nav slot anymore.
