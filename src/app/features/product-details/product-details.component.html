@@ -11,13 +11,13 @@
   } @else {
     <!-- Mobile floating actions (replace the hidden header) -->
     <div class="mobile-top-actions d-lg-none">
-      <button type="button" class="mobile-top-actions__btn" (click)="goBack()"
-              [attr.aria-label]="translationService.isArabic() ? 'رجوع' : 'Back'">
-        <i class="bi" [class.bi-arrow-right]="translationService.isArabic()" [class.bi-arrow-left]="!translationService.isArabic()"></i>
-      </button>
       <button type="button" class="mobile-top-actions__btn" (click)="toggleWishlist()"
               [attr.aria-label]="translationService.isArabic() ? 'المفضلة' : 'Wishlist'">
         <i class="bi" [class.bi-heart-fill]="isInWishlist" [class.bi-heart]="!isInWishlist"></i>
+      </button>
+      <button type="button" class="mobile-top-actions__btn" (click)="goBack()"
+              [attr.aria-label]="translationService.isArabic() ? 'رجوع' : 'Back'">
+        <i class="bi" [class.bi-arrow-right]="translationService.isArabic()" [class.bi-arrow-left]="!translationService.isArabic()"></i>
       </button>
     </div>
 
