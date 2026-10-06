@@ -99,9 +99,9 @@
   padding: 14px 16px;
   text-align: right;
   border-radius: 14px;
-  background-color: #8b7d5e;
-  border: 1px solid #9a8c6e;
-  color: #f5f0e8;
+  background-color: #85b6d6;
+  border: 1px solid #9cc4df;
+  color: #ffffff;
   transform: translateZ(0);
 
   @media (max-width: 576px) {
@@ -123,14 +123,14 @@
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background-color: #6b6045;
+  background-color: #5f9cc6;
   display: flex;
   align-items: center;
   justify-content: center;
 
   i {
     font-size: 1.1rem;
-    color: #d4cbb8;
+    color: #e6f0f7;
   }
 }
 
@@ -151,14 +151,14 @@
     color: #ffc107;
 
     &.bi-star {
-      color: #a89a7a;
+      color: #b5d3e8;
     }
   }
 }
 
 .review-text {
   font-size: 0.78rem;
-  color: #f0ead8;
+  color: #ffffff;
   line-height: 1.45;
   margin: 0;
   display: -webkit-box;
