@@ -28,7 +28,7 @@
   font-weight: 700;
   font-size: 0.95rem;
   text-decoration: none;
-  color: #124072;
+  color: #fff;
   background: #f7ce58;
   box-shadow: 0 6px 18px rgba(46, 139, 87, 0.32);
   position: relative;
@@ -61,7 +61,7 @@
   }
 
   &:hover {
-    color: #124072;
+    color: #fff;
     transform: translateY(-3px);
     box-shadow: 0 10px 26px rgba(46, 139, 87, 0.45);
     animation-play-state: paused;
