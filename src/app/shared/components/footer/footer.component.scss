@@ -14,7 +14,7 @@
   i {
     font-size: 2rem;
     flex-shrink: 0;
-    color: var(--sz-accent, #124072) !important;
+    color: var(--sz-accent, #3582b8) !important;
 
   }
 
@@ -45,7 +45,7 @@
 }
 
 .footer-heading {
-  color: var(--sz-accent, #124072);
+  color: var(--sz-accent, #3582b8);
   font-size: 0.9rem;
   font-weight: 700;
   margin-bottom: 1rem;
@@ -138,7 +138,7 @@
 }
 
 .footer-bottom {
-  background: linear-gradient(135deg, var(--sz-accent, #124072), var(--sz-accent-hover, #3CB371)) !important;
+  background: linear-gradient(135deg, var(--sz-accent, #3582b8), var(--sz-accent-hover, #3CB371)) !important;
   color: #fff;
   margin: 0 calc(var(--bs-gutter-x) * -0.5);
   display: flex;
