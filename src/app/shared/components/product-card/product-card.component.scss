@@ -131,6 +131,18 @@
   cursor: pointer;
   transition: transform 0.2s ease, background 0.2s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 0;
+
+  // Bootstrap Icons sit slightly low by default (vertical-align: -.125em)
+  i {
+    display: block;
+    line-height: 1;
+
+    &::before {
+      display: block;
+      vertical-align: 0;
+    }
+  }
 
   &:hover {
     transform: scale(1.1);
