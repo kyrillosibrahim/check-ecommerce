@@ -690,7 +690,19 @@
   background: var(--sz-accent);
   color: #fff;
   font-size: 1.25rem;
+  padding: 0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+
+  // Bootstrap Icons sit slightly low by default (vertical-align: -.125em)
+  i {
+    display: block;
+    line-height: 1;
+
+    &::before {
+      display: block;
+      vertical-align: 0;
+    }
+  }
 }
 
 @media (max-width: 991.98px) {
