@@ -16,7 +16,7 @@
     <app-skeleton-loader type="list" [count]="3" />
   } @else if ((cartService.cart$ | async)?.length === 0) {
     <div class="empty-state">
-      <i class="bi bi-cart-x d-block"></i>
+      <img src="/assets/iconsd/cart-empty.svg" alt="" class="empty-cart-illustration" width="240" height="201" />
       <h3>{{ 'cart.empty' | translate }}</h3>
       <p>{{ 'cart.empty_desc' | translate }}</p>
       <a routerLink="/products" class="btn btn-primary">

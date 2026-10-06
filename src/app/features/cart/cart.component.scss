@@ -237,3 +237,10 @@
     display: none !important;
   }
 }
+
+.empty-cart-illustration {
+  display: block;
+  width: min(240px, 70vw);
+  height: auto;
+  margin: 0 auto 1rem;
+}

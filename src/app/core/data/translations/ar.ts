@@ -194,7 +194,7 @@ export const AR_TRANSLATIONS: Record<string, string> = {
 
   // ── Cart Page ──
   'cart.title': 'سلة التسوق',
-  'cart.empty': 'سلة التسوق فارغة',
+  'cart.empty': 'السلة فارغة',
   'cart.empty_desc': 'يبدو أنك لم تضف أي عناصر بعد',
   'cart.start_shopping': 'ابدأ التسوق',
   'cart.product': 'المنتج',
