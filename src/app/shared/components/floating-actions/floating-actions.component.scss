@@ -36,7 +36,7 @@
   height: 52px;
   border-radius: 50%;
   border: none;
-  background: #2bb5a0;
+  background: #124072;
   color: #fff;
   font-size: 1.6rem;
   cursor: pointer;
@@ -52,7 +52,7 @@
 
   // Open state keeps the X dead-centre (no rotation → no baseline-shift artefact)
   &.open {
-    background: #2bb5a0;
+    background: #124072;
   }
 }
 
