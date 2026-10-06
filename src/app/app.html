@@ -1,5 +1,5 @@
-<app-header [class.hide-top-on-mobile]="hideChromeOnMobile()" />
-<main class="main-content" [class.no-chrome-mobile]="hideChromeOnMobile()">
+<app-header [class.hide-top-on-mobile]="hideChromeOnMobile() || isProductPage()" />
+<main class="main-content" [class.no-chrome-mobile]="hideChromeOnMobile() || isProductPage()">
   <router-outlet />
 </main>
 <app-footer [class.hide-on-mobile]="hideFooterOnMobile()" />

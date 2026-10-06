@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestroy, OnInit, signal, PLATFORM_ID, DestroyRef, SecurityContext } from '@angular/core';
-import { isPlatformBrowser, AsyncPipe, DatePipe } from '@angular/common';
+import { isPlatformBrowser, AsyncPipe, DatePipe, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { fromEvent, animationFrameScheduler } from 'rxjs';
 import { throttleTime } from 'rxjs/operators';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ProductService } from '../../core/services/product.service';
 import { CartService } from '../../core/services/cart.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -56,6 +56,8 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   private settingsService = inject(SiteSettingsService);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private destroyRef = inject(DestroyRef);
+  private location = inject(Location);
+  private router = inject(Router);
 
   ourLogoUrl = 'assets/logobluewithoutbg.png';
   product: IProduct | undefined;
@@ -291,17 +293,23 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     if (this.isBrowser) {
       document.body.classList.add('product-details-active');
+      // Mobile keeps the bar visible at all times (it replaces the bottom nav)
+      const updateStickyBar = () => {
+        const shouldShow = window.innerWidth < 992 || window.scrollY > 600;
+        if (shouldShow !== this.showStickyBar()) {
+          this.showStickyBar.set(shouldShow);
+        }
+      };
+      updateStickyBar();
       fromEvent(window, 'scroll', { passive: true })
         .pipe(
           throttleTime(120, animationFrameScheduler, { leading: true, trailing: true }),
           takeUntilDestroyed(this.destroyRef)
         )
-        .subscribe(() => {
-          const shouldShow = window.scrollY > 600;
-          if (shouldShow !== this.showStickyBar()) {
-            this.showStickyBar.set(shouldShow);
-          }
-        });
+        .subscribe(updateStickyBar);
+      fromEvent(window, 'resize', { passive: true })
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(updateStickyBar);
     }
     this.settingsService.getSettings()
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -373,6 +381,14 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
 
   get isInWishlist(): boolean {
     return !!this.product && (this.product.inFavorite || this.wishlistService.isInWishlist(this.product.id));
+  }
+
+  goBack(): void {
+    if (window.history.length > 1) {
+      this.location.back();
+    } else {
+      this.router.navigateByUrl('/');
+    }
   }
 
   toggleWishlist(): void {

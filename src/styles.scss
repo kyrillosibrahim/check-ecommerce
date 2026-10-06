@@ -91,6 +91,11 @@ body {
   body {
     padding-bottom: 60px;
   }
+
+  // Product page: sticky add-to-cart bar replaces the bottom nav
+  body.product-details-active {
+    padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 input[type="password"] {

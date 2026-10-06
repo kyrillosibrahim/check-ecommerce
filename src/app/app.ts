@@ -33,6 +33,8 @@ export class App implements OnInit {
   private noChromeRoutes = ['/cart', '/checkout', '/watch', '/profile'];
   hideFooterOnMobile = signal(false);
   hideChromeOnMobile = signal(false);
+  /** Product details page: mobile uses its own floating back/wishlist buttons instead of the header */
+  isProductPage = signal(false);
 
   ngOnInit(): void {
     this.siteVisitService.trackVisit();
@@ -44,6 +46,7 @@ export class App implements OnInit {
       const url = e.urlAfterRedirects.split('?')[0];
       this.hideFooterOnMobile.set(this.noFooterRoutes.includes(url));
       this.hideChromeOnMobile.set(this.noChromeRoutes.includes(url));
+      this.isProductPage.set(url.startsWith('/product/'));
     });
     if (!isPlatformBrowser(this.platformId)) return;
 

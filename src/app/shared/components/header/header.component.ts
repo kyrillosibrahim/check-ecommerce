@@ -382,7 +382,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   private updateActiveNav(url: string): void {
-    this.hideBottomNav = false;
+    // Product page shows its own sticky add-to-cart bar instead of the bottom nav
+    this.hideBottomNav = url.split('?')[0].startsWith('/product/');
     const loggedIn = this.authService.isLoggedIn();
     if (url === '/' || url === '') this.activeNavIndex = 0;
     else if (url.startsWith('/offers')) this.activeNavIndex = 1;

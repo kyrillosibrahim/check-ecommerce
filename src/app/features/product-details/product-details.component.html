@@ -9,8 +9,20 @@
       <a routerLink="/products" class="btn btn-primary">{{ 'details.browse_products' | translate }}</a>
     </div>
   } @else {
+    <!-- Mobile floating actions (replace the hidden header) -->
+    <div class="mobile-top-actions d-lg-none">
+      <button type="button" class="mobile-top-actions__btn" (click)="goBack()"
+              [attr.aria-label]="translationService.isArabic() ? 'رجوع' : 'Back'">
+        <i class="bi" [class.bi-arrow-right]="translationService.isArabic()" [class.bi-arrow-left]="!translationService.isArabic()"></i>
+      </button>
+      <button type="button" class="mobile-top-actions__btn" (click)="toggleWishlist()"
+              [attr.aria-label]="translationService.isArabic() ? 'المفضلة' : 'Wishlist'">
+        <i class="bi" [class.bi-heart-fill]="isInWishlist" [class.bi-heart]="!isInWishlist"></i>
+      </button>
+    </div>
+
     <!-- Breadcrumb -->
-    <nav class="mb-4">
+    <nav class="mb-4 d-none d-lg-block">
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a routerLink="/">{{ 'nav.home' | translate }}</a></li>
         <li class="breadcrumb-item"><a routerLink="/products">{{ 'nav.products' | translate }}</a></li>
