@@ -28,8 +28,8 @@
   font-weight: 700;
   font-size: 0.95rem;
   text-decoration: none;
-  color: #fff;
-  background: linear-gradient(135deg, var(--sz-accent, #3582b8), var(--sz-accent-hover, #024cb2));
+  color: #124072;
+  background: #f7ce58;
   box-shadow: 0 6px 18px rgba(46, 139, 87, 0.32);
   position: relative;
   overflow: hidden;
@@ -61,7 +61,7 @@
   }
 
   &:hover {
-    color: #fff;
+    color: #124072;
     transform: translateY(-3px);
     box-shadow: 0 10px 26px rgba(46, 139, 87, 0.45);
     animation-play-state: paused;
