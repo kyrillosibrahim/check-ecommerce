@@ -5,13 +5,14 @@ const { cacheGet, cacheSet, cacheDel, MIN } = require('../utils/cache.util');
 const CACHE_KEY = 'banners:all';
 
 async function getNextId() { const last = await Banner.findOne({}, { id: 1 }).sort({ id: -1 }); return last ? last.id + 1 : 1; }
+async function getNextOrder() { const last = await Banner.findOne({}, { order: 1 }).sort({ order: -1 }); return last ? (last.order || 0) + 1 : 0; }
 
 async function getAllBanners(_req, res, next) {
   try {
     const cached = cacheGet(CACHE_KEY);
     if (cached) return res.json(cached);
 
-    const banners = await Banner.find({}, { _id: 0, __v: 0 }).lean();
+    const banners = await Banner.find({}, { _id: 0, __v: 0 }).sort({ order: 1, id: 1 }).lean();
     cacheSet(CACHE_KEY, banners, 15 * MIN);
     res.json(banners);
   } catch (err) { next(err); }
@@ -23,7 +24,7 @@ async function createBanner(req, res, next) {
     const link = (req.body.link || '').trim();
     const page = (req.body.page || 'home').trim();
     const imageUrl = await uploadFile(req.file.path, 'banners');
-    const newBanner = await Banner.create({ id: await getNextId(), image: imageUrl, link, page });
+    const newBanner = await Banner.create({ id: await getNextId(), image: imageUrl, link, page, order: await getNextOrder() });
     cacheDel(CACHE_KEY);
     const obj = newBanner.toObject(); delete obj._id; delete obj.__v;
     res.status(201).json(obj);
@@ -59,4 +60,14 @@ async function deleteBanner(req, res, next) {
   } catch (err) { next(err); }
 }
 
-module.exports = { getAllBanners, createBanner, updateBanner, deleteBanner };
+async function reorderBanners(req, res, next) {
+  try {
+    const { ids } = req.body;
+    if (!Array.isArray(ids)) return res.status(400).json({ error: 'ids array is required.' });
+    await Promise.all(ids.map((id, index) => Banner.updateOne({ id: Number(id) }, { $set: { order: index } })));
+    cacheDel(CACHE_KEY);
+    res.json({ message: 'Banners reordered.' });
+  } catch (err) { next(err); }
+}
+
+module.exports = { getAllBanners, createBanner, updateBanner, deleteBanner, reorderBanners };

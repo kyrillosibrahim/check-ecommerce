@@ -6,6 +6,7 @@ const {
   createBanner,
   updateBanner,
   deleteBanner,
+  reorderBanners,
 } = require('../controllers/banner.controller');
 const { adminAuth } = require('../middleware/auth.middleware');
 
@@ -35,6 +36,7 @@ const upload = multer({
 
 router.get('/', getAllBanners);
 router.post('/', adminAuth, upload.single('image'), createBanner);
+router.post('/reorder', adminAuth, express.json(), reorderBanners);
 router.put('/:id', adminAuth, upload.single('image'), updateBanner);
 router.delete('/:id', adminAuth, deleteBanner);
 
