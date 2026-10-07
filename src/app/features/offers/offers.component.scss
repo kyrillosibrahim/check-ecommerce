@@ -559,11 +559,6 @@
   transition: all 0.2s ease;
 
   i { font-size: 1rem; }
-
-  &:hover, &:active {
-    background-color: var(--sz-accent);
-    color: #fff;
-  }
 }
 
 .filter-badge {
