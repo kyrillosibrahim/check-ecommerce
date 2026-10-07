@@ -207,8 +207,18 @@ h6 {
   padding: 6px 8px;
   color: #555;
 
+  // Bootstrap Icons shift glyphs down by -.125em; zero it and use a tight
+  // line-height on icon and label so both sit on the same centre line.
+  line-height: 1;
+
+  span { line-height: 1; }
+
   i {
     font-size: 0.95rem;
+    line-height: 1;
+    display: inline-flex;
+
+    &::before { vertical-align: 0; }
   }
 
   &.zahra-wishlist {

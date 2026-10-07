@@ -133,7 +133,13 @@
     justify-content: center;
     color: var(--sz-accent, #d62f2f);
     font-size: 0.85rem;
+    flex-shrink: 0;
+
+    i { line-height: 1; display: inline-flex; }
+    i::before { vertical-align: 0; }
   }
+
+  > span:first-child { line-height: 1; }
 }
 
 .zahra-order-total {
