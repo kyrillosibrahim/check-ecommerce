@@ -1570,14 +1570,19 @@ $nav-bar-color: var(--sz-accent-hover);
   top: -6px;
   inset-inline-end: -10px;
   font-size: 0.7rem;
-  padding: 0.1rem 0.3rem;
-  border-radius: 10px;
+  // Fixed-height pill with flex centring keeps the digit in the exact middle.
+  height: 18px;
+  min-width: 18px;
+  padding: 0 4px;
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: #e74c3c;
   color: #fff;
   line-height: 1;
   font-weight: 700;
-  min-width: 14px;
-  text-align: center;
+  font-variant-numeric: tabular-nums;
   z-index: 4;
 }
 .mar{
