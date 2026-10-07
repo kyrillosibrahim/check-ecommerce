@@ -7,6 +7,7 @@ import { API_CONFIG } from '../config/api.config';
 import { withLocalCache } from '../utils/local-cache.util';
 
 const SERVER_URL = API_CONFIG.baseUrl;
+const CATEGORIES_VERSION = 2; // 2: adds nameEn
 
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
@@ -19,7 +20,9 @@ export class CategoryService {
 
   getAll(): Observable<ICategory[]> {
     if (!this.allCategories$) {
-      const request$ = this.http.get<ICategory[]>(`${SERVER_URL}/api/categories/detailed`).pipe(
+      // Bump CATEGORIES_VERSION when the response shape changes, so browsers skip
+      // their HTTP-cached response and the localStorage copy from the old shape.
+      const request$ = this.http.get<ICategory[]>(`${SERVER_URL}/api/categories/detailed?v=${CATEGORIES_VERSION}`).pipe(
         map(cats => cats.map(c => ({
           id: c.id,
           name: c.name,
@@ -42,7 +45,7 @@ export class CategoryService {
         tap(cats => this.categoriesSubject.next(cats)),
         shareReplay(1)
       );
-      this.allCategories$ = withLocalCache('kaf:categories', request$, this.platformId);
+      this.allCategories$ = withLocalCache(`kaf:categories:v${CATEGORIES_VERSION}`, request$, this.platformId);
     }
     return this.allCategories$;
   }
