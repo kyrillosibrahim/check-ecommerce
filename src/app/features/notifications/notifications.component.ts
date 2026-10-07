@@ -4,11 +4,13 @@ import { PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
 import { NotificationsService } from '../../core/services/notifications.service';
 import { AlertService } from '../../core/services/alert.service';
+import { TranslationService } from '../../core/services/translation.service';
 import { INotification } from '../../core/models/notification.model';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-notifications',
-  imports: [AsyncPipe, DatePipe],
+  imports: [AsyncPipe, DatePipe, TranslatePipe],
   templateUrl: './notifications.component.html',
   styleUrl: './notifications.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -16,6 +18,7 @@ import { INotification } from '../../core/models/notification.model';
 export class NotificationsComponent implements OnInit, OnDestroy {
   private service = inject(NotificationsService);
   private alert = inject(AlertService);
+  private translationService = inject(TranslationService);
   private router = inject(Router);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
@@ -53,7 +56,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   copyCode(code: string): void {
     if (this.isBrowser && navigator.clipboard) {
       navigator.clipboard.writeText(code).then(() =>
-        this.alert.toast({ icon: 'success', title: 'تم نسخ الكود', timer: 1500 })
+        this.alert.toast({ icon: 'success', title: this.translationService.translate('notifications.code_copied'), timer: 1500 })
       );
     }
   }

@@ -19,7 +19,7 @@
           <div class="card card-hover h-100 shadow-sm" style="border: 1px solid var(--sz-border-color);">
             <!-- Image -->
             <a [routerLink]="['/product', product.id]">
-              <img [src]="(product.images || [])[0]" [alt]="product.title" class="card-img-top" style="height: 220px; object-fit: contain; background-color: white;">
+              <img [src]="(product.images || [])[0]" [alt]="product.title | localize:product.titleAr" class="card-img-top" style="height: 220px; object-fit: contain; background-color: white;">
             </a>
 
             <div class="card-body d-flex flex-column">

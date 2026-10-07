@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, inject, Input, NgZone, OnInit, Output, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { DecimalPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
 import { CartService } from '../../../core/services/cart.service';
@@ -10,12 +9,15 @@ import { IProduct } from '../../../core/models/product.model';
 import { IAddress } from '../../../core/models/user.model';
 import { API_CONFIG } from '../../../core/config/api.config';
 import { unitPriceAfterDiscount } from '../../../core/utils/pricing.util';
+import { TranslationService } from '../../../core/services/translation.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { EgpCurrencyPipe } from '../../../shared/pipes/egp-currency.pipe';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-direct-order-modal',
   standalone: true,
-  imports: [ReactiveFormsModule, DecimalPipe],
+  imports: [ReactiveFormsModule, TranslatePipe, EgpCurrencyPipe],
   templateUrl: './direct-order-modal.component.html',
   styleUrl: './direct-order-modal.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,6 +35,7 @@ export class DirectOrderModalComponent implements OnInit {
   private authService = inject(AuthService);
   private cartService = inject(CartService);
   private governorateService = inject(GovernorateService);
+  private translationService = inject(TranslationService);
 
   governorates: IGovernorateApi[] = [];
   cities: ICityApi[] = [];
@@ -133,7 +136,7 @@ export class DirectOrderModalComponent implements OnInit {
       () => {
         this.ngZone.run(() => {
           this.locating.set(false);
-          Swal.fire({ icon: 'warning', title: 'تنبيه', text: 'تعذر الوصول لموقعك. تأكد من منح صلاحية الموقع', confirmButtonText: 'حسنًا', confirmButtonColor: 'var(--sz-accent)' });
+          Swal.fire({ icon: 'warning', title: this.translationService.translate('common.warning_title'), text: this.translationService.translate('direct_order.location_error'), confirmButtonText: this.translationService.translate('common.ok'), confirmButtonColor: 'var(--sz-accent)' });
         });
       },
       { timeout: 8000 }
@@ -145,7 +148,10 @@ export class DirectOrderModalComponent implements OnInit {
     const aEn = dataEn.address || {};
     const parts = [aAr.road, aAr.neighbourhood, aAr.suburb, aAr.village].filter(Boolean);
     const fallback = [aEn.road, aEn.neighbourhood, aEn.suburb, aEn.village].filter(Boolean);
-    this.form.patchValue({ address: parts.join('، ') || fallback.join(', ') || '' });
+    const address = this.translationService.isArabic()
+      ? parts.join('، ') || fallback.join(', ')
+      : fallback.join(', ') || parts.join('، ');
+    this.form.patchValue({ address });
 
     const stateAr = aAr.state || aAr.county || '';
     const stateEn = aEn.state || aEn.county || '';
@@ -217,7 +223,7 @@ export class DirectOrderModalComponent implements OnInit {
           shippingCompany: 'J&T Express',
           paymentMethod: this.paymentMethod(),
           paymentStatus: 'unpaid',
-          notes: altPhone ? `رقم بديل: ${altPhone}` : '',
+          notes: altPhone ? `${this.translationService.translate('direct_order.alt_phone_note')} ${altPhone}` : '',
           customer: { name: name!, phone: phone!, email: '' },
           date: new Date().toISOString(),
           status: 'pending',
@@ -228,15 +234,15 @@ export class DirectOrderModalComponent implements OnInit {
             this.submitting.set(false);
             this.cdr.markForCheck();
             Swal.fire({
-              icon: 'success', title: 'تم استلام طلبك بنجاح',
-              text: 'سنتواصل معك في أقرب وقت لتأكيد الطلب',
-              confirmButtonText: 'حسنًا', confirmButtonColor: 'var(--sz-accent)',
+              icon: 'success', title: this.translationService.translate('direct_order.success_title'),
+              text: this.translationService.translate('direct_order.success_text'),
+              confirmButtonText: this.translationService.translate('common.ok'), confirmButtonColor: 'var(--sz-accent)',
             }).then(() => this.success.emit());
           },
           error: () => {
             this.submitting.set(false);
             this.cdr.markForCheck();
-            Swal.fire({ icon: 'error', title: 'خطأ', text: 'حدث خطأ أثناء إرسال الطلب', confirmButtonText: 'حسنًا', confirmButtonColor: 'var(--sz-accent)' });
+            Swal.fire({ icon: 'error', title: this.translationService.translate('common.error_title'), text: this.translationService.translate('direct_order.submit_error'), confirmButtonText: this.translationService.translate('common.ok'), confirmButtonColor: 'var(--sz-accent)' });
           },
         });
       },
@@ -246,14 +252,14 @@ export class DirectOrderModalComponent implements OnInit {
         const status = err?.status;
         if (status === 409) {
           Swal.fire({
-            icon: 'info', title: 'الرقم مسجل بالفعل',
-            text: 'هذا الرقم مسجل في حسابنا. سجل دخول لإتمام الطلب',
-            confirmButtonText: 'حسنًا', confirmButtonColor: 'var(--sz-accent)',
+            icon: 'info', title: this.translationService.translate('direct_order.phone_registered_title'),
+            text: this.translationService.translate('direct_order.phone_registered_text'),
+            confirmButtonText: this.translationService.translate('common.ok'), confirmButtonColor: 'var(--sz-accent)',
           });
         } else {
           Swal.fire({
-            icon: 'error', title: 'خطأ', text: err?.error?.error || 'حدث خطأ أثناء التسجيل',
-            confirmButtonText: 'حسنًا', confirmButtonColor: 'var(--sz-accent)',
+            icon: 'error', title: this.translationService.translate('common.error_title'), text: err?.error?.error || this.translationService.translate('register.error'),
+            confirmButtonText: this.translationService.translate('common.ok'), confirmButtonColor: 'var(--sz-accent)',
           });
         }
       },

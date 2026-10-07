@@ -57,7 +57,7 @@ export class CartService {
   /** Validates a coupon against the server and applies its percentage on success. */
   validatePromo(code: string): Observable<{ valid: boolean; error?: string }> {
     const trimmed = code.trim();
-    if (!trimmed) return of({ valid: false, error: 'الكود مطلوب' });
+    if (!trimmed) return of({ valid: false, error: this.translationService.translate('cart.promo_required') });
     return this.http
       .post<{ valid: boolean; discountPercentage?: number; error?: string }>(
         `${API_CONFIG.couponsUrl}/validate`,
@@ -72,7 +72,7 @@ export class CartService {
           }
         }),
         map(res => ({ valid: !!res.valid, error: res.error })),
-        catchError(err => of({ valid: false, error: err?.error?.error || 'الكود غير صحيح' }))
+        catchError(err => of({ valid: false, error: err?.error?.error || this.translationService.translate('cart.promo_error') }))
       );
   }
 

@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthDrawerService, AuthDrawerView } from '../../../core/services/auth-drawer.service';
 import { SiteSettingsService } from '../../../core/services/settings.service';
+import { TranslationService } from '../../../core/services/translation.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { CldImagePipe } from '../../pipes/cld-image.pipe';
 
@@ -21,6 +22,7 @@ export class AuthDrawerComponent implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private authService = inject(AuthService);
   private settingsService = inject(SiteSettingsService);
+  private translationService = inject(TranslationService);
   drawerService = inject(AuthDrawerService);
 
   logoUrl = 'assets/logobluewithoutbg.png';
@@ -151,7 +153,7 @@ export class AuthDrawerComponent implements OnInit {
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = err?.error?.error || 'حدث خطأ أثناء التسجيل';
+        this.errorMessage = err?.error?.error || this.translationService.translate('register.error');
         this.cdr.markForCheck();
       }
     });
@@ -178,7 +180,7 @@ export class AuthDrawerComponent implements OnInit {
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = err?.error?.error || 'حدث خطأ';
+        this.errorMessage = err?.error?.error || this.translationService.translate('common.error_message');
         this.cdr.markForCheck();
       }
     });
@@ -206,7 +208,7 @@ export class AuthDrawerComponent implements OnInit {
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = err?.error?.error || 'حدث خطأ';
+        this.errorMessage = err?.error?.error || this.translationService.translate('common.error_message');
         this.cdr.markForCheck();
       }
     });

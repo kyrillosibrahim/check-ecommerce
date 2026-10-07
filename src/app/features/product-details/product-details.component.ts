@@ -14,8 +14,10 @@ import { SeoService } from '../../core/services/seo.service';
 import { SiteSettingsService } from '../../core/services/settings.service';
 import { ReviewService } from '../../core/services/review.service';
 import { AlertService } from '../../core/services/alert.service';
+import { CategoryService } from '../../core/services/category.service';
 import { IProduct } from '../../core/models/product.model';
 import { IReview } from '../../core/models/review.model';
+import { ICategory } from '../../core/models/category.model';
 import { unitPriceAfterDiscount } from '../../core/utils/pricing.util';
 import { ImageGalleryComponent } from './components/image-gallery/image-gallery.component';
 import { RelatedProductsComponent } from './components/related-products/related-products.component';
@@ -51,6 +53,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   private wishlistService = inject(WishlistService);
   private reviewService = inject(ReviewService);
   private alertService = inject(AlertService);
+  private categoryService = inject(CategoryService);
 
   private seoService = inject(SeoService);
   private settingsService = inject(SiteSettingsService);
@@ -65,6 +68,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   displayProduct: IProduct | undefined;
   selectedVariantId: string | null = null;
   relatedProducts: IProduct[] = [];
+  categories: ICategory[] = [];
   quantity = 1;
   isLoading = signal(true);
   descriptionHtml: SafeHtml = '';
@@ -136,7 +140,13 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   }
 
   initial(name: string): string {
-    return (name || '؟').trim().charAt(0).toUpperCase();
+    return (name || this.translationService.translate('common.unknown_initial')).trim().charAt(0).toUpperCase();
+  }
+
+  get productCategoryName(): string {
+    const category = this.categories.find(c => c.slug === this.product?.category);
+    if (!category) return this.product?.category || '';
+    return this.translationService.isArabic() ? category.name : (category.nameEn || category.name);
   }
 
   markReviewHelpful(review: IReview): void {
@@ -315,6 +325,12 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(settings => {
         this.ourLogoUrl = this.settingsService.getLogoUrl(settings.logo) || this.ourLogoUrl;
+        this.cdr.markForCheck();
+      });
+    this.categoryService.getAll()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(categories => {
+        this.categories = categories;
         this.cdr.markForCheck();
       });
     this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {

@@ -14,7 +14,7 @@
   <div class="d-lg-none mb-3">
     <button class="btn btn-filter-mobile" (click)="openFilterDrawer()">
       <i class="bi bi-funnel"></i>
-      فلتر
+      {{ 'common.filter' | translate }}
       @if (activeFilterCount > 0) {
         <span class="filter-badge">{{ activeFilterCount }}</span>
       }
@@ -29,7 +29,7 @@
   <!-- Mobile filter drawer -->
   <div class="filter-drawer" [class.open]="showFilterDrawer">
     <div class="filter-drawer-header">
-      <h5 class="m-0 fw-bold">فلتر</h5>
+      <h5 class="m-0 fw-bold">{{ 'common.filter' | translate }}</h5>
       <button class="filter-drawer-close" (click)="closeFilterDrawer()">
         <i class="bi bi-x-lg"></i>
       </button>
@@ -46,7 +46,7 @@
             </span>
           }
           <button class="btn btn-sm btn-link text-decoration-none clear-all-btn p-0" (click)="clearAllFilters()">
-            مسح الكل
+            {{ 'common.clear_all' | translate }}
           </button>
         </div>
       }
@@ -79,30 +79,30 @@
                     [class.is-open]="isFilterMenuOpen('sort')"
                     [class.is-active]="sortBy !== 'default'"
                     (click)="toggleFilterMenu('sort')">
-              <span>الترتيب</span>
+              <span>{{ 'offers.sort_label' | translate }}</span>
               <i class="bi bi-chevron-down hfilter-caret"></i>
             </button>
             @if (isFilterMenuOpen('sort')) {
               <div class="hfilter-menu">
                 <label class="sidebar-radio-item">
                   <input type="radio" name="hsort" [checked]="sortBy === 'default'" (change)="onSortChange('default'); closeFilterMenus()">
-                  <span>الافتراضي</span>
+                  <span>{{ 'filter.sort_default' | translate }}</span>
                 </label>
                 <label class="sidebar-radio-item">
                   <input type="radio" name="hsort" [checked]="sortBy === 'price-low'" (change)="onSortChange('price-low'); closeFilterMenus()">
-                  <span>السعر: من الأقل للأعلى</span>
+                  <span>{{ 'filter.sort_price_low' | translate }}</span>
                 </label>
                 <label class="sidebar-radio-item">
                   <input type="radio" name="hsort" [checked]="sortBy === 'price-high'" (change)="onSortChange('price-high'); closeFilterMenus()">
-                  <span>السعر: من الأعلى للأقل</span>
+                  <span>{{ 'filter.sort_price_high' | translate }}</span>
                 </label>
                 <label class="sidebar-radio-item">
                   <input type="radio" name="hsort" [checked]="sortBy === 'name-az'" (change)="onSortChange('name-az'); closeFilterMenus()">
-                  <span>الاسم</span>
+                  <span>{{ 'register.name' | translate }}</span>
                 </label>
                 <label class="sidebar-radio-item">
                   <input type="radio" name="hsort" [checked]="sortBy === 'rating'" (change)="onSortChange('rating'); closeFilterMenus()">
-                  <span>التقييم</span>
+                  <span>{{ 'filter.sort_rating_label' | translate }}</span>
                 </label>
               </div>
             }
@@ -114,7 +114,7 @@
                     [class.is-open]="isFilterMenuOpen('price')"
                     [class.is-active]="selectedPriceRanges.length > 0"
                     (click)="toggleFilterMenu('price')">
-              <span>السعر</span>
+              <span>{{ 'cart.price' | translate }}</span>
               @if (selectedPriceRanges.length > 0) {
                 <span class="hfilter-count">{{ selectedPriceRanges.length }}</span>
               }
@@ -139,7 +139,7 @@
                     [class.is-open]="isFilterMenuOpen('availability')"
                     [class.is-active]="selectedAvailability.length > 0"
                     (click)="toggleFilterMenu('availability')">
-              <span>التوفر</span>
+              <span>{{ 'wholesale.availability' | translate }}</span>
               @if (selectedAvailability.length > 0) {
                 <span class="hfilter-count">{{ selectedAvailability.length }}</span>
               }
@@ -165,7 +165,7 @@
                       [class.is-open]="isFilterMenuOpen('brand')"
                       [class.is-active]="selectedBrands.length > 0"
                       (click)="toggleFilterMenu('brand')">
-                <span>العلامة التجارية</span>
+                <span>{{ 'nav.brand_label' | translate }}</span>
                 @if (selectedBrands.length > 0) {
                   <span class="hfilter-count">{{ selectedBrands.length }}</span>
                 }
@@ -177,7 +177,7 @@
                     <input
                       type="text"
                       class="form-control form-control-sm brand-search-input"
-                      placeholder="ابحث عن علامة تجارية..."
+                      [placeholder]="'brands.search_placeholder' | translate"
                       [value]="brandSearchTerm"
                       (input)="onBrandSearch($any($event.target).value)">
                     <i class="bi bi-search brand-search-icon"></i>
@@ -191,7 +191,7 @@
                       </label>
                     }
                     @if (filteredBrandList.length === 0) {
-                      <p class="text-muted small text-center my-2">لا توجد نتائج</p>
+                      <p class="text-muted small text-center my-2">{{ 'common.no_results' | translate }}</p>
                     }
                   </div>
                 </div>
@@ -206,7 +206,7 @@
                       [class.is-open]="isFilterMenuOpen('filterTags')"
                       [class.is-active]="selectedFilterTags.length > 0"
                       (click)="toggleFilterMenu('filterTags')">
-                <span>الفلاتر</span>
+                <span>{{ 'wholesale.filters' | translate }}</span>
                 @if (selectedFilterTags.length > 0) {
                   <span class="hfilter-count">{{ selectedFilterTags.length }}</span>
                 }
@@ -238,7 +238,7 @@
               </span>
             }
             <button class="btn btn-sm btn-link text-decoration-none clear-all-btn p-0" (click)="clearAllFilters()">
-              مسح الكل
+              {{ 'common.clear_all' | translate }}
             </button>
           </div>
         }
@@ -262,7 +262,7 @@
               </span>
             }
             <button class="btn btn-sm btn-link text-decoration-none clear-all-btn p-0" (click)="clearAllFilters()">
-              مسح الكل
+              {{ 'common.clear_all' | translate }}
             </button>
           </div>
         </div>
@@ -300,7 +300,7 @@
         @if (isLoadingMore()) {
           <div class="d-flex justify-content-center py-4">
             <div class="spinner-border text-primary" role="status">
-              <span class="visually-hidden">جارٍ التحميل...</span>
+              <span class="visually-hidden">{{ 'common.loading' | translate }}</span>
             </div>
           </div>
         }
@@ -319,30 +319,30 @@
   <!-- Sort section -->
   <div class="sidebar-section">
     <button class="sidebar-section-header" (click)="toggleSection('sort')">
-      <span> الترتيب</span>
+      <span> {{ 'offers.sort_label' | translate }}</span>
       <i class="bi" [class.bi-chevron-up]="sidebarSections['sort']" [class.bi-chevron-down]="!sidebarSections['sort']"></i>
     </button>
     @if (sidebarSections['sort']) {
       <div class="sidebar-section-body">
         <label class="sidebar-radio-item">
           <input type="radio" name="sort" [checked]="sortBy === 'default'" (change)="onSortChange('default')">
-          <span>الافتراضي</span>
+          <span>{{ 'filter.sort_default' | translate }}</span>
         </label>
         <label class="sidebar-radio-item">
           <input type="radio" name="sort" [checked]="sortBy === 'price-low'" (change)="onSortChange('price-low')">
-          <span>السعر: من الأقل للأعلى</span>
+          <span>{{ 'filter.sort_price_low' | translate }}</span>
         </label>
         <label class="sidebar-radio-item">
           <input type="radio" name="sort" [checked]="sortBy === 'price-high'" (change)="onSortChange('price-high')">
-          <span>السعر: من الأعلى للأقل</span>
+          <span>{{ 'filter.sort_price_high' | translate }}</span>
         </label>
         <label class="sidebar-radio-item">
           <input type="radio" name="sort" [checked]="sortBy === 'name-az'" (change)="onSortChange('name-az')">
-          <span>الاسم</span>
+          <span>{{ 'register.name' | translate }}</span>
         </label>
         <label class="sidebar-radio-item">
           <input type="radio" name="sort" [checked]="sortBy === 'rating'" (change)="onSortChange('rating')">
-          <span>التقييم</span>
+          <span>{{ 'filter.sort_rating_label' | translate }}</span>
         </label>
       </div>
     }
@@ -351,7 +351,7 @@
   <!-- Price range section -->
   <div class="sidebar-section">
     <button class="sidebar-section-header" (click)="toggleSection('price')">
-      <span> السعر</span>
+      <span> {{ 'cart.price' | translate }}</span>
       <i class="bi" [class.bi-chevron-up]="sidebarSections['price']" [class.bi-chevron-down]="!sidebarSections['price']"></i>
     </button>
     @if (sidebarSections['price']) {
@@ -370,7 +370,7 @@
   <!-- Availability section -->
   <div class="sidebar-section">
     <button class="sidebar-section-header" (click)="toggleSection('availability')">
-      <span> التوفر</span>
+      <span> {{ 'wholesale.availability' | translate }}</span>
       <i class="bi" [class.bi-chevron-up]="sidebarSections['availability']" [class.bi-chevron-down]="!sidebarSections['availability']"></i>
     </button>
     @if (sidebarSections['availability']) {
@@ -390,7 +390,7 @@
   @if (brandList.length > 0) {
     <div class="sidebar-section">
       <button class="sidebar-section-header" (click)="toggleSection('brand')">
-        <span> العلامة التجارية</span>
+        <span> {{ 'nav.brand_label' | translate }}</span>
         <i class="bi" [class.bi-chevron-up]="sidebarSections['brand']" [class.bi-chevron-down]="!sidebarSections['brand']"></i>
       </button>
       @if (sidebarSections['brand']) {
@@ -399,7 +399,7 @@
             <input
               type="text"
               class="form-control form-control-sm brand-search-input"
-              placeholder="ابحث عن علامة تجارية..."
+              [placeholder]="'brands.search_placeholder' | translate"
               [value]="brandSearchTerm"
               (input)="onBrandSearch($any($event.target).value)">
             <i class="bi bi-search brand-search-icon"></i>
@@ -413,7 +413,7 @@
               </label>
             }
             @if (filteredBrandList.length === 0) {
-              <p class="text-muted small text-center my-2">لا توجد نتائج</p>
+              <p class="text-muted small text-center my-2">{{ 'common.no_results' | translate }}</p>
             }
           </div>
         </div>
@@ -425,7 +425,7 @@
   @if (availableFilterTags.length > 0) {
     <div class="sidebar-section">
       <button class="sidebar-section-header" (click)="toggleSection('filterTags')">
-        <span> الفلاتر</span>
+        <span> {{ 'wholesale.filters' | translate }}</span>
         <i class="bi" [class.bi-chevron-up]="sidebarSections['filterTags']" [class.bi-chevron-down]="!sidebarSections['filterTags']"></i>
       </button>
       @if (sidebarSections['filterTags']) {

@@ -32,8 +32,8 @@ export class BrandsComponent implements OnInit {
 
   ngOnInit(): void {
     this.seoService.setPageMeta({
-      title: 'العلامات التجارية',
-      description: 'تصفح جميع العلامات التجارية المتوفرة في كل قسم.',
+      title: this.translationService.translate('nav.brands'),
+      description: this.translationService.translate('seo.brands_description'),
       path: '/brands',
     });
 

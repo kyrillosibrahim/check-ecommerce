@@ -2,8 +2,8 @@
 
   <header class="dom-header">
     <div>
-      <h3>الطلب المباشر</h3>
-      <p>اطلب المنتج مباشرة بدون إنشاء حساب</p>
+      <h3>{{ 'details.direct_order' | translate }}</h3>
+      <p>{{ 'direct_order.subtitle' | translate }}</p>
     </div>
   </header>
 
@@ -13,15 +13,15 @@
 
       <div class="dom-row">
         <div class="dom-field">
-          <label>الاسم</label>
+          <label>{{ 'register.name' | translate }}</label>
           <div class="dom-input-wrap">
             <i class="bi bi-person dom-input-icon"></i>
-            <input type="text" class="dom-input" formControlName="name" placeholder="الاسم بالكامل">
+            <input type="text" class="dom-input" formControlName="name" [placeholder]="'direct_order.full_name_placeholder' | translate">
           </div>
         </div>
 
         <div class="dom-field">
-          <label>رقم الهاتف (واتساب)</label>
+          <label>{{ 'direct_order.whatsapp_phone' | translate }}</label>
           <div class="dom-input-wrap">
             <i class="bi bi-whatsapp dom-input-icon"></i>
             <input type="tel" class="dom-input" formControlName="phone" placeholder="01XXXXXXXXX" dir="ltr">
@@ -31,7 +31,7 @@
 
       <div class="dom-row">
         <div class="dom-field">
-          <label>رقم هاتف بديل <span class="dom-optional">(اختياري)</span></label>
+          <label>{{ 'direct_order.alt_phone' | translate }} <span class="dom-optional">{{ 'common.optional' | translate }}</span></label>
           <div class="dom-input-wrap">
             <i class="bi bi-telephone dom-input-icon"></i>
             <input type="tel" class="dom-input" formControlName="altPhone" placeholder="01XXXXXXXXX" dir="ltr">
@@ -39,11 +39,11 @@
         </div>
 
         <div class="dom-field">
-          <label>المحافظة</label>
+          <label>{{ 'profile.governorate' | translate }}</label>
           <div class="dom-input-wrap">
             <i class="bi bi-geo-alt dom-input-icon"></i>
             <select class="dom-input dom-select" formControlName="governorate" (change)="onGovernorateChange()">
-              <option value="" disabled>اختر المحافظة</option>
+              <option value="" disabled>{{ 'checkout.select_governorate' | translate }}</option>
               @for (gov of governorates; track gov.id) {
                 <option [value]="gov.governorate_name_en">{{ gov.governorate_name_ar }}</option>
               }
@@ -54,11 +54,11 @@
       </div>
 
       <div class="dom-field">
-        <label>المدينة</label>
+        <label>{{ 'profile.city' | translate }}</label>
         <div class="dom-input-wrap">
           <i class="bi bi-buildings dom-input-icon"></i>
           <select class="dom-input dom-select" formControlName="city" [disabled]="cities.length === 0">
-            <option value="" disabled>اختر المدينة</option>
+            <option value="" disabled>{{ 'checkout.select_city' | translate }}</option>
             @for (city of cities; track city.id) {
               <option [value]="city.city_name_en">{{ city.city_name_ar }}</option>
             }
@@ -69,28 +69,28 @@
 
       <div class="dom-field">
         <div class="dom-label-row">
-          <label>العنوان بالتفصيل</label>
+          <label>{{ 'profile.detailed_address' | translate }}</label>
           <button type="button" class="dom-gps-btn" (click)="useCurrentLocation()" [disabled]="locating()">
             @if (locating()) {
               <span class="spinner-border spinner-border-sm"></span>
             } @else {
               <i class="bi bi-geo-alt"></i>
             }
-            موقعك الحالي
+            {{ 'profile.current_location' | translate }}
           </button>
         </div>
-        <textarea class="dom-input dom-textarea" formControlName="address" rows="3" placeholder="الشارع، رقم المبنى، الدور..."></textarea>
+        <textarea class="dom-input dom-textarea" formControlName="address" rows="3" [placeholder]="'profile.address_placeholder' | translate"></textarea>
       </div>
 
       <!-- Payment method -->
       <div class="dom-field">
-        <label>طريقة الدفع</label>
+        <label>{{ 'checkout.payment_method' | translate }}</label>
         <div class="dom-payment-grid">
           <button type="button" class="dom-pay-card" [class.active]="paymentMethod() === 'cod'" (click)="selectPayment('cod')">
             <div class="dom-radio"><span></span></div>
             <div class="dom-pay-body">
-              <span class="dom-pay-title">الدفع عند الاستلام</span>
-              <span class="dom-pay-sub">ادفع نقدًا عند استلام الطلب</span>
+              <span class="dom-pay-title">{{ 'checkout.cod' | translate }}</span>
+              <span class="dom-pay-sub">{{ 'direct_order.cod_desc' | translate }}</span>
             </div>
             <i class="bi bi-cash-coin dom-pay-icon"></i>
           </button>
@@ -100,9 +100,9 @@
             <div class="dom-pay-body">
               <span class="dom-pay-title">
                 INSTAPAY
-                <span class="dom-pay-badge">خصم 50% على الشحن</span>
+                <span class="dom-pay-badge">{{ 'direct_order.instapay_badge' | translate }}</span>
               </span>
-              <span class="dom-pay-sub">الطلب عن طريق إنستاباي يضمن خصم 50% من قيمة الشحن</span>
+              <span class="dom-pay-sub">{{ 'direct_order.instapay_desc' | translate }}</span>
             </div>
             <i class="bi bi-credit-card dom-pay-icon"></i>
           </button>
@@ -112,18 +112,18 @@
       <!-- Totals -->
       @if (selectedGov) {
         <div class="dom-totals">
-          <div class="dom-total-row"><span>المجموع</span><span>{{ subtotal | number:'1.0-0' }} ج.م</span></div>
-          <div class="dom-total-row"><span>الشحن</span><span>{{ shippingCost | number:'1.0-0' }} ج.م</span></div>
-          <div class="dom-total-row dom-grand"><span>الإجمالي</span><span>{{ total | number:'1.0-0' }} ج.م</span></div>
+          <div class="dom-total-row"><span>{{ 'direct_order.subtotal' | translate }}</span><span>{{ subtotal | egpCurrency }}</span></div>
+          <div class="dom-total-row"><span>{{ 'cart.shipping' | translate }}</span><span>{{ shippingCost | egpCurrency }}</span></div>
+          <div class="dom-total-row dom-grand"><span>{{ 'nav.total' | translate }}</span><span>{{ total | egpCurrency }}</span></div>
         </div>
       }
 
       <button type="submit" class="dom-buy-btn" [disabled]="form.invalid || submitting()">
         @if (submitting()) {
           <span class="spinner-border spinner-border-sm me-2"></span>
-          جاري إرسال الطلب...
+          {{ 'direct_order.submitting' | translate }}
         } @else {
-          <i class="bi bi-bag-check me-2"></i>اشترِ الآن
+          <i class="bi bi-bag-check me-2"></i>{{ 'direct_order.buy_now' | translate }}
         }
       </button>
     </form>

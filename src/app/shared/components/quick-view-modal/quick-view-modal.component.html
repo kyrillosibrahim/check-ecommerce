@@ -8,7 +8,7 @@
       <div class="quick-view-content">
         <!-- Image -->
         <div class="quick-view-image">
-          <img [src]="getImage(product) | cldImage:600" [alt]="product.title" />
+          <img [src]="getImage(product) | cldImage:600" [alt]="product.title | localize:product.titleAr" />
         </div>
 
         <!-- Details -->
@@ -31,7 +31,7 @@
               @if (product.minWholesaleQuantity && product.minWholesaleQuantity > 0) {
                 <div class="wholesale-discount-msg mt-2">
                   <i class="bi bi-tag-fill me-1"></i>
-                  خصم على المنتج عند شراء {{ product.minWholesaleQuantity }} قطعة
+                  {{ 'product.wholesale_discount_prefix' | translate }} {{ product.minWholesaleQuantity }} {{ 'product.wholesale_discount_suffix' | translate }}
                 </div>
               }
             } @else if (hasDiscount(product)) {

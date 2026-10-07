@@ -85,19 +85,19 @@ export class OffersComponent implements OnInit, AfterViewInit, OnDestroy {
   };
 
   priceRanges: PriceRange[] = [
-    { label: 'من 0 إلى 500', min: 0, max: 500, count: 0 },
-    { label: 'من 500 إلى 1000', min: 500, max: 1000, count: 0 },
-    { label: 'من 1000 إلى 1500', min: 1000, max: 1500, count: 0 },
-    { label: 'من 1500 إلى 2000', min: 1500, max: 2000, count: 0 },
-    { label: 'من 2000 إلى 2500', min: 2000, max: 2500, count: 0 },
-    { label: 'من 2500 إلى 3000', min: 2500, max: 3000, count: 0 },
-    { label: 'من 3000 إلى 3500', min: 3000, max: 3500, count: 0 },
+    { label: this.translationService.translate('filter.price_0_500'), min: 0, max: 500, count: 0 },
+    { label: this.translationService.translate('filter.price_500_1000'), min: 500, max: 1000, count: 0 },
+    { label: this.translationService.translate('filter.price_1000_1500'), min: 1000, max: 1500, count: 0 },
+    { label: this.translationService.translate('filter.price_1500_2000'), min: 1500, max: 2000, count: 0 },
+    { label: this.translationService.translate('filter.price_2000_2500'), min: 2000, max: 2500, count: 0 },
+    { label: this.translationService.translate('filter.price_2500_3000'), min: 2500, max: 3000, count: 0 },
+    { label: this.translationService.translate('filter.price_3000_3500'), min: 3000, max: 3500, count: 0 },
   ];
   selectedPriceRanges: PriceRange[] = [];
 
   availabilityFilters = [
-    { label: 'متوفر', value: 'in-stock', count: 0 },
-    { label: 'غير متوفر', value: 'out-of-stock', count: 0 },
+    { label: this.translationService.translate('filter.in_stock'), value: 'in-stock', count: 0 },
+    { label: this.translationService.translate('filter.out_of_stock'), value: 'out-of-stock', count: 0 },
   ];
   selectedAvailability: string[] = [];
 
@@ -109,11 +109,11 @@ export class OffersComponent implements OnInit, AfterViewInit, OnDestroy {
   categoryCounts: { slug: string; name: string; count: number }[] = [];
 
   private readonly baseDiscountImages = [
-    { src: '/assets/offers/10-removebg-preview.png', alt: '10% خصم' },
-    { src: '/assets/offers/20-removebg-preview.png', alt: '20% خصم' },
-    { src: '/assets/offers/30-removebg-preview.png', alt: '30% خصم' },
-    { src: '/assets/offers/40-removebg-preview.png', alt: '40% خصم' },
-    { src: '/assets/offers/images-removebg-preview_LE_upscale_prime_light_ai_100_remove_background_general_clip_to_object_off.png', alt: 'تخفيضات' },
+    { src: '/assets/offers/10-removebg-preview.png', alt: `10% ${this.translationService.translate('details.off')}` },
+    { src: '/assets/offers/20-removebg-preview.png', alt: `20% ${this.translationService.translate('details.off')}` },
+    { src: '/assets/offers/30-removebg-preview.png', alt: `30% ${this.translationService.translate('details.off')}` },
+    { src: '/assets/offers/40-removebg-preview.png', alt: `40% ${this.translationService.translate('details.off')}` },
+    { src: '/assets/offers/images-removebg-preview_LE_upscale_prime_light_ai_100_remove_background_general_clip_to_object_off.png', alt: this.translationService.translate('offers.discounts_alt') },
   ];
 
   readonly marqueeSet = Array.from({ length: 20 }, () => this.baseDiscountImages).flat();
@@ -132,8 +132,7 @@ export class OffersComponent implements OnInit, AfterViewInit, OnDestroy {
     const filters: { label: string; type: string; value: string }[] = [];
 
     if (this.selectedCategory) {
-      const cat = this.categories.find(c => c.slug === this.selectedCategory);
-      filters.push({ label: cat?.name || this.selectedCategory, type: 'category', value: this.selectedCategory });
+      filters.push({ label: this.formatCategoryName(this.selectedCategory), type: 'category', value: this.selectedCategory });
     }
     for (const pr of this.selectedPriceRanges) {
       filters.push({ label: pr.label, type: 'price', value: pr.label });
@@ -150,13 +149,17 @@ export class OffersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.seoService.setPageMeta({
-      title: 'العروض والخصومات',
-      description: 'اكتشف أقوى العروض والخصومات على جميع المنتجات. وفر أكثر مع عروض حصرية يومية.',
+      title: this.translationService.translate('offers.title'),
+      description: this.translationService.translate('seo.offers_description'),
       path: '/offers',
     });
     this.bannerService.getByPage('offers').pipe(takeUntilDestroyed(this.destroyRef)).subscribe(b => this.banners.set(b));
     this.categoryService.getAll().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(c => {
       this.categories = c;
+      this.categoryCounts = this.categoryCounts.map(category => ({
+        ...category,
+        name: this.formatCategoryName(category.slug),
+      }));
       this.cdr.markForCheck();
     });
     this.fetchFromServer();
@@ -351,7 +354,8 @@ export class OffersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   formatCategoryName(slug: string): string {
     const cat = this.categories.find(c => c.slug === slug);
-    return cat?.name || slug.replaceAll('-', ' ');
+    if (!cat) return slug.replaceAll('-', ' ');
+    return this.translationService.isArabic() ? cat.name : (cat.nameEn || cat.name);
   }
 
   private fetchFromServer(append = false): void {

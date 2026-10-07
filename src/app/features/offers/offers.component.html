@@ -73,7 +73,7 @@
       <div class="d-lg-none mb-3">
         <button class="btn btn-filter-mobile" (click)="openFilterDrawer()">
           <i class="bi bi-funnel"></i>
-          فلتر
+          {{ 'common.filter' | translate }}
           @if (activeFilterCount > 0) {
             <span class="filter-badge">{{ activeFilterCount }}</span>
           }
@@ -88,7 +88,7 @@
       <!-- Mobile filter drawer -->
       <div class="filter-drawer" [class.open]="showFilterDrawer">
         <div class="filter-drawer-header">
-          <h5 class="m-0 fw-bold">فلتر</h5>
+          <h5 class="m-0 fw-bold">{{ 'common.filter' | translate }}</h5>
           <button class="filter-drawer-close" (click)="closeFilterDrawer()">
             <i class="bi bi-x-lg"></i>
           </button>
@@ -105,7 +105,7 @@
                 </span>
               }
               <button class="btn btn-sm btn-link text-decoration-none clear-all-btn p-0" (click)="clearAllFilters()">
-                مسح الكل
+                {{ 'common.clear_all' | translate }}
               </button>
             </div>
           }
@@ -172,7 +172,7 @@
                   <button type="button" class="hfilter-chip"
                           [class.is-open]="isFilterMenuOpen('category')"
                           (click)="toggleFilterMenu('category')">
-                    <span>القسم</span>
+                    <span>{{ 'filter.category' | translate }}</span>
                     <i class="bi bi-chevron-down hfilter-caret"></i>
                   </button>
                   @if (isFilterMenuOpen('category')) {
@@ -195,7 +195,7 @@
                         [class.is-open]="isFilterMenuOpen('price')"
                         [class.is-active]="selectedPriceRanges.length > 0"
                         (click)="toggleFilterMenu('price')">
-                  <span>السعر</span>
+                  <span>{{ 'cart.price' | translate }}</span>
                   @if (selectedPriceRanges.length > 0) {
                     <span class="hfilter-count">{{ selectedPriceRanges.length }}</span>
                   }
@@ -220,7 +220,7 @@
                         [class.is-open]="isFilterMenuOpen('availability')"
                         [class.is-active]="selectedAvailability.length > 0"
                         (click)="toggleFilterMenu('availability')">
-                  <span>التوفر</span>
+                  <span>{{ 'wholesale.availability' | translate }}</span>
                   @if (selectedAvailability.length > 0) {
                     <span class="hfilter-count">{{ selectedAvailability.length }}</span>
                   }
@@ -246,7 +246,7 @@
                           [class.is-open]="isFilterMenuOpen('brand')"
                           [class.is-active]="selectedBrands.length > 0"
                           (click)="toggleFilterMenu('brand')">
-                    <span>العلامة التجارية</span>
+                    <span>{{ 'nav.brand_label' | translate }}</span>
                     @if (selectedBrands.length > 0) {
                       <span class="hfilter-count">{{ selectedBrands.length }}</span>
                     }
@@ -258,7 +258,7 @@
                         <input
                           type="text"
                           class="form-control form-control-sm brand-search-input"
-                          placeholder="ابحث عن علامة تجارية..."
+                          [placeholder]="'brands.search_placeholder' | translate"
                           [value]="brandSearchTerm"
                           (input)="onBrandSearch($any($event.target).value)">
                         <i class="bi bi-search brand-search-icon"></i>
@@ -272,7 +272,7 @@
                           </label>
                         }
                         @if (filteredBrandList.length === 0) {
-                          <p class="text-muted small text-center my-2">لا توجد نتائج</p>
+                          <p class="text-muted small text-center my-2">{{ 'common.no_results' | translate }}</p>
                         }
                       </div>
                     </div>
@@ -293,7 +293,7 @@
                   </span>
                 }
                 <button class="btn btn-sm btn-link text-decoration-none clear-all-btn p-0" (click)="clearAllFilters()">
-                  مسح الكل
+                  {{ 'common.clear_all' | translate }}
                 </button>
               </div>
             }
@@ -317,7 +317,7 @@
                   </span>
                 }
                 <button class="btn btn-sm btn-link text-decoration-none clear-all-btn p-0" (click)="clearAllFilters()">
-                  مسح الكل
+                  {{ 'common.clear_all' | translate }}
                 </button>
               </div>
             </div>
@@ -351,7 +351,7 @@
             @if (isLoadingMore()) {
               <div class="d-flex justify-content-center py-4">
                 <div class="spinner" role="status">
-                  <span class="visually-hidden">جارٍ التحميل...</span>
+                  <span class="visually-hidden">{{ 'common.loading' | translate }}</span>
                 </div>
               </div>
             }
@@ -372,7 +372,7 @@
   <!-- Sort section -->
   <div class="sidebar-section">
     <button class="sidebar-section-header" (click)="toggleSection('sort')">
-      <span><i class="bi bi-sort-down ms-1"></i> الترتيب</span>
+      <span><i class="bi bi-sort-down ms-1"></i> {{ 'offers.sort_label' | translate }}</span>
       <i class="bi" [class.bi-chevron-up]="sidebarSections['sort']" [class.bi-chevron-down]="!sidebarSections['sort']"></i>
     </button>
     @if (sidebarSections['sort']) {
@@ -405,7 +405,7 @@
   @if (categoryCounts.length > 0 && !selectedCategory) {
     <div class="sidebar-section">
       <button class="sidebar-section-header" (click)="toggleSection('category')">
-        <span><i class="bi bi-grid ms-1"></i> القسم</span>
+        <span><i class="bi bi-grid ms-1"></i> {{ 'filter.category' | translate }}</span>
         <i class="bi" [class.bi-chevron-up]="sidebarSections['category']" [class.bi-chevron-down]="!sidebarSections['category']"></i>
       </button>
       @if (sidebarSections['category']) {
@@ -425,7 +425,7 @@
   <!-- Price range section -->
   <div class="sidebar-section">
     <button class="sidebar-section-header" (click)="toggleSection('price')">
-      <span><i class="bi bi-currency-dollar ms-1"></i> السعر</span>
+      <span><i class="bi bi-currency-dollar ms-1"></i> {{ 'cart.price' | translate }}</span>
       <i class="bi" [class.bi-chevron-up]="sidebarSections['price']" [class.bi-chevron-down]="!sidebarSections['price']"></i>
     </button>
     @if (sidebarSections['price']) {
@@ -444,7 +444,7 @@
   <!-- Availability section -->
   <div class="sidebar-section">
     <button class="sidebar-section-header" (click)="toggleSection('availability')">
-      <span><i class="bi bi-box-seam ms-1"></i> التوفر</span>
+      <span><i class="bi bi-box-seam ms-1"></i> {{ 'wholesale.availability' | translate }}</span>
       <i class="bi" [class.bi-chevron-up]="sidebarSections['availability']" [class.bi-chevron-down]="!sidebarSections['availability']"></i>
     </button>
     @if (sidebarSections['availability']) {
@@ -464,7 +464,7 @@
   @if (brandList.length > 0) {
     <div class="sidebar-section">
       <button class="sidebar-section-header" (click)="toggleSection('brand')">
-        <span><i class="bi bi-award ms-1"></i> العلامة التجارية</span>
+        <span><i class="bi bi-award ms-1"></i> {{ 'nav.brand_label' | translate }}</span>
         <i class="bi" [class.bi-chevron-up]="sidebarSections['brand']" [class.bi-chevron-down]="!sidebarSections['brand']"></i>
       </button>
       @if (sidebarSections['brand']) {
@@ -473,7 +473,7 @@
             <input
               type="text"
               class="form-control form-control-sm brand-search-input"
-              placeholder="ابحث عن علامة تجارية..."
+              [placeholder]="'brands.search_placeholder' | translate"
               [value]="brandSearchTerm"
               (input)="onBrandSearch($any($event.target).value)">
             <i class="bi bi-search brand-search-icon"></i>
@@ -487,7 +487,7 @@
               </label>
             }
             @if (filteredBrandList.length === 0) {
-              <p class="text-muted small text-center my-2">لا توجد نتائج</p>
+              <p class="text-muted small text-center my-2">{{ 'common.no_results' | translate }}</p>
             }
           </div>
         </div>

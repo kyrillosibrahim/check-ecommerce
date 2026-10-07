@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CategoryService } from '../../core/services/category.service';
 import { SeoService } from '../../core/services/seo.service';
+import { TranslationService } from '../../core/services/translation.service';
 import { ICategory } from '../../core/models/category.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { CldImagePipe } from '../../shared/pipes/cld-image.pipe';
@@ -23,6 +24,7 @@ export class CategoriesComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private categoryService = inject(CategoryService);
   private seoService = inject(SeoService);
+  private translationService = inject(TranslationService);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   categories = signal<ICategory[]>([]);
@@ -37,8 +39,8 @@ export class CategoriesComponent implements OnInit {
 
   ngOnInit(): void {
     this.seoService.setPageMeta({
-      title: 'الأقسام',
-      description: 'تصفح جميع الأقسام والأقسام الفرعية وأشهر الماركات.',
+      title: this.translationService.translate('nav.categories'),
+      description: this.translationService.translate('seo.categories_description'),
       path: '/categories',
     });
 

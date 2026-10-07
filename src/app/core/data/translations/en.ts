@@ -35,6 +35,29 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'nav.brands': 'Brands',
   'nav.wholesale_offers': 'Wholesale Offers',
 
+  // ── Common ──
+  'common.filter': 'Filter',
+  'common.clear_all': 'Clear all',
+  'common.no_results': 'No results',
+  'common.loading': 'Loading...',
+  'common.ok': 'OK',
+  'common.error_title': 'Error',
+  'common.warning_title': 'Warning',
+  'common.edit': 'Edit',
+  'common.cancel': 'Cancel',
+  'common.optional': '(Optional)',
+  'common.error_message': 'An error occurred',
+  'common.unknown_initial': '?',
+  'common.banner': 'Banner',
+  'common.address_separator': ',',
+
+  // ── SEO ──
+  'seo.products_description': 'Browse all available products at the best prices. Use advanced filters to search by category and brand.',
+  'seo.offers_description': 'Discover the biggest offers and discounts on all products. Save more with exclusive daily deals.',
+  'seo.home_description': 'Check - your online shopping destination. Discover the best products at the best prices with fast shipping across Egypt.',
+  'seo.categories_description': 'Browse all categories, subcategories, and top brands.',
+  'seo.brands_description': 'Browse all available brands in every category.',
+
   // ── Wholesale offers page ──
   'wholesale.subtitle': 'Browse special wholesale prices on selected products',
   'wholesale.filters': 'Filters',
@@ -101,6 +124,12 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'home.easy_returns_desc': '30-day return policy',
   'home.support_24_7': '24/7 Support',
   'home.support_24_7_desc': 'Dedicated customer service',
+  'home.best_selling_prefix': 'Best Selling',
+  'home.best_selling_highlight': 'Products',
+  'home.top_brands_prefix': 'Top',
+  'home.top_brands_highlight': 'Brands',
+  'home.natural_products_prefix': 'Products in',
+  'home.natural_products_highlight': 'Real Life',
 
   // ── Hero Slider ──
   'hero.slide1_title': 'New Arrivals',
@@ -138,6 +167,16 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'filter.sort_name_az': 'Name: A to Z',
   'filter.sort_rating': 'Rating: High to Low',
   'filter.filter_tags': 'Filter by',
+  'filter.sort_rating_label': 'Rating',
+  'filter.price_0_500': 'From 0 to 500',
+  'filter.price_500_1000': 'From 500 to 1000',
+  'filter.price_1000_1500': 'From 1000 to 1500',
+  'filter.price_1500_2000': 'From 1500 to 2000',
+  'filter.price_2000_2500': 'From 2000 to 2500',
+  'filter.price_2500_3000': 'From 2500 to 3000',
+  'filter.price_3000_3500': 'From 3000 to 3500',
+  'filter.in_stock': 'In Stock',
+  'filter.out_of_stock': 'Out of Stock',
 
   // ── Product Card ──
   'product.add_to_cart': 'Add to Cart',
@@ -147,6 +186,10 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'product.quick_view': 'Quick View',
   'product.view_product': 'View Product',
   'product.close': 'Close',
+  'product.bundle_buy_prefix': 'Buy',
+  'product.bundle_price_middle': 'and get them for',
+  'product.wholesale_discount_prefix': 'Product discount when buying',
+  'product.wholesale_discount_suffix': 'pieces',
 
   // ── Product Details ──
   'details.not_found': 'Product Not Found',
@@ -191,6 +234,9 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'details.description': 'Product Description',
   'details.natural_images': 'Product in Real Life',
   'details.you_may_also_like': 'You May Also Like',
+  'details.our_site': 'Our site',
+  'details.cheapest': 'Cheapest',
+  'details.zoom_reset_hint': 'Double-click to reset',
 
   // ── Cart Page ──
   'cart.title': 'Shopping Cart',
@@ -214,6 +260,7 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'cart.promo_placeholder': 'Enter code',
   'cart.promo_apply': 'Apply',
   'cart.promo_error': 'Invalid code',
+  'cart.promo_required': 'Code is required',
   'cart.promo_success': 'Code applied successfully',
   'cart.promo_discount': 'Promo discount',
   'cart.shipped_from': 'Order shipped from',
@@ -234,6 +281,8 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'wishlist.browse_products': 'Browse Products',
   'wishlist.move_to_cart': 'Move to Cart',
   'wishlist.remove': 'Remove',
+  'wishlist.add_error': 'Failed to add product to wishlist',
+  'wishlist.remove_error': 'Failed to remove product from wishlist',
 
   // ── Checkout Page ──
   'checkout.title': 'Checkout',
@@ -306,6 +355,7 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'checkout.trust_return_desc': 'For damaged, defective, incorrect or expired items, you can request a refund or exchange within 10 days of delivery',
   'checkout.trust_sameday_title': 'Same Day Delivery',
   'checkout.trust_sameday_desc': 'This option is available within Cairo and Giza only at an additional cost',
+  'checkout.select_delivery_address': 'Select delivery address',
 
   // ── Checkout Validation ──
   'validation.full_name_required': 'Full name is required',
@@ -351,6 +401,7 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'register.submit': 'Create Account',
   'register.has_account': 'Already have an account?',
   'register.login_link': 'Sign in',
+  'register.error': 'An error occurred during registration',
 
   // ── Forgot Password Page ──
   'forgot.title': 'Forgot Password',
@@ -367,6 +418,75 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'forgot.back_login': 'Back to login',
   'forgot.otp_sent': 'Verification code sent to your email',
   'forgot.success': 'Password changed successfully',
+  'forgot.your_otp': 'Your verification code',
+
+  // ── Profile Page ──
+  'profile.account': 'Your Account',
+  'profile.addresses': 'Addresses',
+  'profile.logout': 'Log Out',
+  'profile.account_subtitle': 'View and update your contact details and account information',
+  'profile.contact_info': 'Contact Information',
+  'profile.mobile_number': 'Mobile Number',
+  'profile.personal_info': 'Personal Information',
+  'profile.change_password': 'Change Password',
+  'profile.current_password': 'Current Password',
+  'profile.current_password_placeholder': 'Enter your current password',
+  'profile.new_password_placeholder': 'At least 6 characters',
+  'profile.confirm_password_placeholder': 'Re-enter your new password',
+  'profile.save_password': 'Save Password',
+  'profile.addresses_subtitle': 'Manage your saved addresses to complete purchases quickly and easily',
+  'profile.edit_address': 'Edit Address',
+  'profile.full_name': 'Full Name',
+  'profile.phone_number': 'Phone Number',
+  'profile.governorate': 'Governorate',
+  'profile.city': 'City',
+  'profile.detailed_address': 'Detailed Address',
+  'profile.current_location': 'Current Location',
+  'profile.address_placeholder': 'Street, building number, floor...',
+  'profile.save_address': 'Save Address',
+  'profile.change_name_title': 'Change Name',
+  'profile.change_name_text': 'Please contact customer support to change your name',
+  'profile.password_updated_title': 'Updated',
+  'profile.password_change_error': 'An error occurred while changing the password',
+  'profile.address_saved_title': 'Saved',
+  'profile.address_saved_text': 'Address saved successfully',
+  'profile.address_save_error': 'An error occurred while saving the address',
+  'profile.location_error_browser': 'Could not access your location. Make sure location permission is enabled in your browser',
+
+  // ── Direct Order ──
+  'direct_order.subtitle': 'Order the product directly without creating an account',
+  'direct_order.full_name_placeholder': 'Full name',
+  'direct_order.whatsapp_phone': 'Phone Number (WhatsApp)',
+  'direct_order.alt_phone': 'Alternate Phone Number',
+  'direct_order.cod_desc': 'Pay cash when your order arrives',
+  'direct_order.instapay_badge': '50% off shipping',
+  'direct_order.instapay_desc': 'Ordering via InstaPay gives you 50% off the shipping cost',
+  'direct_order.subtotal': 'Subtotal',
+  'direct_order.submitting': 'Sending your order...',
+  'direct_order.buy_now': 'Buy Now',
+  'direct_order.location_error': 'Could not access your location. Make sure location permission is enabled',
+  'direct_order.alt_phone_note': 'Alternate phone:',
+  'direct_order.success_title': 'Your order has been received',
+  'direct_order.success_text': 'We will contact you shortly to confirm your order',
+  'direct_order.submit_error': 'An error occurred while sending your order',
+  'direct_order.phone_registered_title': 'Phone Number Already Registered',
+  'direct_order.phone_registered_text': 'This number is already registered. Sign in to complete your order',
+
+  // ── Notifications ──
+  'notifications.title': 'Notifications',
+  'notifications.empty': 'No notifications yet',
+  'notifications.discount_percentage': 'Discount Percentage',
+  'notifications.copy_code': 'Code (click to copy)',
+  'notifications.expires_in': 'Expires in',
+  'notifications.expired': 'Code expired',
+  'notifications.code_copied': 'Code copied',
+  'notifications.new': 'New notification',
+
+  // ── Watch Page ──
+  'watch.product_hint': 'Tap the video to view the product',
+  'watch.empty': 'No videos available right now',
+  'watch.unmute': 'Turn sound on',
+  'watch.mute': 'Mute sound',
 
   // ── 404 Page ──
   'not_found.title': 'Page Not Found',
@@ -402,6 +522,7 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'offers.sort_price_low': 'Price: Low to High',
   'offers.sort_price_high': 'Price: High to Low',
   'offers.results_count': 'offers',
+  'offers.discounts_alt': 'Discounts',
 
   // ── Category Names ──
   'cat.electronics': 'Electronics',

@@ -10,11 +10,11 @@
           <div class="col-12">
             @if (banner.link) {
               <a [href]="banner.link">
-                <img [src]="banner.image | cldImage:1920" [alt]="'بنر ' + banner.id" class="w-100 rounded-1 shadow-sm"
+                <img [src]="banner.image | cldImage:1920" [alt]="('common.banner' | translate) + ' ' + banner.id" class="w-100 rounded-1 shadow-sm"
                      style="height:auto" loading="lazy" />
               </a>
             } @else {
-              <img [src]="banner.image | cldImage:1920" [alt]="'بنر ' + banner.id" class="w-100 rounded-2 shadow-sm"
+              <img [src]="banner.image | cldImage:1920" [alt]="('common.banner' | translate) + ' ' + banner.id" class="w-100 rounded-2 shadow-sm"
                    style="height:auto" loading="lazy" />
             }
           </div>
@@ -27,7 +27,7 @@
 <!-- Best Selling Products -->
 <section class="section-padding" style="background-color: var(--sz-bg-secondary);">
   <div class="container">
-    <h2 class="section-title">المنتجات <span class="text-shimmer">الأكثر مبيعاً</span></h2>
+    <h2 class="section-title">{{ 'home.best_selling_prefix' | translate }} <span class="text-shimmer">{{ 'home.best_selling_highlight' | translate }}</span></h2>
     @if (isLoadingProducts()) {
       <app-skeleton-loader type="card" [count]="6" />
     } @else if (bestSellingProducts.length > 0) {
@@ -48,11 +48,11 @@
           <div class="col-12">
             @if (banner.link) {
               <a [href]="banner.link">
-                <img style="height: auto;" [src]="banner.image | cldImage:1920" [alt]="'بنر ' + banner.id" class="w-100 rounded-1 shadow-sm"
+                <img style="height: auto;" [src]="banner.image | cldImage:1920" [alt]="('common.banner' | translate) + ' ' + banner.id" class="w-100 rounded-1 shadow-sm"
                      loading="lazy" />
               </a>
             } @else {
-              <img   style="height: auto;" [src]="banner.image | cldImage:1920" [alt]="'بنر ' + banner.id" class="w-100 rounded-2 shadow-sm"
+              <img   style="height: auto;" [src]="banner.image | cldImage:1920" [alt]="('common.banner' | translate) + ' ' + banner.id" class="w-100 rounded-2 shadow-sm"
                    loading="lazy" />
             }
           </div>
@@ -87,11 +87,11 @@
           <div class="col-12">
             @if (banner.link) {
               <a [href]="banner.link">
-                <img  style="height: auto;" [src]="banner.image | cldImage:1920" [alt]="'بنر ' + banner.id" class="w-100 rounded-1 shadow-sm"
+                <img  style="height: auto;" [src]="banner.image | cldImage:1920" [alt]="('common.banner' | translate) + ' ' + banner.id" class="w-100 rounded-1 shadow-sm"
                      loading="lazy" />
               </a>
             } @else {
-              <img  style="height: auto;" [src]="banner.image | cldImage:1920" [alt]="'بنر ' + banner.id" class="w-100 rounded-2 shadow-sm"
+              <img  style="height: auto;" [src]="banner.image | cldImage:1920" [alt]="('common.banner' | translate) + ' ' + banner.id" class="w-100 rounded-2 shadow-sm"
                    loading="lazy" />
             }
           </div>
@@ -104,7 +104,7 @@
 <!-- All Brands -->
 <section class="section-padding" style="background-color: #ffffff;">
   <div class="container">
-    <h2 class="section-title">أقوى <span class="text-shimmer">البراندات</span></h2>
+    <h2 class="section-title">{{ 'home.top_brands_prefix' | translate }} <span class="text-shimmer">{{ 'home.top_brands_highlight' | translate }}</span></h2>
     @defer (on viewport; prefetch on idle) {
       @if (isLoadingBrands()) {
         <app-skeleton-loader type="card" [count]="8" />
@@ -126,11 +126,11 @@
           <div class="col-12">
             @if (banner.link) {
               <a [href]="banner.link">
-                <img  style="height: auto;" [src]="banner.image | cldImage:1920" [alt]="'بنر ' + banner.id" class="w-100 rounded-1 shadow-sm"
+                <img  style="height: auto;" [src]="banner.image | cldImage:1920" [alt]="('common.banner' | translate) + ' ' + banner.id" class="w-100 rounded-1 shadow-sm"
                      loading="lazy" />
               </a>
             } @else {
-              <img  style="height: auto;" [src]="banner.image | cldImage:1920" [alt]="'بنر ' + banner.id" class="w-100 rounded-2 shadow-sm"
+              <img  style="height: auto;" [src]="banner.image | cldImage:1920" [alt]="('common.banner' | translate) + ' ' + banner.id" class="w-100 rounded-2 shadow-sm"
                    loading="lazy" />
             }
           </div>
@@ -145,7 +145,7 @@
   @if (naturalProducts.length > 0) {
     <section class="section-padding d-none d-lg-block" style="background-color: var(--sz-bg-secondary, #f8f9fa);">
       <div class="container">
-        <h2 class="section-title">المنتجات في <span class="text-shimmer">الطبيعة</span></h2>
+        <h2 class="section-title">{{ 'home.natural_products_prefix' | translate }} <span class="text-shimmer">{{ 'home.natural_products_highlight' | translate }}</span></h2>
         <app-natural-products [items]="naturalProducts" />
       </div>
     </section>

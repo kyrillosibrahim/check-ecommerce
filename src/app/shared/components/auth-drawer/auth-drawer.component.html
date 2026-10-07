@@ -205,7 +205,7 @@
       @if (forgotStep === 'reset') {
         @if (forgotOtp) {
           <div class="alert alert-info text-center py-2 mb-3" dir="ltr">
-            <div class="small mb-1">كود التحقق الخاص بك</div>
+            <div class="small mb-1">{{ 'forgot.your_otp' | translate }}</div>
             <strong class="fs-5">{{ forgotOtp }}</strong>
           </div>
         }

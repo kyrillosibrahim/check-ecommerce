@@ -35,6 +35,29 @@ export const AR_TRANSLATIONS: Record<string, string> = {
   'nav.brands': 'العلامات التجارية',
   'nav.wholesale_offers': 'عروض الجملة',
 
+  // ── Common ──
+  'common.filter': 'فلتر',
+  'common.clear_all': 'مسح الكل',
+  'common.no_results': 'لا توجد نتائج',
+  'common.loading': 'جارٍ التحميل...',
+  'common.ok': 'حسنًا',
+  'common.error_title': 'خطأ',
+  'common.warning_title': 'تنبيه',
+  'common.edit': 'تعديل',
+  'common.cancel': 'إلغاء',
+  'common.optional': '(اختياري)',
+  'common.error_message': 'حدث خطأ',
+  'common.unknown_initial': '؟',
+  'common.banner': 'بنر',
+  'common.address_separator': '،',
+
+  // ── SEO ──
+  'seo.products_description': 'تصفح جميع المنتجات المتاحة بأفضل الأسعار. فلاتر متقدمة للبحث حسب القسم والعلامة التجارية.',
+  'seo.offers_description': 'اكتشف أقوى العروض والخصومات على جميع المنتجات. وفر أكثر مع عروض حصرية يومية.',
+  'seo.home_description': 'Check - متجرك الإلكتروني للتسوق أونلاين. اكتشف أفضل المنتجات بأفضل الأسعار مع شحن سريع لجميع محافظات مصر.',
+  'seo.categories_description': 'تصفح جميع الأقسام والأقسام الفرعية وأشهر الماركات.',
+  'seo.brands_description': 'تصفح جميع العلامات التجارية المتوفرة في كل قسم.',
+
   // ── Wholesale offers page ──
   'wholesale.subtitle': 'تصفح أسعار الجملة الخاصة على منتجات مختارة',
   'wholesale.filters': 'الفلاتر',
@@ -101,6 +124,12 @@ export const AR_TRANSLATIONS: Record<string, string> = {
   'home.easy_returns_desc': 'سياسة إرجاع 30 يوم',
   'home.support_24_7': 'دعم 24/7',
   'home.support_24_7_desc': 'خدمة عملاء مخصصة',
+  'home.best_selling_prefix': 'المنتجات',
+  'home.best_selling_highlight': 'الأكثر مبيعاً',
+  'home.top_brands_prefix': 'أقوى',
+  'home.top_brands_highlight': 'البراندات',
+  'home.natural_products_prefix': 'المنتجات في',
+  'home.natural_products_highlight': 'الطبيعة',
 
   // ── Hero Slider ──
   'hero.slide1_title': 'وصل حديثاً',
@@ -138,6 +167,16 @@ export const AR_TRANSLATIONS: Record<string, string> = {
   'filter.sort_name_az': 'الاسم: أ إلى ي',
   'filter.sort_rating': 'التقييم: من الأعلى للأقل',
   'filter.filter_tags': 'فلتر حسب',
+  'filter.sort_rating_label': 'التقييم',
+  'filter.price_0_500': 'من 0 إلى 500',
+  'filter.price_500_1000': 'من 500 إلى 1000',
+  'filter.price_1000_1500': 'من 1000 إلى 1500',
+  'filter.price_1500_2000': 'من 1500 إلى 2000',
+  'filter.price_2000_2500': 'من 2000 إلى 2500',
+  'filter.price_2500_3000': 'من 2500 إلى 3000',
+  'filter.price_3000_3500': 'من 3000 إلى 3500',
+  'filter.in_stock': 'متوفر',
+  'filter.out_of_stock': 'غير متوفر',
 
   // ── Product Card ──
   'product.add_to_cart': 'أضف إلى السلة',
@@ -147,6 +186,10 @@ export const AR_TRANSLATIONS: Record<string, string> = {
   'product.quick_view': 'عرض سريع',
   'product.view_product': 'عرض المنتج',
   'product.close': 'إغلاق',
+  'product.bundle_buy_prefix': 'اشترى',
+  'product.bundle_price_middle': 'واحصل عليهم بسعر',
+  'product.wholesale_discount_prefix': 'خصم على المنتج عند شراء',
+  'product.wholesale_discount_suffix': 'قطعة',
 
   // ── Product Details ──
   'details.not_found': 'المنتج غير موجود',
@@ -191,6 +234,9 @@ export const AR_TRANSLATIONS: Record<string, string> = {
   'details.description': 'وصف المنتج',
   'details.natural_images': 'صورة المنتج على الطبيعة',
   'details.you_may_also_like': 'قد يعجبك أيضاً',
+  'details.our_site': 'موقعنا',
+  'details.cheapest': 'الأرخص',
+  'details.zoom_reset_hint': 'دبل كليك للرجوع',
 
   // ── Cart Page ──
   'cart.title': 'سلة التسوق',
@@ -214,6 +260,7 @@ export const AR_TRANSLATIONS: Record<string, string> = {
   'cart.promo_placeholder': 'ادخل الكود',
   'cart.promo_apply': 'تطبيق',
   'cart.promo_error': 'كود غير صحيح',
+  'cart.promo_required': 'الكود مطلوب',
   'cart.promo_success': 'كود صحيح — تم تفعيل الكود على الفاتورة',
   'cart.promo_discount': 'خصم الكود',
   'cart.shipped_from': 'طلب يشحن من مخزن',
@@ -234,6 +281,8 @@ export const AR_TRANSLATIONS: Record<string, string> = {
   'wishlist.browse_products': 'تصفح المنتجات',
   'wishlist.move_to_cart': 'نقل إلى السلة',
   'wishlist.remove': 'حذف',
+  'wishlist.add_error': 'فشل إضافة المنتج للمفضلة',
+  'wishlist.remove_error': 'فشل إزالة المنتج من المفضلة',
 
   // ── Checkout Page ──
   'checkout.title': 'إتمام الطلب',
@@ -306,6 +355,7 @@ export const AR_TRANSLATIONS: Record<string, string> = {
   'checkout.trust_return_desc': 'بالنسبة للسلع التالفة، المعيبة، الخاطئة أو منتهية الصلاحية، يمكنك طلب استرداد المال أو الاستبدال في غضون 7 أيام من التسليم',
   'checkout.trust_sameday_title': 'التسليم في نفس اليوم',
   'checkout.trust_sameday_desc': 'يتوفر هذا الخيار داخل القاهرة والجيزة فقط  ',
+  'checkout.select_delivery_address': 'اختر عنوان التوصيل',
 
   // ── Checkout Validation ──
   'validation.full_name_required': 'الاسم بالكامل مطلوب',
@@ -351,6 +401,7 @@ export const AR_TRANSLATIONS: Record<string, string> = {
   'register.submit': 'إنشاء الحساب',
   'register.has_account': 'لديك حساب بالفعل؟',
   'register.login_link': 'سجل دخول',
+  'register.error': 'حدث خطأ أثناء التسجيل',
 
   // ── Forgot Password Page ──
   'forgot.title': 'نسيت كلمة المرور',
@@ -367,6 +418,75 @@ export const AR_TRANSLATIONS: Record<string, string> = {
   'forgot.back_login': 'العودة لتسجيل الدخول',
   'forgot.otp_sent': 'تم إرسال كود التحقق إلى بريدك الإلكتروني',
   'forgot.success': 'تم تغيير كلمة المرور بنجاح',
+  'forgot.your_otp': 'كود التحقق الخاص بك',
+
+  // ── Profile Page ──
+  'profile.account': 'حسابك',
+  'profile.addresses': 'العناوين',
+  'profile.logout': 'تسجيل الخروج',
+  'profile.account_subtitle': 'استعرض و حدث بيانات التواصل و معلومات حسابك',
+  'profile.contact_info': 'معلومات الاتصال',
+  'profile.mobile_number': 'رقم الجوال',
+  'profile.personal_info': 'معلوماتك الشخصية',
+  'profile.change_password': 'تغيير كلمة المرور',
+  'profile.current_password': 'كلمة المرور الحالية',
+  'profile.current_password_placeholder': 'أدخل كلمة المرور الحالية',
+  'profile.new_password_placeholder': '6 أحرف على الأقل',
+  'profile.confirm_password_placeholder': 'أعد إدخال كلمة المرور الجديدة',
+  'profile.save_password': 'حفظ كلمة المرور',
+  'profile.addresses_subtitle': 'قم بإدارة عناوينك المحفوظة لتتمكن من إنهاء عمليات الشراء بسرعة وسهولة',
+  'profile.edit_address': 'تعديل العنوان',
+  'profile.full_name': 'الاسم الكامل',
+  'profile.phone_number': 'رقم الهاتف',
+  'profile.governorate': 'المحافظة',
+  'profile.city': 'المدينة',
+  'profile.detailed_address': 'العنوان بالتفصيل',
+  'profile.current_location': 'موقعك الحالي',
+  'profile.address_placeholder': 'الشارع، رقم المبنى، الدور...',
+  'profile.save_address': 'حفظ العنوان',
+  'profile.change_name_title': 'تغيير الاسم',
+  'profile.change_name_text': 'يرجى التواصل مع خدمة الدعم لتغيير الاسم',
+  'profile.password_updated_title': 'تم التحديث',
+  'profile.password_change_error': 'حدث خطأ أثناء تغيير كلمة المرور',
+  'profile.address_saved_title': 'تم الحفظ',
+  'profile.address_saved_text': 'تم حفظ العنوان بنجاح',
+  'profile.address_save_error': 'حدث خطأ أثناء حفظ العنوان',
+  'profile.location_error_browser': 'تعذر الوصول لموقعك. تأكد من منح صلاحية الموقع للمتصفح',
+
+  // ── Direct Order ──
+  'direct_order.subtitle': 'اطلب المنتج مباشرة بدون إنشاء حساب',
+  'direct_order.full_name_placeholder': 'الاسم بالكامل',
+  'direct_order.whatsapp_phone': 'رقم الهاتف (واتساب)',
+  'direct_order.alt_phone': 'رقم هاتف بديل',
+  'direct_order.cod_desc': 'ادفع نقدًا عند استلام الطلب',
+  'direct_order.instapay_badge': 'خصم 50% على الشحن',
+  'direct_order.instapay_desc': 'الطلب عن طريق إنستاباي يضمن خصم 50% من قيمة الشحن',
+  'direct_order.subtotal': 'المجموع',
+  'direct_order.submitting': 'جاري إرسال الطلب...',
+  'direct_order.buy_now': 'اشترِ الآن',
+  'direct_order.location_error': 'تعذر الوصول لموقعك. تأكد من منح صلاحية الموقع',
+  'direct_order.alt_phone_note': 'رقم بديل:',
+  'direct_order.success_title': 'تم استلام طلبك بنجاح',
+  'direct_order.success_text': 'سنتواصل معك في أقرب وقت لتأكيد الطلب',
+  'direct_order.submit_error': 'حدث خطأ أثناء إرسال الطلب',
+  'direct_order.phone_registered_title': 'الرقم مسجل بالفعل',
+  'direct_order.phone_registered_text': 'هذا الرقم مسجل في حسابنا. سجل دخول لإتمام الطلب',
+
+  // ── Notifications ──
+  'notifications.title': 'الإشعارات',
+  'notifications.empty': 'لا توجد إشعارات حتى الآن',
+  'notifications.discount_percentage': 'نسبة الخصم',
+  'notifications.copy_code': 'الكود (اضغط للنسخ)',
+  'notifications.expires_in': 'ينتهى خلال',
+  'notifications.expired': 'انتهت صلاحية الكود',
+  'notifications.code_copied': 'تم نسخ الكود',
+  'notifications.new': 'إشعار جديد',
+
+  // ── Watch Page ──
+  'watch.product_hint': 'اضغط على الفيديو للوصول للمنتج',
+  'watch.empty': 'لا توجد فيديوهات حالياً',
+  'watch.unmute': 'تشغيل الصوت',
+  'watch.mute': 'كتم الصوت',
 
   // ── 404 Page ──
   'not_found.title': 'الصفحة غير موجودة',
@@ -401,6 +521,7 @@ export const AR_TRANSLATIONS: Record<string, string> = {
   'offers.sort_price_low': 'السعر: من الأقل',
   'offers.sort_price_high': 'السعر: من الأعلى',
   'offers.results_count': 'عرض',
+  'offers.discounts_alt': 'تخفيضات',
 
   // ── Category Names ──
   'cat.electronics': 'إلكترونيات',

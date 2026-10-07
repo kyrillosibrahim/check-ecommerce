@@ -6,6 +6,7 @@ import { catchError, switchMap } from 'rxjs/operators';
 import { API_CONFIG } from '../config/api.config';
 import { AuthService } from './auth.service';
 import { AlertService } from './alert.service';
+import { TranslationService } from './translation.service';
 import { INotification } from '../models/notification.model';
 
 const POLL_INTERVAL = 30_000;
@@ -21,6 +22,7 @@ export class NotificationsService {
   private http = inject(HttpClient);
   private auth = inject(AuthService);
   private alert = inject(AlertService);
+  private translationService = inject(TranslationService);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   private notificationsSubject = new BehaviorSubject<INotification[]>([]);
@@ -79,7 +81,7 @@ export class NotificationsService {
   private toast(n: INotification): void {
     this.alert.toast({
       icon: n.type === 'order_shipped' ? 'success' : 'info',
-      title: n.title || 'إشعار جديد',
+      title: n.title || this.translationService.translate('notifications.new'),
       text: n.body,
       timer: 5000,
       timerProgressBar: true,

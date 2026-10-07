@@ -9,6 +9,7 @@ import { BrandService } from '../../core/services/brand.service';
 import { BannerService } from '../../core/services/banner.service';
 import { SiteSettingsService } from '../../core/services/settings.service';
 import { SeoService } from '../../core/services/seo.service';
+import { TranslationService } from '../../core/services/translation.service';
 import { IProduct } from '../../core/models/product.model';
 import { IBanner } from '../../core/models/banner.model';
 import { ICategory } from '../../core/models/category.model';
@@ -40,6 +41,7 @@ export class HomeComponent implements OnInit {
   private bannerService = inject(BannerService);
   private settingsService = inject(SiteSettingsService);
   private seoService = inject(SeoService);
+  private translationService = inject(TranslationService);
 
   bestSellingProducts: IProduct[] = [];
   categories: ICategory[] = [];
@@ -58,8 +60,8 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.seoService.setPageMeta({
-      title: 'الرئيسية',
-      description: 'Check - متجرك الإلكتروني للتسوق أونلاين. اكتشف أفضل المنتجات بأفضل الأسعار مع شحن سريع لجميع محافظات مصر.',
+      title: this.translationService.translate('nav.home'),
+      description: this.translationService.translate('seo.home_description'),
       path: '/',
     });
     this.bannerService.getByPage('home').pipe(takeUntilDestroyed(this.destroyRef)).subscribe(b => {

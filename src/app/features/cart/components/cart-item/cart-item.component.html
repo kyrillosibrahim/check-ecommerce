@@ -3,7 +3,7 @@
      style="border-bottom: 1px solid var(--sz-border-color);">
   <div class="d-flex align-items-center gap-3 flex-grow-1 min-w-0" style="max-width: 400px;">
     <a [routerLink]="['/product', item.product.id]" class="flex-shrink-0">
-      <img [src]="item.product.images[0]" [alt]="item.product.title" class="cart-item-img rounded">
+      <img [src]="item.product.images[0]" [alt]="item.product.title | localize:item.product.titleAr" class="cart-item-img rounded">
     </a>
     <div class="min-w-0">
       <a [routerLink]="['/product', item.product.id]" class="text-decoration-none" style="color: var(--sz-text-primary);">
@@ -54,7 +54,7 @@
       <span class="zahra-original-badge">{{ 'cart.original' | translate }}</span>
     </div>
     <a [routerLink]="['/product', item.product.id]" class="flex-shrink-0">
-      <img [src]="item.product.images[0]" [alt]="item.product.title" class="zahra-img">
+      <img [src]="item.product.images[0]" [alt]="item.product.title | localize:item.product.titleAr" class="zahra-img">
     </a>
   </div>
 

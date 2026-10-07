@@ -15,6 +15,7 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
 import { SkeletonLoaderComponent } from '../../shared/components/skeleton-loader/skeleton-loader.component';
 import { ProductFilterComponent } from './components/product-filter/product-filter.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { TranslationService } from '../../core/services/translation.service';
 
 const ITEMS_PER_PAGE = 36;
 
@@ -42,6 +43,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
   private wishlistService = inject(WishlistService);
   private categoryService = inject(CategoryService);
   private seoService = inject(SeoService);
+  private translationService = inject(TranslationService);
   private destroyRef = inject(DestroyRef);
 
   products: IProduct[] = [];
@@ -87,20 +89,20 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Price range filters
   priceRanges: PriceRange[] = [
-    { label: 'من 0 إلى 500', min: 0, max: 500, count: 0 },
-    { label: 'من 500 إلى 1000', min: 500, max: 1000, count: 0 },
-    { label: 'من 1000 إلى 1500', min: 1000, max: 1500, count: 0 },
-    { label: 'من 1500 إلى 2000', min: 1500, max: 2000, count: 0 },
-    { label: 'من 2000 إلى 2500', min: 2000, max: 2500, count: 0 },
-    { label: 'من 2500 إلى 3000', min: 2500, max: 3000, count: 0 },
-    { label: 'من 3000 إلى 3500', min: 3000, max: 3500, count: 0 },
+    { label: this.translationService.translate('filter.price_0_500'), min: 0, max: 500, count: 0 },
+    { label: this.translationService.translate('filter.price_500_1000'), min: 500, max: 1000, count: 0 },
+    { label: this.translationService.translate('filter.price_1000_1500'), min: 1000, max: 1500, count: 0 },
+    { label: this.translationService.translate('filter.price_1500_2000'), min: 1500, max: 2000, count: 0 },
+    { label: this.translationService.translate('filter.price_2000_2500'), min: 2000, max: 2500, count: 0 },
+    { label: this.translationService.translate('filter.price_2500_3000'), min: 2500, max: 3000, count: 0 },
+    { label: this.translationService.translate('filter.price_3000_3500'), min: 3000, max: 3500, count: 0 },
   ];
   selectedPriceRanges: PriceRange[] = [];
 
   // Availability filters
   availabilityFilters = [
-    { label: 'متوفر', value: 'in-stock', count: 0 },
-    { label: 'غير متوفر', value: 'out-of-stock', count: 0 },
+    { label: this.translationService.translate('filter.in_stock'), value: 'in-stock', count: 0 },
+    { label: this.translationService.translate('filter.out_of_stock'), value: 'out-of-stock', count: 0 },
   ];
   selectedAvailability: string[] = [];
 
@@ -174,11 +176,15 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
   get pageTitle(): string {
     const cat = this.categories.find(c => c.slug === this.selectedCategory);
     if (!cat) return '';
+    const categoryName = this.translationService.isArabic() ? cat.name : (cat.nameEn || cat.name);
     if (this.selectedSubcategory && cat.subcategories) {
       const sub = cat.subcategories.find(s => s.slug === this.selectedSubcategory);
-      if (sub?.name) return `${cat.name} - ${sub.name}`;
+      if (sub?.name) {
+        const subcategoryName = this.translationService.isArabic() ? sub.name : (sub.nameEn || sub.name);
+        return `${categoryName} - ${subcategoryName}`;
+      }
     }
-    return cat.name;
+    return categoryName;
   }
 
   openFilterDrawer(): void {
@@ -231,8 +237,8 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.seoService.setPageMeta({
-      title: 'المنتجات',
-      description: 'تصفح جميع المنتجات المتاحة بأفضل الأسعار. فلاتر متقدمة للبحث حسب القسم والعلامة التجارية.',
+      title: this.translationService.translate('nav.products'),
+      description: this.translationService.translate('seo.products_description'),
       path: '/products',
     });
     // The URL carries short numeric ids; we resolve them back to the (Arabic) slugs

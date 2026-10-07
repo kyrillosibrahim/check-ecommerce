@@ -2,12 +2,13 @@ import { ChangeDetectionStrategy, Component, inject, AfterViewInit, ElementRef, 
 import { NgOptimizedImage } from '@angular/common';
 import { Router } from '@angular/router';
 import { IBanner } from '../../../../core/models/banner.model';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-hero-slider',
-  imports: [NgOptimizedImage],
+  imports: [NgOptimizedImage, TranslatePipe],
   templateUrl: './hero-slider.component.html',
   styleUrl: './hero-slider.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

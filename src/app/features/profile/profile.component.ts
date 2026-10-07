@@ -5,14 +5,16 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
 import { GovernorateService } from '../../core/services/governorate.service';
+import { TranslationService } from '../../core/services/translation.service';
 import { IUser, IAddress } from '../../core/models/user.model';
 import { IGovernorateApi, ICityApi } from '../../core/models/governorate.model';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, TranslatePipe],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,6 +27,7 @@ export class ProfileComponent implements OnInit {
   private http = inject(HttpClient);
   private ngZone = inject(NgZone);
   private governorateService = inject(GovernorateService);
+  private translationService = inject(TranslationService);
   private cdr = inject(ChangeDetectorRef);
   private destroyRef = inject(DestroyRef);
 
@@ -79,9 +82,9 @@ export class ProfileComponent implements OnInit {
   // ── Account ──
   showNameInfo(): void {
     Swal.fire({
-      icon: 'info', title: 'تغيير الاسم',
-      text: 'يرجى التواصل مع خدمة الدعم لتغيير الاسم',
-      confirmButtonText: 'حسنًا', confirmButtonColor: 'var(--sz-accent)',
+      icon: 'info', title: this.translationService.translate('profile.change_name_title'),
+      text: this.translationService.translate('profile.change_name_text'),
+      confirmButtonText: this.translationService.translate('common.ok'), confirmButtonColor: 'var(--sz-accent)',
       background: 'var(--sz-bg-card)', color: 'var(--sz-text-primary)',
     });
   }
@@ -96,8 +99,8 @@ export class ProfileComponent implements OnInit {
     if (this.passwordForm.invalid) return;
     const { currentPassword, newPassword, confirmPassword } = this.passwordForm.value;
     if (newPassword !== confirmPassword) {
-      Swal.fire({ icon: 'error', title: 'خطأ', text: 'كلمتا المرور غير متطابقتين',
-        confirmButtonText: 'حسنًا', confirmButtonColor: 'var(--sz-accent)',
+      Swal.fire({ icon: 'error', title: this.translationService.translate('common.error_title'), text: this.translationService.translate('register.confirm_invalid'),
+        confirmButtonText: this.translationService.translate('common.ok'), confirmButtonColor: 'var(--sz-accent)',
         background: 'var(--sz-bg-card)', color: 'var(--sz-text-primary)' });
       return;
     }
@@ -108,16 +111,16 @@ export class ProfileComponent implements OnInit {
         this.showPasswordSection.set(false);
         this.passwordForm.reset();
         this.cdr.markForCheck();
-        Swal.fire({ icon: 'success', title: 'تم التحديث', text: 'تم تغيير كلمة المرور بنجاح',
+        Swal.fire({ icon: 'success', title: this.translationService.translate('profile.password_updated_title'), text: this.translationService.translate('forgot.success'),
           timer: 2000, showConfirmButton: false,
           background: 'var(--sz-bg-card)', color: 'var(--sz-text-primary)' });
       },
       error: (err) => {
         this.passwordSaving.set(false);
         this.cdr.markForCheck();
-        Swal.fire({ icon: 'error', title: 'خطأ',
-          text: err.error?.error || 'حدث خطأ أثناء تغيير كلمة المرور',
-          confirmButtonText: 'حسنًا', confirmButtonColor: 'var(--sz-accent)',
+        Swal.fire({ icon: 'error', title: this.translationService.translate('common.error_title'),
+          text: err.error?.error || this.translationService.translate('profile.password_change_error'),
+          confirmButtonText: this.translationService.translate('common.ok'), confirmButtonColor: 'var(--sz-accent)',
           background: 'var(--sz-bg-card)', color: 'var(--sz-text-primary)' });
       },
     });
@@ -180,15 +183,15 @@ export class ProfileComponent implements OnInit {
         this.addressForm.reset();
         this.cities = [];
         this.cdr.markForCheck();
-        Swal.fire({ icon: 'success', title: 'تم الحفظ', text: 'تم حفظ العنوان بنجاح',
+        Swal.fire({ icon: 'success', title: this.translationService.translate('profile.address_saved_title'), text: this.translationService.translate('profile.address_saved_text'),
           timer: 1800, showConfirmButton: false,
           background: 'var(--sz-bg-card)', color: 'var(--sz-text-primary)' });
       },
       error: () => {
         this.savingAddress.set(false);
         this.cdr.markForCheck();
-        Swal.fire({ icon: 'error', title: 'خطأ', text: 'حدث خطأ أثناء حفظ العنوان',
-          confirmButtonText: 'حسنًا', confirmButtonColor: 'var(--sz-accent)',
+        Swal.fire({ icon: 'error', title: this.translationService.translate('common.error_title'), text: this.translationService.translate('profile.address_save_error'),
+          confirmButtonText: this.translationService.translate('common.ok'), confirmButtonColor: 'var(--sz-accent)',
           background: 'var(--sz-bg-card)', color: 'var(--sz-text-primary)' });
       },
     });
@@ -240,7 +243,7 @@ export class ProfileComponent implements OnInit {
       () => {
         this.ngZone.run(() => {
           this.locating.set(false);
-          Swal.fire({ icon: 'warning', title: 'تنبيه', text: 'تعذر الوصول لموقعك. تأكد من منح صلاحية الموقع للمتصفح', confirmButtonText: 'حسنًا', confirmButtonColor: 'var(--sz-accent)', background: 'var(--sz-bg-card)', color: 'var(--sz-text-primary)' });
+          Swal.fire({ icon: 'warning', title: this.translationService.translate('common.warning_title'), text: this.translationService.translate('profile.location_error_browser'), confirmButtonText: this.translationService.translate('common.ok'), confirmButtonColor: 'var(--sz-accent)', background: 'var(--sz-bg-card)', color: 'var(--sz-text-primary)' });
         });
       },
       { timeout: 8000 }
@@ -251,10 +254,13 @@ export class ProfileComponent implements OnInit {
     const aAr = dataAr.address || {};
     const aEn = dataEn.address || {};
 
-    // ── Address detail (prefer Arabic) ──
+    // ── Address detail ──
     const parts = [aAr.road, aAr.neighbourhood, aAr.suburb, aAr.village].filter(Boolean);
     const fallbackParts = [aEn.road, aEn.neighbourhood, aEn.suburb, aEn.village].filter(Boolean);
-    this.addressForm.patchValue({ address: parts.join('، ') || fallbackParts.join(', ') || '' });
+    const address = this.translationService.isArabic()
+      ? parts.join('، ') || fallbackParts.join(', ')
+      : fallbackParts.join(', ') || parts.join('، ');
+    this.addressForm.patchValue({ address });
 
     // ── Match governorate (try Arabic then English) ──
     const stateAr = aAr.state || aAr.county || '';

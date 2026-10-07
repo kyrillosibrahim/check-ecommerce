@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, ChangeDetectorRef } from '@
 import { Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
+import { TranslationService } from '../../../core/services/translation.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 @Component({
@@ -15,6 +16,7 @@ export class ForgotPasswordComponent {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private authService = inject(AuthService);
+  private translationService = inject(TranslationService);
   private cdr = inject(ChangeDetectorRef);
 
   step: 'phone' | 'reset' = 'phone';
@@ -56,7 +58,7 @@ export class ForgotPasswordComponent {
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = err?.error?.error || 'حدث خطأ';
+        this.errorMessage = err?.error?.error || this.translationService.translate('common.error_message');
         this.cdr.markForCheck();
       }
     });
@@ -83,7 +85,7 @@ export class ForgotPasswordComponent {
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = err?.error?.error || 'حدث خطأ';
+        this.errorMessage = err?.error?.error || this.translationService.translate('common.error_message');
         this.cdr.markForCheck();
       }
     });

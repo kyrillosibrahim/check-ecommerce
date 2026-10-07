@@ -10,6 +10,7 @@ import { API_CONFIG } from '../config/api.config';
 import { AlertService } from './alert.service';
 import { AuthService } from './auth.service';
 import { AuthDrawerService } from './auth-drawer.service';
+import { TranslationService } from './translation.service';
 
 const SERVER_URL = API_CONFIG.baseUrl;
 
@@ -21,6 +22,7 @@ export class WishlistService {
   private alertService = inject(AlertService);
   private auth = inject(AuthService);
   private authDrawer = inject(AuthDrawerService);
+  private translationService = inject(TranslationService);
   private platformId = inject(PLATFORM_ID);
 
   private wishlistSubject = new BehaviorSubject<IProduct[]>([]);
@@ -152,7 +154,7 @@ export class WishlistService {
         this.favoriteIds.update(s => { const n = new Set(s); n.delete(product.id); return n; });
         this.productService.updateProductFavoriteState(product.id, false);
         this.unmarkProcessing(product.id);
-        this.alertService.fire({ icon: 'error', title: 'خطأ', text: 'فشل إضافة المنتج للمفضلة', timer: 2000, showConfirmButton: false });
+        this.alertService.fire({ icon: 'error', title: this.translationService.translate('common.error_title'), text: this.translationService.translate('wishlist.add_error'), timer: 2000, showConfirmButton: false });
       },
     });
     return true;
@@ -181,7 +183,7 @@ export class WishlistService {
           this.wishlistSubject.next([...this.wishlistSubject.getValue(), removed]);
         }
         this.unmarkProcessing(productId);
-        this.alertService.fire({ icon: 'error', title: 'خطأ', text: 'فشل إزالة المنتج من المفضلة', timer: 2000, showConfirmButton: false });
+        this.alertService.fire({ icon: 'error', title: this.translationService.translate('common.error_title'), text: this.translationService.translate('wishlist.remove_error'), timer: 2000, showConfirmButton: false });
       },
     });
   }

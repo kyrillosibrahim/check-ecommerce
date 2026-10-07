@@ -7,6 +7,7 @@ import { IProduct } from '../../core/models/product.model';
 import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
 import { SkeletonLoaderComponent } from '../../shared/components/skeleton-loader/skeleton-loader.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { TranslationService } from '../../core/services/translation.service';
 
 interface PriceRange {
   label: string;
@@ -25,6 +26,7 @@ export class WholesaleOffersComponent implements OnInit {
   private wholesaleService = inject(WholesaleOfferService);
   private cartService = inject(CartService);
   private cdr = inject(ChangeDetectorRef);
+  private translationService = inject(TranslationService);
 
   isLoading = signal(true);
   allProducts: IProduct[] = [];
@@ -38,18 +40,18 @@ export class WholesaleOffersComponent implements OnInit {
   showFilterDrawer = false;
 
   priceRanges: PriceRange[] = [
-    { label: 'من 0 إلى 500', min: 0, max: 500 },
-    { label: 'من 500 إلى 1000', min: 500, max: 1000 },
-    { label: 'من 1000 إلى 1500', min: 1000, max: 1500 },
-    { label: 'من 1500 إلى 2000', min: 1500, max: 2000 },
-    { label: 'من 2000 إلى 2500', min: 2000, max: 2500 },
-    { label: 'من 2500 إلى 3000', min: 2500, max: 3000 },
-    { label: 'من 3000 إلى 3500', min: 3000, max: 3500 },
+    { label: this.translationService.translate('filter.price_0_500'), min: 0, max: 500 },
+    { label: this.translationService.translate('filter.price_500_1000'), min: 500, max: 1000 },
+    { label: this.translationService.translate('filter.price_1000_1500'), min: 1000, max: 1500 },
+    { label: this.translationService.translate('filter.price_1500_2000'), min: 1500, max: 2000 },
+    { label: this.translationService.translate('filter.price_2000_2500'), min: 2000, max: 2500 },
+    { label: this.translationService.translate('filter.price_2500_3000'), min: 2500, max: 3000 },
+    { label: this.translationService.translate('filter.price_3000_3500'), min: 3000, max: 3500 },
   ];
 
   availabilityFilters = [
-    { label: 'متوفر', value: 'in-stock' },
-    { label: 'غير متوفر', value: 'out-of-stock' },
+    { label: this.translationService.translate('filter.in_stock'), value: 'in-stock' },
+    { label: this.translationService.translate('filter.out_of_stock'), value: 'out-of-stock' },
   ];
 
   ngOnInit(): void {

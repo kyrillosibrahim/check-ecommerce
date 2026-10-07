@@ -3,6 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SiteSettingsService } from '../../core/services/settings.service';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface IWatchItem {
   video: string;
@@ -16,7 +17,7 @@ const CLD_VIDEO_MARK = '/video/upload/';
 @Component({
   selector: 'app-watch',
   standalone: true,
-  imports: [],
+  imports: [TranslatePipe],
   templateUrl: './watch.component.html',
   styleUrl: './watch.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

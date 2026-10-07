@@ -15,7 +15,7 @@
         <button type="button" class="rail-item" [class.active]="cat.id === selected()?.id" (click)="selectCategory(cat)">
           <span class="rail-item__img">
             @if (cat.image) {
-              <img [src]="cat.image | cldImage:96" [alt]="cat.name" loading="lazy" decoding="async" />
+              <img [src]="cat.image | cldImage:96" [alt]="(cat.nameEn || cat.name) | localize:cat.name" loading="lazy" decoding="async" />
             } @else {
               <i class="bi bi-grid"></i>
             }
@@ -41,7 +41,7 @@
               <a class="tile" routerLink="/products" [queryParams]="{ category: cat.id, subcategory: sub.id }">
                 <span class="tile__img">
                   @if (sub.image) {
-                    <img [src]="sub.image | cldImage:200" [alt]="sub.name" loading="lazy" decoding="async" />
+                    <img [src]="sub.image | cldImage:200" [alt]="(sub.nameEn || sub.name) | localize:sub.name" loading="lazy" decoding="async" />
                   } @else {
                     <i class="bi bi-grid"></i>
                   }

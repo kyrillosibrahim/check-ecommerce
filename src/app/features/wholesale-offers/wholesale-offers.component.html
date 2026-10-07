@@ -87,7 +87,7 @@
     <aside class="filter-drawer d-lg-none">
       <div class="filter-drawer-header">
         <h6 class="mb-0 fw-bold">{{ 'wholesale.filters' | translate }}</h6>
-        <button class="btn-close-custom" (click)="closeFilterDrawer()" aria-label="إغلاق">
+        <button class="btn-close-custom" (click)="closeFilterDrawer()" [attr.aria-label]="'product.close' | translate">
           <i class="bi bi-x-lg"></i>
         </button>
       </div>

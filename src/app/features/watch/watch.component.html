@@ -13,7 +13,7 @@
       @if (item.link) {
         <div class="watch-hint">
           <i class="bi bi-box-arrow-up-right"></i>
-          <span>اضغط على الفيديو للوصول للمنتج</span>
+          <span>{{ 'watch.product_hint' | translate }}</span>
         </div>
       }
     </div>
@@ -22,13 +22,13 @@
   @if (items.length === 0) {
     <div class="watch-empty">
       <i class="bi bi-camera-video-off"></i>
-      <p>لا توجد فيديوهات حالياً</p>
+      <p>{{ 'watch.empty' | translate }}</p>
     </div>
   }
 
   @if (items.length > 0) {
     <button type="button" class="watch-sound" (click)="toggleSound($event)"
-            [attr.aria-label]="muted() ? 'تشغيل الصوت' : 'كتم الصوت'">
+            [attr.aria-label]="(muted() ? 'watch.unmute' : 'watch.mute') | translate">
       <i class="bi" [class.bi-volume-mute-fill]="muted()" [class.bi-volume-up-fill]="!muted()"></i>
     </button>
   }
