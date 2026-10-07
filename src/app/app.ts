@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { isPlatformBrowser } from '@angular/common';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -11,6 +11,7 @@ import { QuickViewModalComponent } from './shared/components/quick-view-modal/qu
 import { SiteSettingsService } from './core/services/settings.service';
 import { SiteVisitService } from './core/services/site-visit.service';
 import { CustomerActivityTrackerService } from './core/services/customer-activity-tracker.service';
+import { AuthDrawerService } from './core/services/auth-drawer.service';
 
 @Component({
   selector: 'app-root',
@@ -26,15 +27,21 @@ export class App implements OnInit {
   private platformId = inject(PLATFORM_ID);
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
+  private authDrawerService = inject(AuthDrawerService);
 
   /** Pages where the footer should be hidden on mobile */
   private noFooterRoutes = ['/', '/profile', '/wishlist', '/cart', '/offers', '/checkout', '/watch', '/categories'];
   /** Pages where the header & floating actions should be hidden on mobile */
   private noChromeRoutes = ['/cart', '/checkout', '/watch', '/profile'];
+  /** Extra pages where only the floating actions (chat / scroll-top) are hidden on mobile */
+  private noFabRoutes = ['/categories'];
   hideFooterOnMobile = signal(false);
   hideChromeOnMobile = signal(false);
   /** Product details page: mobile uses its own floating back/wishlist buttons instead of the header */
   isProductPage = signal(false);
+  hideFabOnMobile = signal(false);
+  /** Login/register drawer (bottom-nav "تسجيل") also hides the floating actions */
+  authDrawerOpen = toSignal(this.authDrawerService.isOpen$, { initialValue: false });
 
   ngOnInit(): void {
     this.siteVisitService.trackVisit();
@@ -47,6 +54,7 @@ export class App implements OnInit {
       this.hideFooterOnMobile.set(this.noFooterRoutes.includes(url));
       this.hideChromeOnMobile.set(this.noChromeRoutes.includes(url));
       this.isProductPage.set(url.startsWith('/product/'));
+      this.hideFabOnMobile.set(this.noFabRoutes.includes(url));
     });
     if (!isPlatformBrowser(this.platformId)) return;
 

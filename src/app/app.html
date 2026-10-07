@@ -3,6 +3,6 @@
   <router-outlet />
 </main>
 <app-footer [class.hide-on-mobile]="hideFooterOnMobile()" />
-<app-floating-actions [class.hide-on-mobile]="hideChromeOnMobile()" />
+<app-floating-actions [class.hide-on-mobile]="hideChromeOnMobile() || hideFabOnMobile() || authDrawerOpen()" />
 <app-auth-drawer />
 <app-quick-view-modal />
