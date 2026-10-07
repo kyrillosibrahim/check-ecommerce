@@ -60,7 +60,7 @@ async function createOrder(req, res, next) {
       if (result.valid) {
         // Consume first (atomic, race-safe) and only apply the discount if THIS
         // request actually consumed it — prevents concurrent double-spend.
-        const consumed = await markCouponUsed(body.couponCode, userId, body.browserId);
+        const consumed = await markCouponUsed(body.couponCode, userId, body.browserId, result.coupon.issueId || '');
         if (consumed) {
           couponCode = String(body.couponCode).trim().toUpperCase();
           couponDiscount = Math.round(couponBase * (result.discountPercentage / 100));

@@ -15,14 +15,15 @@ async function validateCoupon(rawCode, userId, browserId) {
     return { valid: false, error: 'انتهت صلاحية الكود' };
   }
 
-  // Blocked if already used by this account OR this browser.
+  // Guests are tracked by browser only, so one of the two ids is required.
   const or = [];
   if (userId) or.push({ userId });
   if (browserId) or.push({ browserId });
-  if (or.length) {
-    const used = await CouponUsage.findOne({ code, $or: or });
-    if (used) return { valid: false, error: 'تم استخدام هذا الكود من قبل' };
-  }
+  if (!or.length) return { valid: false, error: 'تعذّر التحقق من الكود، حدّث الصفحة وحاول مرة أخرى' };
+
+  // Blocked if this issue of the code was already used by this account OR this browser.
+  const used = await CouponUsage.findOne({ code, issueId: coupon.issueId || '', $or: or });
+  if (used) return { valid: false, error: 'تم استخدام هذا الكود من قبل' };
 
   return { valid: true, discountPercentage: coupon.discountPercentage, coupon };
 }
@@ -33,12 +34,13 @@ async function validateCoupon(rawCode, userId, browserId) {
  * (unique-index violation from a concurrent order) or on error — callers must
  * only apply the discount when this returns true.
  */
-async function markCouponUsed(rawCode, userId, browserId) {
+async function markCouponUsed(rawCode, userId, browserId, issueId = '') {
   const code = (rawCode || '').trim().toUpperCase();
-  if (!code) return false;
+  if (!code || (!userId && !browserId)) return false;
   try {
     await CouponUsage.create({
       code,
+      issueId,
       userId: userId || '',
       browserId: browserId || '',
       usedAt: new Date().toISOString(),

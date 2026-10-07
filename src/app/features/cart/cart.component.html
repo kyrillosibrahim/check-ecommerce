@@ -102,7 +102,7 @@
               </div>
               @if (promoError()) {
                 <small class="text-danger mt-1 d-block">
-                  {{ 'cart.promo_error' | translate }}
+                  {{ promoError() }}
                 </small>
               }
             } @else {

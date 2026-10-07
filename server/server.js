@@ -247,5 +247,8 @@ app.listen(PORT, () => {
 
 // Connect to the DB in the background; never let a DB failure stop the server.
 connectDB()
+  // Replace the old per-code coupon-usage indexes with the per-issue ones.
+  .then(() => require('./models/CouponUsage').syncIndexes()
+    .catch((err) => console.error('  CouponUsage index sync error:', err.message)))
   .then(() => seedGovernorates())
   .catch((err) => console.error('  Startup DB/seed error:', err.message));

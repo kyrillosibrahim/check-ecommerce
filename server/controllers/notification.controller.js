@@ -75,7 +75,8 @@ async function sendToCustomers(req, res, next) {
       const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
       await Coupon.findOneAndUpdate(
         { code },
-        { code, discountPercentage: pct, expiresAt, active: true, createdAt: new Date().toISOString() },
+        // New issueId per send: users who used an earlier send of this code can use it again.
+        { code, discountPercentage: pct, expiresAt, active: true, issueId: genId().replace('ntf-', 'cpn-'), createdAt: new Date().toISOString() },
         { upsert: true }
       );
       couponPayload = { code, discountPercentage: pct, expiresAt };

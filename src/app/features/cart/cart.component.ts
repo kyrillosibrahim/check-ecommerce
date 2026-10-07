@@ -22,7 +22,8 @@ export class CartComponent {
   cartService = inject(CartService);
 
   promoCodeInput = '';
-  promoError = signal(false);
+  /** Server's reason the code was rejected, '' when there is no error. */
+  promoError = signal('');
   itemsCollapsed = signal(false);
 
   toggleItemsCollapsed(): void {
@@ -39,14 +40,14 @@ export class CartComponent {
 
   applyPromo(): void {
     this.cartService.validatePromo(this.promoCodeInput).subscribe(res => {
-      this.promoError.set(!res.valid);
+      this.promoError.set(res.valid ? '' : (res.error || this.translationService.translate('cart.promo_error')));
     });
   }
 
   removePromo(): void {
     this.promoCodeInput = '';
     this.cartService.removePromo();
-    this.promoError.set(false);
+    this.promoError.set('');
   }
 
   clearAll(): void {
