@@ -23,6 +23,7 @@ export class CategoryService {
         map(cats => cats.map(c => ({
           id: c.id,
           name: c.name,
+          nameEn: c.nameEn || '',
           slug: c.slug,
           image: c.image ? (c.image.startsWith('http') ? c.image : SERVER_URL + c.image) : '',
           description: c.description || '',

@@ -19,6 +19,7 @@ import { ProductService } from '../../../core/services/product.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { EgpCurrencyPipe } from '../../pipes/egp-currency.pipe';
 import { CldImagePipe } from '../../pipes/cld-image.pipe';
+import { LocalizePipe } from '../../pipes/localize.pipe';
 import { IBrand } from '../../../core/models/brand.model';
 import { ICategory } from '../../../core/models/category.model';
 import { IProduct } from '../../../core/models/product.model';
@@ -36,7 +37,7 @@ const MEGA_MENU_MIN_WIDTH = 992;
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink, RouterLinkActive, AsyncPipe, FormsModule, TranslatePipe, EgpCurrencyPipe, CldImagePipe],
+  imports: [RouterLink, RouterLinkActive, AsyncPipe, FormsModule, TranslatePipe, EgpCurrencyPipe, CldImagePipe, LocalizePipe],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -20,7 +20,7 @@
               <i class="bi bi-grid"></i>
             }
           </span>
-          <span class="rail-item__name">{{ cat.name }}</span>
+          <span class="rail-item__name">{{ (cat.nameEn || cat.name) | localize:cat.name }}</span>
         </button>
       }
     </nav>
@@ -29,7 +29,7 @@
     @if (selected(); as cat) {
       <div class="categories-pane">
         <div class="pane-header">
-          <h1 class="pane-title">{{ cat.name }}</h1>
+          <h1 class="pane-title">{{ (cat.nameEn || cat.name) | localize:cat.name }}</h1>
           <a class="pane-view-all" routerLink="/products" [queryParams]="{ category: cat.id }">
             {{ 'categories.view_all' | translate }}
           </a>
@@ -46,7 +46,7 @@
                     <i class="bi bi-grid"></i>
                   }
                 </span>
-                <span class="tile__name">{{ sub.name }}</span>
+                <span class="tile__name">{{ (sub.nameEn || sub.name) | localize:sub.name }}</span>
               </a>
             }
           </div>

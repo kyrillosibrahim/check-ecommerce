@@ -16,7 +16,7 @@
               <i class="bi bi-grid"></i>
             }
           </div>
-          <p class="category-name">{{ category.name }}</p>
+          <p class="category-name">{{ (category.nameEn || category.name) | localize:category.name }}</p>
         </a>
       </div>
     }

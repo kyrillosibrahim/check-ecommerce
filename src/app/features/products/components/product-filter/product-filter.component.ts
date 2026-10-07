@@ -3,10 +3,11 @@ import { Location } from '@angular/common';
 import { ICategory, ISubcategory } from '../../../../core/models/category.model';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { CldImagePipe } from '../../../../shared/pipes/cld-image.pipe';
+import { LocalizePipe } from '../../../../shared/pipes/localize.pipe';
 
 @Component({
   selector: 'app-product-filter',
-  imports: [TranslatePipe, CldImagePipe],
+  imports: [TranslatePipe, CldImagePipe, LocalizePipe],
   templateUrl: './product-filter.component.html',
   styleUrl: './product-filter.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

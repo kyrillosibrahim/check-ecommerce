@@ -7,11 +7,12 @@ import { SeoService } from '../../core/services/seo.service';
 import { ICategory } from '../../core/models/category.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { CldImagePipe } from '../../shared/pipes/cld-image.pipe';
+import { LocalizePipe } from '../../shared/pipes/localize.pipe';
 
 @Component({
   selector: 'app-categories',
   standalone: true,
-  imports: [RouterLink, TranslatePipe, CldImagePipe],
+  imports: [RouterLink, TranslatePipe, CldImagePipe, LocalizePipe],
   templateUrl: './categories.component.html',
   styleUrl: './categories.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

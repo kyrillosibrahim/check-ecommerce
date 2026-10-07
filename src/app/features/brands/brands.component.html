@@ -31,7 +31,7 @@
                 @if (cat.icon) {
                   <span class="cat-icon"><i class="bi" [class]="cat.icon"></i></span>
                 }
-                <h2>{{ cat.name }}</h2>
+                <h2>{{ (cat.nameEn || cat.name) | localize:cat.name }}</h2>
               </div>
               <a class="brand-section-link" (click)="goToCategory(cat)">
                 {{ 'brands.view_category' | translate }}

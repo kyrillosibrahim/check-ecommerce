@@ -28,7 +28,7 @@ async function getAllCategories(_req, res, next) {
     if (cached) return res.json(cached);
 
     const cats = await Category.find({}, { __v: 0 }).sort({ order: 1, id: 1 }).lean();
-    const result = cats.map(c => ({ id: c.id, name: c.name, slug: c.slug, image: c.image || '', filterTags: c.filterTags || [], order: c.order || 0 }));
+    const result = cats.map(c => ({ id: c.id, name: c.name, nameEn: c.nameEn || '', slug: c.slug, image: c.image || '', filterTags: c.filterTags || [], order: c.order || 0 }));
 
     cacheSet(CACHE_LIST, result, 10 * MIN);
     res.json(result);
@@ -51,7 +51,7 @@ async function getDetailedCategories(_req, res, next) {
     const brandMap = new Map(allBrands.map(b => [b.id, b]));
     const detailed = cats.map(c => {
       const famousBrands = (c.famousBrands || []).map(bId => brandMap.get(bId)).filter(Boolean);
-      return { id: c.id, name: c.name, slug: c.slug, image: c.image || '', subcategories: c.subcategories || [], famousBrands, filterTags: c.filterTags || [], order: c.order || 0 };
+      return { id: c.id, name: c.name, nameEn: c.nameEn || '', slug: c.slug, image: c.image || '', subcategories: c.subcategories || [], famousBrands, filterTags: c.filterTags || [], order: c.order || 0 };
     });
 
     cacheSet(CACHE_DETAILED, detailed, 30 * MIN);
@@ -72,12 +72,12 @@ async function reorderCategories(req, res, next) {
 
 async function createCategory(req, res, next) {
   try {
-    const { name, imageUrl } = req.body;
+    const { name, nameEn, imageUrl } = req.body;
     if (!name?.trim()) return res.status(400).json({ error: 'Category name is required.' });
     const slug = generateSlug(name.trim());
     if (await Category.findOne({ slug })) return res.status(409).json({ error: 'Category already exists.' });
     const image = req.file ? '/uploads/categories/' + req.file.filename : (imageUrl || '');
-    const newCat = await Category.create({ id: await getNextId(), name: name.trim(), slug, image, subcategories: [], famousBrands: [], filterTags: [] });
+    const newCat = await Category.create({ id: await getNextId(), name: name.trim(), nameEn: (nameEn || '').trim(), slug, image, subcategories: [], famousBrands: [], filterTags: [] });
     _invalidate();
     const obj = newCat.toObject(); delete obj._id; delete obj.__v; res.status(201).json(obj);
   } catch (err) { next(err); }
@@ -86,7 +86,7 @@ async function createCategory(req, res, next) {
 async function updateCategory(req, res, next) {
   try {
     const id = parseInt(req.params.id, 10);
-    const { name, famousBrands, filterTags } = req.body;
+    const { name, nameEn, famousBrands, filterTags } = req.body;
     if (!name?.trim()) return res.status(400).json({ error: 'Category name is required.' });
     const slug = generateSlug(name.trim());
     if (await Category.findOne({ slug, id: { $ne: id } })) return res.status(409).json({ error: 'A category with this name already exists.' });
@@ -95,6 +95,8 @@ async function updateCategory(req, res, next) {
     const oldSlug = cat.slug;
     const oldName = cat.name;
     cat.name = name.trim(); cat.slug = slug;
+    // Only overwritten when sent, so brand/tag-only updates keep the English name.
+    if (nameEn !== undefined) cat.nameEn = String(nameEn).trim();
     if (req.file) {
       if (cat.image && !cat.image.startsWith('http')) { const oldPath = path.join(__dirname, '..', cat.image); await fse.remove(oldPath).catch(() => {}); }
       cat.image = '/uploads/categories/' + req.file.filename;
@@ -132,14 +134,14 @@ async function deleteCategory(req, res, next) {
 async function addSubcategory(req, res, next) {
   try {
     const categoryId = parseInt(req.params.id, 10);
-    const { name } = req.body;
+    const { name, nameEn } = req.body;
     if (!name?.trim()) return res.status(400).json({ error: 'Subcategory name is required.' });
     const cat = await Category.findOne({ id: categoryId });
     if (!cat) return res.status(404).json({ error: 'Category not found.' });
     const slug = generateSlug(name.trim());
     if ((cat.subcategories || []).find(s => s.slug === slug)) return res.status(409).json({ error: 'Subcategory already exists.' });
     const image = req.file ? '/uploads/categories/' + req.file.filename : (req.body.imageUrl || '');
-    cat.subcategories.push({ id: getNextSubId(cat.subcategories), name: name.trim(), slug, image });
+    cat.subcategories.push({ id: getNextSubId(cat.subcategories), name: name.trim(), nameEn: (nameEn || '').trim(), slug, image });
     await cat.save();
     _invalidate();
     const obj = cat.toObject(); delete obj._id; delete obj.__v; res.status(201).json(obj);
@@ -149,7 +151,7 @@ async function addSubcategory(req, res, next) {
 async function updateSubcategory(req, res, next) {
   try {
     const categoryId = parseInt(req.params.id, 10); const subId = parseInt(req.params.subId, 10);
-    const { name } = req.body;
+    const { name, nameEn } = req.body;
     if (!name?.trim()) return res.status(400).json({ error: 'Subcategory name is required.' });
     const cat = await Category.findOne({ id: categoryId });
     if (!cat) return res.status(404).json({ error: 'Category not found.' });
@@ -160,6 +162,7 @@ async function updateSubcategory(req, res, next) {
     const oldSubSlug = cat.subcategories[subIndex].slug;
     const oldSubName = cat.subcategories[subIndex].name;
     cat.subcategories[subIndex].name = name.trim(); cat.subcategories[subIndex].slug = slug;
+    if (nameEn !== undefined) cat.subcategories[subIndex].nameEn = String(nameEn).trim();
     if (req.file) {
       const oldImg = cat.subcategories[subIndex].image;
       if (oldImg && !oldImg.startsWith('http')) await fse.remove(path.join(__dirname, '..', oldImg)).catch(() => {});
