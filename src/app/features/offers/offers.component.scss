@@ -551,7 +551,7 @@
   padding: 0.45rem 1rem;
   border: 1.5px solid var(--sz-accent);
   border-radius: 8px;
-  background-color: transparent;
+  background-color: var(--sz-bg-card, #fff);
   color: var(--sz-accent);
   font-weight: 600;
   font-size: 0.85rem;
