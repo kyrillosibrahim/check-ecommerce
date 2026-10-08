@@ -1,69 +1,121 @@
 <section class="brands-page">
   <div class="container">
-    <!-- Header -->
-    <div class="brands-header">
-      <h1 class="brands-heading">{{ 'brands.title' | translate }}</h1>
+    <header class="brands-header">
+      <div class="brands-title-row">
+        <h1 class="brands-heading">{{ 'brands.title' | translate }}</h1>
+        <span class="brands-count">{{ filtered().length }} {{ 'brands.count' | translate }}</span>
+      </div>
       <p class="brands-subtitle">{{ 'brands.subtitle' | translate }}</p>
-      <div class="heading-line"></div>
 
       <div class="brands-search">
-        <i class="bi bi-search"></i>
+        <i class="bi bi-search" aria-hidden="true"></i>
         <input
-          type="text"
+          type="search"
           [placeholder]="'brands.search_placeholder' | translate"
-          [value]="searchTerm"
-          (input)="onSearchInput($any($event.target).value)">
+          [value]="searchTerm()"
+          (input)="searchTerm.set($any($event.target).value)">
       </div>
-    </div>
+    </header>
 
-    <!-- Loading state -->
-    @if (isLoading()) {
-      <div class="brands-loading">
-        <div class="spinner-border" role="status" style="color: var(--sz-accent);"></div>
-      </div>
-    } @else {
-      <!-- Categories with their brands -->
-      @for (cat of categories(); track trackCat($index, cat)) {
-        @if (filteredBrands(cat.famousBrands).length > 0) {
-          <article class="brand-section" [id]="'cat-' + cat.id">
-            <header class="brand-section-header">
-              <div class="brand-section-title">
-                @if (cat.icon) {
-                  <span class="cat-icon"><i class="bi" [class]="cat.icon"></i></span>
-                }
-                <h2>{{ (cat.nameEn || cat.name) | localize:cat.name }}</h2>
-              </div>
-              <a class="brand-section-link" (click)="goToCategory(cat)">
-                {{ 'brands.view_category' | translate }}
-                <i class="bi bi-arrow-left"></i>
-              </a>
-            </header>
+    @if (!isLoading() && entries().length > 0) {
+      <nav class="brands-category-nav" [attr.aria-label]="'brands.title' | translate">
+        <button
+          type="button"
+          class="brands-category-chip"
+          [class.active]="activeCatId() === null"
+          [attr.aria-pressed]="activeCatId() === null"
+          (click)="activeCatId.set(null)">
+          {{ 'brands.all' | translate }}
+          <span class="chip-count">{{ entries().length }}</span>
+        </button>
 
-            <div class="brand-grid">
-              @for (brand of filteredBrands(cat.famousBrands); track trackBrand($index, brand)) {
-                <a class="brand-card" (click)="goToBrand(brand)" [title]="brand.name">
-                  @if (brand.image) {
-                    <img [src]="brand.image | cldImage:280" [alt]="brand.name" loading="lazy">
-                  } @else {
-                    <div class="brand-img-placeholder">
-                      <i class="bi bi-award"></i>
-                    </div>
-                  }
-                  <span class="brand-name">{{ brand.name }}</span>
-                </a>
-              }
-            </div>
-          </article>
+        @for (chip of chipCats(); track chip.category.id) {
+          <button
+            type="button"
+            class="brands-category-chip"
+            [class.active]="activeCatId() === chip.category.id"
+            [attr.aria-pressed]="activeCatId() === chip.category.id"
+            (click)="activeCatId.set(chip.category.id)">
+            {{ translationService.isArabic() ? chip.category.name : (chip.category.nameEn || chip.category.name) }}
+            <span class="chip-count">{{ chip.count }}</span>
+          </button>
         }
-      }
-
-      <!-- Empty state -->
-      @if (categories().length === 0) {
-        <div class="brands-empty">
-          <i class="bi bi-award"></i>
-          <p>{{ 'brands.empty' | translate }}</p>
-        </div>
-      }
+      </nav>
     }
   </div>
+
+  @if (isLoading()) {
+    <div class="brands-loading">
+      <div class="spinner-border" role="status" style="color: var(--sz-accent);"></div>
+    </div>
+  } @else {
+    @if (entries().length > 0) {
+      <nav class="letters-bar" dir="ltr" [attr.aria-label]="'brands.title' | translate">
+        <div class="container letters-track">
+          @for (letter of letters; track letter.key) {
+            <button
+              type="button"
+              class="letter-button"
+              [class.active]="activeLetter() === letter.key"
+              [disabled]="!availableKeys().has(letter.key)"
+              [attr.aria-pressed]="activeLetter() === letter.key"
+              (click)="jumpTo(letter.key)">
+              {{ letter.label }}
+            </button>
+          }
+        </div>
+      </nav>
+    }
+
+    <div class="container brands-content">
+      @if (entries().length === 0) {
+        <div class="brands-empty">
+          <i class="bi bi-award" aria-hidden="true"></i>
+          <p>{{ 'brands.empty' | translate }}</p>
+        </div>
+      } @else if (filtered().length === 0) {
+        <div class="brands-empty">
+          <i class="bi bi-search" aria-hidden="true"></i>
+          <p>{{ 'brands.no_results' | translate }}</p>
+        </div>
+      } @else {
+        @for (g of groups(); track g.key) {
+          <section
+            #letterSection
+            class="letter-section"
+            [id]="'brands-letter-' + g.key"
+            [attr.data-key]="g.key">
+            <h2 class="letter-marker">{{ g.label }}</h2>
+
+            <div class="brand-grid">
+              @for (e of g.entries; track e.brand.id) {
+                <button
+                  type="button"
+                  class="brand-card"
+                  [title]="e.brand.name"
+                  (click)="goToBrand(e.brand)">
+                  <span class="brand-logo">
+                    @if (e.brand.image) {
+                      <img
+                        [src]="e.brand.image | cldImage:280"
+                        [alt]="e.brand.name"
+                        loading="lazy">
+                    } @else {
+                      <span class="brand-img-placeholder">
+                        <i class="bi bi-award" aria-hidden="true"></i>
+                      </span>
+                    }
+                  </span>
+                  <span class="brand-name">{{ e.brand.name }}</span>
+                  @if (catsLabel(e); as label) {
+                    <span class="brand-categories">{{ label }}</span>
+                  }
+                </button>
+              }
+            </div>
+          </section>
+        }
+      }
+    </div>
+  }
 </section>

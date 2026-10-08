@@ -74,9 +74,11 @@ export const EN_TRANSLATIONS: Record<string, string> = {
 
   // ── Brands page ──
   'brands.title': 'Brands',
-  'brands.subtitle': 'Browse each category and discover the most popular brands available',
+  'brands.subtitle': 'All brands in one place, sorted A–Z',
   'brands.search_placeholder': 'Search for a brand...',
-  'brands.view_category': 'View Category',
+  'brands.all': 'All',
+  'brands.count': 'brands',
+  'brands.no_results': 'No matching brands',
   'brands.empty': 'No brands available right now',
 
   // ── Footer ──

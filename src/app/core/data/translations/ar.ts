@@ -74,9 +74,11 @@ export const AR_TRANSLATIONS: Record<string, string> = {
 
   // ── Brands page ──
   'brands.title': 'العلامات التجارية',
-  'brands.subtitle': 'تصفح كل قسم وتعرف على أشهر العلامات التجارية المتوفرة فيه',
+  'brands.subtitle': 'كل العلامات التجارية فى مكان واحد ومرتبة أبجديًا',
   'brands.search_placeholder': 'ابحث عن علامة تجارية...',
-  'brands.view_category': 'عرض القسم',
+  'brands.all': 'الكل',
+  'brands.count': 'علامة تجارية',
+  'brands.no_results': 'لا توجد علامات تجارية مطابقة',
   'brands.empty': 'لا توجد علامات تجارية متاحة حالياً',
 
   // ── Footer ──
