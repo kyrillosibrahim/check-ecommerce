@@ -483,7 +483,6 @@ export const AR_TRANSLATIONS: Record<string, string> = {
   'notifications.new': 'إشعار جديد',
 
   // ── Watch Page ──
-  'watch.product_hint': 'اضغط على الفيديو للوصول للمنتج',
   'watch.empty': 'لا توجد فيديوهات حالياً',
   'watch.unmute': 'تشغيل الصوت',
   'watch.mute': 'كتم الصوت',

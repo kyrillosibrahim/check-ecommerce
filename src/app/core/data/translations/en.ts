@@ -483,7 +483,6 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'notifications.new': 'New notification',
 
   // ── Watch Page ──
-  'watch.product_hint': 'Tap the video to view the product',
   'watch.empty': 'No videos available right now',
   'watch.unmute': 'Turn sound on',
   'watch.mute': 'Mute sound',

@@ -3,27 +3,37 @@ import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SiteSettingsService } from '../../core/services/settings.service';
+import { ProductService } from '../../core/services/product.service';
+import { IProduct } from '../../core/models/product.model';
+import { unitPriceAfterDiscount } from '../../core/utils/pricing.util';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { CldImagePipe } from '../../shared/pipes/cld-image.pipe';
+import { EgpCurrencyPipe } from '../../shared/pipes/egp-currency.pipe';
+import { LocalizePipe } from '../../shared/pipes/localize.pipe';
 
 interface IWatchItem {
   video: string;
   poster?: string;
   link?: string;
+  /** Set when the link points to a product page — used to show the product card */
+  productId?: string;
 }
 
 const VIDEO_EXT_RE = /\.(mp4|webm|ogg|mov|m4v)(\?|$)/i;
 const CLD_VIDEO_MARK = '/video/upload/';
+const PRODUCT_LINK_RE = /\/product\/([^/?#]+)/;
 
 @Component({
   selector: 'app-watch',
   standalone: true,
-  imports: [TranslatePipe],
+  imports: [TranslatePipe, CldImagePipe, EgpCurrencyPipe, LocalizePipe],
   templateUrl: './watch.component.html',
   styleUrl: './watch.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WatchComponent implements OnInit, AfterViewInit, OnDestroy {
   private settingsService = inject(SiteSettingsService);
+  private productService = inject(ProductService);
   private platformId = inject(PLATFORM_ID);
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
@@ -33,6 +43,8 @@ export class WatchComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren('slideVideo') videos?: QueryList<ElementRef<HTMLVideoElement>>;
 
   items: IWatchItem[] = [];
+  /** Products linked from the videos, keyed by id (filled after one batch request) */
+  products = signal<Map<string, IProduct>>(new Map());
   private observer?: IntersectionObserver;
 
   private readonly SOUND_KEY = 'kaf-watch-sound';
@@ -63,10 +75,34 @@ export class WatchComponent implements OnInit, AfterViewInit, OnDestroy {
           video: this.optimizeVideo(i.video),
           poster: this.posterFor(i.video),
           link: i.link,
+          productId: i.link?.match(PRODUCT_LINK_RE)?.[1],
         }));
       this.cdr.markForCheck();
       queueMicrotask(() => this.setupObserver());
+      this.loadProducts();
     });
+  }
+
+  /** One request for every product linked from the feed; on failure the videos just show without cards. */
+  private loadProducts(): void {
+    const ids = [...new Set(this.items.map(i => i.productId).filter((id): id is string => !!id))];
+    if (!ids.length) return;
+    this.productService.getByIds(ids).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: products => this.products.set(new Map(products.map(p => [p.id, p]))),
+      error: () => {},
+    });
+  }
+
+  productFor(item: IWatchItem): IProduct | undefined {
+    return item.productId ? this.products().get(item.productId) : undefined;
+  }
+
+  priceOf(p: IProduct): number {
+    return unitPriceAfterDiscount(p);
+  }
+
+  hasDiscount(p: IProduct): boolean {
+    return this.priceOf(p) < p.price;
   }
 
   /** Add Cloudinary auto quality/format so videos download smaller & start faster. */

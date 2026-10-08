@@ -10,10 +10,22 @@
         loop
         playsinline
       ></video>
-      @if (item.link) {
-        <div class="watch-hint">
-          <i class="bi bi-box-arrow-up-right"></i>
-          <span>{{ 'watch.product_hint' | translate }}</span>
+      @if (productFor(item); as p) {
+        <div class="watch-product">
+          @if (p.images.length) {
+            <span class="watch-product__img">
+              <img [src]="p.images[0] | cldImage:120" [alt]="p.title | localize:p.titleAr" loading="lazy" decoding="async" />
+            </span>
+          }
+          <div class="watch-product__info">
+            <span class="watch-product__name">{{ p.title | localize:p.titleAr }}</span>
+            <span class="watch-product__price">
+              {{ priceOf(p) | egpCurrency }}
+              @if (hasDiscount(p)) {
+                <del>{{ (p.originalPrice || p.price) | egpCurrency }}</del>
+              }
+            </span>
+          </div>
         </div>
       }
     </div>
