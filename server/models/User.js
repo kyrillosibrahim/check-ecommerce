@@ -16,6 +16,8 @@ const userSchema = new mongoose.Schema({
   role: { type: String, default: 'user' },
   addresses: [addressSchema],
   reviewsDisabled: { type: Boolean, default: false },
+  // Welcome notification is sent once per account (first register/login)
+  welcomeSent: { type: Boolean, default: false },
   createdAt: { type: String },
 });
 

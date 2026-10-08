@@ -11,7 +11,26 @@ function generateId() { return 'usr-' + Date.now().toString(36) + Math.random().
 // Security token — use a CSPRNG, not Math.random.
 function generateOtp() { return crypto.randomInt(100000, 1000000).toString(); }
 function signToken(user) { return jwt.sign({ id: user.id, phone: user.phone, role: user.role }, JWT_SECRET, { expiresIn: '7d' }); }
-function sanitizeUser(user) { const obj = user.toObject ? user.toObject() : { ...user }; delete obj.password; delete obj._id; delete obj.__v; return obj; }
+function sanitizeUser(user) { const obj = user.toObject ? user.toObject() : { ...user }; delete obj.password; delete obj._id; delete obj.__v; delete obj.welcomeSent; return obj; }
+
+/**
+ * Sends the welcome notification once per account. The flag is claimed atomically
+ * so concurrent logins can't double-send. Accounts from before the flag existed
+ * that already received a welcome just get the flag set, without a new message.
+ */
+async function sendWelcomeOnce(user) {
+  try {
+    const claimed = await User.updateOne({ id: user.id, welcomeSent: { $ne: true } }, { $set: { welcomeSent: true } });
+    if (!claimed.modifiedCount) return;
+    if (await Notification.exists({ userId: user.id, type: 'welcome' })) return;
+    await createNotification(user.id, {
+      type: 'welcome',
+      title: 'أهلاً بك فى كاف',
+      body: `مرحبا شكرا لك يا ${user.name} فى الانضمام فى كاف`,
+      link: '/notifications',
+    });
+  } catch { /* never let notifications break auth */ }
+}
 
 async function register(req, res) {
   try {
@@ -25,6 +44,7 @@ async function register(req, res) {
     if (await User.findOne({ phone: phone.trim() })) return res.status(409).json({ error: 'رقم التليفون مسجل بالفعل' });
     const newUser = await User.create({ id: generateId(), name: name.trim(), phone: phone.trim(), password: await bcrypt.hash(password, 10), role: 'user', addresses: [], createdAt: new Date().toISOString() });
     res.status(201).json({ user: sanitizeUser(newUser), token: signToken(newUser) });
+    await sendWelcomeOnce(newUser);
   } catch (err) { console.error('[AUTH] Register error:', err.message); res.status(500).json({ error: 'حدث خطأ أثناء التسجيل' }); }
 }
 
@@ -36,18 +56,8 @@ async function login(req, res) {
     if (!user || !(await bcrypt.compare(password, user.password))) return res.status(401).json({ error: 'رقم التليفون أو كلمة المرور غير صحيحة' });
     res.json({ user: sanitizeUser(user), token: signToken(user) });
 
-    // State 2: welcome the customer. Dedupe so we don't pile up unread greetings.
-    try {
-      const hasUnreadWelcome = await Notification.exists({ userId: user.id, type: 'welcome', read: false });
-      if (!hasUnreadWelcome) {
-        await createNotification(user.id, {
-          type: 'welcome',
-          title: 'أهلاً بك فى كاف',
-          body: `مرحبا شكرا لك يا ${user.name} فى الانضمام فى كاف`,
-          link: '/notifications',
-        });
-      }
-    } catch { /* never let notifications break login */ }
+    // Welcome only on the account's first sign-in, not on every login
+    await sendWelcomeOnce(user);
   } catch (err) { res.status(500).json({ error: 'حدث خطأ أثناء تسجيل الدخول' }); }
 }
 
