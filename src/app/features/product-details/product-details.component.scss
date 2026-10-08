@@ -1159,3 +1159,21 @@
     }
   }
 }
+
+// Quantity +/- and wishlist heart: keep icons dead-centre
+// (Bootstrap Icons sit slightly low by default: vertical-align: -.125em)
+.icon-center-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    display: block;
+    line-height: 1;
+
+    &::before {
+      display: block;
+      vertical-align: 0;
+    }
+  }
+}
