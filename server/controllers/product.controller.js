@@ -1,6 +1,7 @@
 const { generateSlug } = require('../utils/slug.util');
 const { uploadFile, deleteFile } = require('../utils/cloudinary.util');
 const Product = require('../models/Product');
+const { getPinnedBrandNames } = require('./brand.controller');
 
 async function uploadImages(files, folder) {
   if (!files || files.length === 0) return [];
@@ -199,20 +200,39 @@ async function getAllProducts(req, res, next) {
       return res.json(result);
     }
 
+    // Category/subcategory pages without an explicit sort list pinned brands' products first
+    // (brand management → «يظهر أولًا»); that needs a computed sort key, hence the aggregation.
+    const pinned = !sort && (category || subcategory) ? await getPinnedBrandNames() : [];
+    const findDocs = (skip, max) => {
+      if (!pinned.length) {
+        let q = Product.find(query, { __v: 0 }).sort(sortSpec);
+        if (skip) q = q.skip(skip);
+        if (max) q = q.limit(max);
+        return q.lean();
+      }
+      return Product.aggregate([
+        { $match: query },
+        { $addFields: { _pin: { $cond: [{ $in: ['$brand', pinned] }, 1, 0] } } },
+        { $sort: { _pin: -1, createdAt: -1, _id: -1 } },
+        ...(skip ? [{ $skip: skip }] : []),
+        ...(max ? [{ $limit: max }] : []),
+        { $project: { _pin: 0, __v: 0 } },
+      ]);
+    };
+
     // Paginated path — skip/limit + count at the DB level (no full-collection load).
     if (page && limit) {
       const pageNum = parseInt(page, 10) || 1; const limitNum = parseInt(limit, 10) || 36;
       const [docs, total] = await Promise.all([
-        Product.find(query, { __v: 0 }).sort(sortSpec).skip((pageNum - 1) * limitNum).limit(limitNum).lean(),
+        findDocs((pageNum - 1) * limitNum, limitNum),
         Product.countDocuments(query),
       ]);
       return res.json({ products: docs.map(p => enrich(fixImagePaths(p))), total });
     }
 
     // Unpaginated list (optionally capped by ?limit).
-    let dbQuery = Product.find(query, { __v: 0 }).sort(sortSpec);
-    if (limit) { const max = parseInt(limit, 10); if (!isNaN(max) && max > 0) dbQuery = dbQuery.limit(max); }
-    const docs = await dbQuery.lean();
+    const max = parseInt(limit, 10);
+    const docs = await findDocs(0, !isNaN(max) && max > 0 ? max : 0);
     return res.json(docs.map(p => enrich(fixImagePaths(p))));
   } catch (err) { next(err); }
 }
