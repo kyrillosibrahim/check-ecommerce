@@ -1,8 +1,13 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, Input, OnChanges, PLATFORM_ID, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, Input, OnChanges, PLATFORM_ID, signal, SimpleChanges, ViewChild } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import Swiper from 'swiper';
 import { Autoplay } from 'swiper/modules';
 import { CldImagePipe } from '../../../../shared/pipes/cld-image.pipe';
+import { VideoProductCardComponent } from '../../../../shared/components/video-product-card/video-product-card.component';
+import { ProductService } from '../../../../core/services/product.service';
+import { IProduct } from '../../../../core/models/product.model';
+import { productIdFromLink } from '../../../../core/utils/product-link.util';
 
 export interface INaturalProductItem {
   video: string;
@@ -13,7 +18,7 @@ const VIDEO_EXT_RE = /\.(mp4|webm|ogg|mov|m4v)(\?|$)/i;
 
 @Component({
   selector: 'app-natural-products',
-  imports: [CldImagePipe],
+  imports: [CldImagePipe, VideoProductCardComponent],
   templateUrl: './natural-products.component.html',
   styleUrl: './natural-products.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,7 +28,17 @@ export class NaturalProductsComponent implements AfterViewInit, OnChanges {
   @ViewChild('swiperRef') swiperRef!: ElementRef<HTMLElement>;
 
   private platformId = inject(PLATFORM_ID);
+  private productService = inject(ProductService);
+  private destroyRef = inject(DestroyRef);
   private swiper?: Swiper;
+
+  /** Products linked from the cards, keyed by id (filled after one batch request) */
+  products = signal<Map<string, IProduct>>(new Map());
+
+  productFor(item: INaturalProductItem): IProduct | undefined {
+    const id = productIdFromLink(item.link);
+    return id ? this.products().get(id) : undefined;
+  }
 
   isVideo(url: string): boolean {
     if (!url) return false;
@@ -51,10 +66,21 @@ export class NaturalProductsComponent implements AfterViewInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes['items']) this.loadProducts();
     if (changes['items'] && this.swiperRef && isPlatformBrowser(this.platformId)) {
       this.swiper?.destroy(true, true);
       if (this.items.length > 0) this.initSwiper();
     }
+  }
+
+  /** One request for every linked product; on failure the cards just show without it. */
+  private loadProducts(): void {
+    const ids = [...new Set(this.items.map(i => productIdFromLink(i.link)).filter((id): id is string => !!id))];
+    if (!ids.length) return;
+    this.productService.getByIds(ids).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: products => this.products.set(new Map(products.map(p => [p.id, p]))),
+      error: () => {},
+    });
   }
 
   private initSwiper(): void {

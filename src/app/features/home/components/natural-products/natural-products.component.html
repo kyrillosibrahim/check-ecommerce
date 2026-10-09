@@ -10,6 +10,9 @@
               } @else {
                 <img [src]="item.video | cldImage:400" alt="" loading="lazy" draggable="false">
               }
+              @if (productFor(item); as p) {
+                <app-video-product-card class="np-product" [product]="p" [compact]="true" />
+              }
             </a>
           } @else {
             <div class="np-card">

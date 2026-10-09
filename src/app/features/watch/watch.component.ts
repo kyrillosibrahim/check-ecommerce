@@ -5,11 +5,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SiteSettingsService } from '../../core/services/settings.service';
 import { ProductService } from '../../core/services/product.service';
 import { IProduct } from '../../core/models/product.model';
-import { unitPriceAfterDiscount } from '../../core/utils/pricing.util';
+import { productIdFromLink } from '../../core/utils/product-link.util';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
-import { CldImagePipe } from '../../shared/pipes/cld-image.pipe';
-import { EgpCurrencyPipe } from '../../shared/pipes/egp-currency.pipe';
-import { LocalizePipe } from '../../shared/pipes/localize.pipe';
+import { VideoProductCardComponent } from '../../shared/components/video-product-card/video-product-card.component';
 
 interface IWatchItem {
   video: string;
@@ -21,12 +19,11 @@ interface IWatchItem {
 
 const VIDEO_EXT_RE = /\.(mp4|webm|ogg|mov|m4v)(\?|$)/i;
 const CLD_VIDEO_MARK = '/video/upload/';
-const PRODUCT_LINK_RE = /\/product\/([^/?#]+)/;
 
 @Component({
   selector: 'app-watch',
   standalone: true,
-  imports: [TranslatePipe, CldImagePipe, EgpCurrencyPipe, LocalizePipe],
+  imports: [TranslatePipe, VideoProductCardComponent],
   templateUrl: './watch.component.html',
   styleUrl: './watch.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -75,7 +72,7 @@ export class WatchComponent implements OnInit, AfterViewInit, OnDestroy {
           video: this.optimizeVideo(i.video),
           poster: this.posterFor(i.video),
           link: i.link,
-          productId: i.link?.match(PRODUCT_LINK_RE)?.[1],
+          productId: productIdFromLink(i.link),
         }));
       this.cdr.markForCheck();
       queueMicrotask(() => this.setupObserver());
@@ -95,14 +92,6 @@ export class WatchComponent implements OnInit, AfterViewInit, OnDestroy {
 
   productFor(item: IWatchItem): IProduct | undefined {
     return item.productId ? this.products().get(item.productId) : undefined;
-  }
-
-  priceOf(p: IProduct): number {
-    return unitPriceAfterDiscount(p);
-  }
-
-  hasDiscount(p: IProduct): boolean {
-    return this.priceOf(p) < p.price;
   }
 
   /** Add Cloudinary auto quality/format so videos download smaller & start faster. */

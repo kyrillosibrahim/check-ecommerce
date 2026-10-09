@@ -17,7 +17,7 @@
   display: block;
   width: 100%;
   aspect-ratio: 9 / 16;
-  border-radius: 5px;
+  border-radius: 12px;
   overflow: hidden;
   background: #000;
   text-decoration: none;
@@ -40,4 +40,14 @@
     @media (max-width: 768px) {
       width: 65%;
     }
+}
+
+// Linked product (thumbnail, name, price) over the bottom of the card
+.np-product {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 32px 10px 10px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0));
+  pointer-events: none;
 }

@@ -1,0 +1,14 @@
+@if (product().images.length) {
+  <span class="vpc-img">
+    <img [src]="product().images[0] | cldImage:120" [alt]="product().title | localize:product().titleAr" loading="lazy" decoding="async" />
+  </span>
+}
+<div class="vpc-info">
+  <span class="vpc-name">{{ product().title | localize:product().titleAr }}</span>
+  <span class="vpc-price">
+    {{ price() | egpCurrency }}
+    @if (hasDiscount()) {
+      <del>{{ (product().originalPrice || product().price) | egpCurrency }}</del>
+    }
+  </span>
+</div>
