@@ -1,12 +1,20 @@
 <div class="container section-padding">
   <h2 class="section-title">{{ pageTitle || ('products.title' | translate) }}</h2>
 
-  <!-- Categories (always visible) -->
+  <!-- Brand banner replaces the categories row while one brand is chosen -->
+  @if (activeBrandBanner) {
+    <div class="brand-banner">
+      <img [src]="activeBrandBanner | cldImage:1600" [alt]="activeBrand" width="1600" height="500">
+    </div>
+  }
+
+  <!-- Categories -->
   <app-product-filter
     [categories]="categories"
     [selectedCategory]="selectedCategory"
     [selectedSubcategory]="selectedSubcategory"
     [hideSort]="true"
+    [hideCategories]="!!activeBrandBanner"
     (categoryChange)="onCategoryChange($event)"
     (subcategoryChange)="onSubcategoryChange($event)" />
 

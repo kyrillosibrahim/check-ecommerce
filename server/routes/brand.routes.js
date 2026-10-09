@@ -33,9 +33,12 @@ const upload = multer({
   },
 });
 
+// `image` = logo, `banner` = products-page banner.
+const brandFiles = upload.fields([{ name: 'image', maxCount: 1 }, { name: 'banner', maxCount: 1 }]);
+
 router.get('/', getAllBrands);
-router.post('/', adminAuth, upload.single('image'), createBrand);
-router.put('/:id', adminAuth, upload.single('image'), updateBrand);
+router.post('/', adminAuth, brandFiles, createBrand);
+router.put('/:id', adminAuth, brandFiles, updateBrand);
 router.delete('/:id', adminAuth, deleteBrand);
 
 module.exports = router;

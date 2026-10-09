@@ -16,6 +16,8 @@ import { SkeletonLoaderComponent } from '../../shared/components/skeleton-loader
 import { ProductFilterComponent } from './components/product-filter/product-filter.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslationService } from '../../core/services/translation.service';
+import { BrandService } from '../../core/services/brand.service';
+import { CldImagePipe } from '../../shared/pipes/cld-image.pipe';
 
 const ITEMS_PER_PAGE = 36;
 
@@ -28,7 +30,7 @@ export interface PriceRange {
 
 @Component({
   selector: 'app-products',
-  imports: [ProductCardComponent, SkeletonLoaderComponent, ProductFilterComponent, TranslatePipe, FormsModule, NgTemplateOutlet],
+  imports: [ProductCardComponent, SkeletonLoaderComponent, ProductFilterComponent, TranslatePipe, FormsModule, NgTemplateOutlet, CldImagePipe],
   templateUrl: './products.component.html',
   styleUrl: './products.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -45,6 +47,10 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
   private seoService = inject(SeoService);
   private translationService = inject(TranslationService);
   private destroyRef = inject(DestroyRef);
+  private brandService = inject(BrandService);
+
+  /** Brand name → products-page banner (set in dashboard brand management). */
+  private brandBanners = new Map<string, string>();
 
   products: IProduct[] = [];
   allFetchedProducts: IProduct[] = []; // unfiltered products from server for computing counts
@@ -235,11 +241,25 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  /** One chosen brand (from the URL, or the only one ticked in the sidebar). */
+  get activeBrand(): string {
+    return this.selectedBrand || (this.selectedBrands.length === 1 ? this.selectedBrands[0] : '');
+  }
+
+  /** The brand's banner replaces the categories row while that brand is chosen. */
+  get activeBrandBanner(): string {
+    return this.brandBanners.get(this.activeBrand) || '';
+  }
+
   ngOnInit(): void {
     this.seoService.setPageMeta({
       title: this.translationService.translate('nav.products'),
       description: this.translationService.translate('seo.products_description'),
       path: '/products',
+    });
+    this.brandService.getAll().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(brands => {
+      this.brandBanners = new Map(brands.filter(b => b.banner).map(b => [b.name, b.banner!]));
+      this.cdr.markForCheck();
     });
     // The URL carries short numeric ids; we resolve them back to the (Arabic) slugs
     // the API and the UI use. Old slug-based links still work (resolveSlug passes
