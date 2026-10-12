@@ -20,6 +20,9 @@ import { BrandService } from '../../core/services/brand.service';
 import { CldImagePipe } from '../../shared/pipes/cld-image.pipe';
 
 const ITEMS_PER_PAGE = 36;
+// One shuffle seed per page load: a refresh reshuffles a category, while scrolling and
+// coming back from a product keep the same order.
+const SHUFFLE_SEED = Math.floor(Math.random() * 2 ** 31) + 1;
 
 export interface PriceRange {
   label: string;
@@ -491,6 +494,9 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.isLoading.set(true);
     }
 
+    // A main category mixes all its subcategories at random; a subcategory stays newest first.
+    const shuffle = !!this.selectedCategory && !this.selectedSubcategory && !this.selectedBrand && !this.searchTerm;
+
     this.productService.searchProducts({
       search: this.searchTerm || undefined,
       category: this.selectedCategory || undefined,
@@ -499,6 +505,8 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
       filterTags: this.selectedFilterTags.length ? this.selectedFilterTags : undefined,
       page: this.currentPage,
       limit: ITEMS_PER_PAGE,
+      sort: shuffle ? 'random' : undefined,
+      seed: shuffle ? SHUFFLE_SEED : undefined,
     }).subscribe(result => {
       this.allFetchedProducts = append
         ? [...this.allFetchedProducts, ...result.products]

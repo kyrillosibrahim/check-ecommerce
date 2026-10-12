@@ -33,6 +33,24 @@ function fixImagePaths(product) {
   return obj;
 }
 
+// Fisher-Yates driven by mulberry32, so the same seed always yields the same order.
+function seededShuffle(items, seed) {
+  let a = seed >>> 0;
+  const rand = () => {
+    a = (a + 0x6D2B79F5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  const out = [...items];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
 async function createProduct(req, res, next) {
   try {
     const body = req.body;
@@ -134,7 +152,7 @@ async function createProduct(req, res, next) {
 
 async function getAllProducts(req, res, next) {
   try {
-    const { category, subcategory, search, brand, merchant, featured, limit, filterTags: filterTagsParam, hasDiscount, page, sort } = req.query;
+    const { category, subcategory, search, brand, merchant, featured, limit, filterTags: filterTagsParam, hasDiscount, page, sort, seed } = req.query;
     const query = {};
     if (category) query.$or = [{ category }, { categoryFolder: category }];
     if (subcategory) query.subcategory = subcategory;
@@ -198,6 +216,26 @@ async function getAllProducts(req, res, next) {
       }
       if (limit) { const max = parseInt(limit, 10); if (!isNaN(max) && max > 0) result = result.slice(0, max); }
       return res.json(result);
+    }
+
+    // Main category pages mix all their subcategories in a shuffled order. The client sends one
+    // seed per visit, so every infinite-scroll page slices the same order: no repeats, no gaps.
+    if (sort === 'random') {
+      const pinnedSet = new Set(category || subcategory ? await getPinnedBrandNames() : []);
+      const refs = await Product.find(query, { _id: 1, brand: 1 }).sort({ _id: 1 }).lean();
+      const shuffled = seededShuffle(refs, parseInt(seed, 10) || 1);
+      // Pinned brands (brand management → «يظهر أولًا») still lead; each group is shuffled on its own.
+      const ordered = [...shuffled.filter(r => pinnedSet.has(r.brand)), ...shuffled.filter(r => !pinnedSet.has(r.brand))];
+      const max = parseInt(limit, 10);
+      let slice = !isNaN(max) && max > 0 ? ordered.slice(0, max) : ordered;
+      if (page && limit) {
+        const pageNum = parseInt(page, 10) || 1; const limitNum = parseInt(limit, 10) || 36;
+        slice = ordered.slice((pageNum - 1) * limitNum, pageNum * limitNum);
+      }
+      const docs = await Product.find({ _id: { $in: slice.map(r => r._id) } }, { __v: 0 }).lean();
+      const byId = new Map(docs.map(d => [String(d._id), d]));
+      const result = slice.map(r => byId.get(String(r._id))).filter(Boolean).map(p => enrich(fixImagePaths(p)));
+      return page && limit ? res.json({ products: result, total: ordered.length }) : res.json(result);
     }
 
     // Category/subcategory pages without an explicit sort list pinned brands' products first
