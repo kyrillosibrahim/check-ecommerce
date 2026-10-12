@@ -21,6 +21,15 @@ const BOT_IP_REGEX = new RegExp(`^(?:${[...BOT_IP_PREFIXES, ...CLOUD_IP_PREFIXES
   .map(prefix => prefix.replace(/\./g, '\\.'))
   .join('|')})`);
 
+// Rows saved before the iPhone parsing fix say "Mac"; the raw UA still tells the truth.
+// The list column and the device filter must share these so a row never disagrees with its filter.
+const MOBILE_UA_PATTERN = 'iPhone|iPad|iPod|Android|Mobi';
+const MOBILE_NAME_PATTERN = 'iPhone|iPad|iPod|Android';
+const MOBILE_MATCH = [
+  { userAgent: new RegExp(MOBILE_UA_PATTERN, 'i') },
+  { deviceName: new RegExp(MOBILE_NAME_PATTERN, 'i') },
+];
+
 function sanitize(raw, req) {
   const body = raw && typeof raw === 'object' ? raw : {};
   const clean = (value, max) => typeof value === 'string' ? value.trim().slice(0, max) : '';
@@ -366,6 +375,9 @@ router.get('/', adminAuth, async (req, res) => {
         { title: search },
       ];
     }
+    // $and, not $or: the search above already owns filter.$or.
+    if (req.query.device === 'mobile') filter.$and = [{ $or: MOBILE_MATCH }];
+    else if (req.query.device === 'desktop') filter.$nor = MOBILE_MATCH;
 
     const [activity] = await CustomerActivity.aggregate([
       { $match: filter },
@@ -375,13 +387,12 @@ router.get('/', adminAuth, async (req, res) => {
             { $sort: { enteredAt: -1 } },
             { $skip: (page - 1) * limit },
             { $limit: limit },
-            // Rows saved before the iPhone parsing fix say "Mac"; the raw UA still tells the truth.
             {
               $addFields: {
                 isMobile: {
                   $or: [
-                    { $regexMatch: { input: { $ifNull: ['$userAgent', ''] }, regex: 'iPhone|iPad|iPod|Android|Mobi', options: 'i' } },
-                    { $regexMatch: { input: { $ifNull: ['$deviceName', ''] }, regex: 'iPhone|iPad|iPod|Android', options: 'i' } },
+                    { $regexMatch: { input: { $ifNull: ['$userAgent', ''] }, regex: MOBILE_UA_PATTERN, options: 'i' } },
+                    { $regexMatch: { input: { $ifNull: ['$deviceName', ''] }, regex: MOBILE_NAME_PATTERN, options: 'i' } },
                   ],
                 },
               },
