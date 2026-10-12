@@ -33,7 +33,7 @@ export class CustomerActivityTrackerService {
     if (!this.isBrowser || this.started) return;
     this.started = true;
     this.deviceId = getOrCreateDeviceId();
-    this.deviceName = parseDeviceName(navigator.userAgent);
+    this.deviceName = parseDeviceName(navigator.userAgent, navigator.maxTouchPoints);
 
     this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd)

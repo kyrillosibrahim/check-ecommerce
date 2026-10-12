@@ -375,6 +375,17 @@ router.get('/', adminAuth, async (req, res) => {
             { $sort: { enteredAt: -1 } },
             { $skip: (page - 1) * limit },
             { $limit: limit },
+            // Rows saved before the iPhone parsing fix say "Mac"; the raw UA still tells the truth.
+            {
+              $addFields: {
+                isMobile: {
+                  $or: [
+                    { $regexMatch: { input: { $ifNull: ['$userAgent', ''] }, regex: 'iPhone|iPad|iPod|Android|Mobi', options: 'i' } },
+                    { $regexMatch: { input: { $ifNull: ['$deviceName', ''] }, regex: 'iPhone|iPad|iPod|Android', options: 'i' } },
+                  ],
+                },
+              },
+            },
             { $project: { userAgent: 0, ipAddress: 0, __v: 0 } },
           ],
           totals: [

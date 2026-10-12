@@ -13,7 +13,7 @@ export class SiteVisitService {
     if (!isPlatformBrowser(this.platformId)) return;
 
     const deviceId = getOrCreateDeviceId();
-    const deviceName = parseDeviceName(navigator.userAgent);
+    const deviceName = parseDeviceName(navigator.userAgent, navigator.maxTouchPoints);
 
     this.http.post(API_CONFIG.siteVisitsUrl, { deviceId, deviceName, userAgent: navigator.userAgent })
       .subscribe({ error: () => {} });
